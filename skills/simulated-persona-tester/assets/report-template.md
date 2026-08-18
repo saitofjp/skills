@@ -1,9 +1,9 @@
-# Alpha test report template
+# Persona test report template
 
 Use this structure for the finished report (Phase B, plus Phase C if run) unless the user asks for another format.
 
 ```markdown
-## Alpha Test Result
+## Persona Test Result
 
 ### Simulation Status
 - **Nature of result:** Simulated behavior, not real-user evidence

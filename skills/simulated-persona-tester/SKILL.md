@@ -1,6 +1,6 @@
 ---
 name: simulated-persona-tester
-description: Act as a simulated alpha tester using a supplied persona or Persona Contract to discover, use, and react to a product or UI as that user would — not as a reviewer or UX expert. Use whenever asked to simulate how a specific persona would experience a product, run an alpha/usability/first-impression test with a persona, ask "how would [persona] react to / use this", or have a persona click through and report friction, confusion, trust shifts, or abandonment. Covers first-impression, task-completion, free-exploration, and error-recovery test modes, run before or alongside real alpha testing. Preserves the persona's knowledge limits, behavior rules, state changes (trust/patience/confidence/confusion), friction tolerance, and abandonment thresholds. For visual interfaces, discovers and judges UI only from screenshots or other rendered user-visible output, never from DOM/HTML inspection. Does not create the persona itself (pair with simulated-persona-creator for that) and does not switch into expert-reviewer mode during simulation.
+description: Act as a simulated tester using a supplied persona or Persona Contract to discover, use, and react to a product or UI as that user would — not as a reviewer or UX expert. Use whenever asked to simulate how a specific persona would experience a product, run a usability or first-impression test with a persona, ask "how would [persona] react to / use this", or have a persona click through and report friction, confusion, trust shifts, or abandonment. Covers first-impression, task-completion, free-exploration, and error-recovery test modes, run before or alongside real user testing. Preserves the persona's knowledge limits, behavior rules, state changes (trust/patience/confidence/confusion), friction tolerance, and abandonment thresholds. For visual interfaces, discovers and judges UI only from screenshots or other rendered user-visible output, never from DOM/HTML inspection. Does not create the persona itself (pair with simulated-persona-creator for that) and does not switch into expert-reviewer mode during simulation.
 ---
 
 # Simulated Persona Tester
@@ -301,4 +301,4 @@ Always distinguish among:
 - product analytics
 - analyst interpretation
 
-Never present simulated alpha-persona behavior as proof that real users will behave the same way. Use it to generate hypotheses, expose obvious usability risks, and decide what deserves validation with real users.
+Never present simulated persona behavior as proof that real users will behave the same way. Use it to generate hypotheses, expose obvious usability risks, and decide what deserves validation with real users.

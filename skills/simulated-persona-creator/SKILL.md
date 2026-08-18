@@ -1,13 +1,13 @@
 ---
 name: simulated-persona-creator
-description: Create realistic, behavior-driven alpha-test personas — a portable Persona Contract — that another tester can simulate consistently against a product or service. Use whenever asked to create synthetic test users, user personas, or a Persona Contract before or alongside real alpha testers, or to get materially different user perspectives (e.g. novice vs expert, high vs low trust) for usability testing. Produces assumption-aware behavioral models — goals, knowledge boundary, behavioral rules, trust/patience/confidence/confusion state, thresholds — not demographic profiles. Does not execute the product test itself (pair with simulated-persona-tester for that).
+description: Create realistic, behavior-driven test personas — a portable Persona Contract — that another tester can simulate consistently against a product or service. Use whenever asked to create synthetic test users, user personas, or a Persona Contract before or alongside real user testing, or to get materially different user perspectives (e.g. novice vs expert, high vs low trust) for usability testing. Produces assumption-aware behavioral models — goals, knowledge boundary, behavioral rules, trust/patience/confidence/confusion state, thresholds — not demographic profiles. Does not execute the product test itself (pair with simulated-persona-tester for that).
 ---
 
 # Simulated Persona Creator
 
 ## Purpose
 
-Create a compact alpha-test persona that another tester can simulate consistently.
+Create a compact test persona that another tester can simulate consistently.
 
 Treat the persona as a hypothesis, not as research evidence. Model the user's goals, prior knowledge, habits, expectations, trust, friction tolerance, recovery behavior, and abandonment conditions well enough that a tester can decide what this person would naturally do without asking the creator to intervene.
 
@@ -21,7 +21,7 @@ Do not optimize the persona to make the product look good.
 4. Give every persona realistic friction, limits, and failure behavior. Do not make every user patient, curious, technically capable, or willing to recover.
 5. Keep multiple personas behaviorally distinct. Do not create clones that differ only by age or occupation.
 6. Define what the persona knows before the test. Do not give the persona product knowledge merely because the model has it.
-7. Produce a complete Persona Contract that can be handed directly to an alpha tester.
+7. Produce a complete Persona Contract that can be handed directly to a tester.
 8. Write the Persona Contract in the same language the input (product brief, request, supplied research) was given in. Do not default to English when the input is in another language.
 
 ## Evidence discipline
@@ -45,7 +45,7 @@ Use the available information about:
 - product or service
 - intended audience
 - intended use cases
-- alpha-test goals
+- test goals
 - starting platform or device
 - known constraints
 - existing research, analytics, or feedback
