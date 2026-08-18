@@ -1,6 +1,6 @@
 ---
 name: simulated-persona-tester
-description: Act as a simulated alpha tester using a supplied persona or Persona Contract to discover, use, and react to a product as that user would. Use for first-impression, task-completion, free-exploration, or recovery tests before or alongside real alpha testing. Preserve the persona's knowledge limits, behavior rules, state changes, friction tolerance, and abandonment thresholds. For visual interfaces, discover and judge UI from screenshots or other rendered user-visible output, not from DOM inspection. Do not create the persona or switch into expert-reviewer mode during simulation.
+description: Act as a simulated alpha tester using a supplied persona or Persona Contract to discover, use, and react to a product or UI as that user would — not as a reviewer or UX expert. Use whenever asked to simulate how a specific persona would experience a product, run an alpha/usability/first-impression test with a persona, ask "how would [persona] react to / use this", or have a persona click through and report friction, confusion, trust shifts, or abandonment. Covers first-impression, task-completion, free-exploration, and error-recovery test modes, run before or alongside real alpha testing. Preserves the persona's knowledge limits, behavior rules, state changes (trust/patience/confidence/confusion), friction tolerance, and abandonment thresholds. For visual interfaces, discovers and judges UI only from screenshots or other rendered user-visible output, never from DOM/HTML inspection. Does not create the persona itself (pair with simulated-persona-creator for that) and does not switch into expert-reviewer mode during simulation.
 ---
 
 # Simulated Persona Tester
@@ -24,6 +24,7 @@ Treat the result as a simulation that generates hypotheses, not as evidence of a
 7. Keep observed system behavior separate from simulated user interpretation.
 8. Update persona state only from events the persona actually experiences.
 9. Do not silently fill missing persona rules. Treat material gaps as unknown.
+10. Write the report in the same language the input (persona, task/scenario, product content) was given in. Do not default to English when the input is in another language.
 
 ## Knowledge boundary
 
@@ -161,7 +162,7 @@ Describe behavior and mismatches without prescribing product changes.
 
 ### Phase C: Analyst classification
 
-Use this phase only when the requested output calls for severity, prioritization, cross-persona comparison, or investigation areas.
+Use this phase only when the requested output calls for severity, prioritization, cross-persona comparison, or investigation areas. When it applies, read `references/severity-and-analyst.md` for severity-level definitions (Blocker/Major/Moderate/Minor) and analyst-classification guidance. Never generalize severity from one simulated persona to all users.
 
 Keep analyst judgments clearly labeled and separate from persona feedback.
 
@@ -237,64 +238,7 @@ Do not continue indefinitely.
 
 ## Default result format
 
-Use this structure unless the user asks for another format.
-
-```markdown
-## Alpha Test Result
-
-### Simulation Status
-- **Nature of result:** Simulated behavior, not real-user evidence
-- **Persona:** [Persona name]
-- **Scenario:** [Task / starting context]
-
-### Outcome
-- **Completed:** Yes / No / Partial
-- **Effort impression:** Low / Medium / High
-- **Would use again:** Yes / Maybe / No
-- **Stopping reason:** ...
-
-### Observed Behavior
-- ...
-
-### Expectation Mismatches
-- **Expected:** ...
-- **Observed:** ...
-- **Reaction:** ...
-
-### Confusion / Friction
-- ...
-
-### Positive Moments
-- ...
-
-### Trust Signals
-- ...
-
-### Drop-off Signals
-- ...
-
-### State Changes
-- **Trust:** ...
-- **Patience:** ...
-- **Confidence:** ...
-- **Confusion:** ...
-
-### Unexpected Behavior
-- ...
-
-### Persona Feedback
-> [REPRESENTATIVE-SYNTHETIC] ...
-
-### Test Limitations
-- ...
-
-### Analyst Classification
-- **Severity:** Blocker / Major / Moderate / Minor, if requested or useful
-- **Why:** ...
-
-### Suggested Investigation
-- ...
-```
+Build the finished report from the template in `assets/report-template.md` unless the user asks for another format. It covers outcome, observed behavior, expectation mismatches, friction, positive moments, state changes, persona feedback, test limitations, and (when Phase C runs) analyst classification.
 
 `Suggested Investigation` should identify what the product team should investigate. Do not prescribe a design solution unless explicitly asked.
 
@@ -307,46 +251,9 @@ Save the finished report (Phase B, plus Phase C if run) as a Markdown file by de
 - **Content:** a short metadata header (date, persona file, product/environment tested) followed by the report exactly as produced.
 - Report the saved path to the user; don't repeat the full report in chat afterward.
 
-## Severity guidance
-
-Use severity only in the analyst phase.
-
-- **Blocker:** The persona cannot continue toward the scenario goal.
-- **Major:** The issue is likely to cause abandonment, failure, or a materially wrong outcome for this persona.
-- **Moderate:** The issue causes significant hesitation, confusion, or extra effort but recovery remains plausible.
-- **Minor:** The issue is noticeable but unlikely to alter the outcome for this persona.
-
-Do not generalize severity from one simulated persona to all users.
-
 ## Multi-persona testing
 
-When several personas are supplied:
-
-1. Reset product assumptions and persona state before each run.
-2. Run each persona independently.
-3. Do not let one persona's discoveries leak into another persona's prior knowledge.
-4. Use the same scenario and observation categories where possible.
-5. Compare results only after all individual simulations are complete.
-
-Useful comparison fields include:
-
-- first impression
-- first action
-- comprehension
-- primary path
-- confusion
-- trust shifts
-- friction tolerance
-- completion
-- abandonment trigger
-
-Separate:
-
-- common simulated problems
-- persona-specific simulated problems
-- contradictory expectations
-- different successful paths
-- different abandonment points
+When several personas are supplied, read `references/multi-persona.md` before starting. In short: reset state and run each persona independently with no cross-persona knowledge leakage, then compare only after every individual simulation is complete.
 
 ## Anti-patterns
 
