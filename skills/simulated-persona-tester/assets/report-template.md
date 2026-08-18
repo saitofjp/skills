@@ -1,6 +1,10 @@
 # Persona test report template
 
-Use this structure for the finished report (Phase B, plus Phase C if run) unless the user asks for another format.
+Use this structure for the finished report unless the user asks for another format.
+
+Keep the section headings and the fixed labels (`Yes / No / Partial`, `Low / Medium / High`, severity names) in English even when the report body is written in another language, so results stay comparable across runs.
+
+Everything up to `Test Limitations` is Phase B and always applies. The final block is Phase C only — omit it entirely on a plain simulation-and-observation run.
 
 ```markdown
 ## Persona Test Result
@@ -51,8 +55,11 @@ Use this structure for the finished report (Phase B, plus Phase C if run) unless
 ### Test Limitations
 - ...
 
+<!-- Phase C only. Delete this whole block when severity, prioritization,
+     cross-persona comparison, or investigation areas were not requested. -->
+
 ### Analyst Classification
-- **Severity:** Blocker / Major / Moderate / Minor, if requested or useful
+- **Severity:** Blocker / Major / Moderate / Minor
 - **Why:** ...
 
 ### Suggested Investigation

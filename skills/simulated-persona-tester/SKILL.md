@@ -1,6 +1,6 @@
 ---
 name: simulated-persona-tester
-description: Act as a simulated tester using a supplied persona or Persona Contract to discover, use, and react to a product or UI as that user would — not as a reviewer or UX expert. Use whenever asked to simulate how a specific persona would experience a product, run a usability or first-impression test with a persona, ask "how would [persona] react to / use this", or have a persona click through and report friction, confusion, trust shifts, or abandonment. Covers first-impression, task-completion, free-exploration, and error-recovery test modes, run before or alongside real user testing. Preserves the persona's knowledge limits, behavior rules, state changes (trust/patience/confidence/confusion), friction tolerance, and abandonment thresholds. For visual interfaces, discovers and judges UI only from screenshots or other rendered user-visible output, never from DOM/HTML inspection. Does not create the persona itself (pair with simulated-persona-creator for that) and does not switch into expert-reviewer mode during simulation.
+description: Act as a simulated tester using a supplied persona or Persona Contract to discover, use, and react to a product or UI as that user would — not as a reviewer or UX expert. Use whenever asked to simulate how a specific persona would experience a product, run a usability or first-impression test with a persona, ask "how would [persona] react to / use this", or have a persona click through and report friction, confusion, trust shifts, or abandonment. Preserves the persona's knowledge limits, behavioral rules, state, and abandonment thresholds. For visual interfaces, judges UI only from screenshots or other rendered user-visible output, never from DOM inspection. Does not create the persona itself (pair with simulated-persona-creator for that).
 ---
 
 # Simulated Persona Tester
@@ -24,7 +24,7 @@ Treat the result as a simulation that generates hypotheses, not as evidence of a
 7. Keep observed system behavior separate from simulated user interpretation.
 8. Update persona state only from events the persona actually experiences.
 9. Do not silently fill missing persona rules. Treat material gaps as unknown.
-10. Write the report in the same language the input (persona, task/scenario, product content) was given in. Do not default to English when the input is in another language.
+10. Write the report in the same language the input (persona, task/scenario, product content) was given in. Do not default to English when the input is in another language. Keep the report's section headings and fixed labels (`Yes / No / Partial`, `Low / Medium / High`, severity names) in English so results stay comparable across runs; translate only the descriptive content.
 
 ## Knowledge boundary
 
@@ -54,6 +54,14 @@ Use, in order of preference when available:
 - other user-visible visual output from the test environment
 
 Base recognition of buttons, links, fields, menus, messages, hierarchy, and state changes on what is visibly rendered.
+
+### Obtaining the visual state
+
+Before simulating, establish how the rendered state will be captured:
+
+1. Use whatever browser or app automation the environment already offers — a Playwright/Puppeteer MCP server, a screenshot CLI, or a project skill that launches the app — to open the starting point and capture a screenshot.
+2. If the user supplied screenshots, a recording, or a design file, use those as the rendered state.
+3. If neither is available, ask the user to supply screenshots or a way to run the product before starting. Do not begin a visual simulation with no visual input.
 
 ### Do not discover controls from the DOM
 
@@ -85,6 +93,12 @@ A test should use:
 Do not create a new persona inside this skill merely to make the test possible.
 
 If no task is supplied, follow the persona's natural first-time exploration behavior instead of inventing a business objective.
+
+### Locating a supplied persona
+
+When the user names a persona instead of pasting one ("test with persona 2", "run Yuki against this"), look in `.simulated-personas/` in the repo root. `simulated-persona-creator` stores each persona as `persona-NN-<slug>/persona.md`, so match on the folder number, the slug, or the name in the file's top heading.
+
+If several personas match, or none do, ask which persona to use. Do not guess, and do not write one yourself.
 
 ## Test modes
 
@@ -162,11 +176,9 @@ Describe behavior and mismatches without prescribing product changes.
 
 ### Phase C: Analyst classification
 
-Use this phase only when the requested output calls for severity, prioritization, cross-persona comparison, or investigation areas. When it applies, read `references/severity-and-analyst.md` for severity-level definitions (Blocker/Major/Moderate/Minor) and analyst-classification guidance. Never generalize severity from one simulated persona to all users.
+Run this phase only when the requested output calls for severity, prioritization, cross-persona comparison, or investigation areas. When it applies, read `references/severity-and-analyst.md` and follow it — it holds the severity definitions (Blocker/Major/Moderate/Minor) and the rules for keeping analyst judgment separate from persona feedback.
 
-Keep analyst judgments clearly labeled and separate from persona feedback.
-
-Do not retroactively change what the persona experienced because the intended design becomes obvious later.
+Skip this phase, and its section in the report, for a plain Phase A/B run.
 
 ## State handling
 
@@ -238,15 +250,14 @@ Do not continue indefinitely.
 
 ## Default result format
 
-Build the finished report from the template in `assets/report-template.md` unless the user asks for another format. It covers outcome, observed behavior, expectation mismatches, friction, positive moments, state changes, persona feedback, test limitations, and (when Phase C runs) analyst classification.
-
-`Suggested Investigation` should identify what the product team should investigate. Do not prescribe a design solution unless explicitly asked.
+Build the finished report from the template in `assets/report-template.md` unless the user asks for another format. It covers outcome, observed behavior, expectation mismatches, friction, positive moments, state changes, persona feedback, test limitations, and — only when Phase C runs — analyst classification and suggested investigation.
 
 ## Saving results
 
 Save the finished report (Phase B, plus Phase C if run) as a Markdown file by default; skip only if the user says not to.
 
-- **Location:** fixed at `.simulated-personas/persona-NN/test-results/`, where `persona-NN` is the folder of the persona under test (create the folder, and a `persona-NN/test-results/` subfolder, if the persona wasn't created via `simulated-persona-creator` and doesn't already have one). If the persona wasn't file-based at all, fall back to `.simulated-personas/ad-hoc/test-results/`.
+- **Location:** `<persona folder>/test-results/`, where `<persona folder>` is the existing `.simulated-personas/persona-NN-<slug>/` folder of the persona under test. Create the `test-results/` subfolder if it does not exist yet.
+- **Never allocate a `persona-NN` number yourself.** Numbering belongs to `simulated-persona-creator`. For a persona supplied inline rather than from a file, save to `.simulated-personas/ad-hoc-<persona-slug>/test-results/`, using a slug derived from the persona's name.
 - **Filename:** `YYYY-MM-DD-<scenario-slug>.md`, e.g. `2026-08-17-travel-plan-pitfall.md`. Append `-2`, `-3` on same-day reruns instead of overwriting.
 - **Content:** a short metadata header (date, persona file, product/environment tested) followed by the report exactly as produced.
 - Report the saved path to the user; don't repeat the full report in chat afterward.

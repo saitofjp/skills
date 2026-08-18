@@ -22,7 +22,8 @@ Do not optimize the persona to make the product look good.
 5. Keep multiple personas behaviorally distinct. Do not create clones that differ only by age or occupation.
 6. Define what the persona knows before the test. Do not give the persona product knowledge merely because the model has it.
 7. Produce a complete Persona Contract that can be handed directly to a tester.
-8. Write the Persona Contract in the same language the input (product brief, request, supplied research) was given in. Do not default to English when the input is in another language.
+8. Write the Persona Contract in the same language the input (product brief, request, supplied research) was given in. Do not default to English when the input is in another language. Keep the contract's section headings, fixed labels (`Low / Medium / High`), and evidence tags in English so any tester can parse the same structure; translate only the descriptive content.
+9. State each behavior, threshold, and state rule exactly once. A contract that says the same thing in two sections leaves the tester with no way to know which version binds.
 
 ## Evidence discipline
 
@@ -53,9 +54,11 @@ Use the available information about:
 
 If the product itself is unknown, do not invent one. State the gap.
 
-### 2. Define only relevant identity and background
+### 2. Define only relevant identity and context
 
 Create a memorable natural human name.
+
+This becomes the contract's `Relevant Context` section. There is deliberately no free-form biography field — if a detail does not change how the persona uses or judges the product, leave it out.
 
 Include only details that affect behavior, such as:
 
@@ -86,11 +89,15 @@ Explicitly state:
 - **Does not know:** Product concepts, terminology, workflows, or conventions the persona should not be assumed to know.
 - **May infer from:** Information sources the persona normally trusts, such as visible UI, familiar conventions, recommendations, documentation, or search.
 
+In the same section, set the persona's level for domain knowledge, digital literacy, product-category familiarity, terminology familiarity, and confidence with unfamiliar software. These calibrate how far the persona will stretch beyond what they explicitly know.
+
 The tester must be able to distinguish persona knowledge from model knowledge.
 
 ### 5. Define observable behavioral rules
 
-Describe concrete tendencies for:
+Start with what the persona does on arrival: their first action, what they notice first, and what they habitually ignore.
+
+Then describe concrete tendencies for:
 
 - discovery
 - reading and comprehension
@@ -159,6 +166,8 @@ These criteria should reflect the persona's goal, not the product team's desired
 
 Build the finished contract from the template in `assets/persona-contract-template.md` by default. Keep it compact, but do not omit fields that affect simulation.
 
+Each rule lives in exactly one section: behavior in `Behavioral Rules`, stopping points in `Thresholds`, state movement in `State Update Rules`, outcome criteria in `Success & Failure`. Do not summarize one section inside another.
+
 ## Saving personas
 
 Save each finished Persona Contract as a Markdown file by default; skip only for an explicit throwaway.
@@ -167,17 +176,18 @@ Save each finished Persona Contract as a Markdown file by default; skip only for
 
   ```text
   .simulated-personas/
-  ├─ persona-01/
+  ├─ persona-01-yuki-cautious-parent/
   │  ├─ persona.md
   │  └─ test-results/
-  ├─ persona-02/
+  ├─ persona-02-ken-power-user/
   │  ├─ persona.md
   │  └─ test-results/
   └─ ...
   ```
 
-- **Numbering:** scan `.simulated-personas/` for existing `persona-NN` folders and continue the sequence (start at `persona-01`).
-- **Filename:** always `persona.md`, saved inside the persona's own `persona-NN/` folder.
+- **Folder name:** `persona-NN-<slug>`, where `<slug>` is a short kebab-case hint of who they are (given name plus a defining trait, e.g. `persona-03-mika-first-time-buyer`). The slug matters: `simulated-persona-tester` locates a persona by it when the user names one instead of pasting one.
+- **Numbering:** scan `.simulated-personas/` for existing `persona-NN-*` folders and continue the sequence (start at `persona-01`). Numbering is owned by this skill — `simulated-persona-tester` never allocates one.
+- **Filename:** always `persona.md`, saved inside the persona's own folder.
 - Create the sibling `test-results/` folder alongside `persona.md` even if empty, so it exists before `simulated-persona-tester` needs to write into it.
 - Report the saved path to the user.
 
@@ -201,6 +211,8 @@ Before finalizing, verify that:
 - synthetic quotations are clearly labeled
 - important assumptions and unknowns are visible
 - no research, analytics, or customer feedback was invented
+- no behavior, threshold, or state rule is stated in more than one section
+- the contract contains no biography that fails to change behavior
 - another tester could use the contract and produce reasonably consistent behavior
 
 ## Anti-patterns
