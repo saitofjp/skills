@@ -185,7 +185,7 @@ Save each finished Persona Contract as a Markdown file by default; skip only for
   └─ ...
   ```
 
-- **Folder name:** `persona-NN-<slug>`, where `<slug>` is a short kebab-case hint of who they are (given name plus a defining trait, e.g. `persona-03-mika-first-time-buyer`). The slug matters: `simulated-persona-tester` locates a persona by it when the user names one instead of pasting one.
+- **Folder name:** `persona-NN-<slug>`, where `<slug>` is a short kebab-case hint of who they are (given name plus a defining trait, e.g. `persona-03-mika-first-time-buyer`). The slug is what lets someone pick the right persona out of a list months later, so add one whenever the persona has a defining trait to name. A plain `persona-NN/` is still valid, and existing folders in either form keep the name they already have — `simulated-persona-tester` matches on the number, the slug, or the name in the file's heading, so renaming an existing folder only breaks the paths already cited in its test results.
 - **Numbering:** scan `.simulated-personas/` for existing `persona-NN-*` folders and continue the sequence (start at `persona-01`). Numbering is owned by this skill — `simulated-persona-tester` never allocates one.
 - **Filename:** always `persona.md`, saved inside the persona's own folder.
 - Create the sibling `test-results/` folder alongside `persona.md` even if empty, so it exists before `simulated-persona-tester` needs to write into it.
@@ -193,27 +193,25 @@ Save each finished Persona Contract as a Markdown file by default; skip only for
 
 ## Multiple personas
 
-When asked for several personas, read `references/multiple-personas.md` first. In short: default to 2-4 materially different users, differentiated by behavior/motivation/knowledge/trust/friction tolerance rather than demographics, without padding to hit a quota.
+When asked for several personas, default to 2-4 materially different users and apply the same evidence discipline to each. Include a primary persona when the product has a clear target, and an edge-case persona only when it can expose a usability risk the others cannot. Do not pad the set to hit a number — two personas that behave differently are worth more than four that differ only by job title.
+
+Differentiate along axes that change behavior: novice vs expert, fast vs cautious, high vs low trust, high vs low friction tolerance, self-directed vs help-seeking, frequent vs occasional use, problem-aware vs problem-unaware, buyer vs user, mobile-first vs desktop-first. Pick the two or three axes that matter for this product and make the set span them, rather than varying everything at once.
 
 ## Quality checks
 
 Before finalizing, verify that:
 
 - the persona has a plausible reason to use the product
-- demographics are not carrying the persona
 - current workarounds are explicit
 - prior knowledge and non-knowledge are explicit
 - behavioral rules are observable rather than generic traits
 - state-change rules are concrete enough to simulate
 - retry, help-seeking, and abandonment thresholds are defined
 - trust-building and trust-breaking conditions are defined
-- the persona can make decisions without creator intervention
-- synthetic quotations are clearly labeled
-- important assumptions and unknowns are visible
-- no research, analytics, or customer feedback was invented
+- every detail left in the contract changes how this person uses or judges the product
+- important assumptions and unknowns are visible, and every synthetic quotation is labeled
 - no behavior, threshold, or state rule is stated in more than one section
-- the contract contains no biography that fails to change behavior
-- another tester could use the contract and produce reasonably consistent behavior
+- the persona can make decisions without creator intervention, and another tester could reuse the contract and get reasonably consistent behavior
 
 ## Anti-patterns
 
