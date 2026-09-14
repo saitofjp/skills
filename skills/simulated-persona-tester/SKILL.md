@@ -16,10 +16,10 @@ Treat the result as a simulation that generates hypotheses, not as evidence of a
 ## Core rules
 
 1. Use the supplied persona as the primary decision model.
-2. Do not become a UX designer, product manager, developer, usability expert, or ideal user during the simulation phase.
-3. Do not silently rescue the persona with model knowledge.
+2. Do not become a UX designer, product manager, developer, usability expert, or ideal user during the simulation phase. Not "The navigation is poorly designed," but "this persona looked under Profile for saved items because they expected personal content to be there."
+3. Do not silently rescue the persona with model knowledge, and do not explain the intended flow once they are stuck. Being stuck is the finding.
 4. Do not invent missing UI, hidden features, developer intent, or undocumented behavior.
-5. Do not optimize for task completion. If the persona would stop, stop.
+5. Do not optimize for task completion. If the persona would stop, stop — retrying until the task succeeds destroys the only thing this test measures.
 6. Follow the persona's reading, exploration, recovery, help-seeking, trust, and friction rules even when another path would be more efficient.
 7. Keep observed system behavior separate from simulated user interpretation.
 8. Update persona state only from events the persona actually experiences.
@@ -67,7 +67,7 @@ Before simulating, establish how the rendered state will be captured:
 
 Do not inspect or search the DOM, HTML, page source, CSS, element IDs, test IDs, framework internals, hidden text, network payloads, application state, or accessibility tree to discover what actions are available or where to click.
 
-Do not use selectors, DOM queries, or accessibility labels as a shortcut for understanding a screen the persona has not visually understood.
+Do not use selectors, DOM queries, or accessibility labels as a shortcut for understanding a screen the persona has not visually understood. The specific temptation is a hidden or unlabeled control: finding it in the DOM and clicking it erases the very finding — that a user cannot tell what that control is.
 
 If the automation environment requires a DOM handle or selector only to execute an action on a target that was already identified from the visible screen, the handle may be used strictly as an execution mechanism. It must not reveal, select, rank, or interpret targets that were not first identified visually.
 
@@ -96,7 +96,7 @@ If no task is supplied, follow the persona's natural first-time exploration beha
 
 ### Locating a supplied persona
 
-When the user names a persona instead of pasting one ("test with persona 2", "run Yuki against this"), look in `.simulated-personas/` in the repo root. `simulated-persona-creator` stores each persona as `persona-NN-<slug>/persona.md`, so match on the folder number, the slug, or the name in the file's top heading.
+When the user names a persona instead of pasting one ("test with persona 2", "run Yuki against this"), look in `.simulated-personas/` in the repo root. `simulated-persona-creator` stores each persona as `persona.md` inside a numbered folder — `persona-NN-<slug>/` when it had a slug to work with, plain `persona-NN/` otherwise, and both forms coexist in practice. Match on the folder number, the slug if there is one, or the name in the file's top heading.
 
 If several personas match, or none do, ask which persona to use. Do not guess, and do not write one yourself.
 
@@ -166,7 +166,7 @@ At each decision point, preserve these distinctions:
 - **Reaction:** How the result affected the persona.
 - **State change:** Any supported change to trust, patience, confidence, or confusion.
 
-Do not expose hidden chain-of-thought. If a detailed trace is requested, report concise externally observable reasoning such as expectations, actions, reactions, and state changes.
+If a detailed trace is requested, keep it to externally observable reasoning: expectations, actions, reactions, and state changes.
 
 ### Phase B: Observation report
 
@@ -176,9 +176,18 @@ Describe behavior and mismatches without prescribing product changes.
 
 ### Phase C: Analyst classification
 
-Run this phase only when the requested output calls for severity, prioritization, cross-persona comparison, or investigation areas. When it applies, read `references/severity-and-analyst.md` and follow it — it holds the severity definitions (Blocker/Major/Moderate/Minor) and the rules for keeping analyst judgment separate from persona feedback.
+Run this phase — and include its report section — only when the requested output calls for severity, prioritization, cross-persona comparison, or investigation areas. Skip both on a plain Phase A/B run.
 
-Skip this phase, and its section in the report, for a plain Phase A/B run.
+Keep analyst judgment clearly separated from persona feedback, and do not retroactively change what the persona experienced because the intended design became obvious to you later.
+
+Rate each finding by what it did to *this* persona, most severe first:
+
+- **Blocker:** the persona cannot continue toward the scenario goal.
+- **Major:** likely to cause abandonment, failure, or a materially wrong outcome for this persona.
+- **Moderate:** significant hesitation, confusion, or extra effort, but recovery remains plausible.
+- **Minor:** noticeable but unlikely to alter the outcome for this persona.
+
+A single run usually yields several findings at different severities, so list them rather than picking one. Severity describes one simulated persona — do not generalize it to all users.
 
 ## State handling
 
@@ -250,51 +259,35 @@ Do not continue indefinitely.
 
 ## Default result format
 
-Build the finished report from the template in `assets/report-template.md` unless the user asks for another format. It covers outcome, observed behavior, expectation mismatches, friction, positive moments, state changes, persona feedback, test limitations, and — only when Phase C runs — analyst classification and suggested investigation.
+Build the finished report from the template in `assets/report-template.md` unless the user asks for another format. That file owns the report's shape — the metadata header, the section order, and the fixed labels — so read it rather than reconstructing the structure from memory. It covers outcome, observed behavior, expectation mismatches, friction, positive moments, state changes, persona feedback, test limitations, and — only when Phase C runs — analyst classification and suggested investigation.
 
 ## Saving results
 
 Save the finished report (Phase B, plus Phase C if run) as a Markdown file by default; skip only if the user says not to.
 
-- **Location:** `<persona folder>/test-results/`, where `<persona folder>` is the existing `.simulated-personas/persona-NN-<slug>/` folder of the persona under test. Create the `test-results/` subfolder if it does not exist yet.
+- **Location:** `<persona folder>/test-results/`, where `<persona folder>` is the persona's existing folder under `.simulated-personas/` (`persona-NN-<slug>/` or `persona-NN/`, whichever it already uses — never rename it). Create the `test-results/` subfolder if it does not exist yet.
 - **Never allocate a `persona-NN` number yourself.** Numbering belongs to `simulated-persona-creator`. For a persona supplied inline rather than from a file, save to `.simulated-personas/ad-hoc-<persona-slug>/test-results/`, using a slug derived from the persona's name.
 - **Filename:** `YYYY-MM-DD-<scenario-slug>.md`, e.g. `2026-08-17-travel-plan-pitfall.md`. Append `-2`, `-3` on same-day reruns instead of overwriting.
-- **Content:** a short metadata header (date, persona file, product/environment tested) followed by the report exactly as produced.
+- **Content:** the metadata header from `assets/report-template.md`, filled in, followed by the report exactly as produced. Use that header's fields and the `## Persona Test Result` heading verbatim — runs that invent their own wording are the ones that later cannot be compared with the others.
 - Report the saved path to the user; don't repeat the full report in chat afterward.
 
 ## Multi-persona testing
 
-When several personas are supplied, read `references/multi-persona.md` before starting. In short: reset state and run each persona independently with no cross-persona knowledge leakage, then compare only after every individual simulation is complete.
+When several personas are supplied, run each one independently: reset persona state and product assumptions before each run, keep the scenario and observation categories the same, and let nothing one persona discovered become another persona's prior knowledge. That leakage is the failure mode — the second run silently becomes an expert user.
+
+Compare only after every individual simulation is finished, and keep the comparison in four separate buckets: problems common to all, problems specific to one persona, expectations that contradict each other, and different successful paths or abandonment points. The same defect showing up with different severities across personas is a finding in itself.
 
 ## Anti-patterns
 
-### Reviewer mode during simulation
-
-Avoid: "The navigation is poorly designed."
-
-Prefer: "This persona looked under Profile for saved items because they expected personal content to be there."
-
-### DOM shortcut
-
-Avoid discovering a hidden or unlabeled control through DOM inspection and then clicking it.
-
-Prefer identifying available actions from the screenshot and acting only on what the persona could visually discover.
-
-### Expert rescue
-
-Do not explain the intended flow after the persona becomes stuck.
+These three are not restatements of the core rules above — they are the failure modes that survive the rules.
 
 ### Hindsight bias
 
-Do not say the persona should obviously have selected an option they did not understand.
-
-### Over-optimization
-
-Do not keep trying until the task succeeds.
+Do not say the persona should obviously have selected an option they did not understand. Once you know where the control was, it looks findable; that knowledge is not the persona's.
 
 ### Fake emotion
 
-Do not manufacture dramatic reactions that are unsupported by the persona.
+Do not manufacture dramatic reactions the persona's rules do not support. Invented drama is the fastest way to make a report unusable as evidence.
 
 ### Generic feedback
 

@@ -4,9 +4,18 @@ Use this structure for the finished report unless the user asks for another form
 
 Keep the section headings and the fixed labels (`Yes / No / Partial`, `Low / Medium / High`, severity names) in English even when the report body is written in another language, so results stay comparable across runs.
 
+The two top headings are part of that: the file opens with `# [Persona name] — [Scenario]`, and the report itself always opens with `## Persona Test Result`. Earlier runs drifted to other wordings and to hand-rolled metadata blocks, which is exactly what makes a set of runs hard to read side by side.
+
 Everything up to `Test Limitations` is Phase B and always applies. The final block is Phase C only — omit it entirely on a plain simulation-and-observation run.
 
 ```markdown
+# [Persona name] — [Scenario in a few words]
+
+- **Date:** YYYY-MM-DD
+- **Persona file:** .simulated-personas/persona-NN…/persona.md
+- **Environment:** production / local / preview, with the URL, the device or viewport, and the auth state
+- **Side effects:** real data this run created (sessions, consumed credits, saved content, anything now publicly visible) — write "none" when there are none
+
 ## Persona Test Result
 
 ### Simulation Status
@@ -59,8 +68,13 @@ Everything up to `Test Limitations` is Phase B and always applies. The final blo
      cross-persona comparison, or investigation areas were not requested. -->
 
 ### Analyst Classification
-- **Severity:** Blocker / Major / Moderate / Minor
-- **Why:** ...
+
+One entry per finding, most severe first — a run normally produces several at different severities.
+
+- **Severity: Major** — [the finding in one sentence]
+  - **Why:** [the persona rule, threshold, or observed reaction that sets this severity]
+- **Severity: Moderate** — ...
+  - **Why:** ...
 
 ### Suggested Investigation
 - ...
