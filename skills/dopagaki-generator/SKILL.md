@@ -1,231 +1,234 @@
 ---
 name: dopagaki-generator
-description: 渡された内容（原稿・箇条書き・ファイル・URL）を、SNSで流行している「ドパガキ」的な表現（ゲーム×パチンコ×アニメOP×ショート動画×MAD/AMV）を過剰に盛り込んだ、AUTO再生型のインタラクティブWebプレゼン（16:9の単一HTML）として実装する。ブラウザでAUTO再生した画面を録画すればSNS動画になる。「ドパガキにして」「ドパガキ風のプレゼンにして」「超派手なモーションプレゼンを作って」「SNS用の煽り演出動画にして」などで使う。
+description: Turns the given content (script, bullet points, file, or URL) into an auto-playing interactive web presentation (a single 16:9 HTML file) packed with the over-the-top "dopagaki" style popular on Japanese social media (Japanese video games × pachinko × Japanese anime opening sequences × short video × MAD/AMV). Screen-record the auto-play in a browser and it becomes a social media video. Use for requests like "make it dopagaki", "turn this into a dopagaki-style presentation", "make an insanely flashy motion presentation", "make a hype video for social media", or in Japanese 「ドパガキにして」「ドパガキ風のプレゼンにして」「超派手なモーションプレゼンを作って」「SNS用の煽り演出動画にして」.
 ---
 
-# ドパガキ・ジェネレーター
+# Dopagaki Generator
 
-## 使い方
+"Dopagaki" (ドパガキ) is Japanese internet slang for kids hooked on dopamine-heavy content; here it names a hyper-stimulating visual style borrowed from Japanese video games, Japanese pachinko machines, Japanese anime opening sequences, and short-form video. The style references below mean those Japanese conventions specifically.
 
-- プレゼンの内容は引数で受け取る（テキスト／ファイルパス／URL）。無ければ内容を聞いてから始める。
-- 下の「演出仕様」に従って実装する。実装方法（ライブラリ、タイムラインの持ち方、エフェクトの作り方）は内容に合わせて自由に決めてよい。
-- 出力はブラウザで直接開ける単一のHTMLファイル。保存先はユーザー指定があればそこ、無ければ `.dopagaki/<YYYYMMDD>-<slug>.html`。コミットはユーザーに求められたときだけ行う。
-- 仕様に出てくる数字（`87`、`RANK S`、`COMBO ×12` など）は演出の型の例。原稿にない数値を事実のように見せない。
-- 実装したら実際にブラウザで再生し、操作なしで最後まで進むこと、コンソールエラーが出ないこと、要所で重要な文字が読めることを確認する。
-- 納品時は、ファイルパス、総尺、操作キー、録画のしかた（全画面表示にして画面録画する）を伝える。ユーザーがファイルを直接開けない環境（リモート実行など）では、Artifactとして公開してURLを渡す（公開前に `artifact-design` スキルを読み込む）。
+## Usage
 
-## 演出仕様
+- Take the presentation content from the arguments (text / file path / URL). If none is given, ask for the content before starting.
+- Implement it following the "Direction spec" below. How you implement it (libraries, how the timeline is held, how effects are built) is up to you and should fit the content.
+- The output is a single HTML file that opens directly in a browser. Save it where the user specifies; otherwise save to `.dopagaki/<YYYYMMDD>-<slug>.html`. Commit only when the user asks.
+- Numbers that appear in the spec (`87`, `RANK S`, `COMBO ×12`, etc.) are examples of the effect patterns. Do not present numbers that are not in the source content as if they were facts.
+- After implementing, actually play it in a browser and confirm that it runs to the end without any interaction, that no console errors appear, and that the important text is readable at the key moments.
+- On delivery, tell the user the file path, total duration, control keys, and how to record it (go fullscreen and screen-record). If the user cannot open the file directly (e.g. remote execution), publish it as an Artifact and share the URL (load the `artifact-design` skill before publishing).
+- Write the on-screen text in the language of the source content.
 
-渡された内容を、SNSで流行している「ドパガキ」的な表現を取り入れた、**超高刺激・過剰演出・AUTO再生型のインタラクティブWebプレゼン**として実装してください。
+## Direction spec
 
-単なる「派手なスライド」にはしないでください。
+Implement the given content as a **hyper-stimulating, over-directed, auto-playing interactive web presentation** that incorporates the "dopagaki" style of expression popular on Japanese social media.
 
-**ゲーム、パチンコ、アニメOP、ショート動画、MAD/AMVなど、強い視線誘導と期待感を生み出す映像表現を融合し、プレゼンそのものを一本の映像作品のようにしてください。**
+Do not make it just "flashy slides."
 
-最終的にはブラウザでAUTO再生し、その画面を録画するだけでSNS向け動画として成立することを想定してください。
+**Fuse video techniques that create strong eye guidance and anticipation — Japanese video games, Japanese pachinko, Japanese anime openings, short videos, MAD/AMV — and make the presentation itself a single piece of video work.**
 
-### 1. 基本コンセプト
+Assume that, in the end, it will auto-play in a browser and simply recording the screen will produce a finished social media video.
 
-目標は、**「普通のプレゼンを派手にしたもの」ではなく、「ゲーム・パチンコ・アニメOP・ショート動画の演出で作られたプレゼン」**です。
+### 1. Core concept
 
-「ちょっと派手」ではなく、**「刺激が多すぎて笑ってしまうくらい過剰」**を基本値にしてください。
+The goal is **not "a normal presentation made flashy," but "a presentation built out of the directing of Japanese video games, Japanese pachinko, Japanese anime OPs, and short videos."**
 
-画面を見た瞬間に視線を奪い、次に何が起きるのか期待させ、重要な情報が出る瞬間には大きなカタルシスを作ってください。
+Make the baseline not "a bit flashy" but **"so overloaded with stimulation that it's laughable."**
 
-### 2. 演出の4本柱
+Grab the viewer's eyes the moment they see the screen, make them anticipate what happens next, and create a big catharsis at the moment important information appears.
 
-以下の4種類の映像表現を積極的に融合してください。
+### 2. The four pillars of direction
 
-- **GAME**: SCORE / COMBO / LEVEL / RANK / HP・POWER / ゲージ / CLEAR / PERFECT / LEVEL UP / リザルト画面 / ステータスUI / ミッション達成
-- **PACHINKO**: 予告演出 / 煽り / 期待感を引っ張るタメ / カウントダウン / カットイン / 画面フラッシュ / 激熱風の強調 / 発展演出 / 突然の巨大文字 / リーチ直前の盛り上げ / 結果表示直前の「溜め」 / 成功／失敗の結果演出
-  - ただし、既存作品の具体的な演出をそのままコピーするのではなく、**「期待感を高めてから結果を爆発させる構造」**を利用してください。
-- **ANIME OP**: 巨大なタイトルロゴ / キャラクター紹介のような要素紹介 / 高速カット切り替え / 斜め構図 / 強いパース / カメラが飛び込むようなズーム / 回転 / 画面分割 / 大量のタイポグラフィ / 光・粒子・火花 / サビに入ったような一気に盛り上がる展開 / 最後にタイトルやテーマを強烈に提示
-- **SHORT VIDEO / MAD / AMV**: 最初の1〜3秒で強烈なフック / 巨大テロップ / 瞬間的なズーム / ビートを感じる高速カット / フラッシュ / グリッチ / 画面揺れ / 速度変化 / 一瞬の静止から急激な展開 / 複数情報の高速連続表示 / カットごとに違う視覚表現
+Actively fuse the following four kinds of visual expression.
 
-### 3. 最重要：AUTO再生
+- **GAME** (Japanese video games — arcade, JRPG, rhythm and fighting games): SCORE / COMBO / LEVEL / RANK / HP・POWER / gauges / CLEAR / PERFECT / LEVEL UP / result screen / status UI / mission complete
+- **PACHINKO** (Japanese pachinko/pachislot machines — their LCD "hype" sequences): foreshadowing effects / hype build-up / suspense-stretching "tame" (the held breath before the payoff) / countdowns / cut-ins / screen flashes / "super hot" style emphasis / escalation sequences / sudden giant text / build-up just before a "reach" / the hold right before the result / success or failure result effects
+  - However, do not copy specific effects from existing works; instead use **the structure of "raise anticipation, then explode the result."**
+- **ANIME OP** (Japanese TV anime opening sequences): giant title logos / character-intro-style introductions of elements / rapid cut switching / diagonal compositions / strong perspective / zooms that feel like the camera is diving in / rotation / split screens / masses of typography / light, particles, sparks / a sudden surge like entering the chorus / a powerful final presentation of the title or theme
+- **SHORT VIDEO / MAD / AMV**: a strong hook in the first 1–3 seconds / giant captions / instant zooms / fast cuts you can feel the beat in / flashes / glitches / screen shake / speed ramps / a momentary freeze followed by a sudden burst / rapid-fire display of multiple pieces of information / a different visual treatment for every cut
 
-**基本操作はAUTOです。** ユーザーが何も操作しなくても、最初から最後まで自動的に進行してください。クリックを要求しないでください。
+### 3. Most important: AUTO play
 
-各スライド、および各スライド内の演出に明確なタイムラインを持たせてください。基本形は次のように、自動的に演出が進んでください。
+**The default mode is AUTO.** It must progress automatically from start to finish without the user doing anything. Do not require clicks.
+
+Give each slide, and each effect within a slide, a clear timeline. The basic shape is for effects to progress automatically like this:
 
 `INTRO` → `TEASE` → `BUILD UP` → `REVEAL` → `IMPACT` → `RESULT` → `TRANSITION`
 
-クリック・キーボード操作は、一時停止／再開／前へ／次へなどの補助操作として実装してください。
+Implement click and keyboard controls as auxiliary controls such as pause / resume / previous / next.
 
-**AUTO再生した状態そのものが完成作品です。**
+**The auto-playing state itself is the finished work.**
 
-### 4. 「情報が出ること」自体をイベントにする
+### 4. Make "information appearing" an event in itself
 
-情報を最初から全部表示しないでください。「何が出てくるのか」を演出してください。例えば、
+Do not show all the information from the start. Direct "what is about to appear." For example:
 
-`？？？` → 暗転 → 小さな文字 `本当にそうなのか？` → カウントダウン `3` `2` `1` → 高速ズーム → 巨大な数字 `87` → 画面フラッシュ → `CRITICAL!!` → ゲージMAX → `LEVEL UP!!`
+`???` → blackout → small text `Is that really true?` → countdown `3` `2` `1` → high-speed zoom → giant number `87` → screen flash → `CRITICAL!!` → gauge MAX → `LEVEL UP!!`
 
-というように、**情報そのものより、情報が出現する瞬間を楽しませる**構造にしてください。
+Build it so that **the moment information appears is more entertaining than the information itself.**
 
-### 5. 常に何かが起きている
+### 5. Something is always happening
 
-完全な静止状態を極力作らないでください。
+Avoid fully static states as much as possible.
 
-- 背景では、粒子・光・グリッド・ノイズ・流れる線・放射線・微細なUI・数字・小さな通知などを動かしてください。
-- 前景では、巨大文字・カード・バッジ・ゲージ・数値・アイコン・ラベル・ポップアップなどが時間差で現れては変化してください。
+- In the background, animate particles, light, grids, noise, flowing lines, radial lines, fine UI, numbers, small notifications, etc.
+- In the foreground, have giant text, cards, badges, gauges, numbers, icons, labels, popups, etc. appear and change with staggered timing.
 
-**数秒に一度は何かしらの視覚イベントが起きる**ことを基本としてください。
+As a rule, **some visual event happens every few seconds.**
 
-### 6. 重要な瞬間は「画面を破壊」する
+### 6. At important moments, "destroy the screen"
 
-重要な数字や結論が出るときは、通常のフェードやスライドインではなく、**画面全体を使った大演出**にしてください。例：
+When an important number or conclusion appears, do not use an ordinary fade or slide-in; use **a big effect that uses the entire screen.** For example:
 
-数字カウントアップ → 一瞬停止 → 無音を感じるような「タメ」 → 画面フラッシュ → 巨大数字 → ズーム → 画面揺れ → 粒子爆発 → `CRITICAL!!!` → ゲージがMAX → `LEVEL UP!!!` → 次の情報へ高速遷移
+number counts up → momentary stop → a "tame" that feels like silence → screen flash → giant number → zoom → screen shake → particle explosion → `CRITICAL!!!` → gauge MAX → `LEVEL UP!!!` → fast transition to the next piece of information
 
-「ここが一番重要」という瞬間には、それまでより明らかに強い演出を使ってください。
+For the "this is the most important part" moment, use a clearly stronger effect than anything before it.
 
-### 7. 数字を最大限派手にする
+### 7. Make numbers as flashy as possible
 
-数字が存在する場合、単なるテキストとして扱わないでください。
+When there are numbers, do not treat them as plain text.
 
-例えば `27` → `31` → `42` → `58` → `73` → `87` → `100!!!` のように高速カウントアップさせ、拡大・発光・フラッシュ・粒子・コンボ・ゲージ・背景変化・画面揺れを連動させてください。
+For example, count up rapidly like `27` → `31` → `42` → `58` → `73` → `87` → `100!!!`, and link scaling, glow, flashes, particles, combos, gauges, background changes, and screen shake to it.
 
-グラフについても、単に棒や線を表示するのではなく、**「数字が伸びる → グラフが追従する → 画面が反応する」**というイベントにしてください。
+Likewise with graphs: do not just display bars or lines; make it an event where **"the number grows → the graph follows → the screen reacts."**
 
-### 8. パチンコ的な「煽り」を取り入れる
+### 8. Incorporate pachinko-style "hype"
 
-結論をすぐ見せないでください。重要な情報の前には、**期待 → 煽り → タメ → 発展 → 結果**という構造を作ってください。例えば、
+Do not show the conclusion right away. Before important information, build the structure **anticipation → hype → tame → escalation → result.** For example:
 
-`これが変わると……` → 小さな予告 → 背景が変化 → 何かが起きそうなUI → カウントダウン → 巨大カットイン → 結果
+`If this changes……` → small foreshadowing → background changes → UI that suggests something is about to happen → countdown → giant cut-in → result
 
-というように、**結果を見るまで少し引っ張る**設計を入れてください。ただし、毎回同じパターンにしないでください。
-※ ただし パチンコそのままのリール演出などを安易に利用しないこと
+Design it to **drag things out a little before the result is shown.** But do not use the same pattern every time.
+Note: do not lazily reuse literal pachinko effects such as spinning reels.
 
-### 9. アニメOP的な「高速カット」
+### 9. Anime-OP-style "rapid cuts"
 
-スライド間・スライド内の両方で、アニメOPのような高速カットを使ってください。例えば、
+Use rapid cuts like a Japanese anime opening both between slides and within slides. For example, switch in a short time between:
 
-タイトル → 人物／概念 → 数字 → 図形 → キーワード → 背景 → 巨大文字 → ロゴ → 結果
+title → person/concept → number → shape → keyword → background → giant text → logo → result
 
-を短時間で切り替えてください。画面分割、斜め配置、パース、カメラズーム、回転、高速パンなども積極的に使用してください。
+Actively use split screens, diagonal layouts, perspective, camera zooms, rotation, fast pans, and so on.
 
-### 10. ショート動画的な冒頭
+### 10. A short-video-style opening
 
-最初の1〜3秒が最重要です。冒頭から普通のタイトルスライドを表示しないでください。
+The first 1–3 seconds are the most important. Do not open with an ordinary title slide.
 
-いきなり、巨大な数字・大きな問い・強烈なコピー・警告・意外な結果・強いビジュアル・爆発的なタイポグラフィなどを表示してください。
+Show right away a giant number, a big question, a punchy line of copy, a warning, a surprising result, a strong visual, explosive typography, etc.
 
-**最初の数秒で「何これ？」と思わせること。**
+**Make viewers think "What is this?" within the first few seconds.**
 
-### 11. 画面密度
+### 11. Screen density
 
-画面を大胆に埋めてください。背景・中景・前景にそれぞれ異なる情報を配置し、レイヤーを重ねてください。例えば、
+Fill the screen boldly. Place different information in the background, middle ground, and foreground, and stack the layers. For example, a multi-layer structure like:
 
-- 背景：グリッド、光、粒子、巨大数字
-- 中景：ゲージ、カード、図形、グラフ
-- 前景：巨大テキスト、重要数字、UI、通知
+- Background: grids, light, particles, giant numbers
+- Middle ground: gauges, cards, shapes, graphs
+- Foreground: giant text, key numbers, UI, notifications
 
-というような多層構造にしてください。ただし、本当に重要な本文・数字・結論は必ず読めるようにしてください。
+However, the truly important body text, numbers, and conclusions must always be readable.
 
-### 12. エフェクト
+### 12. Effects
 
-積極的に以下を使用してください。
+Actively use the following:
 
-Glow / Bloom / Flash / Particle / Spark / Noise / Glitch / Scanline / Chromatic aberration風表現 / Motion blur風表現 / Zoom / Shake / Rotation / Scale / Distortion / Radial burst / Speed line / Screen split / Light sweep
+Glow / Bloom / Flash / Particle / Spark / Noise / Glitch / Scanline / chromatic-aberration-style effects / motion-blur-style effects / Zoom / Shake / Rotation / Scale / Distortion / Radial burst / Speed line / Screen split / Light sweep
 
-ただし、すべてを常に使うのではなく、**演出の強弱を作ってください。**
+But do not use all of them all the time; **create contrast in intensity.**
 
-静かな瞬間 → 期待 → 爆発 → 余韻 → 再び加速
+Create an ebb and flow like:
 
-という起伏を作ってください。
+quiet moment → anticipation → explosion → afterglow → acceleration again
 
-### 13. スライドごとに「演出ジャンル」を変える
+### 13. Change the "directing genre" for each slide
 
-すべてのスライドを同じゲームUIにしないでください。例えば、
+Do not give every slide the same game UI. For example:
 
-1. ショート動画的な強烈なフック
-2. パチンコ的な煽り
-3. アニメOP的な高速カット
-4. ゲームのステータス画面
-5. VS対決
-6. 数字のカウントアップ
-7. コンボ／FEVER
-8. 大量情報＋高速編集
-9. 最終リザルト
+1. A short-video-style punchy hook
+2. Pachinko-style hype
+3. Anime-OP-style rapid cuts
+4. A game status screen
+5. A VS showdown
+6. A number count-up
+7. COMBO / FEVER
+8. Masses of information + rapid editing
+9. The final result
 
-のように、**映像として展開が変わる構成**にしてください。
+Make it **a structure whose visual development keeps changing.**
 
-### 14. 画面遷移
+### 14. Screen transitions
 
-単純なフェードは禁止。以下を積極的に使用してください。
+Plain fades are forbidden. Actively use:
 
-高速ズーム / パン / 回転 / フラッシュ / グリッチ / 暗転 / 色反転 / 画面分割 / パーツ飛散 / 画面が割れるような遷移 / 次の画面が飛び込んでくる遷移
+fast zoom / pan / rotation / flash / glitch / blackout / color inversion / split screen / parts scattering / transitions where the screen seems to shatter / transitions where the next screen flies in
 
-スライドが変わること自体をイベントにしてください。
+Make the slide change itself an event.
 
-### 15. 最終リザルト
+### 15. The final result
 
-最後は普通の「まとめ」スライドにしないでください。**ゲームの最終結果画面＋アニメ最終カット＋パチンコの大当たり的なクライマックス**を融合してください。例えば、
+Do not end with an ordinary "summary" slide. Fuse **a Japanese game's final result screen + a Japanese anime OP's final cut + a pachinko jackpot-style climax.** For example:
 
-`MISSION COMPLETE` → 巨大な数字 `87` → `RANK S` → `COMBO ×12` → `NEW RECORD` → 画面全体をフラッシュ → 最後に最も重要なメッセージを巨大表示
+`MISSION COMPLETE` → giant number `87` → `RANK S` → `COMBO ×12` → `NEW RECORD` → full-screen flash → finally, the most important message displayed huge
 
-というようにしてください。最後の演出が作品全体で最大になるようにしてください。
+Make the final effect the biggest in the entire work.
 
-### 16. 情報設計
+### 16. Information design
 
-どれだけ派手にしても、**内容が理解できることを最優先**してください。各スライドには1つの中心メッセージを設定してください。
+No matter how flashy it gets, **prioritize making the content understandable.** Give each slide one central message.
 
-本文を小さく大量に詰め込むのではなく、**何を伝えるのか → 何が一番重要なのか → どんな演出ならそれが最も強く伝わるか**の順に設計してください。
+Rather than cramming in lots of small body text, design in the order **what to convey → what matters most → what effect would convey it most powerfully.**
 
-派手さは装飾ではなく、**情報の重要度を視覚化するために使ってください。**
+Use flashiness not as decoration but **to visualize the importance of information.**
 
-### 17. 動画化を前提にした技術要件
+### 17. Technical requirements for video capture
 
 - HTML / CSS / JavaScript
 - 16:9
-- ブラウザ上で直接再生可能
-- AUTO再生が標準状態
-- スライドごとのdurationを設定可能
-- 各アニメーションをタイムラインで管理
-- 全編AUTOで最後まで再生
-- 一時停止／再開可能
-- 前後移動可能
-- キーボード操作対応
-- クリック操作対応
+- Plays directly in a browser
+- AUTO play is the default state
+- Per-slide duration is configurable
+- Each animation is managed on a timeline
+- The whole thing auto-plays to the end
+- Pause / resume
+- Move forward / back
+- Keyboard controls
+- Click controls
 - CSS Animation
 - Web Animations API
 - SVG / Canvas
-- 必要に応じてGSAP等を使用
-- 動画素材への依存を避ける
-- エフェクトは可能な限りCSS / SVG / Canvas / JavaScriptで生成
-- テキストはHTMLとして保持
-- 数値・ゲージ・グラフはJavaScriptで制御
-- 画面録画しても演出が破綻しないようにする
-- フレーム落ちをできるだけ避ける
-- 後からタイミングや文章を変更しやすい構造にする
+- Use GSAP etc. as needed
+- Avoid depending on video assets
+- Generate effects with CSS / SVG / Canvas / JavaScript wherever possible
+- Keep text as HTML
+- Control numbers, gauges, and graphs with JavaScript
+- Effects must not break when screen-recorded
+- Avoid dropped frames as much as possible
+- Structure it so timings and text are easy to change later
 
-### 18. AUTOタイムライン
+### 18. AUTO timeline
 
-各スライドを単に表示するのではなく、**時間軸上の演出として設計してください。**例：
+Do not simply display each slide; **design it as a performance along a time axis.** For example:
 
 ```text
-0.0s   背景開始
-0.3s   小さなUI出現
-0.8s   テキスト出現
-1.5s   数字カウント開始
-2.5s   ゲージ上昇
-3.2s   一瞬停止
-3.5s   巨大演出
-4.0s   フラッシュ
-4.5s   結果表示
-6.0s   次スライドへ
+0.0s   background starts
+0.3s   small UI appears
+0.8s   text appears
+1.5s   number count starts
+2.5s   gauge rises
+3.2s   momentary stop
+3.5s   giant effect
+4.0s   flash
+4.5s   result shown
+6.0s   to next slide
 ```
 
-このように、**「何がいつ起きるか」まで設計してください。**
+In this way, **design down to "what happens when."**
 
-### 19. 最終的な方向性
+### 19. Final direction
 
-完成物は、**プレゼン資料**ではなく、**「ゲーム × パチンコ × アニメOP × ショート動画 × MAD/AMV」を融合した、自動再生モーション作品**として成立させてください。
+The finished product should work **not as presentation material, but as an auto-playing motion piece fusing "Japanese game × pachinko × Japanese anime OP × short video × MAD/AMV."**
 
-見る人が「これプレゼンなの？」「次に何が起きるんだ？」と思ってしまうくらい、演出を過剰にしてください。
+Overdo the directing so much that viewers think "Is this a presentation?" and "What's going to happen next?"
 
-ただし、次の3点は必ず守ってください。
+However, always keep these three rules:
 
-- **重要な情報ほど強い演出にする**
-- **派手さのために内容を犠牲にしない**
-- **AUTO再生だけで最後まで成立する**
+- **The more important the information, the stronger the effect**
+- **Never sacrifice content for flashiness**
+- **It must work end to end on AUTO play alone**
