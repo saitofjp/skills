@@ -7,6 +7,7 @@ Agent Skills for testing and refining products and documents.
 - **[simulated-persona-creator](skills/simulated-persona-creator/SKILL.md)** — Create a behavior-driven test persona (a portable Persona Contract) that another tester can simulate consistently.
 - **[simulated-persona-tester](skills/simulated-persona-tester/SKILL.md)** — Simulate how a supplied persona would naturally encounter and use a product, and report the result as a hypothesis-generating persona test.
 - **[aidoc-less-is-more](skills/aidoc-less-is-more/SKILL.md)** — Restructure an AI-generated document by removing elements that compete for the reader's attention (conflict, duplication, decoration), verifying every deletion with a QA test.
+- **[dopagaki-generator](skills/dopagaki-generator/SKILL.md)** — Turn content into an over-the-top, auto-playing 16:9 motion presentation (single HTML) in the "dopagaki" style (game × pachinko × anime OP × short video); screen-record it to get an SNS video.
 
 Use the persona skills together: create a persona with `simulated-persona-creator`, then run it against your product with `simulated-persona-tester`.
 
@@ -24,6 +25,7 @@ Install a single skill:
 npx skills add saitofjp/skills --skill simulated-persona-creator
 npx skills add saitofjp/skills --skill simulated-persona-tester
 npx skills add saitofjp/skills --skill aidoc-less-is-more
+npx skills add saitofjp/skills --skill dopagaki-generator
 ```
 
 Or point directly at a skill's path in this repo:
