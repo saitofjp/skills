@@ -11,6 +11,12 @@ Agent Skills for testing and refining products and documents.
 
 Use the persona skills together: create a persona with `simulated-persona-creator`, then run it against your product with `simulated-persona-tester`.
 
+## Demos
+
+Live outputs are published with GitHub Pages from [`docs/`](docs/): <https://saitofjp.github.io/skills/>
+
+- [日銀展望レポート ドパガキ版](https://saitofjp.github.io/skills/dopagaki/boj-outlook-2607.html) — made with `dopagaki-generator` from the Bank of Japan's Outlook Report (July 2026). It auto-plays in the browser and is an unofficial summary.
+
 ## Install
 
 Install with [`npx skills`](https://skills.sh):
