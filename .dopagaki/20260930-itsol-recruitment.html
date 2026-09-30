@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ITZ採用サイト ドパガキ版</title>
+<meta name="description" content="アイティソリューションズ株式会社のリクルーティングサイトの内容を、ゲーム×パチンコ×アニメOP×ショート動画の過剰演出で約110秒のAUTO再生モーションプレゼンにした非公式の作例。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DotGothic16&family=Noto+Sans+JP:wght@700;900&family=Orbitron:wght@700;900&display=swap">
+<style>
+/* Layout: fixed 1920x1080 stage scaled to fit and letterboxed on black; depth = bg / back canvas / scene DOM / front canvas, under a game HUD, flash and transition overlays */
+:root{
+  --void:#000; --ink:#070612; --paper:#f6f7ff; --dim:#9aa0c4;
+  --cyan:#16e6ff; --pink:#ff2e8a; --gold:#ffd21a; --orange:#ff7a1a; --violet:#7b4dff; --red:#ff2b3d; --lime:#b4ff2e;
+  --f-impact:"Dela Gothic One","Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --f-body:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+  --f-num:"Orbitron","Dela Gothic One","Noto Sans JP",sans-serif;
+  --f-pixel:"DotGothic16","Noto Sans JP",monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--void);overflow:hidden}
+html{font-synthesis:style}
+body{color:var(--paper);font-family:var(--f-body);-webkit-font-smoothing:antialiased}
+#viewport{position:fixed;inset:0;overflow:hidden;background:var(--void);user-select:none;-webkit-user-select:none;cursor:pointer}
+#viewport.idle{cursor:none}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;overflow:hidden;background:var(--ink);transform-origin:50% 50%}
+#cam,#rig,#bg,#scene,#hud,#fxo,#trans,#scan{position:absolute;inset:0}
+#cam,#rig{transform-origin:50% 50%}
+#cam{z-index:0}
+#bg,#scene{overflow:hidden}
+#hud,#fxo,#trans,#scan{pointer-events:none;overflow:hidden}
+canvas.fx{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+#scan{background:repeating-linear-gradient(0deg,rgba(0,0,0,.13) 0 2px,transparent 2px 4px),radial-gradient(ellipse at center,transparent 62%,rgba(0,0,0,.5) 100%)}
+#noise{position:absolute;inset:-120px;opacity:.06;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");animation:noise .5s steps(4) infinite}
+@keyframes noise{0%{transform:translate(0,0)}25%{transform:translate(-50px,30px)}50%{transform:translate(40px,-60px)}75%{transform:translate(-30px,-20px)}100%{transform:translate(0,0)}}
+.warm{position:absolute;left:-99999px;top:0;width:3000px;opacity:0;pointer-events:none;font-size:16px}
+
+/* ---------- primitives ---------- */
+.pin{position:absolute;width:0;height:0}
+.pin>.m{position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:max-content;text-align:center}
+.full{position:absolute;inset:0}
+.flexc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+.cut{position:absolute;inset:0;overflow:hidden}
+.imp{font-family:var(--f-impact);font-weight:400;line-height:1.08}
+.num{font-family:var(--f-num);font-weight:900;line-height:1;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.pix{font-family:var(--f-pixel);line-height:1.2}
+.bd{font-family:var(--f-body);font-weight:900;line-height:1.3}
+.sk{-webkit-text-stroke:var(--sw,12px) var(--sc,#000);paint-order:stroke fill}
+.chroma{text-shadow:-7px 0 0 rgba(255,46,138,.9),7px 0 0 rgba(22,230,255,.9)}
+.gl{animation:glt .24s steps(2) infinite}
+@keyframes glt{0%{text-shadow:-12px 0 0 var(--pink),12px 0 0 var(--cyan)}50%{text-shadow:14px 3px 0 var(--pink),-14px -3px 0 var(--cyan)}100%{text-shadow:-5px 0 0 var(--pink),5px 0 0 var(--cyan)}}
+@keyframes blink{50%{opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes tape{to{transform:translateX(-50%)}}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+@keyframes up{to{transform:translateY(-16px)}}
+
+/* backgrounds */
+.solid{position:absolute;inset:0}
+.rays{position:absolute;left:50%;top:50%;width:3400px;height:3400px;margin:-1700px 0 0 -1700px;background:repeating-conic-gradient(from 0deg,var(--r1) 0deg 6deg,var(--r2) 6deg 12deg);animation:spin var(--rs,16s) linear infinite}
+.rays.rb{background:repeating-conic-gradient(from 0deg,#ff2b3d 0deg 10deg,#ff7a1a 10deg 20deg,#ffd21a 20deg 30deg,#b4ff2e 30deg 40deg,#16e6ff 40deg 50deg,#7b4dff 50deg 60deg)}
+.grid{position:absolute;left:-50%;width:200%;bottom:-2%;height:62%;transform:perspective(700px) rotateX(64deg);transform-origin:50% 100%;background-image:linear-gradient(var(--gl) 3px,transparent 3px),linear-gradient(90deg,var(--gl) 3px,transparent 3px);background-size:140px 140px;animation:gridmv var(--gs,1s) linear infinite;-webkit-mask-image:linear-gradient(to top,#000 35%,transparent);mask-image:linear-gradient(to top,#000 35%,transparent)}
+@keyframes gridmv{to{background-position:0 140px}}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.82) 100%)}
+.stripes{position:absolute;inset:-200px;background:repeating-linear-gradient(-45deg,rgba(255,255,255,var(--so,.07)) 0 40px,transparent 40px 80px);animation:strp 1.6s linear infinite}
+@keyframes strp{to{transform:translateX(113.14px)}}
+
+/* overlays */
+.fl,.tcover{position:absolute;inset:0}
+.inv{position:absolute;inset:0;background:#fff;mix-blend-mode:difference}
+.gbar{position:absolute;left:-100px;right:-100px;mix-blend-mode:screen}
+.sweep{position:absolute;left:0;width:260px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);pointer-events:none}
+.svgw{position:absolute;inset:0;pointer-events:none}
+.dim{position:absolute;inset:0;background:#000}
+.shard{position:absolute;background:linear-gradient(135deg,#fff,#e2eaff)}
+.tstrip{position:absolute;left:0;width:1920px}
+.tpanel{position:absolute;left:0;width:1920px;height:540px;background:#05040c}
+.tpanel.t{top:0;border-bottom:8px solid var(--pink);box-shadow:0 0 50px var(--pink)}
+.tpanel.b{top:540px;border-top:8px solid var(--cyan);box-shadow:0 0 50px var(--cyan)}
+.tbar{position:absolute;top:-60px;width:300px;height:1200px}
+.iris{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 0 0 3000px #000,inset 0 0 0 14px var(--gold)}
+
+/* shared components */
+.cap{font-family:var(--f-body);font-weight:900;font-size:60px;line-height:1.28;background:#fff;color:#0a0a12;padding:12px 36px 16px;border-radius:12px;box-shadow:10px 10px 0 var(--pink)}
+.cap.y{background:var(--gold);box-shadow:10px 10px 0 #000}
+.cap em{font-style:normal;color:var(--red)}
+.chip{font-family:var(--f-body);font-weight:900;font-size:40px;line-height:1.2;padding:10px 30px 12px;border:4px solid var(--cc,var(--cyan));border-radius:22px;background:rgba(5,5,15,.8);color:#fff;box-shadow:0 0 24px var(--cc,var(--cyan))}
+.chip small{display:block;font-family:var(--f-num);font-size:22px;letter-spacing:.2em;color:var(--cc,var(--cyan))}
+.chip.big{font-size:52px;border-radius:999px;padding:12px 44px 14px}
+.bandw{position:absolute;left:-240px;width:2400px;height:96px}
+.band{width:100%;height:100%;overflow:hidden;display:flex;align-items:center;font-family:var(--f-num);font-weight:900;font-size:50px;letter-spacing:.05em;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.band .tape{display:flex;white-space:nowrap;animation:tape 8s linear infinite}
+
+/* HUD */
+#hud{transition:opacity .35s}
+#hud.off{opacity:0}
+.htl{position:absolute;left:34px;top:26px;display:flex;align-items:center;gap:14px;font-family:var(--f-num);font-weight:900;font-size:22px;letter-spacing:.16em;color:#fff;text-shadow:0 2px 0 #000}
+.htl .lg{background:var(--paper);color:var(--ink);padding:5px 12px 4px;text-shadow:none}
+.htl .st{color:var(--gold)}
+.htr{position:absolute;right:34px;top:24px;display:flex;align-items:center;gap:12px;font-family:var(--f-num);font-weight:900;font-size:20px;letter-spacing:.18em;color:#fff;text-shadow:0 2px 0 #000}
+.hype{display:flex;gap:4px;padding:4px;border:2px solid rgba(255,255,255,.5);background:rgba(0,0,0,.4)}
+.hype i{display:block;width:20px;height:24px;background:rgba(255,255,255,.1);transform:skewX(-16deg)}
+#hypeLbl{min-width:96px;text-align:right;color:var(--gold)}
+.rec{position:absolute;right:34px;bottom:62px;display:flex;align-items:center;gap:10px;font-family:var(--f-num);font-weight:700;font-size:20px;letter-spacing:.14em;color:#fff;text-shadow:0 2px 0 #000}
+.rec i{width:14px;height:14px;border-radius:50%;background:var(--red);animation:blink 1s steps(1) infinite}
+.ticker{position:absolute;left:0;right:0;bottom:0;height:46px;background:rgba(3,3,10,.85);border-top:3px solid var(--pink);overflow:hidden;display:flex;align-items:center}
+.ticker .tape{display:flex;white-space:nowrap;font-family:var(--f-body);font-weight:900;font-size:24px;color:#fff;animation:tape 70s linear infinite}
+
+/* S0 hook */
+.h100{font-size:400px;color:#fff;letter-spacing:-.02em}
+.h100 .pc,.r100 .pc{font-size:.55em;margin-left:.04em}
+.q{font-size:150px}
+.q span{display:inline-block}
+.ans{font-size:84px;color:#fff;letter-spacing:.12em;text-shadow:0 0 30px rgba(255,255,255,.6)}
+
+/* S1 title */
+.half{position:absolute;left:0;width:100%;height:50%;overflow:hidden}
+.half.ht{top:0}.half.hb{top:50%}
+.streak{position:absolute;left:0;top:538px;width:1920px;height:4px;background:#fff;box-shadow:0 0 30px #fff,0 0 60px var(--cyan);transform-origin:0 50%}
+.logoL{font-size:360px;color:#fff}
+.coname{font-size:68px;color:#fff;letter-spacing:.06em;min-height:1.3em;text-shadow:0 4px 0 #000}
+.tg1{font-size:52px;color:#fff;text-shadow:0 3px 0 #000,0 0 20px rgba(0,0,0,.8)}
+.tg2{font-size:100px;color:#fff;--sw:14px;position:relative}
+.tg2 .mk{position:absolute;left:-24px;right:-24px;bottom:4px;height:46%;background:var(--pink);transform-origin:0 50%;z-index:-1}
+.tg2 .tx{position:relative}
+
+/* S2 vs */
+.pnl{position:absolute;inset:0;overflow:hidden}
+.pL{clip-path:polygon(0 0,58% 0,42% 100%,0 100%);background:linear-gradient(135deg,#0a1a8f,#1476ff 70%,#16e6ff)}
+.pR{clip-path:polygon(58% 0,100% 0,100% 100%,42% 100%);background:linear-gradient(135deg,#ff7a1a,#e0001f 60%,#6a0010)}
+.vs{font-size:260px;color:var(--gold);--sw:16px;--sc:#3a0008;font-style:italic}
+.plab{font-size:36px;letter-spacing:.4em;color:rgba(255,255,255,.9)}
+.ptl{font-size:84px;color:#fff;--sw:10px}
+.ptb{font-size:140px;color:#fff;--sw:14px}
+.ptb.r{font-size:108px}
+.flick{font-size:54px;color:#fff;min-width:560px;padding:12px 30px;background:rgba(0,0,0,.55);border:4px solid var(--cyan);border-radius:12px}
+.gbox{display:flex;align-items:center;gap:26px;padding:16px 36px;background:rgba(3,3,12,.82);border:3px solid rgba(255,255,255,.4);border-radius:14px}
+.glab{font-size:30px;letter-spacing:.3em;color:#fff}
+.gauge{width:1000px;height:42px;border:4px solid #fff;background:rgba(255,255,255,.08);transform:skewX(-14deg);overflow:hidden}
+.gauge i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--gold) 70%,var(--pink))}
+.gnum{font-size:48px;min-width:170px;text-align:right;color:var(--gold)}
+.gnum.warn{color:var(--red);animation:blink .2s steps(1) infinite}
+.r1{font-size:100px;color:#fff;--sw:12px}
+.r1 .hl{color:var(--gold)}
+.r100{font-size:380px;color:#fff;--sw:18px;--sc:#5a2a00;text-shadow:0 0 60px rgba(255,210,26,.8)}
+.sticker{display:flex;flex-direction:column;align-items:center;padding:14px 26px;background:var(--pink);color:#fff;border:5px solid #fff;border-radius:16px;box-shadow:8px 8px 0 #000}
+.sticker b{font-size:52px}
+.sticker span{font-family:var(--f-body);font-weight:900;font-size:28px}
+.flow{display:flex;align-items:center;gap:14px}
+.fstep{font-family:var(--f-body);font-weight:900;font-size:40px;color:#fff;padding:8px 26px;background:rgba(0,0,0,.72);border:3px solid var(--gold);border-radius:999px}
+.farr{font-family:var(--f-num);font-weight:900;font-size:30px;color:var(--gold)}
+
+/* S3 salary */
+.qtx{font-size:72px;color:#fff;min-height:1.3em;letter-spacing:.06em}
+.qtx.big{font-size:110px}
+.edge{position:absolute;inset:0;box-shadow:inset 0 0 160px 40px rgba(255,43,61,.9)}
+.sfx{font-size:130px;color:var(--gold);--sw:10px}
+.gogo{font-size:140px;color:#c3adff;--sw:10px;--sc:#1a0030}
+.heatw{display:flex;align-items:center;gap:30px}
+.hlab{font-size:56px;color:#fff}
+.heat{display:flex;gap:16px}
+.heat i{display:block;width:190px;height:76px;border:4px solid rgba(255,255,255,.55);background:rgba(255,255,255,.06);transform:skewX(-16deg)}
+.rbw{background:linear-gradient(90deg,#ff2b3d,#ff7a1a,#ffd21a,#b4ff2e,#16e6ff,#7b4dff,#ff2b3d)!important;background-size:200% 100%!important;animation:rbw .5s linear infinite}
+@keyframes rbw{to{background-position:200% 0}}
+.heatcut{color:#fff;--sw:12px}
+.rbwt{color:#ff2b3d!important;animation:hue .4s linear infinite}
+.cd{font-size:560px;color:#fff;--sw:22px;--sc:var(--red)}
+.cutin{width:2800px;padding:22px 0;background:repeating-linear-gradient(90deg,#000 0 46px,var(--gold) 46px 92px)}
+.cib{height:280px;background:linear-gradient(90deg,#2a0006,#d0001e 50%,#2a0006);display:flex;align-items:center;justify-content:center}
+.cib span{font-size:200px;color:#fff;--sw:14px}
+.slab{font-size:120px;color:#fff;--sw:14px}
+.salw{display:flex;align-items:baseline;gap:10px}
+.sal{font-size:320px;color:var(--gold);--sw:16px;--sc:#3a0a00}
+.unit{font-size:150px;color:#fff;--sw:14px}
+.salw.hot .sal{text-shadow:0 0 50px rgba(255,210,26,.9),0 0 120px rgba(255,122,26,.7)}
+.atsu{font-size:140px;color:var(--red);--sw:16px;--sc:#fff;text-shadow:0 0 40px rgba(255,43,61,.8)}
+.upbox{display:flex;align-items:center;gap:22px;padding:16px 36px;background:rgba(0,0,0,.78);border:4px solid var(--lime);border-radius:16px}
+.upbox .bd{font-size:44px;color:#fff}
+.upv{font-size:84px;color:var(--lime);--sw:10px}
+.arr{font-family:var(--f-num);font-weight:900;font-size:60px;color:var(--lime);animation:up .5s ease-in-out infinite alternate;display:inline-block}
+.starb{position:relative;width:320px;height:320px;display:flex;align-items:center;justify-content:center}
+.starb svg{position:absolute;inset:0}
+.starb span{position:relative;font-size:34px;color:#000;line-height:1.15;text-align:center}
+
+/* S4 guarantee */
+.pwin{font-size:52px;color:#fff;padding:10px 40px;background:rgba(10,10,60,.88);border:5px solid #fff;outline:4px solid #3a55ff;outline-offset:4px;border-radius:10px}
+.t16{display:flex;flex-direction:column;align-items:center}
+.t16 .bd{font-size:56px;color:#fff}
+.t16 .imp{font-size:140px;color:var(--gold);--sw:14px}
+.row16{position:absolute;inset:0;transform-origin:960px 600px}
+.slot{position:absolute;width:96px;height:150px;border:3px dashed rgba(255,255,255,.3);border-radius:10px}
+.blk{position:absolute;width:96px;height:150px;border-radius:10px;background:var(--bc);border:4px solid rgba(255,255,255,.9);box-shadow:inset 0 -12px 0 rgba(0,0,0,.25),0 0 24px var(--bc);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#06121a}
+.blk b{font-size:34px}
+.blk span{font-family:var(--f-body);font-weight:900;font-size:27px}
+.blk .imp{font-family:var(--f-impact);font-size:62px}
+.m12{--bc:var(--cyan)}.su{--bc:var(--orange)}.wi{--bc:var(--pink)}
+.lab12{font-size:64px;color:var(--cyan);--sw:10px}
+.lab2{font-size:34px;color:#fff;line-height:1.15;text-shadow:0 3px 0 #000}
+.lab2 b{font-family:var(--f-num);font-size:44px}
+.lclear{font-size:130px;color:#fff;--sw:14px;--sc:var(--violet)}
+.shika{font-size:130px;color:#fff;--sw:12px;min-height:1.1em}
+.noreason{font-size:64px;color:#fff;text-shadow:0 4px 0 #000}
+.noreason em{font-style:normal;color:var(--gold)}
+.stamp{display:flex;flex-direction:column;align-items:center;padding:14px 50px 18px;border:14px solid var(--red);border-radius:26px;background:rgba(255,248,240,.96);box-shadow:0 0 0 6px rgba(255,255,255,.9),0 20px 60px rgba(0,0,0,.6)}
+.stamp .imp{font-size:180px;color:var(--red);line-height:1.05}
+.stamp .num{font-size:40px;letter-spacing:.4em;color:var(--red)}
+
+/* S5 status */
+.win{position:absolute;left:200px;top:150px;width:1520px;height:760px;background:rgba(3,8,40,.9);border:6px solid #fff;border-radius:16px;box-shadow:0 0 0 6px #1b37ff,0 30px 80px rgba(0,0,0,.6);transform-origin:50% 50%}
+.whead{position:absolute;left:40px;right:40px;top:26px;display:flex;align-items:center;gap:30px;font-size:40px;color:#fff;border-bottom:4px solid rgba(255,255,255,.35);padding-bottom:18px}
+.whead .wname{flex:1;min-height:1.2em;text-align:left}
+.whead .wsince{color:var(--gold)}
+.wrow{position:absolute;left:50px;right:50px;height:150px}
+.wl{position:absolute;left:0;top:34px;font-size:48px;color:#fff}
+.wl i{font-style:normal;color:var(--cyan);margin-right:14px;animation:blink .5s steps(1) infinite}
+.wv{position:absolute;right:0;top:0;display:flex;align-items:baseline;gap:4px}
+.wv b{font-size:100px;color:#fff}
+.wv i{font-style:normal;font-size:60px;color:var(--gold)}
+.wbar{position:absolute;left:0;right:0;bottom:4px;height:14px;background:rgba(255,255,255,.12)}
+.wbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),#fff)}
+.wrow.hi .wl{color:var(--gold)}
+.wrow.hi .wbar i{background:linear-gradient(90deg,var(--gold),var(--red))}
+.soshite{font-size:64px;color:var(--gold)}
+.critw{display:flex;align-items:baseline;gap:10px}
+.crit{font-size:320px;color:#fff;--sw:16px;--sc:var(--red);text-shadow:0 0 60px rgba(255,43,61,.8)}
+.unit2{font-size:150px;color:#fff;--sw:14px;--sc:var(--red)}
+.crit2{font-size:150px;font-style:italic;color:var(--gold);--sw:14px;--sc:var(--red)}
+.critl{font-size:60px;color:#fff;text-shadow:0 4px 0 #000}
+.lvup{font-size:84px;color:var(--lime);text-shadow:0 0 30px var(--lime),0 4px 0 #000}
+
+/* S6 benefits */
+.bhead{display:flex;align-items:baseline;gap:30px}
+.bhead .num{font-size:66px;font-style:italic;color:#fff;letter-spacing:.06em;text-shadow:0 4px 0 #000}
+.bhead .imp{font-size:72px;color:var(--pink);text-shadow:0 4px 0 #000}
+.brow{width:1320px;height:96px;display:flex;align-items:center;gap:26px;padding:0 30px;background:rgba(12,4,32,.88);border:3px solid var(--rc);border-radius:14px;box-shadow:0 0 22px var(--rc)}
+.brow .no{font-size:36px;color:var(--rc)}
+.brow .tt{font-family:var(--f-body);font-weight:900;font-size:46px;color:#fff;text-align:left}
+.brow .tt em{font-style:normal;color:var(--gold)}
+.brow .jd{margin-left:auto;font-size:24px;letter-spacing:.16em;color:var(--rc)}
+.blinkem{animation:emflash .3s steps(1) 6}
+@keyframes emflash{50%{color:#fff;text-shadow:0 0 18px var(--gold),0 0 36px var(--gold)}}
+.combo{display:flex;flex-direction:column;align-items:center}
+.combo .cl{font-size:50px;letter-spacing:.2em;color:#fff;font-style:italic;text-shadow:0 4px 0 #000}
+.combo .cn{font-size:260px;color:var(--pink);line-height:1;-webkit-text-stroke:10px #000;paint-order:stroke fill;display:inline-block}
+.combo .cn.max{color:var(--gold)}
+.judge{font-size:60px;color:#fff;--sw:8px;--sc:var(--pink);font-style:italic}
+.fever{font-size:280px;color:#fff;--sw:18px;--sc:var(--pink);text-shadow:0 0 40px var(--gold)}
+
+/* S7 classes */
+.selh{font-size:84px;font-style:italic;color:#fff;--sw:10px;--sc:var(--violet);letter-spacing:.06em}
+.selh2{font-size:56px;color:var(--gold)}
+.ccard{position:absolute;width:250px;height:600px;transform:skewX(-8deg);border:5px solid var(--cc);border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(0,0,0,.6)),#0d0a1c;overflow:hidden;box-shadow:0 0 24px rgba(0,0,0,.6)}
+.ccard::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.04) 0 14px,transparent 14px 28px)}
+.ccard .in{position:absolute;inset:0;transform:skewX(8deg);display:flex;flex-direction:column;align-items:center;padding:28px 0 22px;gap:18px}
+.ccard .ic{width:96px;height:96px;flex:none}
+.vname{flex:1;writing-mode:vertical-rl;font-family:var(--f-body);font-weight:900;font-size:29px;letter-spacing:0;color:#fff;text-shadow:0 3px 0 #000}
+.tcy{text-combine-upright:all}
+.ctag{font-size:17px;letter-spacing:.1em;color:var(--cc);flex:none}
+.ccard.you{border-color:var(--gold);background:radial-gradient(circle at 50% 40%,rgba(255,210,26,.55),rgba(0,0,0,.8) 70%),#1a1000}
+.youtx{font-size:80px;color:var(--gold);margin-top:170px}
+.yousub{font-size:44px;color:#fff}
+.curw{position:absolute;left:-137px;top:278px;width:274px;height:624px;pointer-events:none}
+.cur{position:absolute;inset:0;border:8px solid var(--pink);border-radius:14px;transform:skewX(-8deg);box-shadow:0 0 40px var(--pink),inset 0 0 30px rgba(255,46,138,.45)}
+.cur b{position:absolute;left:-8px;top:-44px;padding:5px 14px;background:var(--pink);color:#fff;font-family:var(--f-num);font-size:24px}
+.selp{width:1400px;display:flex;align-items:center;gap:30px;padding:12px 40px;background:rgba(0,0,0,.82);border:4px solid var(--pink);border-radius:12px}
+.selp .p1{font-size:30px;color:var(--pink);letter-spacing:.1em}
+.selp .pn{font-size:54px;color:#fff;flex:1;text-align:left}
+.selp .pt{font-size:28px;color:var(--gold);letter-spacing:.12em}
+.turnb{width:2800px;height:240px;background:linear-gradient(90deg,var(--violet),var(--pink));border-top:10px solid #fff;border-bottom:10px solid #fff;display:flex;align-items:center;justify-content:center}
+.turnb span{font-size:150px;color:#fff;--sw:14px}
+
+/* S8 origin */
+.lbx{position:absolute;left:0;right:0;height:110px;background:#000;z-index:5}
+.lbx.t{top:0}.lbx.b{bottom:0}
+.ep{font-size:56px;color:var(--gold);letter-spacing:.5em}
+.eprole{font-size:48px;color:#fff}
+.epname{font-size:130px;color:#fff}
+.cutbig{font-size:110px;color:#fff;min-height:1.2em}
+.vline{position:absolute;left:0;top:0;width:6px;height:100%;background:#fff;box-shadow:0 0 30px #fff}
+.halfv{position:absolute;top:0;width:50%;height:100%;overflow:hidden}
+.halfv.l{left:0}.halfv.r{left:50%}
+.ten{font-size:560px;color:#070612}
+.tenl{font-size:96px;color:#fff}
+.tenb{font-size:150px;color:var(--pink);--sw:12px}
+.note{font-size:110px;color:var(--pink);opacity:.85}
+.agew{display:flex;align-items:baseline;gap:10px}
+.age{font-size:300px;color:#fff}
+.agek{font-size:150px;color:#fff}
+.cutmid{font-size:96px;color:#fff;--sw:10px}
+.cutbig2{font-size:130px;--sw:12px}
+.pass1{font-size:130px;color:#fff;--sw:14px}
+.pass2{font-size:260px;color:var(--red);--sw:18px;--sc:#fff}
+.cutmid2{font-size:80px;color:#fff}
+.cutsoft{font-size:110px;color:#fff;--sw:12px}
+.cutjob{font-size:120px;color:var(--gold);--sw:12px}
+.pres{font-size:170px;color:#070612;--sw:14px;--sc:#fff}
+.presn{font-size:80px;color:#070612}
+.kakageru{font-size:60px;color:#fff;min-height:1.2em}
+.secore{font-size:190px;color:#fff;--sw:14px}
+.envl{font-size:50px;color:#fff;text-shadow:0 3px 0 #000}
+.envb{font-size:84px;color:var(--gold);--sw:10px}
+
+/* S9 result */
+.mcw{display:flex;flex-direction:column;align-items:center}
+.mc{font-size:170px;color:#fff;--sw:14px;--sc:var(--violet);letter-spacing:.05em;line-height:1.05}
+.mc span{display:inline-block}
+.rrow{position:absolute;left:160px;width:1300px;height:72px;display:flex;align-items:center;gap:20px}
+.rrow .lb{font-family:var(--f-body);font-weight:900;font-size:42px;color:#fff}
+.rrow .ld{flex:1;height:0;border-bottom:5px dotted rgba(255,255,255,.35)}
+.rrow .vl{font-family:var(--f-num);font-weight:900;font-size:58px;color:var(--gold);font-variant-numeric:tabular-nums}
+.rrow .vl.txt{font-family:var(--f-impact);font-weight:400}
+.rrow .vl small{font-family:var(--f-impact);font-weight:400;font-size:.62em;margin-left:6px;color:#fff}
+.rankbox{display:flex;flex-direction:column;align-items:center}
+.rl{font-size:48px;letter-spacing:.3em;color:var(--gold)}
+.rv{font-size:300px;color:#fff;--sw:16px;--sc:var(--violet);line-height:1;min-width:1em;text-align:center}
+.rv.rs{color:var(--gold);--sc:var(--red);text-shadow:0 0 60px rgba(255,210,26,.9)}
+.saigo{font-size:76px;color:#fff;min-height:1.2em;letter-spacing:.1em}
+.fin1{font-size:64px;color:#fff;--sw:10px}
+.fin2{font-size:220px;color:var(--gold);--sw:18px;--sc:#3a0010;text-shadow:0 0 60px rgba(255,210,26,.7)}
+.fin3{font-size:100px;color:#fff;--sw:12px;--sc:var(--pink)}
+.finlogo{display:flex;align-items:center;gap:24px}
+.flg{font-size:64px;padding:4px 18px;background:#fff;color:var(--ink)}
+.fco{font-size:44px;color:#fff;text-shadow:0 3px 0 #000}
+.entry a{display:inline-block;font-family:var(--f-num);font-weight:900;font-size:36px;letter-spacing:.12em;color:#000;background:var(--gold);padding:14px 40px;border-radius:999px;text-decoration:none;box-shadow:0 0 30px rgba(255,210,26,.7)}
+.entry a span{font-family:var(--f-body);font-weight:900;letter-spacing:.02em;font-size:30px}
+.entry a:focus-visible{outline:4px solid #fff;outline-offset:4px}
+
+/* controls (outside the stage) */
+#ctrl{position:absolute;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px;max-width:calc(100% - 32px);padding:8px 12px;background:rgba(10,10,20,.86);border:1px solid rgba(255,255,255,.18);border-radius:14px;color:#fff;font:700 13px/1.2 var(--f-body);opacity:0;pointer-events:none;transition:opacity .25s}
+#ctrl.show{opacity:1;pointer-events:auto}
+#ctrl button{appearance:none;border:0;background:rgba(255,255,255,.1);color:#fff;font:900 15px/1 var(--f-body);min-width:42px;height:36px;padding:0 10px;border-radius:9px;cursor:pointer}
+#ctrl button:hover{background:rgba(255,255,255,.22)}
+#ctrl button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#cInfo{font-family:var(--f-num);font-variant-numeric:tabular-nums;letter-spacing:.06em;padding:0 6px}
+#ctrl .keys{color:var(--dim);font-size:12px;padding:0 4px}
+#pauseTag{position:absolute;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);font:900 16px/1 var(--f-num);letter-spacing:.3em;padding:10px 18px;background:var(--gold);color:#000;pointer-events:none}
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <div id="cam"><div id="rig">
+      <div id="bg"></div>
+      <canvas id="cvBack" class="fx" width="1920" height="1080"></canvas>
+      <div id="scene"></div>
+      <canvas id="cvFront" class="fx" width="1920" height="1080"></canvas>
+    </div></div>
+    <div id="hud" class="off">
+      <div class="htl"><span class="lg">ITZ</span><span>RECRUIT</span><span id="hudStage" class="st">STAGE 01/10</span></div>
+      <div class="htr"><span>HYPE</span><div class="hype" id="hype"></div><span id="hypeLbl">LV.1</span></div>
+      <div class="rec"><i></i>REC <span id="tc">00:00.0</span></div>
+      <div class="ticker"><div class="tape" id="tickerTape"></div></div>
+    </div>
+    <div id="fxo"></div>
+    <div id="trans"></div>
+    <div id="scan"><div id="noise"></div></div>
+  </div>
+  <div id="pauseTag" hidden>PAUSE</div>
+  <div id="ctrl" role="toolbar" aria-label="再生コントロール">
+    <button id="bPrev" type="button" aria-label="前のシーン">◀◀</button>
+    <button id="bPlay" type="button" aria-label="一時停止">❚❚</button>
+    <button id="bNext" type="button" aria-label="次のシーン">▶▶</button>
+    <button id="bRe" type="button" aria-label="最初から">↺</button>
+    <button id="bFs" type="button" aria-label="全画面">全画面</button>
+    <span id="cInfo">01/10</span>
+    <span class="keys">Space 一時停止 ／ ← → 前後 ／ R 最初から ／ F 全画面</span>
+  </div>
+</div>
+<script id="main">
+(()=>{
+'use strict';
+/* =========================================================
+   設定：BEAT（150BPM=0.4秒）を単位に尺を決める。
+   各シーンの dur と、build() 内の at(秒, 関数) を書き換えると演出タイミングを調整できる。
+   ========================================================= */
+const W=1920,H=1080,BEAT=0.4,TR=0.4,TAU=Math.PI*2;
+const b=n=>n*BEAT;
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=s=>document.querySelector(s);
+const vp=$('#viewport'),stage=$('#stage'),cam=$('#cam'),rig=$('#rig'),bgL=$('#bg'),scene=$('#scene'),hud=$('#hud'),fxo=$('#fxo'),trans=$('#trans'),ctrl=$('#ctrl');
+const cvB=$('#cvBack'),cvF=$('#cvFront'),gB=cvB.getContext('2d'),gF=cvF.getContext('2d');
+const css=getComputedStyle(document.documentElement);
+const C={};for(const k of ['cyan','pink','gold','orange','violet','red','lime','paper','ink'])C[k]=css.getPropertyValue('--'+k).trim();
+const rnd=(a,c)=>a+Math.random()*(c-a),pick=a=>a[Math.random()*a.length|0],clamp=(v,a,c)=>Math.max(a,Math.min(c,v));
+const eo3=p=>1-Math.pow(1-p,3),eio3=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2,lin=p=>p;
+
+/* ---------- 画面フィット ---------- */
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`scale(${s})`;}
+addEventListener('resize',fit);fit();
+
+/* ---------- DOMヘルパー ---------- */
+function el(tag,cls,html,parent){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;if(parent)parent.appendChild(e);return e;}
+function P(parent,x,y,cls,html){const pin=el('div','pin',null,parent);pin.style.left=x+'px';pin.style.top=y+'px';const m=el('div','m',null,pin);return el('div',cls,html,m);}
+function unpin(n){const p=n&&n.closest('.pin');if(p)p.remove();}
+function A(node,kf,dur,o={}){const opt={duration:Math.max(1,dur*1000),fill:o.fill||'both',easing:o.ease||'cubic-bezier(.2,.9,.25,1)'};if(o.delay)opt.delay=o.delay*1000;if(o.iter)opt.iterations=o.iter;if(o.dir)opt.direction=o.dir;if(o.comp)opt.composite=o.comp;return node.animate(kf,opt);}
+function ctr(n){const r=n.getBoundingClientRect(),s=stage.getBoundingClientRect(),k=s.width/W;return[(r.left+r.width/2-s.left)/k,(r.top+r.height/2-s.top)/k];}
+const K={
+  slam:(s=3.2,r=0)=>[{transform:`scale(${s}) rotate(${r}deg)`,opacity:0},{transform:`scale(.94) rotate(${r}deg)`,opacity:1,offset:.72},{transform:`scale(1) rotate(${r}deg)`,opacity:1}],
+  pop:(r=0)=>[{transform:`scale(0) rotate(${r-10}deg)`,opacity:0},{transform:`scale(1.14) rotate(${r}deg)`,opacity:1,offset:.65},{transform:`scale(1) rotate(${r}deg)`,opacity:1}],
+  fromX:(x,r=0)=>[{transform:`translateX(${x}px) rotate(${r}deg)`,opacity:0},{transform:`translateX(0) rotate(${r}deg)`,opacity:1}],
+  fromY:(y,r=0)=>[{transform:`translateY(${y}px) rotate(${r}deg)`,opacity:0},{transform:`translateY(0) rotate(${r}deg)`,opacity:1}],
+  fade:[{opacity:0},{opacity:1}],
+  out:[{opacity:1},{opacity:0}],
+};
+function bgSolid(c){const d=el('div','solid',null,bgL);d.style.background=c;return d;}
+function bgRays(c1,c2,sp=16,parent=bgL){const d=el('div','rays',null,parent);d.style.setProperty('--r1',c1);d.style.setProperty('--r2',c2);d.style.setProperty('--rs',sp+'s');return d;}
+function bgGrid(c,sp=1,parent=bgL){const d=el('div','grid',null,parent);d.style.setProperty('--gl',c);d.style.setProperty('--gs',sp+'s');return d;}
+function bgVig(parent=bgL){return el('div','vig',null,parent);}
+function starPts(n,r1,r2,cx,cy){const p=[];for(let j=0;j<n*2;j++){const r=j%2?r2:r1,a=j/(n*2)*TAU-Math.PI/2;p.push((cx+Math.cos(a)*r).toFixed(1)+','+(cy+Math.sin(a)*r).toFixed(1));}return p.join(' ');}
+
+/* ---------- タイムライン・エンジン ---------- */
+const E={i:0,t:0,playing:false,started:false,ended:false,ev:[],evi:0,tw:[],held:[],hype:0,hypeV:0,amb:null,mode:null,charge:false,autoP:false};
+function at(t,fn){const ev=E.ev;let k=ev.length;while(k>E.evi&&ev[k-1].t>t)k--;ev.splice(k,0,{t,fn});}
+function tw(t0,dur,fn,ease=eo3){E.tw.push({t0,dur,fn,ease,done:false});}
+function typeOn(node,text,t0,cps=.05){node.textContent='';[...text].forEach((ch,k)=>at(t0+k*cps,()=>{node.textContent+=ch;}));}
+function hype(v){E.hype=clamp(v,0,1);}
+function ambient(c,n=40){E.amb={c,n};}
+
+/* ---------- 画面エフェクト ---------- */
+function flash(color='#fff',dur=.3,op=1){if(RM)op=Math.min(op,.3);const d=el('div','fl',null,fxo);d.style.background=color;A(d,[{opacity:op},{opacity:0}],dur,{ease:'ease-out'}).onfinish=()=>d.remove();}
+function invert(dur=.1){if(RM)return;const d=el('div','inv',null,fxo);A(d,[{opacity:1},{opacity:1}],dur,{ease:'linear'}).onfinish=()=>d.remove();}
+function shake(pw=20,dur=.4){if(RM)pw*=.15;const n=Math.max(4,Math.round(dur*28)),k=[];for(let j=0;j<n;j++){const f=1-j/n;k.push({transform:`translate(${rnd(-pw,pw)*f}px,${rnd(-pw,pw)*f}px) rotate(${rnd(-.6,.6)*f*pw/20}deg)`});}k.push({transform:'translate(0px,0px) rotate(0deg)'});A(rig,k,dur,{ease:'linear',fill:'none',comp:'add'});}
+function punch(s=1.05,dur=.3){if(RM)s=1+(s-1)*.3;A(rig,[{transform:`scale(${s})`},{transform:'scale(1)'}],dur,{ease:'cubic-bezier(.1,.8,.3,1)',fill:'none',comp:'add'});}
+function glitch(dur=.3,n=8){if(RM)n=2;for(let j=0;j<n;j++){const bar=el('div','gbar',null,fxo);bar.style.top=rnd(0,1040)+'px';bar.style.height=rnd(6,80)+'px';bar.style.background=pick(['rgba(22,230,255,.6)','rgba(255,46,138,.6)','rgba(255,255,255,.45)','rgba(180,255,46,.5)']);const d=rnd(.06,dur);A(bar,[{transform:`translateX(${rnd(-260,260)}px)`},{transform:`translateX(${rnd(-260,260)}px)`},{transform:`translateX(${rnd(-260,260)}px)`}],d,{ease:'steps(3)',delay:rnd(0,Math.max(0,dur-d))}).onfinish=()=>bar.remove();}shake(10,dur);}
+function sweep(y,h=300,dur=.6,rot=-18){const s=el('div','sweep',null,scene);s.style.top=(y-h/2)+'px';s.style.height=h+'px';A(s,[{transform:`translateX(-600px) skewX(${rot}deg)`},{transform:`translateX(2400px) skewX(${rot}deg)`}],dur,{ease:'cubic-bezier(.5,0,.5,1)'}).onfinish=()=>s.remove();}
+function bolt(x1=1114,y1=0,x2=806,y2=1080){const pts=[];const n=14;for(let j=0;j<=n;j++){const t=j/n;pts.push([(x1+(x2-x1)*t+(j&&j<n?rnd(-50,50):0)).toFixed(0),(y1+(y2-y1)*t).toFixed(0)]);}const ps=pts.map(p=>p.join(',')).join(' ');const w=el('div','svgw',`<svg width="1920" height="1080" viewBox="0 0 1920 1080"><polyline points="${ps}" fill="none" stroke="${C.cyan}" stroke-opacity=".4" stroke-width="36" stroke-linejoin="round"/><polyline points="${ps}" fill="none" stroke="#fff" stroke-width="12" stroke-linejoin="round"/></svg>`,scene);A(w,[{opacity:1},{opacity:0},{opacity:1},{opacity:0}],.45,{ease:'steps(4)'}).onfinish=()=>w.remove();}
+function band(y,rot,bg,fg,text,dir=-1,sp=8){const w=el('div','bandw',null,scene);w.style.top=(y-48)+'px';w.style.transform=`rotate(${rot}deg)`;const bn=el('div','band',null,w);bn.style.background=bg;bn.style.color=fg;const tp=el('div','tape',null,bn);const s=text.repeat(6);tp.innerHTML=`<span>${s}</span><span>${s}</span>`;tp.style.animationDuration=sp+'s';if(dir>0)tp.style.animationDirection='reverse';A(bn,[{transform:`translateX(${dir*-2400}px)`},{transform:'translateX(0)'}],.3);return w;}
+
+/* ---------- パーティクル（Canvas） ---------- */
+const PS=[];
+function burst(x,y,o={}){const n=Math.round((o.n||90)*(RM?.35:1));const cols=o.colors||['#fff',C.gold,C.cyan,C.pink];for(let j=0;j<n;j++){const a=o.ang!=null?o.ang+rnd(-(o.spread||.5),o.spread||.5):rnd(0,TAU);const sp=rnd(o.s0||350,o.s1||1500);const life=rnd(o.l0||.45,o.l1||1.1);PS.push({t:o.type||'spark',x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,g:o.g??700,dr:o.dr??.9,life,max:life,sz:rnd(o.z0||2,o.z1||5),c:pick(cols),L:o.L||'f',rot:rnd(0,TAU),vr:rnd(-12,12),w:rnd(12,24),h:rnd(7,13)});}}
+function confetti(x,y,n,ang,spread,s0=700,s1=1600){burst(x,y,{n,type:'conf',ang,spread,s0,s1,g:900,dr:.965,l0:1.6,l1:3.2,colors:[C.gold,C.cyan,C.pink,C.lime,'#fff',C.violet,C.orange]});}
+function ring(x,y,c='#fff',r=900,dur=.6,w=16){PS.push({t:'ring',x,y,r:8,vr:r/dur,life:dur,max:dur,sz:w,c,L:'f'});}
+function ringIn(x,y,c='#fff',r=1100,dur=.5,w=10){PS.push({t:'ring',x,y,r,vr:-r/dur,life:dur,max:dur,sz:w,c,L:'f'});}
+const CODECH='01{}<>/=;()[]+*アイティ#$&ITZ'.split('');
+const VY=110,JY=960;
+const hwyX=(lane,s)=>{const xb=960+(lane-2.5)*300,xt=960+(lane-2.5)*44;return xt+(xb-xt)*s;};
+const hwyY=s=>VY+(JY-VY)*s;
+const laneX=i=>960+(i-2)*300;
+function modeStep(dt){const M=E.mode;if(!M)return;
+  if(M.k==='rain'){if(!M.drops){M.drops=[];for(let j=0;j<140;j++)M.drops.push({x:rnd(-200,2200),y:rnd(-100,1100),l:rnd(60,160),v:rnd(1400,2200)});}for(const d of M.drops){d.y+=d.v*dt;d.x-=d.v*dt*.18;if(d.y>1180){d.y=rnd(-200,-40);d.x=rnd(0,2300);}}}
+  else if(M.k==='code'){if(!M.cols){M.cols=[];for(let j=0;j<34;j++)M.cols.push({x:j*58+20,y:rnd(-600,1080),v:rnd(500,1100)});}for(const c of M.cols){c.y+=c.v*dt;if(c.y>1560)c.y=rnd(-400,-50);}}
+  else if(M.k==='hwy'){M.s=(M.s+dt*1.6)%1;}
+}
+function drawMode(g){const M=E.mode;if(!M)return;g.save();
+  if(M.k==='speed'){g.fillStyle=M.c;g.globalAlpha=M.a;for(let j=0;j<M.n;j++){const a=rnd(0,TAU),r0=M.r0+rnd(0,300),w=rnd(.003,.014);g.beginPath();g.moveTo(M.x+Math.cos(a)*r0,M.y+Math.sin(a)*r0);g.lineTo(M.x+Math.cos(a-w)*1700,M.y+Math.sin(a-w)*1700);g.lineTo(M.x+Math.cos(a+w)*1700,M.y+Math.sin(a+w)*1700);g.closePath();g.fill();}}
+  else if(M.k==='rain'&&M.drops){g.strokeStyle='rgba(170,190,255,.35)';g.lineWidth=2;g.beginPath();for(const d of M.drops){g.moveTo(d.x,d.y);g.lineTo(d.x+d.l*.18,d.y-d.l);}g.stroke();}
+  else if(M.k==='code'&&M.cols){g.font='700 30px ui-monospace,Menlo,monospace';g.textAlign='center';for(const c of M.cols){for(let k=0;k<14;k++){const y=c.y-k*36;if(y<-40||y>1120)continue;g.fillStyle=k===0?'rgba(220,255,245,.95)':`rgba(22,230,160,${(.55*(1-k/14)).toFixed(3)})`;g.fillText(pick(CODECH),c.x,y);}}}
+  else if(M.k==='hwy'){
+    g.fillStyle='rgba(20,6,40,.6)';g.beginPath();g.moveTo(hwyX(0,0),VY);g.lineTo(hwyX(5,0),VY);g.lineTo(hwyX(5,1.14),hwyY(1.14));g.lineTo(hwyX(0,1.14),hwyY(1.14));g.closePath();g.fill();
+    g.lineWidth=3;for(let j=0;j<=5;j++){g.strokeStyle=(j===0||j===5)?'rgba(255,46,138,.95)':'rgba(255,255,255,.25)';g.beginPath();g.moveTo(hwyX(j,0),VY);g.lineTo(hwyX(j,1.14),hwyY(1.14));g.stroke();}
+    for(let k=0;k<6;k++){let s=(M.s+k/6)%1;s=s*s;g.strokeStyle=`rgba(123,77,255,${(.15+.55*s).toFixed(3)})`;g.lineWidth=1+4*s;g.beginPath();g.moveTo(hwyX(0,s),hwyY(s));g.lineTo(hwyX(5,s),hwyY(s));g.stroke();}
+    g.strokeStyle='#fff';g.lineWidth=6;g.shadowColor=C.pink;g.shadowBlur=24;g.beginPath();g.moveTo(hwyX(0,1),JY);g.lineTo(hwyX(5,1),JY);g.stroke();
+    for(const n of M.notes){const p=1-(n.hit-E.t)/.7;if(p<0||p>1.02)continue;const s=p*p,xl=hwyX(n.lane+.12,s),xr=hwyX(n.lane+.88,s),y=hwyY(s),h=6+28*s;g.fillStyle=n.c;g.shadowColor=n.c;g.shadowBlur=20;g.fillRect(xl,y-h/2,xr-xl,h);}
+    g.shadowBlur=0;
+  }
+  g.restore();
+}
+function fxStep(dt){
+  if(E.amb){let cnt=0;for(const p of PS)if(p.amb)cnt++;if(cnt<E.amb.n&&Math.random()<.5){const life=rnd(3,7);PS.push({t:'dot',amb:1,x:rnd(0,W),y:H+10,vx:rnd(-20,20),vy:rnd(-160,-50),g:0,dr:1,life,max:life,sz:rnd(1.5,4),c:E.amb.c,L:'b'});}}
+  if(E.charge){for(let j=0;j<6;j++){const a=rnd(0,TAU),r=rnd(900,1200),sp=rnd(900,1500),life=r/sp;PS.push({t:'spark',x:960+Math.cos(a)*r,y:540+Math.sin(a)*r,vx:-Math.cos(a)*sp,vy:-Math.sin(a)*sp,g:0,dr:1,life,max:life*1.4,sz:rnd(2,4),c:pick([C.gold,'#fff',C.cyan]),L:'f'});}}
+  modeStep(dt);
+  for(let j=PS.length-1;j>=0;j--){const p=PS[j];p.life-=dt;if(p.life<=0){PS[j]=PS[PS.length-1];PS.pop();continue;}
+    if(p.t==='ring'){p.r=Math.max(1,p.r+p.vr*dt);continue;}
+    const d=Math.pow(p.dr,dt*60);p.vx*=d;p.vy*=d;p.vy+=p.g*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;}
+  if(PS.length>2600)PS.splice(0,PS.length-2600);
+}
+function fxDraw(){
+  gB.clearRect(0,0,W,H);gF.clearRect(0,0,W,H);
+  drawMode(gB);
+  gB.lineCap=gF.lineCap='round';
+  gB.globalCompositeOperation=gF.globalCompositeOperation='lighter';
+  for(const p of PS){const g=p.L==='b'?gB:gF;const a=clamp(p.life/p.max,0,1);
+    if(p.t==='spark'){g.globalAlpha=a;g.strokeStyle=p.c;g.lineWidth=p.sz;g.beginPath();g.moveTo(p.x,p.y);g.lineTo(p.x-p.vx*.035,p.y-p.vy*.035);g.stroke();}
+    else if(p.t==='dot'){g.fillStyle=p.c;g.globalAlpha=a*.25;g.beginPath();g.arc(p.x,p.y,p.sz*3,0,TAU);g.fill();g.globalAlpha=a;g.beginPath();g.arc(p.x,p.y,p.sz,0,TAU);g.fill();}
+    else if(p.t==='ring'){g.globalAlpha=a;g.strokeStyle=p.c;g.lineWidth=p.sz*a+1;g.beginPath();g.arc(p.x,p.y,p.r,0,TAU);g.stroke();}
+    else if(p.t==='conf'){g.globalCompositeOperation='source-over';g.globalAlpha=Math.min(1,a*1.6);g.fillStyle=p.c;g.save();g.translate(p.x,p.y);g.rotate(p.rot);g.scale(1,Math.cos(p.rot*1.7));g.fillRect(-p.w/2,-p.h/2,p.w,p.h);g.restore();g.globalCompositeOperation='lighter';}
+  }
+  gB.globalAlpha=gF.globalAlpha=1;gB.globalCompositeOperation=gF.globalCompositeOperation='source-over';
+}
+
+/* ---------- シーン切替トランジション ---------- */
+function cover(color,dur,ease='cubic-bezier(.7,0,1,.6)'){const d=el('div','tcover',null,trans);d.style.background=color;A(d,K.fade,dur,{ease});return d;}
+function clearTrans(dur=.3){[...trans.children].forEach(c=>{A(c,K.out,dur,{ease:'ease-out'}).onfinish=()=>c.remove();});}
+const TRANS={
+  cut:{in(){trans.replaceChildren();flash('#fff',.3,.85);}},
+  zoom:{out(){A(cam,[{transform:'scale(1)'},{transform:'scale(3.6)'}],TR,{ease:'cubic-bezier(.7,0,1,.5)'});cover('#fff',TR);E.mode={k:'speed',x:960,y:540,c:'#fff',a:.7,n:60,r0:120};},
+        in(){clearTrans(.4);A(cam,[{transform:'scale(1.7)'},{transform:'scale(1)'}],.5,{ease:'cubic-bezier(.1,.8,.2,1)',fill:'none'});}},
+  shatter:{out(){cover('#fff',TR*.85);punch(1.06,TR);},
+    in(){trans.replaceChildren();const cw=240,ch=216;for(let r=0;r<5;r++)for(let c=0;c<8;c++)for(const tri of [0,1]){const s=el('div','shard',null,trans);s.style.left=c*cw+'px';s.style.top=r*ch+'px';s.style.width=cw+'px';s.style.height=ch+'px';const fl=(r+c)%2;s.style.clipPath=tri?(fl?'polygon(3px 3px,100% 0,0 100%)':'polygon(0 0,calc(100% - 3px) 3px,calc(100% - 3px) calc(100% - 3px))'):(fl?'polygon(100% 3px,100% 100%,3px 100%)':'polygon(0 3px,0 100%,calc(100% - 3px) 100%)');const cx=c*cw+cw/2-960,cy=r*ch+ch/2-540,d=Math.hypot(cx,cy)||1,f=rnd(900,1600);A(s,[{transform:'translate(0,0) rotate(0deg) scale(1)',opacity:1},{transform:`translate(${cx/d*f}px,${cy/d*f+rnd(100,400)}px) rotate(${rnd(-200,200)}deg) scale(${rnd(.3,.8)})`,opacity:0}],rnd(.45,.7),{ease:'cubic-bezier(.2,.6,.4,1)',delay:rnd(0,.1)}).onfinish=()=>s.remove();}
+      burst(960,540,{n:120,colors:['#fff','#dfe8ff',C.cyan],s0:600,s1:1800});shake(22,.35);}},
+  glitch:{out(){glitch(TR,12);at(E.t+.08,()=>invert(.06));for(let j=0;j<12;j++){const s=el('div','tstrip',null,trans);s.style.top=(j*90)+'px';s.style.height='91px';s.style.background=j%3===0?C.pink:'#000';const dir=j%2?1:-1;A(s,[{transform:`translateX(${dir*2000}px)`},{transform:'translateX(0)'}],TR*.65,{ease:'cubic-bezier(.6,0,.9,.6)',delay:TR*.3*Math.random()});}},
+    in(){[...trans.children].forEach((s,j)=>{const dir=j%2?-1:1;A(s,[{transform:'translateX(0)'},{transform:`translateX(${dir*2000}px)`}],.35,{ease:'cubic-bezier(.3,0,.8,.6)',delay:rnd(0,.12)}).onfinish=()=>s.remove();});glitch(.35,10);}},
+  split:{out(){for(const top of [1,0]){const s=el('div','tpanel '+(top?'t':'b'),null,trans);A(s,[{transform:`translateY(${top?-560:560}px)`},{transform:'translateY(0)'}],TR,{ease:'cubic-bezier(.7,0,1,.6)'});}},
+    in(){shake(26,.35);flash('#fff',.2,.6);[...trans.children].forEach(s=>{const top=s.classList.contains('t');A(s,[{transform:'translateY(0)'},{transform:`translateY(${top?-600:600}px)`}],.4,{ease:'cubic-bezier(.2,.7,.3,1)',delay:.08}).onfinish=()=>s.remove();});}},
+  invert:{out(){invert(.06);at(E.t+.14,()=>invert(.06));at(E.t+.26,()=>invert(.06));A(cam,[{transform:'scale(1)'},{transform:'scale(1.25)'}],TR,{ease:'cubic-bezier(.6,0,1,.6)'});at(E.t+TR-.1,()=>cover('#fff',.1,'linear'));},
+    in(){clearTrans(.25);invert(.08);at(.16,()=>invert(.06));A(cam,[{transform:'scale(1.25)'},{transform:'scale(1)'}],.4,{fill:'none'});}},
+  shutter:{out(){for(let j=0;j<10;j++){const s=el('div','tbar',null,trans);s.style.left=(j*260-500)+'px';s.style.background=j%2?'#000':C.violet;A(s,[{transform:'translateY(-1300px) skewX(-20deg)'},{transform:'translateY(0) skewX(-20deg)'}],TR*.6,{ease:'cubic-bezier(.6,0,1,.6)',delay:j*.02});}},
+    in(){[...trans.children].forEach((s,j)=>{A(s,[{transform:'translateY(0) skewX(-20deg)'},{transform:'translateY(1300px) skewX(-20deg)'}],.35,{ease:'cubic-bezier(.3,0,.7,1)',delay:j*.025}).onfinish=()=>s.remove();});}},
+  spin:{out(){A(cam,[{transform:'rotate(0deg) scale(1)'},{transform:'rotate(28deg) scale(2.8)'}],TR,{ease:'cubic-bezier(.7,0,1,.5)'});cover('#fff',TR);},
+    in(){clearTrans(.35);A(cam,[{transform:'rotate(-28deg) scale(2.8)'},{transform:'rotate(0deg) scale(1)'}],.5,{ease:'cubic-bezier(.1,.8,.2,1)',fill:'none'});}},
+  iris:{out(){const d=el('div','iris',null,trans);A(d,[{width:'2400px',height:'2400px'},{width:'0px',height:'0px'}],TR,{ease:'cubic-bezier(.7,0,1,.7)'});},
+    in(){trans.replaceChildren();const d=el('div','iris',null,trans);A(d,[{width:'0px',height:'0px'},{width:'2400px',height:'2400px'}],.5,{ease:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>d.remove();ring(960,540,C.gold,1100,.5,18);}},
+  whiteout:{out(){cover('#fff',TR,'ease-in');},in(){clearTrans(.9);}},
+};
+
+/* ---------- アイコン ---------- */
+const svgI=(inner)=>`<svg viewBox="0 0 100 100" width="96" height="96">${inner}</svg>`;
+const ICON={
+  stack:c=>svgI(`<g fill="none" stroke="${c}" stroke-width="7" stroke-linejoin="round"><path d="M50 12 88 32 50 52 12 32Z"/><path d="M12 50 50 70 88 50"/><path d="M12 68 50 88 88 68"/></g>`),
+  db:c=>svgI(`<g fill="none" stroke="${c}" stroke-width="7"><ellipse cx="50" cy="22" rx="32" ry="11"/><path d="M18 22v56c0 6 14 11 32 11s32-5 32-11V22"/><path d="M18 50c0 6 14 11 32 11s32-5 32-11"/></g>`),
+  arch:c=>svgI(`<g fill="none" stroke="${c}" stroke-width="7" stroke-linejoin="round"><path d="M12 40 50 14 88 40Z"/><path d="M24 46v32M42 46v32M58 46v32M76 46v32"/><path d="M10 86h80"/></g>`),
+  flag:c=>svgI(`<g fill="none" stroke="${c}" stroke-width="7" stroke-linejoin="round"><path d="M26 92V10"/><path d="M26 14h52L66 30l12 16H26"/></g>`),
+  target:c=>svgI(`<g fill="none" stroke="${c}" stroke-width="7"><circle cx="50" cy="50" r="34"/><circle cx="50" cy="50" r="18"/><path d="M50 6v16M50 78v16M6 50h16M78 50h16"/></g><circle cx="50" cy="50" r="6" fill="${c}"/>`),
+  q:c=>svgI(`<text x="50" y="80" text-anchor="middle" font-size="84" font-family="Orbitron,sans-serif" font-weight="900" fill="${c}">?</text>`),
+};
+
+/* =========================================================
+   シーン定義（dur=尺、trans=退場トランジション、hud=HUD表示）
+   テキストの出典：アイティソリューションズ株式会社 リクルーティングサイト
+   ========================================================= */
+const SL=[
+/* ---- 01 HOOK：ショート動画の掴み ---- */
+{id:'hook',dur:b(16),trans:'zoom',hud:false,build(){
+  bgSolid('#16000a');const rays=bgRays('rgba(255,43,61,.5)','rgba(0,0,0,0)',5);bgVig();ambient(C.red,40);hype(0);
+  let big,cap;const qs=[],chips=[];
+  at(.05,()=>{big=P(scene,960,440,'num h100 chroma','100<span class="pc">%</span>');A(big,K.slam(4.2),.26,{ease:'cubic-bezier(.5,0,.75,1)'});});
+  at(.24,()=>{shake(34,.5);flash('#fff',.22,.9);burst(960,440,{n:150});ring(960,440,C.gold,1100,.6);invert(.07);});
+  at(.62,()=>{cap=P(scene,960,890,'cap','↑ これ、何の数字かわかる？');A(cap,K.pop(-2),.34);punch(1.03,.25);});
+  [[330,250,-14],[1590,240,12],[180,560,8],[1770,560,-10],[600,100,6],[1340,100,-6]].forEach(([x,y,r],j)=>at(.95+j*.07,()=>{const q=P(scene,x,y,'imp q sk','<span>？</span>');q.style.color=j%2?C.gold:C.pink;A(q,K.pop(r),.25);A(q.firstChild,[{transform:'translateY(0)'},{transform:'translateY(-22px)'}],.4,{iter:Infinity,dir:'alternate',ease:'ease-in-out'});qs.push(q);}));
+  at(1.6,()=>{big.classList.add('gl');glitch(.3,8);});
+  at(1.95,()=>big.classList.remove('gl'));
+  [['HINT 1','大手企業'],['HINT 2','企画から参画'],['HINT 3','どんなスキルでも']].forEach(([h,t],j)=>at(2.4+j*.4,()=>{const c=P(scene,420+j*540,720,'chip',`<small>${h}</small>${t}`);c.style.setProperty('--cc',[C.cyan,C.gold,C.pink][j]);A(c,K.fromY(80),.25);burst(420+j*540,720,{n:30,s0:200,s1:700,g:300});punch(1.02,.2);chips.push(c);}));
+  at(4.0,()=>{[cap,...qs,...chips].forEach(n=>n&&A(n,[{opacity:1},{opacity:.12}],.25,{fill:'forwards',comp:'replace'}));rays.getAnimations().forEach(a=>a.updatePlaybackRate(.25));const d=P(scene,960,170,'bd ans','答えは——');A(d,K.fade,.3);});
+  at(4.4,()=>punch(1.03,.3));at(4.8,()=>punch(1.04,.3));
+  at(5.2,()=>{A(big,[{transform:'scale(1)'},{transform:'scale(1.35)'}],.8,{ease:'cubic-bezier(.5,0,1,1)',fill:'forwards'});E.mode={k:'speed',x:960,y:440,c:'#fff',a:.45,n:50,r0:380};});
+}},
+/* ---- 02 TITLE：アニメOPの高速カット ---- */
+{id:'title',dur:b(20),trans:'shatter',hud:true,build(){
+  bgSolid('#000');ambient(C.cyan,30);hype(.2);
+  const CUTS=[
+    c=>{c.style.background=C.cyan;const t=P(c,960,540,'imp','新しい技術');t.style.cssText+=';font-size:250px;color:#070612';A(t,[{transform:'translateX(1400px) rotate(-7deg)'},{transform:'translateX(-40px) rotate(-7deg)',offset:.5},{transform:'translateX(0) rotate(-7deg)'}],.3);},
+    c=>{const top=el('div','half ht',null,c),bot=el('div','half hb',null,c);top.style.background=C.pink;bot.style.background='#070612';const t1=P(top,1000,270,'imp','サービス');t1.style.cssText+=';font-size:230px;color:#070612';const t2=P(bot,920,270,'imp','作りが');t2.style.cssText+=';font-size:230px;color:'+C.pink;A(top,[{transform:'translateX(-1920px)'},{transform:'translateX(0)'}],.2);A(bot,[{transform:'translateX(1920px)'},{transform:'translateX(0)'}],.2);},
+    c=>{c.style.background='#000';bgRays('rgba(255,210,26,.55)','rgba(0,0,0,0)',4,c);const t=P(c,960,540,'imp sk','大好き!!');t.style.cssText+=';font-size:330px;color:'+C.gold+';--sw:18px;--sc:'+C.red;A(t,K.slam(3),.2);shake(26,.3);burst(960,540,{n:80,colors:[C.gold,'#fff',C.orange]});},
+    c=>{c.style.background='#f6f7ff';c.style.perspective='1200px';const t=P(c,960,540,'imp','<span class="num">IT</span>の');t.style.cssText+=';font-size:380px;color:#070612';A(t,[{transform:'rotateY(55deg) scale(1.3)'},{transform:'rotateY(0deg) scale(1)'}],.28);},
+    c=>{c.style.background=C.violet;el('div','stripes',null,c);const t=P(c,960,540,'imp sk','プロフェッショナル');t.style.cssText+=';font-size:190px;color:#fff;--sw:12px';A(t,[{transform:'translateX(-500px) rotate(-10deg)'},{transform:'translateX(260px) rotate(-10deg)'}],.4,{ease:'linear'});},
+    c=>{c.style.background=C.red;const t=P(c,960,540,'imp sk','集団');t.style.cssText+=';font-size:560px;color:#fff;--sw:20px';A(t,[{transform:'scale(.45)'},{transform:'scale(1.12)'}],.4,{ease:'cubic-bezier(.1,.9,.3,1)'});punch(1.06,.3);},
+  ];
+  let prev=null;
+  CUTS.forEach((fn,j)=>at(j*.4,()=>{const c=el('div','cut',null,scene);fn(c);if(prev)prev.remove();prev=c;if(j)flash('#fff',.08,.35);hype(.2+j*.03);}));
+  at(2.4,()=>{if(prev)prev.remove();prev=null;const ln=el('div','streak',null,scene);A(ln,[{transform:'scaleX(0)',opacity:1},{transform:'scaleX(1)',opacity:1,offset:.6},{transform:'scaleX(1)',opacity:0}],.22,{ease:'ease-out'});});
+  at(2.55,()=>{bgL.replaceChildren();bgSolid('#0a0826');bgRays('rgba(123,77,255,.28)','rgba(0,0,0,0)',20);bgGrid('rgba(22,230,255,.5)',1.1);bgVig();});
+  [['I',650,'translateX(-1500px)'],['T',890,'translateY(-1000px)'],['Z',1190,'translateX(1500px)']].forEach(([ch,x,from],j)=>at(2.6+j*.15,()=>{const l=P(scene,x,372,'num logoL chroma',ch);A(l,[{transform:from+' scale(1.4)'},{transform:'translateX(0) scale(1)'}],.16,{ease:'cubic-bezier(.6,0,.9,.7)'});at(E.t+.16,()=>{burst(x,372,{n:40,s0:300,s1:900,g:400});shake(12,.2);});}));
+  at(3.08,()=>{flash('#fff',.3,.95);shake(36,.5);ring(960,372,C.cyan,1200,.6,20);ring(960,372,C.pink,900,.5,12);burst(960,372,{n:160});hype(.45);invert(.06);});
+  at(3.2,()=>{const n=P(scene,960,592,'bd coname','');typeOn(n,'アイティソリューションズ株式会社',E.t,.03);});
+  at(3.75,()=>sweep(372,380,.55));
+  at(4.0,()=>{band(150,-3,C.gold,'#070612','RECRUITING ▶ ENGINEERS WANTED ▶ ',-1,8);band(958,2,C.pink,'#fff','リクルーティングサイト ◆ ITのプロフェッショナル集団 ◆ ',1,10);shake(10,.2);});
+  at(4.8,()=>{const t=P(scene,960,702,'bd tg1','新しい技術やサービス作りが大好きな');A(t,K.fromY(40),.3);});
+  at(5.15,()=>{const t=P(scene,960,806,'imp tg2 sk','<span class="mk"></span><span class="tx">ITのプロフェッショナル集団</span>');A(t,K.slam(1.8),.25);A(t.querySelector('.mk'),[{transform:'scaleX(0)'},{transform:'scaleX(1)'}],.35,{delay:.15});punch(1.03,.25);burst(960,806,{n:50,s0:300,s1:900,colors:[C.gold,'#fff']});hype(.55);});
+  at(5.6,()=>A(rig,[{transform:'scale(1)'},{transform:'scale(1.045)'}],2.0,{ease:'linear',fill:'forwards'}));
+  at(6.0,()=>{const a=P(scene,250,430,'chip','<small>SINCE</small>1999.03');a.style.setProperty('--cc',C.gold);A(a,K.pop(-6),.25);const c=P(scene,1670,430,'chip','<small>OFFICE</small>東京・品川');c.style.setProperty('--cc',C.pink);A(c,K.pop(6),.25);});
+  at(6.5,()=>sweep(372,380,.55));
+}},
+/* ---- 03 VS：プライム案件100%の正体 ---- */
+{id:'vs',dur:b(24),trans:'glitch',hud:true,build(){
+  bgSolid('#1a0f00');const gr=bgRays('rgba(255,210,26,.55)','rgba(255,122,26,.12)',10);bgVig();ambient(C.gold,30);hype(.35);
+  const L=el('div','pnl pL',null,scene),R=el('div','pnl pR',null,scene);el('div','stripes',null,L);el('div','stripes',null,R);
+  A(L,[{transform:'translateX(-1300px)'},{transform:'translateX(0)'}],.28,{ease:'cubic-bezier(.6,0,.3,1)'});
+  A(R,[{transform:'translateX(1300px)'},{transform:'translateX(0)'}],.28,{ease:'cubic-bezier(.6,0,.3,1)'});
+  let vs,flick,gauge,gfill,gnum;
+  at(.3,()=>shake(24,.35));
+  at(.36,()=>{vs=P(scene,960,610,'num vs sk','VS');A(vs,K.slam(5),.22,{ease:'cubic-bezier(.5,0,.75,1)'});});
+  at(.55,()=>{flash('#fff',.2,.8);burst(960,610,{n:120,colors:['#fff',C.gold,C.cyan]});ring(960,610,'#fff',1000,.5);bolt();invert(.06);});
+  at(.8,()=>{[P(L,420,250,'num plab','PLAYER'),P(L,420,360,'imp ptl sk','あなたの'),P(L,420,490,'imp ptb sk','スキル')].forEach((n,j)=>A(n,K.fromX(-300),.25,{delay:j*.06}));});
+  at(.95,()=>{[P(R,1510,250,'num plab','STAGE'),P(R,1510,370,'imp ptl sk','大手企業との'),P(R,1510,490,'imp ptb r sk','プライム案件')].forEach((n,j)=>A(n,K.fromX(300),.25,{delay:j*.06}));});
+  at(1.0,()=>{flick=P(L,400,650,'bd flick','？？？');A(flick,K.pop(),.2);});
+  const SK=['フロントエンド','バックエンド','インフラ','データベース','クラウド','マネジメント','？？？'];
+  tw(1.1,3.7,p=>{if(flick)flick.textContent=SK[Math.floor(p*40)%SK.length];},lin);
+  at(4.85,()=>{flick.textContent='どんなスキルでも';flick.style.borderColor=C.gold;A(flick,K.pop(),.2);});
+  at(1.2,()=>{gauge=P(scene,960,900,'gbox','<span class="num glab">MATCHING</span><div class="gauge"><i></i></div><span class="num gnum">0%</span>');gfill=gauge.querySelector('i');gnum=gauge.querySelector('.gnum');A(gauge,K.fromY(120),.25);});
+  const setG=v=>{gfill.style.width=v+'%';gnum.textContent=Math.floor(v)+'%';};
+  tw(1.4,2.0,p=>setG(87*p),eo3);
+  tw(3.4,1.0,p=>{setG(87+12*p);if(Math.random()<.3)burst(960,900,{n:3,s0:100,s1:400,g:200});},lin);
+  at(3.4,()=>hype(.55));
+  at(4.4,()=>{gnum.classList.add('warn');[L,R].forEach(n=>A(n,[{filter:'brightness(1)'},{filter:'brightness(.45)'}],.2,{fill:'forwards'}));const d=P(scene,960,760,'bd ans','……');A(d,K.fade,.2);at(E.t+.55,()=>unpin(d));A(rig,[{transform:'scale(1)'},{transform:'scale(1.07)'}],.6,{ease:'linear',fill:'forwards'});});
+  at(4.55,()=>punch(1.02,.2));at(4.8,()=>punch(1.03,.2));
+  at(5.0,()=>{setG(100);rig.getAnimations().forEach(a=>a.cancel());flash('#fff',.4,1);shake(48,.7);invert(.08);ring(960,520,C.gold,1300,.7,24);ring(960,520,'#fff',900,.5,12);burst(960,520,{n:260,s0:500,s1:2000});confetti(960,560,90,-Math.PI/2,1.3);hype(.75);
+    A(L,[{transform:'translateX(0)'},{transform:'translateX(-1500px) rotate(-8deg)'}],.45,{ease:'cubic-bezier(.3,0,.7,1)',fill:'forwards'});
+    A(R,[{transform:'translateX(0)'},{transform:'translateX(1500px) rotate(8deg)'}],.45,{ease:'cubic-bezier(.3,0,.7,1)',fill:'forwards'});
+    A(vs,[{transform:'scale(1)',opacity:1},{transform:'scale(4)',opacity:0}],.35,{fill:'forwards'});A(gauge,K.out,.2,{fill:'forwards'});
+    gr.getAnimations().forEach(a=>a.updatePlaybackRate(2.5));
+    const t=P(scene,960,200,'imp r1 sk','大手企業との<span class="hl">プライム案件</span>');A(t,K.slam(2),.25,{delay:.15});
+    const n=P(scene,960,480,'num r100 sk','100<span class="pc">%</span>');A(n,K.slam(3.4),.3);});
+  at(6.0,()=>{const c=P(scene,960,770,'cap y','どんなスキルを持っていても<br><em>必ずプライム案件にアサイン</em>');A(c,K.pop(-1.5),.3);punch(1.03,.25);});
+  at(7.0,()=>{const s=P(scene,1730,560,'sticker','<b class="num">ANSWER!!</b><span>さっきの100%の正体</span>');A(s,K.pop(10),.3);burst(1730,560,{n:40,colors:[C.pink,'#fff']});});
+  at(7.8,()=>{const row=P(scene,960,955,'flow','');['企画から参画','開発','保守','長期的に伴走'].forEach((f,j)=>{if(j){const a=el('span','farr','▶',row);A(a,K.fade,.15,{delay:j*.22-.05});}const s=el('span','fstep',f,row);A(s,K.fromX(-60),.2,{delay:j*.22});});});
+  at(8.6,()=>hype(.7));
+}},
+/* ---- 04 SALARY：パチンコ的な煽り ---- */
+{id:'salary',dur:b(32),trans:'split',hud:true,build(){
+  const base=bgSolid('#030208');ambient('#886655',20);hype(.15);
+  let q1,q2,heat,cells=[],rays,num,numW;const gg=[];
+  at(.2,()=>{q1=P(scene,960,440,'bd qtx','');typeOn(q1,'この会社の……',E.t,.07);});
+  at(1.0,()=>{q2=P(scene,960,560,'bd qtx big','');typeOn(q2,'平均年収は？',E.t,.07);});
+  at(1.8,()=>{const e=el('div','edge',null,scene);A(e,[{opacity:0},{opacity:1},{opacity:.2},{opacity:.9},{opacity:0}],.7,{ease:'linear'}).onfinish=()=>e.remove();const s=P(scene,1720,860,'imp sfx sk','！？');A(s,K.pop(8),.2);gg.push(s);});
+  at(2.2,()=>{for(let j=0;j<3;j++){for(const [x,r] of [[170,-10],[1750,10]]){const a=P(scene,x,300+j*190,'imp gogo sk','ゴ');A(a,K.pop(r),.2,{delay:j*.08});A(a.parentNode,[{transform:'translate(-50%,-50%)'},{transform:'translate(calc(-50% + 6px),calc(-50% - 4px))'}],.08,{iter:Infinity,dir:'alternate',ease:'steps(2)'});gg.push(a);}}});
+  at(2.4,()=>{base.style.background='#1a0005';rays=bgRays('rgba(255,43,61,.35)','rgba(0,0,0,0)',8);bgVig();A(q1,[{transform:'none'},{transform:'translateY(-270px) scale(.75)'}],.3,{fill:'forwards'});A(q2,[{transform:'none'},{transform:'translateY(-300px) scale(.8)'}],.3,{fill:'forwards'});shake(12,.3);});
+  at(2.8,()=>{heat=P(scene,960,560,'heatw','<span class="bd hlab">期待度</span><div class="heat">'+'<i></i>'.repeat(5)+'</div>');cells=[...heat.querySelectorAll('.heat i')];A(heat,K.fromY(60),.25);});
+  const HC=[['#2e7bff','期待度UP↑','#000a2a'],['#2bd96b','期待度UP↑','#001a0c'],['#ff2b3d','期待度UP↑↑','#2a0006'],['#ffd21a','期待度UP↑↑↑','#2a1c00'],[null,'MAX!!','#1a0030']];
+  HC.forEach(([c,label,bgc],j)=>at(3.2+j*.5,()=>{const cell=cells[j];if(c){cell.style.background=c;cell.style.boxShadow=`0 0 30px ${c}`;}else cell.classList.add('rbw');A(cell,K.pop(),.2);
+    const t=P(scene,960,400,'imp heatcut sk',label);t.style.color=c||'#fff';t.style.fontSize=(90+j*26)+'px';if(!c)t.classList.add('rbwt');A(t,[{transform:'scale(2.4)',opacity:0},{transform:'scale(1)',opacity:1,offset:.3},{transform:'scale(1)',opacity:1,offset:.8},{transform:'scale(1.1)',opacity:0}],.48,{ease:'ease-out'}).onfinish=()=>unpin(t);
+    shake(8+j*7,.3);punch(1.02+j*.012,.25);hype(.3+j*.13);const [x,y]=ctr(cell);burst(x,y,{n:20+j*20,s0:200,s1:800+j*200,colors:[c||C.gold,'#fff']});base.style.background=bgc;
+    if(j===4){flash('#fff',.25,.9);invert(.06);rays.classList.add('rb');rays.style.opacity=.55;}}));
+  at(5.75,()=>{[heat,q1,q2,...gg].forEach(n=>n&&A(n,K.out,.15,{fill:'forwards',comp:'replace'}));rays.style.opacity=.2;});
+  [3,2,1].forEach((n,j)=>at(5.8+j*.5,()=>{const d=P(scene,960,540,'num cd sk',String(n));A(d,[{transform:'scale(2.6)',opacity:0},{transform:'scale(1)',opacity:1,offset:.25},{transform:'scale(.92)',opacity:1,offset:.8},{transform:'scale(.6)',opacity:0}],.5,{ease:'ease-out'}).onfinish=()=>unpin(d);ring(960,540,[C.cyan,C.gold,C.red][j],1000,.45,18);invert(.05);shake(14+j*8,.25);base.style.background=['#001040','#301000','#400008'][j];}));
+  at(7.3,()=>{const w=P(scene,960,540,'cutin','<div class="cib"><span class="imp sk">平均年収</span></div>');A(w,[{transform:'translateX(-2600px) rotate(-8deg)'},{transform:'translateX(0) rotate(-8deg)',offset:.35},{transform:'translateX(60px) rotate(-8deg)',offset:.8},{transform:'translateX(2600px) rotate(-8deg)'}],.6,{ease:'linear'}).onfinish=()=>unpin(w);E.mode={k:'speed',x:960,y:540,c:'#fff',a:.35,n:40,r0:300};flash(C.gold,.2,.5);shake(20,.3);});
+  at(7.9,()=>{E.mode=null;base.style.background='#140008';rays.classList.remove('rb');rays.style.opacity=.35;const l=P(scene,960,230,'imp slab sk','平均年収');A(l,K.slam(2),.25);numW=P(scene,960,520,'salw','<span class="num sal sk">0.0</span><span class="imp unit sk">万円</span>');num=numW.querySelector('.sal');A(numW,[{transform:'scale(.7)'},{transform:'scale(1)'}],1.3,{ease:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});});
+  tw(8.0,1.3,p=>{num.textContent=(676.4*p).toFixed(1);if(Math.random()<.6)burst(rnd(560,1360),rnd(420,620),{n:3,s0:200,s1:700,g:300,colors:[C.gold,'#fff']});},eio3);
+  at(8.0,()=>{A(rig,[{transform:'translate(0px,0px)'},{transform:'translate(3px,-2px)'}],.05,{iter:26,dir:'alternate',fill:'none'});hype(.8);});
+  at(9.35,()=>A(numW,[{transform:'scale(1)'},{transform:'scale(.96)'}],.25,{fill:'forwards'}));
+  at(9.65,()=>{flash('#fff',.45,1);shake(52,.7);invert(.08);A(numW,[{transform:'scale(1.5)'},{transform:'scale(1)'}],.35,{ease:'cubic-bezier(.2,1.4,.4,1)',fill:'forwards'});numW.classList.add('hot');ring(960,520,C.gold,1300,.7,26);ring(960,520,C.red,900,.5,14);burst(960,520,{n:280,s0:500,s1:2100,colors:[C.gold,'#fff',C.orange,C.red]});confetti(200,1080,70,-1.2,.35);confetti(1720,1080,70,-1.94,.35);rays.classList.add('rb');rays.style.opacity=.35;rays.getAnimations().forEach(a=>a.updatePlaybackRate(2));hype(1);
+    const st=P(scene,1640,215,'imp atsu sk','激アツ!!');A(st,K.slam(3,-12),.25,{delay:.1});});
+  at(10.4,()=>{const u=P(scene,600,840,'upbox','<span class="bd">昇給 平均年額</span><span class="imp upv sk">20万円以上</span><span class="arr">↑↑↑</span>');A(u,K.fromY(200),.3);burst(600,840,{n:50,colors:[C.lime,'#fff']});});
+  at(11.0,()=>{const s=P(scene,1500,835,'starb',`<svg viewBox="0 0 360 360" width="320" height="320"><polygon points="${starPts(16,178,130,180,180)}" fill="${C.gold}" stroke="#000" stroke-width="8"/></svg><span class="imp">50万円昇給の<br>例も!!</span>`);A(s,K.pop(-8),.3);A(s.querySelector('svg'),[{transform:'rotate(0deg)'},{transform:'rotate(360deg)'}],6,{iter:Infinity,ease:'linear'});punch(1.03,.2);});
+  at(11.8,()=>sweep(520,340,.6));
+}},
+/* ---- 05 GUARANTEE：落ちものパズル ---- */
+{id:'guarantee',dur:b(26),trans:'invert',hud:true,build(){
+  bgSolid('#050a1c');bgGrid('rgba(123,77,255,.45)',1.4);bgVig();ambient(C.cyan,30);hype(.4);
+  const hdr=P(scene,960,128,'pix pwin','▶ 基本年俸 保証システム');A(hdr,[{transform:'scaleY(0)'},{transform:'scaleY(1)'}],.25,{ease:'steps(5)'});
+  let t16,lc,dm,sh,lm;
+  at(.4,()=>{t16=P(scene,960,300,'t16','<span class="bd">基本年俸を</span><span class="imp sk">16分割!!</span>');A(t16,K.slam(2),.25);shake(10,.2);});
+  const X0=117,PITCH=106,Y=600,row=el('div','row16',null,scene),blocks=[];
+  at(.8,()=>{for(let j=0;j<16;j++){const s=el('div','slot',null,row);s.style.left=(X0+j*PITCH)+'px';s.style.top=(Y-75)+'px';A(s,K.fade,.15,{delay:j*.02});}});
+  const drop=(j,cls,html,big,col)=>{const bk=el('div','blk '+cls,html,row);bk.style.left=(X0+j*PITCH)+'px';bk.style.top=(Y-75)+'px';A(bk,[{transform:'translateY(-900px)'},{transform:'translateY(0)',offset:.75},{transform:'translateY(-18px)',offset:.87},{transform:'translateY(0)'}],.24,{ease:'cubic-bezier(.5,0,1,1)'});at(E.t+.18,()=>{burst(X0+j*PITCH+48,Y+75,{n:big?40:14,s0:150,s1:big?900:500,g:600,ang:-Math.PI/2,spread:1.3,colors:[col,'#fff']});if(big){shake(14,.2);punch(1.02,.2);}});blocks.push(bk);};
+  at(1.2,()=>{lm=P(row,X0+5.5*PITCH+48,Y+140,'imp lab12 sk','月給 ×0');A(lm,K.fade,.2);});
+  for(let j=0;j<12;j++)at(1.2+j*.2,()=>{drop(j,'m12',`<b class="num">${j+1}</b><span>月給</span>`,false,C.cyan);lm.textContent=`月給 ×${j+1}`;if(j===11){A(lm,K.pop(),.2);hype(.5);}});
+  at(3.7,()=>drop(12,'su','<span class="imp">夏</span>',true,C.orange));
+  at(3.95,()=>{drop(13,'su','<span class="imp">夏</span>',true,C.orange);const l=P(row,X0+12.5*PITCH+48,Y+150,'bd lab2','夏季賞与<br><b>×2</b>');A(l,K.pop(),.2,{delay:.15});});
+  at(4.3,()=>drop(14,'wi','<span class="imp">冬</span>',true,C.pink));
+  at(4.55,()=>{drop(15,'wi','<span class="imp">冬</span>',true,C.pink);const l=P(row,X0+14.5*PITCH+48,Y+150,'bd lab2','冬季賞与<br><b>×2</b>');A(l,K.pop(),.2,{delay:.15});});
+  at(5.0,()=>{blocks.forEach((bk,j)=>A(bk,[{filter:'brightness(1)'},{filter:'brightness(2.2)'},{filter:'brightness(1)'}],.4,{delay:j*.015,fill:'none'}));for(let j=0;j<16;j++)burst(X0+j*PITCH+48,Y,{n:10,s0:200,s1:800,colors:['#fff',C.gold]});flash('#fff',.25,.7);shake(22,.35);A(t16,K.out,.15,{fill:'forwards',comp:'replace'});lc=P(scene,960,300,'num lclear sk','LINE CLEAR!!');A(lc,K.slam(2.5),.25);hype(.6);});
+  at(5.8,()=>{dm=el('div','dim',null,scene);A(dm,[{opacity:0},{opacity:.75}],.25,{fill:'forwards'});sh=P(scene,960,480,'imp shika sk','');typeOn(sh,'しかも……',E.t,.08);A(lc,K.out,.2,{fill:'forwards',comp:'replace'});});
+  at(6.45,()=>punch(1.03,.2));
+  at(6.7,()=>{A(dm,[{opacity:.75},{opacity:0}],.15,{fill:'forwards'});unpin(sh);A(row,[{transform:'none'},{transform:'translateY(150px) scale(.84)'}],.3,{fill:'forwards',ease:'cubic-bezier(.3,0,.2,1)'});const l=P(scene,960,215,'bd noreason','会社業績や個人実績に<em>関係なく</em>');A(l,K.fromY(-60),.25);});
+  at(7.05,()=>{const st=P(scene,960,455,'stamp','<span class="imp">保証支給</span><span class="num">GUARANTEED</span>');A(st,[{transform:'scale(3.2) rotate(-8deg)',opacity:0},{transform:'scale(.92) rotate(-8deg)',opacity:1,offset:.7},{transform:'scale(1) rotate(-8deg)',opacity:1}],.22,{ease:'cubic-bezier(.6,0,.9,.6)'});at(E.t+.2,()=>{flash('#fff',.3,.9);shake(44,.6);invert(.06);burst(960,455,{n:180,colors:[C.red,'#fff',C.gold],s0:400,s1:1700});ring(960,455,C.red,1100,.6,22);hype(.85);});});
+  at(8.4,()=>sweep(455,340,.55));
+  at(9.2,()=>{burst(300,450,{n:40,colors:[C.gold,'#fff']});burst(1620,450,{n:40,colors:[C.gold,'#fff']});punch(1.02,.2);});
+}},
+/* ---- 06 STATUS：RPGのステータス画面 ---- */
+{id:'status',dur:b(26),trans:'shutter',hud:true,build(){
+  bgSolid('#020822');bgGrid('rgba(22,230,255,.55)',.9);bgVig();ambient(C.cyan,40);hype(.45);
+  const win=el('div','win',null,scene);A(win,[{transform:'scaleY(.02) scaleX(.3)'},{transform:'scaleY(.02) scaleX(1)',offset:.4},{transform:'scale(1)'}],.35,{ease:'steps(8)'});
+  at(.3,()=>{const h=el('div','whead','<span class="pix">▶ STATUS</span><span class="pix wname"></span><span class="pix wsince">SINCE 1999.03</span>',win);typeOn(h.querySelector('.wname'),'アイティソリューションズ株式会社',E.t,.025);});
+  const ROWS=[['売上高',88409],['経常利益',13348],['技術者1人当り 年間平均売上',2017]];
+  const fmtYen=v=>{const n=Math.round(v),oku=Math.floor(n/10000),man=n%10000;return(oku?`<b class="num">${oku}</b><i class="imp">億</i><b class="num">${String(man).padStart(4,'0')}</b>`:`<b class="num">${man}</b>`)+'<i class="imp">万円</i>';};
+  const rows=ROWS.map(([l],j)=>{const r=el('div','wrow',`<span class="pix wl"><i>▶</i>${l}</span><span class="wv"></span><div class="wbar"><i></i></div>`,win);r.style.top=(150+j*170)+'px';r.style.opacity=0;return r;});
+  const showRow=(j,t0,dur,ease)=>{const v=rows[j].querySelector('.wv'),bar=rows[j].querySelector('.wbar i');at(t0,()=>{rows[j].style.opacity=1;A(rows[j],K.fromX(-80),.2);});tw(t0+.2,dur,p=>{v.innerHTML=fmtYen(ROWS[j][1]*p);bar.style.width=(p*100)+'%';if(j===2&&Math.random()<.5){const[x,y]=ctr(v);burst(x+rnd(-150,150),y,{n:3,s0:150,s1:500,g:200,colors:[C.gold,'#fff']});}},ease);if(j<2)at(t0+.2+dur,()=>{const[x,y]=ctr(v);burst(x,y,{n:40,s0:200,s1:900,colors:[C.cyan,'#fff']});punch(1.015,.15);});};
+  showRow(0,.7,1.1,eo3);showRow(1,2.3,1.0,eo3);
+  let so;
+  at(3.8,()=>{rows.slice(0,2).forEach(r=>A(r,[{opacity:1},{opacity:.3}],.3,{fill:'forwards',comp:'replace'}));so=P(scene,960,700,'pix soshite','そして……');A(so,K.fade,.2);});
+  at(4.4,()=>{unpin(so);rows[2].classList.add('hi');});
+  showRow(2,4.4,1.5,eio3);
+  at(4.6,()=>{A(rig,[{transform:'translate(0px,0px)'},{transform:'translate(2px,-2px)'}],.05,{iter:30,dir:'alternate',fill:'none'});hype(.7);});
+  at(6.2,()=>A(win,[{filter:'brightness(1)'},{filter:'brightness(.6)'}],.2,{fill:'forwards'}));
+  at(6.45,()=>{flash('#fff',.4,1);shake(50,.7);invert(.07);const d=el('div','dim',null,scene);A(d,[{opacity:0},{opacity:.86}],.2,{fill:'forwards'});
+    const big=P(scene,960,560,'critw','<span class="num crit sk">2017</span><span class="imp unit2 sk">万円</span>');A(big,K.slam(3),.28);
+    const cr=P(scene,960,300,'num crit2 sk','CRITICAL!!');A(cr,K.slam(2,-4),.25,{delay:.1});
+    const lb=P(scene,960,775,'bd critl','技術者1人当り 年間平均売上');A(lb,K.fromY(60),.25,{delay:.15});
+    burst(960,560,{n:260,s0:500,s1:2000,colors:[C.red,C.gold,'#fff']});ring(960,560,C.red,1300,.7,24);ring(960,560,C.gold,900,.5,12);hype(.95);});
+  at(7.8,()=>{const lv=P(scene,960,905,'pix lvup','▲ LEVEL UP!! ▲');A(lv,K.fromY(120),.3);burst(960,905,{n:60,colors:[C.lime,'#fff'],ang:-Math.PI/2,spread:.8,g:300});});
+  at(8.6,()=>punch(1.02,.2));at(9.1,()=>sweep(560,320,.5));
+}},
+/* ---- 07 BENEFITS：リズムゲームのCOMBO→FEVER ---- */
+{id:'benefits',dur:b(28),trans:'spin',hud:true,build(){
+  bgSolid('#0c0420');bgRays('rgba(255,46,138,.12)','rgba(0,0,0,0)',30);bgVig();ambient(C.pink,30);hype(.4);
+  E.mode={k:'hwy',notes:[],s:0};
+  const hdr=P(scene,770,165,'bhead','<span class="num">BENEFITS STAGE</span><span class="imp">福利厚生</span>');A(hdr,K.fromY(-100),.3);
+  const cmb=P(scene,1680,470,'combo','<span class="num cl">COMBO</span><span class="num cn">0</span>');const cn=cmb.querySelector('.cn');A(cmb,K.pop(6),.3);
+  const BEN=[['確定拠出年金制度',C.cyan],['書籍購入費用 <em>全額負担</em>',C.gold],['全社飲み会・チーム飲み会費用 <em>全額負担</em>',C.pink],['勤続10周年のお祝いと休暇制度',C.lime],['高度情報処理試験 資格手当制度',C.violet]];
+  const HIT=[.8,2.0,3.2,4.4,5.6],LANE=[1,3,0,4,2];
+  HIT.forEach((h,j)=>{E.mode.notes.push({lane:LANE[j],hit:h,c:BEN[j][1]});at(h,()=>{
+    const r=P(scene,770,330+j*112,'brow',`<span class="num no">${String(j+1).padStart(2,'0')}</span><span class="tt">${BEN[j][0]}</span><span class="num jd">PERFECT</span>`);r.style.setProperty('--rc',BEN[j][1]);A(r,[{transform:'translateX(1200px) skewX(-20deg)',opacity:0},{transform:'translateX(-30px) skewX(0deg)',opacity:1,offset:.7},{transform:'translateX(0) skewX(0deg)',opacity:1}],.24);
+    const lx=laneX(LANE[j]);burst(lx,JY,{n:60,ang:-Math.PI/2,spread:.9,s0:400,s1:1400,colors:[BEN[j][1],'#fff'],g:900});ring(lx,JY,BEN[j][1],300,.35,10);
+    const jd=P(scene,lx,880,'num judge sk','PERFECT!!');A(jd,[{transform:'scale(1.8)',opacity:0},{transform:'scale(1)',opacity:1,offset:.25},{transform:'translateY(-40px)',opacity:0}],.6).onfinish=()=>unpin(jd);
+    cn.textContent=j+1;A(cn,[{transform:'scale(1.8)',color:'#fff'},{transform:'scale(1)',color:BEN[j][1]}],.3);punch(1.025,.2);shake(8+j*3,.2);hype(.45+j*.1);});});
+  let fever;
+  at(6.3,()=>{scene.querySelectorAll('.brow').forEach(r=>A(r,[{filter:'brightness(1)'},{filter:'brightness(1.7)'}],.1,{dir:'alternate',iter:4,fill:'none'}));A(cmb,[{transform:'scale(1)'},{transform:'scale(1.15)'}],.1,{iter:4,dir:'alternate',fill:'none'});});
+  at(6.8,()=>{flash('#fff',.4,1);invert(.07);shake(46,.6);const rb=el('div','rays rb',null,bgL);rb.style.opacity=.45;rb.style.setProperty('--rs','5s');bgVig();
+    confetti(0,1080,120,-1.0,.4);confetti(1920,1080,120,-2.14,.4);burst(960,520,{n:240,s0:500,s1:2000});ring(960,520,C.gold,1300,.7,24);
+    fever=P(scene,960,520,'imp fever sk','FEVER!!');A(fever,K.slam(3.5,-6),.3);cn.classList.add('max');hype(1);});
+  at(7.9,()=>A(fever,[{transform:'translate(0px,0px) rotate(-6deg) scale(1)'},{transform:'translate(640px,380px) rotate(-6deg) scale(.36)'}],.35,{fill:'forwards',ease:'cubic-bezier(.5,0,.2,1)'}));
+  at(8.4,()=>scene.querySelectorAll('.brow em').forEach(e=>e.classList.add('blinkem')));
+  [8.8,9.6,10.3].forEach(t=>at(t,()=>{const k=Math.floor(rnd(0,5));burst(rnd(300,1300),330+k*112,{n:30,s0:200,s1:700,colors:[C.gold,'#fff']});}));
+}},
+/* ---- 08 CLASSES：キャラクター選択 ---- */
+{id:'classes',dur:b(26),trans:'iris',hud:true,build(){
+  bgSolid('#08030f');el('div','stripes',null,bgL).style.setProperty('--so','.05');bgVig();ambient(C.violet,30);hype(.45);
+  const h1=P(scene,960,122,'num selh sk','SELECT YOUR CLASS');A(h1,K.slam(2),.25);
+  at(.15,()=>{const h2=P(scene,960,204,'imp selh2','募集職種');A(h2,K.fromY(-40),.2);flash('#fff',.12,.4);});
+  const JOBS=[
+    {n:'フルスタックエンジニア',t:'ALL-ROUNDER',c:C.cyan,ic:'stack'},
+    {n:'データベーススペシャリスト',t:'DATA MASTER',c:C.gold,ic:'db'},
+    {n:'システムアーキテクト',t:'DESIGNER',c:C.lime,ic:'arch'},
+    {n:'プロジェクトマネージャー',t:'LEADER',c:C.pink,ic:'flag'},
+    {n:'<span class="tcy">IT</span>ストラテジスト',t:'STRATEGIST',c:C.orange,ic:'target'},
+    {n:'？？？',t:'???',c:'#8a8fb0',ic:'q'}];
+  const XS=JOBS.map((_,j)=>280+j*272);
+  const cards=JOBS.map((jb,j)=>{const c=el('div','ccard',`<div class="in"><div class="ic">${ICON[jb.ic](jb.c)}</div><div class="vname">${jb.n}</div><div class="num ctag">${jb.t}</div></div>`,scene);c.style.left=(XS[j]-125)+'px';c.style.top='290px';c.style.setProperty('--cc',jb.c);A(c,[{transform:'translateY(900px) skewX(-8deg) rotate(12deg)'},{transform:'translateY(0) skewX(-8deg) rotate(0deg)'}],.35,{delay:.2+j*.07,ease:'cubic-bezier(.2,.9,.3,1.15)'});return c;});
+  let cur,pn,pt,panel,sel=-1,curX=XS[0];
+  const HOT='skewX(-8deg) translateY(-16px) scale(1.08)',COLD='skewX(-8deg) translateY(0px) scale(1)';
+  const hover=(j,quiet)=>{if(sel>=0&&sel!==j)A(cards[sel],[{transform:HOT},{transform:COLD}],.12,{fill:'forwards'});if(sel!==j)A(cards[j],[{transform:COLD},{transform:HOT}],.12,{fill:'forwards'});A(cur,[{transform:`translateX(${curX}px)`},{transform:`translateX(${XS[j]}px)`}],.1,{fill:'forwards'});curX=XS[j];sel=j;
+    if(!quiet){pn.innerHTML=JOBS[j].n;pt.textContent='TYPE: '+JOBS[j].t;A(panel,K.fromX(-40),.15);burst(XS[j],300,{n:30,s0:200,s1:700,colors:[JOBS[j].c,'#fff']});punch(1.015,.15);}};
+  at(1.0,()=>{cur=el('div','curw','<div class="cur"><b>1P</b></div>',scene);panel=P(scene,960,955,'selp','<span class="num p1">1P ▶</span><span class="imp pn"></span><span class="num pt"></span>');pn=panel.querySelector('.pn');pt=panel.querySelector('.pt');A(panel,K.fromY(100),.2);hover(0);});
+  [1.8,2.6,3.4,4.2].forEach((t,k)=>at(t,()=>hover(k+1)));
+  const seq=[];{let t=5.0,dt=.055;while(t<6.55){seq.push(t);t+=dt;dt*=1.13;}}
+  const s0=((5-(seq.length-1))%6+6)%6;
+  at(5.0,()=>{pn.textContent='？？？';pt.textContent='';hype(.6);});
+  seq.forEach((t,k)=>at(t,()=>hover((s0+k)%6,true)));
+  at(seq[seq.length-1]+.05,()=>{pn.textContent='……？';});
+  at(6.95,()=>{A(cards[5],[{transform:HOT+' rotateY(0deg)'},{transform:HOT+' rotateY(90deg)'}],.1,{fill:'forwards'});
+    at(E.t+.1,()=>{cards[5].classList.add('you');cards[5].querySelector('.in').innerHTML='<div class="num youtx">YOU</div><div class="bd yousub">あなた</div>';A(cards[5],[{transform:HOT+' rotateY(-90deg)'},{transform:'skewX(-8deg) translateY(-16px) scale(1.12) rotateY(0deg)'}],.14,{fill:'forwards'});
+      flash('#fff',.3,.9);shake(36,.5);burst(XS[5],590,{n:180,colors:[C.gold,'#fff',C.pink]});ring(XS[5],590,C.gold,900,.5,18);pn.textContent='NEXT PLAYER：あなた';pt.textContent='TYPE: ???';hype(.8);});});
+  at(7.8,()=>{const bd=P(scene,960,560,'turn','<div class="turnb"><span class="imp sk">次は、あなたの番!!</span></div>');A(bd,[{transform:'translateX(-2600px) rotate(-6deg)'},{transform:'translateX(0) rotate(-6deg)'}],.25,{ease:'cubic-bezier(.2,.9,.3,1)'});shake(20,.3);burst(960,560,{n:80,colors:[C.pink,'#fff',C.violet]});});
+  at(8.8,()=>sweep(560,260,.5));
+}},
+/* ---- 09 ORIGIN：代表のEPISODE 0（アニメOPの回想カット） ---- */
+{id:'origin',dur:b(32),trans:'whiteout',hud:true,build(){
+  bgSolid('#050508');ambient('#999999',20);hype(.35);
+  const lb=[el('div','lbx t',null,scene),el('div','lbx b',null,scene)];
+  let prev=null;
+  const cut=(t,fn)=>at(t,()=>{const c=el('div','cut',null,scene);fn(c);if(prev)prev.remove();prev=c;flash('#fff',.08,.3);});
+  cut(0,c=>{c.style.background='#07070c';const e=P(c,960,410,'num ep','EPISODE 0');A(e,[{letterSpacing:'1em',opacity:0},{letterSpacing:'.5em',opacity:1}],.6);const r=P(c,960,520,'bd eprole','代表取締役社長');A(r,K.fade,.4,{delay:.2});const n=P(c,960,640,'imp epname','岡田 成規');A(n,K.fromY(40),.4,{delay:.3});});
+  cut(.8,c=>{c.style.background='#0b1a3a';const t=P(c,960,540,'bd cutbig','高校卒業後——');A(t,K.fromX(-200),.3);const ln=el('div','vline',null,c);A(ln,[{transform:'translateX(0px)'},{transform:'translateX(1920px)'}],.6,{ease:'linear'});});
+  cut(1.6,c=>{const L=el('div','halfv l',null,c),R=el('div','halfv r',null,c);L.style.background=C.pink;R.style.background='#07060f';P(L,480,540,'num ten','10');P(R,480,410,'imp tenl','年間');P(R,480,580,'imp tenb sk','バンドマン');A(L,[{transform:'translateY(-1080px)'},{transform:'translateY(0)'}],.18);A(R,[{transform:'translateY(1080px)'},{transform:'translateY(0)'}],.18);[['♪',140,220],['♫',820,250],['♪',760,830]].forEach(([m,x,y])=>{const q=P(R,x,y,'imp note',m);A(q,[{transform:'translateY(20px) rotate(-10deg)'},{transform:'translateY(-20px) rotate(10deg)'}],.4,{iter:2,dir:'alternate'});});shake(18,.25);});
+  cut(2.4,c=>{c.style.background='#15151d';E.mode={k:'rain'};const g=el('div','full',null,c);g.style.transform='rotate(-4deg)';const a=P(g,960,400,'agew','<span class="num age">32</span><span class="imp agek">歳</span>');A(a,K.fromY(-60),.25);const t=P(g,960,640,'imp cutmid sk','バンドマンから足を洗う');A(t,K.fade,.3,{delay:.1});});
+  cut(3.2,c=>{c.style.background='#001a14';E.mode={k:'code'};const a=P(c,960,380,'agew','<span class="num age" style="color:var(--cyan)">33</span><span class="imp agek">歳</span>');A(a,K.slam(1.6),.2);const t=P(c,960,600,'imp cutmid sk','プログラミングを');A(t,K.fromX(200),.2,{delay:.08});const t2=P(c,960,740,'imp cutbig2 sk','独学スタート');t2.style.color=C.cyan;A(t2,K.fromX(-200),.2,{delay:.16});});
+  cut(4.0,c=>{E.mode=null;c.style.background='#1a1000';bgRays('rgba(255,210,26,.5)','rgba(0,0,0,0)',6,c);const a=P(c,960,380,'imp pass1 sk','情報処理二種');A(a,K.fromY(-80),.2);const t=P(c,960,640,'imp pass2 sk','合格!!');A(t,K.slam(3,-6),.22,{delay:.15});at(E.t+.35,()=>{flash('#fff',.25,.8);shake(34,.45);burst(960,640,{n:160,colors:[C.gold,'#fff',C.red]});confetti(960,700,60,-Math.PI/2,1);});});
+  cut(4.8,c=>{c.style.background='#040b2a';bgGrid('rgba(22,230,255,.5)',1,c);c.style.perspective='1400px';const w=el('div','full flexc',null,c);w.innerHTML='<div class="bd cutmid2">未経験で</div><div class="imp cutsoft sk">独立系ソフトウェアハウスに</div><div class="imp cutjob sk">就職</div>';A(w,[{transform:'translateX(900px) rotateY(-40deg)'},{transform:'translateX(0px) rotateY(0deg)'}],.3);});
+  cut(5.6,c=>{c.style.background='#000';const t=P(c,960,540,'bd cutbig','');typeOn(t,'そして——',E.t,.09);});
+  at(6.0,()=>punch(1.03,.25));at(6.2,()=>punch(1.04,.25));
+  cut(6.4,c=>{c.style.background='#fff';bgRays('rgba(255,210,26,.6)','rgba(255,255,255,0)',10,c);const t=P(c,960,470,'imp pres sk','代表取締役社長');A(t,K.slam(2.6),.25);const n=P(c,960,680,'bd presn','岡田 成規');A(n,K.fromY(40),.25,{delay:.15});flash('#fff',.4,1);shake(40,.55);burst(960,470,{n:180,colors:[C.gold,C.orange,'#fff']});hype(.6);});
+  cut(7.4,c=>{c.style.background='#0a0630';bgRays('rgba(123,77,255,.3)','rgba(0,0,0,0)',16,c);bgGrid('rgba(255,46,138,.45)',1,c);bgVig(c);lb.forEach((x,j)=>A(x,[{transform:'translateY(0px)'},{transform:`translateY(${j?120:-120}px)`}],.3,{fill:'forwards'}));const t=P(c,960,280,'bd kakageru','');typeOn(t,'掲げるのは——',E.t,.07);});
+  at(8.0,()=>{const t=P(prev,960,470,'imp secore chroma sk','SE中心主義経営');A(t,K.slam(3.2),.25);at(E.t+.2,()=>{flash('#fff',.4,1);shake(46,.6);invert(.07);ring(960,470,C.cyan,1200,.6,22);ring(960,470,C.pink,900,.5,14);burst(960,470,{n:240});hype(.9);});});
+  at(9.2,()=>{const c2=P(prev,960,680,'chip big','公正な人事給与評価制度');c2.style.setProperty('--cc',C.cyan);A(c2,K.pop(),.25);punch(1.02,.2);});
+  at(9.9,()=>{const a=P(prev,960,800,'bd envl','エンジニア一人ひとりの実力が発揮できる');A(a,K.fromY(40),.25);const t=P(prev,960,890,'imp envb sk','最高の職場環境');A(t,K.slam(1.8),.25,{delay:.2});at(E.t+.4,()=>{burst(960,890,{n:60,colors:[C.gold,'#fff']});punch(1.02,.2);});});
+  at(11.0,()=>sweep(470,300,.6));at(11.8,()=>sweep(890,160,.5));
+}},
+/* ---- 10 RESULT：リザルト→最大の山場 ---- */
+{id:'result',dur:b(44),trans:null,hud:false,build(){
+  bgSolid('#040308');const g=bgGrid('rgba(255,210,26,.35)',1.6);bgVig();ambient(C.gold,50);
+  const L1=el('div','full',null,scene);
+  const mc=P(L1,960,500,'mcw','');
+  ['MISSION','COMPLETE'].forEach((w,wi)=>{const line=el('div','num mc sk',null,mc);[...w].forEach((ch,j)=>{const s=el('span',null,ch,line);A(s,[{transform:'translateY(-300px) scale(2)',opacity:0},{transform:'translateY(0px) scale(1)',opacity:1}],.18,{delay:.05+(wi*7+j)*.04,ease:'cubic-bezier(.5,0,.7,1.3)'});});});
+  at(.75,()=>{flash('#fff',.3,.9);shake(30,.45);burst(960,500,{n:180,colors:[C.gold,'#fff',C.cyan]});ring(960,500,C.gold,1200,.6,20);});
+  at(1.3,()=>A(mc,[{transform:'translateY(0px) scale(1)'},{transform:'translateY(-355px) scale(.42)'}],.35,{fill:'forwards',ease:'cubic-bezier(.5,0,.2,1)'}));
+  const RES=[
+    ['大手企業とのプライム案件',p=>Math.round(100*p)+'%'],
+    ['平均年収',p=>(676.4*p).toFixed(1)+'<small>万円</small>'],
+    ['昇給 平均年額',p=>Math.round(20*p)+'<small>万円以上</small>'],
+    ['基本年俸',null,'保証支給'],
+    ['技術者1人当り 年間平均売上',p=>Math.round(2017*p)+'<small>万円</small>'],
+    ['福利厚生',null,'FEVER!!'],
+  ];
+  RES.forEach(([lab,f,txt],j)=>at(1.7+j*.45,()=>{const r=el('div','rrow',`<span class="lb">${lab}</span><span class="ld"></span><span class="vl"></span>`,L1);r.style.top=(290+j*84)+'px';A(r,K.fromX(400),.2);const v=r.querySelector('.vl');if(f)tw(E.t+.05,.35,p=>{v.innerHTML=f(p);},eo3);else{v.innerHTML=txt;if(/[^\x00-\x7f]/.test(txt))v.classList.add('txt');A(v,K.pop(),.2,{delay:.1});}at(E.t+.42,()=>{const[x,y]=ctr(v);burst(x,y,{n:24,s0:150,s1:700,colors:[C.gold,'#fff']});punch(1.012,.12);});}));
+  let rk,saigo;
+  at(4.6,()=>{const box=P(L1,1690,520,'rankbox','<span class="num rl">RANK</span><span class="num rv sk">?</span>');rk=box.querySelector('.rv');A(box,K.pop(),.25);});
+  tw(4.8,1.1,p=>{rk.textContent='DCBA'[Math.floor(p*26)%4];},lin);
+  [5.0,5.3,5.6].forEach((t,k)=>at(t,()=>punch(1.01+k*.01,.15)));
+  at(6.0,()=>{rk.textContent='S';rk.classList.add('rs');A(rk,K.slam(3),.25);flash('#fff',.35,1);shake(40,.55);invert(.07);burst(1690,560,{n:200,colors:[C.gold,'#fff',C.orange]});ring(1690,560,C.gold,1000,.6,20);confetti(1690,600,60,-Math.PI/2,1.1);});
+  at(7.1,()=>{A(L1,[{opacity:1,transform:'scale(1)'},{opacity:.12,transform:'scale(.94)'}],.5,{fill:'forwards'});A(g,[{opacity:1},{opacity:.25}],.5,{fill:'forwards'});E.charge=true;saigo=P(scene,960,540,'bd saigo','');typeOn(saigo,'最後に——',E.t+.2,.1);});
+  [7.6,8.0,8.4,8.8].forEach((t,k)=>at(t,()=>{punch(1.02+k*.012,.28);ringIn(960,540,[C.cyan,C.pink,C.gold,'#fff'][k],1100,.45,10);}));
+  at(9.0,()=>A(saigo,[{transform:'scale(1)',opacity:1},{transform:'scale(.2)',opacity:0}],.2,{fill:'forwards',ease:'ease-in'}));
+  at(9.2,()=>{E.charge=false;L1.remove();unpin(saigo);flash('#fff',.7,1);shake(64,.9);invert(.1);const rb=el('div','rays rb',null,bgL);rb.style.opacity=.4;rb.style.setProperty('--rs','7s');bgVig();
+    burst(960,540,{n:420,s0:600,s1:2600,colors:[C.gold,C.cyan,C.pink,C.lime,'#fff',C.orange]});ring(960,540,'#fff',1500,.8,30);ring(960,540,C.gold,1200,.7,20);ring(960,540,C.pink,900,.6,12);
+    confetti(0,1080,150,-1.0,.45);confetti(1920,1080,150,-2.14,.45);confetti(960,-20,120,Math.PI/2,1.2,200,700);E.mode={k:'speed',x:960,y:500,c:'#fff',a:.16,n:30,r0:700};});
+  at(9.45,()=>{const a=P(scene,960,200,'bd fin1 sk','今まで培った経験を');A(a,K.fromY(-60),.25);});
+  at(9.85,()=>{const a=P(scene,960,305,'bd fin1 sk','大手クライアントとの');A(a,K.fromY(-60),.25);});
+  at(10.3,()=>{const f=P(scene,960,500,'imp fin2 sk','プライム案件で');A(f,K.slam(3.4),.28);at(E.t+.24,()=>{flash('#fff',.3,.8);shake(40,.5);burst(960,500,{n:200,colors:[C.gold,'#fff',C.orange]});ring(960,500,C.gold,1300,.6,22);});});
+  at(11.1,()=>{const a=P(scene,960,700,'imp fin3 sk','活用してみませんか？');A(a,K.slam(1.8),.25);punch(1.03,.2);});
+  at(12.0,()=>{E.mode=null;const lg=P(scene,960,850,'finlogo','<span class="num flg">ITZ</span><span class="bd fco">アイティソリューションズ株式会社</span>');A(lg,K.fromY(60),.3);});
+  at(12.5,()=>{const en=P(scene,960,960,'entry','<a href="https://www.itsol.co.jp/recruitment/index.html" target="_blank" rel="noopener">ENTRY ▶ <span>www.itsol.co.jp/recruitment/</span></a>');A(en,K.pop(),.3);A(en.firstChild,[{transform:'scale(1)'},{transform:'scale(1.05)'}],.4,{iter:Infinity,dir:'alternate',ease:'ease-in-out',delay:.3});});
+  [12.9,14.5,16.1].forEach(t=>at(t,()=>sweep(500,280,.7)));
+  [13.4,15.0,16.6].forEach(t=>at(t,()=>confetti(rnd(300,1620),-20,50,Math.PI/2,.8,150,500)));
+}},
+];
+
+/* ---------- 進行制御 ---------- */
+const starts=[];let TOTAL=0;for(const s of SL){starts.push(TOTAL);TOTAL+=s.dur;}
+const hudStage=$('#hudStage'),tc=$('#tc'),hypeEl=$('#hype'),hypeLbl=$('#hypeLbl'),cInfo=$('#cInfo'),bPlay=$('#bPlay'),pauseTag=$('#pauseTag');
+const segs=[];for(let j=0;j<12;j++)segs.push(el('i',null,null,hypeEl));
+const segCol=j=>j<4?C.cyan:j<8?C.gold:j<10?C.pink:C.red;
+{const T='◆ 大手企業とのプライム案件 100%　◆ 平均年収 676.4万円　◆ 昇給 平均年額 20万円以上　◆ 基本年俸は会社業績や個人実績に関係なく保証支給　◆ 技術者1人当り 年間平均売上 2017万円　◆ 募集職種：フルスタックエンジニア／データベーススペシャリスト／システムアーキテクト／プロジェクトマネージャー／ITストラテジスト　◆ アイティソリューションズ株式会社 リクルーティングサイト　';$('#tickerTape').innerHTML=`<span>${T}</span><span>${T}</span>`;}
+const pad2=n=>String(n).padStart(2,'0');
+const fmtT=s=>{const m=Math.floor(s/60),r=s-m*60;return pad2(m)+':'+r.toFixed(1).padStart(4,'0');};
+const elapsed=()=>starts[E.i]+Math.min(E.t,SL[E.i].dur);
+let hypeShown=-1;
+function hudStep(dt){E.hypeV+=(E.hype-E.hypeV)*Math.min(1,dt*6);const n=Math.round(E.hypeV*12);if(n!==hypeShown){hypeShown=n;segs.forEach((s,j)=>{s.style.background=j<n?segCol(j):'';s.style.boxShadow=j<n?`0 0 10px ${segCol(j)}`:'';});hypeLbl.textContent=n>=12?'MAX!!':'LV.'+Math.max(1,Math.ceil(n/12*9));}tc.textContent=fmtT(elapsed());}
+function info(){cInfo.textContent=`${pad2(E.i+1)}/${pad2(SL.length)} · ${fmtT(elapsed())} / ${fmtT(TOTAL)}${E.ended?' · END':''}`;}
+function ui(){bPlay.textContent=E.playing?'❚❚':'▶';bPlay.setAttribute('aria-label',E.playing?'一時停止':'再生');pauseTag.hidden=E.playing||!E.started;info();}
+
+function go(i,auto){
+  i=clamp(i,0,SL.length-1);
+  const inT=auto?SL[E.i].trans:null;
+  for(const n of [cam,rig])n.getAnimations().forEach(a=>a.cancel());
+  scene.replaceChildren();bgL.replaceChildren();fxo.replaceChildren();
+  if(!auto){trans.replaceChildren();PS.length=0;}
+  else{for(let j=PS.length-1;j>=0;j--)if(PS[j].amb){PS[j]=PS[PS.length-1];PS.pop();}}
+  E.i=i;E.t=0;E.ev=[];E.evi=0;E.tw=[];E.ended=false;E.amb=null;E.mode=null;E.charge=false;
+  const S=SL[i];
+  hud.classList.toggle('off',!S.hud);
+  hudStage.textContent=`STAGE ${pad2(i+1)}/${pad2(SL.length)}`;
+  S.build();
+  if(S.trans&&i<SL.length-1){const tr=S.trans;at(S.dur-TR,()=>TRANS[tr].out());}
+  (TRANS[inT]||TRANS.cut).in();
+  ui();
+}
+let last=null,infoT=0;
+function tick(ts){
+  requestAnimationFrame(tick);
+  const dt=last==null?0:Math.min(.1,(ts-last)/1000);last=ts;
+  if(!E.started||!E.playing)return;
+  if(!E.ended){
+    E.t+=dt;
+    while(E.evi<E.ev.length&&E.ev[E.evi].t<=E.t){const e=E.ev[E.evi++];try{e.fn();}catch(err){console.error(err);}}
+    for(const w of E.tw){if(w.done||E.t<w.t0)continue;const p=clamp((E.t-w.t0)/w.dur,0,1);try{w.fn(w.ease(p),p);}catch(err){console.error(err);w.done=true;}if(p>=1)w.done=true;}
+    if(E.t>=SL[E.i].dur){if(E.i<SL.length-1)go(E.i+1,true);else{E.ended=true;ui();}}
+  }
+  fxStep(dt);fxDraw();hudStep(dt);
+  infoT+=dt;if(infoT>.2){infoT=0;info();}
+}
+function pause(){if(!E.playing)return;E.playing=false;E.held=document.getAnimations().filter(a=>a.playState==='running'&&!(a.effect&&a.effect.target&&ctrl.contains(a.effect.target)));E.held.forEach(a=>a.pause());ui();}
+function resume(){if(E.playing)return;E.playing=true;E.held.forEach(a=>{try{a.play();}catch(e){}});E.held=[];last=null;ui();}
+function toggle(){if(E.ended){restart();return;}E.playing?pause():resume();}
+function jump(i){resume();go(i,false);}
+function next(){if(E.i<SL.length-1)jump(E.i+1);}
+function prev(){jump(E.t>1.5?E.i:E.i-1);}
+function restart(){jump(0);}
+function fs(){const d=document;try{if(d.fullscreenElement){const r=d.exitFullscreen();r&&r.catch&&r.catch(()=>{});}else if(d.documentElement.requestFullscreen){const r=d.documentElement.requestFullscreen();r&&r.catch&&r.catch(()=>{});}}catch(e){}}
+
+addEventListener('keydown',e=>{
+  if(e.altKey||e.ctrlKey||e.metaKey)return;
+  const k=e.key;
+  if(k===' '||k==='k'||k==='K'){e.preventDefault();toggle();}
+  else if(k==='ArrowRight'||k==='l'||k==='L'||k==='PageDown'){e.preventDefault();next();}
+  else if(k==='ArrowLeft'||k==='j'||k==='J'||k==='PageUp'){e.preventDefault();prev();}
+  else if(k==='r'||k==='R'||k==='Home'){e.preventDefault();restart();}
+  else if(k==='f'||k==='F'){e.preventDefault();fs();}
+  else if(/^[0-9]$/.test(k)){const n=k==='0'?9:parseInt(k,10)-1;if(n<SL.length)jump(n);}
+});
+const btn=(id,fn)=>$(id).addEventListener('click',e=>{e.stopPropagation();fn();e.currentTarget.blur();});
+btn('#bPrev',prev);btn('#bPlay',toggle);btn('#bNext',next);btn('#bRe',restart);btn('#bFs',fs);
+vp.addEventListener('click',e=>{if(e.target.closest('#ctrl')||e.target.closest('a'))return;const r=vp.getBoundingClientRect(),x=(e.clientX-r.left)/r.width;if(x<.22)prev();else if(x>.78)next();else toggle();});
+let hideT=0;
+const showCtrl=()=>{ctrl.classList.add('show');vp.classList.remove('idle');clearTimeout(hideT);hideT=setTimeout(()=>{if(!ctrl.matches(':hover')){ctrl.classList.remove('show');vp.classList.add('idle');}},2200);};
+vp.addEventListener('mousemove',showCtrl);vp.addEventListener('touchstart',showCtrl,{passive:true});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){if(E.started&&E.playing){pause();E.autoP=true;}}else if(E.autoP){E.autoP=false;resume();}});
+
+window.DOPA={slides:SL,go:jump,pause,resume,restart,get state(){return{i:E.i,id:SL[E.i].id,t:E.t,playing:E.playing,ended:E.ended,elapsed:elapsed(),total:TOTAL};}};
+
+/* ---------- 起動：フォントを読み込んでからAUTO再生 ---------- */
+async function boot(){
+  const warm=el('div','warm',null,document.body);const src=$('#main').textContent;
+  for(const [f,w] of [['var(--f-impact)',400],['var(--f-body)',900],['var(--f-body)',700],['var(--f-num)',900],['var(--f-num)',700],['var(--f-pixel)',400]]){const d=el('div',null,null,warm);d.style.fontFamily=f;d.style.fontWeight=w;d.textContent=src;}
+  void warm.offsetWidth;
+  try{await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,4000))]);}catch(e){}
+  warm.remove();
+  const m=/^#s(\d+)$/.exec(location.hash);
+  E.started=true;E.playing=true;go(m?clamp(parseInt(m[1],10)-1,0,SL.length-1):0,false);
+}
+requestAnimationFrame(tick);
+boot();
+})();
+</script>
+</body>
+</html>
