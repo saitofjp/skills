@@ -332,7 +332,7 @@ const BENCH = [
   {id: 'cwe',     n: 'CWE-bench v1',                    v: [68.0, 68.0, 58.0, 67.0], res: 'tie'},
 ];
 const B = Object.fromEntries(BENCH.map(b => [b.id, b]));
-const TICKER = ['Output token limit: 1M, up from 64K', 'Introductory price: $2 per 1M input tokens, $10 per 1M output tokens', 'After the intro period: $4 input, $20 output per 1M tokens', 'Cached input: 95% off the input price', 'Rolling out first to trusted cyber defenders through the Fairwind Program', 'Then paid API customers and Google AI Ultra subscribers', 'DeepSWE v1.1: 77.9%, a new state of the art', 'AutomationBench: #1 at 51.3%', 'LVBench: 91.7%, state of the art', 'CWE-bench v1: 68%, three-way tie for first', 'Real-world vulnerability discovery: 85.8%', 'Gray Swan IPI: 0.7% attack success at k=15, the lowest', 'Over 300 TiB of memory freed across Google data centers', 'libgav1: 2.7x faster than the Rust port'];
+const TICKER = ['Output token limit: 1M, up from 64K', 'Introductory price: $2 per 1M input tokens, $10 per 1M output tokens', 'After the intro period: $4 input, $20 output per 1M tokens', 'Cached input: 95% off the input price', 'Rolling out first to trusted cyber defenders through the Fairwind Program', 'Then paid API customers and Google AI Ultra subscribers', 'DeepSWE v1.1: 77.9%, a new state of the art', 'AutomationBench: #1 at 51.3%', 'LVBench: 91.7%, state of the art', 'CWE-bench v1: 68%, three-way tie for first', 'Real-world vulnerability discovery: 85.8%', 'Gray Swan IPI: 0.7% attack success at k=15, the lowest', 'Over 300 TiB of memory freed across Google data centers', 'Quantum: beat the published baseline by 40% in minutes', 'libgav1: 2.7x faster than the Rust port'];
 
 /* ---------- basics ---------- */
 const $ = s => document.querySelector(s);
@@ -1137,22 +1137,7 @@ const SLIDES = [
   });
 }},
 
-/* 08 INSIDE: quantum, one quick cut */
-{genre: 'INSIDE', dur: 5.4, bg: {mode: 'dark', hue: 250, energy: .4}, trans: 'wipe', build(c) {
-  const r = c.root;
-  const L = h('div', 'full', null, r, {background: 'linear-gradient(160deg,#2a1260,#0b0620 70%)'});
-  c.at(0, () => { A(L, [{transform: 'translateY(-100%)'}, {transform: 'none'}], .3, OUT); flash('#ffffff', .2, .5); shake(16, .25); });
-  c.at(.3, () => { const m = P(L, CX, 190, 'mchip', 'INSIDE GOOGLE · QUANTUM', {color: 'var(--ar)'}); fx.pop(m); });
-  c.at(.5, () => { const s = P(L, CX, 290, 'bd', 'Optimizing the spacetime resources (qubits × gates) of quantum subroutines', {fontSize: '36px', color: '#fff'}); fx.from(s, {y: 20, dur: .3}); });
-  c.at(1.1, () => { const s = P(L, CX, 390, 'bk', 'Beat the published baseline by', {fontSize: '44px', color: '#d9caff'}); fx.from(s, {x: -40, dur: .25}); });
-  let n40;
-  c.at(1.4, () => { n40 = P(L, CX, 590, 'disp tabnum', '0' + PCT, {fontSize: '320px', color: '#fff'}); count(c, n40, 40, .45, {dec: 0, suf: PCT}); });
-  c.at(1.9, () => { n40.classList.add('goldx'); fx.slam(n40, {from: 1.6, dur: .22}); flash('#ffd23f', .3, .6); shake(30, .4); punch(.05); FX.burst(CX, 590, {n: 140, colors: ['#ffd23f','#ffffff','#b38cff'], speed: [400, 1600]}); });
-  c.at(2.15, () => { const b = P(L, CX, 820, 'band-gold', '<div>IN MINUTES</div>'); fx.from(b, {x: -300, dur: .25}); shake(14, .2); });
-  c.at(2.5, () => { const s = P(L, CX, 925, 'bd', "Google doesn't name the baseline in the announcement", {fontSize: '22px', color: '#c9b8f2'}); fx.from(s, {dur: .3}); });
-}},
-
-/* 09 CYBER: find / validate / patch + Google's cyber numbers + the Wiz case */
+/* 08 CYBER: find / validate / patch + Google's cyber numbers + the Wiz case */
 {genre: 'CYBER', dur: 13.7, bg: {mode: 'stripes', hue: 355, energy: .5}, trans: 'glitch', build(c) {
   const r = c.root;
   const s1 = h('div', 'full', null, r);
@@ -1234,7 +1219,7 @@ const SLIDES = [
   c.at(11.6, () => { const s = P(r, CX, 728, 'hudf', 'ROLLING OUT VIA THE FAIRWIND PROGRAM', {fontSize: '28px', color: 'var(--gold)'}); fx.from(s, {y: 20, dur: .3}); });
 }},
 
-/* 10 SHIELD: four safeguard areas + training-feedback rule */
+/* 09 SHIELD: four safeguard areas + training-feedback rule */
 {genre: 'SHIELD', dur: 9.6, bg: {mode: 'grid', hue: 205, hue2: 268, energy: .4}, trans: 'split', build(c) {
   const r = c.root;
   c.at(0, () => header(r, 'SAFEGUARDS', '#8fd0ff', 'Before broad availability', 'Four areas Google is strengthening'));
@@ -1283,7 +1268,7 @@ const SLIDES = [
   });
 }},
 
-/* 11 PRICE: introductory price + rollout map */
+/* 10 PRICE: introductory price + rollout map */
 {genre: 'PRICE', dur: 8.6, bg: {mode: 'plasma', hue: 45, hue2: 268, energy: .5}, trans: 'zoom', build(c) {
   const r = c.root;
   c.at(0, () => header(r, 'PRICE', '#ffd23f', 'Introductory price', 'Per 1M tokens, with a phased rollout'));
@@ -1311,7 +1296,7 @@ const SLIDES = [
   c.at(3.8, () => { const y = P(r, nx - 40, 420, 'here', 'YOU ARE HERE ▶', null, 1, .5); fx.pop(y); flash('#ffd23f', .2, .35); FX.ring(nx, 420, {color: '#ffd23f', r1: 300, w: 10}); });
 }},
 
-/* 12 RESULT: tame -> result board -> final message */
+/* 11 RESULT: tame -> result board -> final message */
 {genre: 'RESULT', dur: 14.4, bg: {mode: 'dark', hue: 268, energy: 0}, trans: 'cut', build(c) {
   const r = c.root;
   const hold = h('div', 'full', null, r);
