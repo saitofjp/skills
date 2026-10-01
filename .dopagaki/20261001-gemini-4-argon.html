@@ -42,7 +42,6 @@ body{color:var(--paper);font-family:var(--f-body);-webkit-font-smoothing:antiali
 .tabnum{font-variant-numeric:tabular-nums}
 .ch{display:inline-block;white-space:pre}
 .pct{font-size:.55em;margin-left:.04em}
-.unit{font-size:.42em;margin-left:.08em;text-transform:none}
 .rgb{text-shadow:-.03em 0 rgba(255,47,168,.95),.03em 0 rgba(143,208,255,.95),0 0 .12em rgba(255,255,255,.35)}
 .arx{color:#fff;text-shadow:0 0 .03em #fff,0 0 .12em var(--ar),0 0 .3em var(--ar2),0 0 .6em rgba(123,77,255,.6)}
 .goldx{color:#fff4b8;text-shadow:0 .015em 0 #ffb300,0 .03em 0 #e08a00,0 .045em 0 #b86400,0 .06em 0 #7a3f00,0 .075em 0 #3d1f00,0 0 .2em rgba(255,190,40,.8),0 0 .5em rgba(255,110,0,.5)}
@@ -165,14 +164,9 @@ body{color:var(--paper);font-family:var(--f-body);-webkit-font-smoothing:antiali
 .tg .t b,.tg .t span{color:#fff}
 .tg .l b,.tg .l span{color:var(--red)} .tg .l b{text-shadow:0 0 40px rgba(255,59,78,.7)}
 
-/* ---------- jackpot / missions ---------- */
-.jband>div{width:2600px;padding:20px 0 24px;background:var(--gold);color:#07060f;text-align:center;font:400 96px/1 var(--f-disp);transform:rotate(-3deg);border-block:6px solid #07060f;letter-spacing:.05em}
-.est{display:flex;align-items:center;gap:30px;padding:14px 34px;background:rgba(7,6,15,.82);border:3px solid var(--gold)}
-.est .hudf{font-size:26px;color:var(--gold)}
-.est b{font:400 80px/1 var(--f-disp);color:#fff;letter-spacing:.02em}
+/* ---------- coding / inside google ---------- */
 .mchip{font:700 28px/1 var(--f-hud);letter-spacing:.2em;padding:12px 18px 10px;border:3px solid currentColor}
 .band-gold>div{font:400 74px/1 var(--f-disp);color:#07060f;background:var(--gold);padding:12px 40px 16px;transform:rotate(-3deg);letter-spacing:.04em;box-shadow:8px 8px 0 #07060f}
-.mclear>div{font:400 70px/1 var(--f-disp);color:#fff;border:8px solid #fff;padding:10px 22px 14px;transform:rotate(-12deg);background:rgba(166,255,58,.18);text-shadow:0 0 24px #a6ff3a;box-shadow:0 0 40px rgba(166,255,58,.6);letter-spacing:.04em}
 .tchip{display:inline-block;font:700 24px/1 var(--f-hud);letter-spacing:.12em;padding:12px 16px 10px;border:3px solid var(--blue);color:var(--blue);background:rgba(7,6,15,.6);margin:0 8px}
 .next{display:flex;flex-direction:column;align-items:center;gap:14px;padding:40px 80px 46px;background:rgba(7,6,15,.94);border-block:6px solid var(--blue);width:1920px;box-sizing:border-box;white-space:normal;text-align:center}
 
@@ -311,7 +305,8 @@ body{color:var(--paper);font-family:var(--f-body);-webkit-font-smoothing:antiali
    Source data (primary sources only):
    - Google blog "Gemini 4 Argon: our next era of frontier intelligence" (Sep 30, 2026)
    - Google DeepMind benchmark table (methodology: deepmind.google/models/evals-methodology/gemini-4-argon)
-   - Google DeepMind Fairwind Program page (Gray Swan IPI 0.7% at k=15)
+   - Google DeepMind cyber / Fairwind Program page (Gray Swan IPI 0.7% at k=15; real-world vulnerability discovery 85.8% and
+     Wiz penetration testing 70.9%, both vs Gemini 3.8 Flash Cyber; CWE-bench v1 68% shared with GPT-6 Astra and Grok 4.7)
    - Artificial Analysis Intelligence Index (53 / 53 / 58)
    v = [Gemini 4 Argon, GPT-6 Astra, Claude Fable 5.1, Claude Opus 5.5]; null = not reported
    GraphWalks counts as one benchmark (two context settings) -> 18 benchmarks: 12 top, 1 tie, 5 behind
@@ -337,7 +332,7 @@ const BENCH = [
   {id: 'cwe',     n: 'CWE-bench v1',                    v: [68.0, 68.0, 58.0, 67.0], res: 'tie'},
 ];
 const B = Object.fromEntries(BENCH.map(b => [b.id, b]));
-const TICKER = ['Output token limit: 1M, up from 64K', 'Introductory price: $2 per 1M input tokens, $10 per 1M output tokens', 'Cached input: 95% off the input price', 'Rolling out first to trusted cyber defenders through the Fairwind Program', 'Then paid API customers and Google AI Ultra subscribers', 'DeepSWE v1.1: 77.9%, a new state of the art', 'AutomationBench: #1 at 51.3%', 'LVBench: 91.7%, state of the art', 'CWE-bench v1: 68%, tied for first', 'Gray Swan IPI: 0.7% attack success at k=15, the lowest', 'Over 300 TiB of memory freed across Google data centers', 'libgav1: 2.7x faster than the Rust port'];
+const TICKER = ['Output token limit: 1M, up from 64K', 'Introductory price: $2 per 1M input tokens, $10 per 1M output tokens', 'After the intro period: $4 input, $20 output per 1M tokens', 'Cached input: 95% off the input price', 'Rolling out first to trusted cyber defenders through the Fairwind Program', 'Then paid API customers and Google AI Ultra subscribers', 'DeepSWE v1.1: 77.9%, a new state of the art', 'AutomationBench: #1 at 51.3%', 'LVBench: 91.7%, state of the art', 'CWE-bench v1: 68%, three-way tie for first', 'Real-world vulnerability discovery: 85.8%', 'Gray Swan IPI: 0.7% attack success at k=15, the lowest', 'Over 300 TiB of memory freed across Google data centers', 'libgav1: 2.7x faster than the Rust port'];
 
 /* ---------- basics ---------- */
 const $ = s => document.querySelector(s);
@@ -767,7 +762,7 @@ const SLIDES = [
   c.at(3.85, () => { const s = P(r, CX, 712, 'bd', 'Built to sustain deep reasoning across complex, long-horizon workflows', {fontSize: '42px', color: '#fff', textShadow: '0 0 20px rgba(0,0,0,.9)'}); fx.from(s, {y: 30, dur: .35}); });
   c.at(4.5, () => {
     const box = P(r, CX, 850, 'chap', '');
-    [['01','Output','#b38cff'], ['02','Benchmarks','#8fd0ff'], ['03','Inside Google','#ffd23f'], ['04','Cyber','#ff3b4e'], ['05','Safeguards','#ffffff'], ['06','Price','#ff2fa8']].forEach((d, i) => {
+    [['01','Output','#b38cff'], ['02','Coding','#8fd0ff'], ['03','Knowledge work','#ffd23f'], ['04','Cyber','#ff3b4e'], ['05','Safeguards','#ffffff'], ['06','Price','#ff2fa8']].forEach((d, i) => {
       const s = h('span', '', `<i>${d[0]}</i>${d[1]}`, box, {background: d[2]});
       fx.pop(s, {delay: i * .12});
     });
@@ -835,7 +830,100 @@ const SLIDES = [
   c.at(8.8, () => { fx.glitch(pl, .35); fx.glitch(rp, .35); });
 }},
 
-/* 03 REACH: jackpot-style tease for the legal benchmark */
+/* 03 CODING: DeepSWE state of the art -> libgav1 Rust rewrite -> Zircon migration */
+{genre: 'CODING', dur: 10.6, bg: {mode: 'data', hue: 205, hue2: 268, energy: .5}, trans: 'wipe', score: true, marks: ['deepswe'], build(c) {
+  const r = c.root;
+  c.at(0, () => header(r, 'CODING', 'var(--blue)', 'Real-world software engineering', 'DeepSWE v1.1 · long-horizon software engineering tasks'));
+  const a = h('div', 'full', null, r);
+  let n;
+  c.at(.45, () => { n = P(a, CX, 540, 'disp tabnum', '0.0' + PCT, {fontSize: '300px', color: '#fff'}); count(c, n, B.deepswe.v[0], .8, {suf: PCT}); BG.kick(.5); });
+  c.at(1.3, () => {
+    n.classList.add('goldx'); fx.slam(n, {from: 1.8, dur: .25});
+    const t = P(a, 1490, 330, 'rtag', '<div>NEW STATE OF THE ART</div>'); fx.pop(t, {dur: .25});
+    SC.hit('deepswe');
+    flash('#8fd0ff', .35, .7); shake(36, .5); punch(.07); BG.kick(1.2);
+    FX.burst(CX, 540, {n: 200, colors: ['#8fd0ff','#ffffff','#ffd23f'], speed: [500, 2000], jx: 400});
+  });
+  c.at(1.7, () => {
+    const riv = [3, 1, 2].map(j => `${['', 'Astra', 'Fable 5.1', 'Opus 5.5'][j]} ${B.deepswe.v[j].toFixed(1)}`).join('  ·  ');
+    const s = P(a, CX, 760, 'rriv', riv, {color: '#fff', border: '3px solid #fff'}); fx.from(s, {y: 30, dur: .3});
+  });
+  c.at(2.2, () => { const s = P(a, CX, 850, 'hudf', 'ARGON SELF-COMPUTED (MINI-SWE-AGENT HARNESS) · RIVALS FROM LEADERBOARD AND SYSTEM CARDS', {fontSize: '20px', color: 'rgba(255,255,255,.7)'}); fx.from(s, {dur: .3}); });
+  let b, n32, n27;
+  c.at(3.9, () => {
+    a.remove();
+    BG.set({mode: 'dark', hue: 205, hue2: 268, energy: .5});
+    b = h('div', 'full', null, r, {background: 'linear-gradient(200deg,#0d3a5c,#05101c 70%)'});
+    A(b, [{clipPath: 'inset(0 100% 0 0)'}, {clipPath: 'inset(0 0% 0 0)'}], .3, OUT);
+    const m = P(b, CX, 190, 'mchip', 'INSIDE GOOGLE · RUST', {color: 'var(--blue)'}); fx.pop(m);
+    const s = P(b, CX, 275, 'bd', "libgav1 · Google's open-source video decoder", {fontSize: '38px', color: '#fff'}); fx.from(s, {y: 20, dur: .3});
+    flash('#ffffff', .2, .5); shake(16, .25);
+  });
+  c.at(4.3, () => { n32 = P(b, 540, 500, 'disp tabnum', '0K', {fontSize: '220px', color: '#fff'}); count(c, n32, 32, .5, {dec: 0, suf: 'K'}); });
+  c.at(4.7, () => { const s = P(b, 540, 640, 'bk', 'lines of SIMD code replaced', {fontSize: '40px', color: 'var(--blue)'}); fx.from(s, {y: 20, dur: .25}); shake(10, .2); });
+  c.at(5.1, () => { n27 = P(b, 1380, 500, 'disp tabnum', '1.0×', {fontSize: '260px', color: '#fff'}); count(c, n27, 2.7, .5, {from: 1, suf: '×'}); });
+  c.at(5.65, () => {
+    n27.classList.add('goldx'); fx.slam(n27, {from: 1.6, dur: .22});
+    const s = P(b, 1380, 640, 'bk', 'faster than the existing Rust port', {fontSize: '40px', color: '#fff'}); fx.from(s, {y: 20, dur: .25});
+    flash('#ffd23f', .3, .6); shake(30, .4); punch(.05);
+    FX.burst(1380, 500, {n: 120, colors: ['#ffd23f','#ffffff','#8fd0ff'], speed: [400, 1600]});
+  });
+  c.at(6.0, () => { const s = P(b, CX, 770, '', '<span class="tchip">IDENTICAL VIDEO OUTPUT</span><span class="tchip">MEMORY-SAFE</span>'); fx.from(s, {y: 20, dur: .25}); });
+  c.at(6.3, () => { const s = P(b, CX, 860, 'bd', 'Argon agents rewrote it as safe Rust that the compiler vectorizes automatically', {fontSize: '28px', color: '#b8d6ea'}); fx.from(s, {dur: .3}); });
+  c.at(7.6, () => {
+    A(b, [{filter: 'brightness(1)'}, {filter: 'brightness(.25)'}], .3, 'linear');
+    const nx = P(r, CX, CY, 'next', '<div class="hudf" style="font-size:30px;color:var(--blue)">NEXT UP</div><div class="disp" style="font-size:190px;color:#fff">C/C++ → RUST</div><div class="bk" style="font-size:46px;color:#fff">Migrations scaling up to 800K+ lines</div><div class="bd" style="font-size:30px;color:#b8d6ea">Fuchsia Zircon kernel · rigorous auditing and review before production</div>');
+    A(nx, [{transform: 'scaleY(0)'}, {transform: 'scaleY(1)'}], .28, OUT);
+    flash('#ffffff', .3, .6); shake(26, .4);
+  });
+}},
+
+/* 04 COMBO: knowledge work count-ups, teasing the legal benchmark */
+{genre: 'COMBO', dur: 9.6, bg: {mode: 'grid', hue: 268, hue2: 205, energy: .5}, trans: 'split', score: true, marks: ['vals', 'fin', 'auto'], build(c) {
+  const r = c.root;
+  c.at(0, () => header(r, 'KNOWLEDGE WORK', '#b38cff', 'Enterprise work', 'Legal, finance and business workflows'));
+  const CARDS = [
+    {id: 'vals', x: 390, t: 'Vals Index', d: 'Finance, coding, legal and tax work, weighted by U.S. GDP', tag: '#1 OVERALL'},
+    {id: 'fin', x: 960, t: 'Vals Finance Agent v2', d: 'Multi-step financial research', tag: 'TOP SCORE'},
+    {id: 'auto', x: 1530, t: 'AutomationBench', d: "Zapier's benchmark for end-to-end business functions", tag: 'RANK #1'},
+  ];
+  const RIV = ['GPT-6 Astra', 'Claude Fable 5.1', 'Claude Opus 5.5'];
+  let combo;
+  const comboUp = () => {
+    if (!combo) { combo = P(r, CX, 960, 'combo', ''); fx.pop(combo); }
+    combo.innerHTML = `COMBO <b>×${SC.wins()}</b>`;
+    A(combo.lastChild, [{transform: 'scale(2.2)', opacity: .3}, {transform: 'scale(1)', opacity: 1}], .3, BACK);
+  };
+  CARDS.forEach((d, i) => {
+    const t0 = .55 + i*1.75, b = B[d.id];
+    let card, num;
+    c.at(t0, () => {
+      card = P(r, d.x, 590, 'kcard', `<div class="hudf kl">KNOWLEDGE WORK</div><div class="bk kt">${d.t}</div><div class="bd kd">${d.d}</div><div class="disp kv tabnum">0.0${PCT}</div><div class="kr hudf">${RIV.map((n, j) => `<span>${n}</span><b>${b.v[j + 1].toFixed(1)}%</b>`).join('')}</div>`);
+      A(card, [{transform: `translate(${(i - 1) * 300}px,200px) rotate(${(i - 1) * 8}deg) scale(.6)`, opacity: 0}, {transform: 'none', opacity: 1}], .38, BACK);
+      num = card.querySelector('.kv');
+      shake(10, .2); BG.kick(.4); flash('#b38cff', .2, .3);
+    });
+    c.at(t0 + .3, () => count(c, num, b.v[0], .7, {suf: PCT}));
+    c.at(t0 + 1.05, () => {
+      num.classList.add('goldx'); fx.slam(num, {from: 1.6, dur: .22});
+      const tg = h('div', 'ktag hudf', d.tag, card); fx.pop(tg);
+      SC.hit(d.id);
+      FX.burst(d.x, 590, {n: 90, colors: ['#ffd23f','#ffffff','#b38cff'], speed: [400, 1500]});
+      shake(20, .3); punch(.04);
+      comboUp();
+    });
+  });
+  c.at(6.0, () => {
+    BG.set({mode: 'fever', hue: 268, hue2: 45, energy: 1, speed: 1.3}); BG.kick(1.4);
+    const b = P(r, CX, CY, 'banner', '<div><span class="hudf">FEVER</span>KNOWLEDGE WORK: 3 / 3 TOP SCORES<span class="hudf">FEVER</span></div>');
+    A(b, [{transform: 'scaleY(0)'}, {transform: 'scaleY(1)'}], .25, OUT);
+    flash('#ffffff', .4, .9); shake(34, .6); punch(.07);
+    FX.confetti(180, {x: CX, y: 600}); FX.rainOn({rate: 30});
+  });
+  c.at(6.9, () => { const s = P(r, CX, 860, 'bk', '', {fontSize: '48px', color: '#fff', background: 'rgba(7,6,15,.85)', padding: '8px 26px'}); typeOn(c, s, 'One more: the legal benchmark…', 30); });
+}},
+
+/* 05 REACH: jackpot-style climax of knowledge work, the legal benchmark */
 {genre: 'REACH', dur: 10, bg: {mode: 'dark', hue: 268, energy: .3}, trans: 'zoom', score: true, marks: ['harvey'], build(c) {
   const r = c.root;
   c.at(0, () => header(r, 'LEGAL', '#ffd23f', 'Legal agent', "Harvey's Legal Agent Benchmark · legal research and drafting"));
@@ -902,67 +990,23 @@ const SLIDES = [
     FX.confetti(140, {x: 1450, y: 700});
     SC.hit('harvey');
   });
-  c.at(7.1, () => { const s = P(r, 760, 440, 'stampr', '<div>CRITICAL HIT!!</div>'); fx.slam(s, {from: 3, dur: .28, rot: -25}); shake(26, .35); flash('#ffffff', .25, .5); });
+  let hit;
+  c.at(7.1, () => { const s = hit = P(r, 760, 440, 'stampr', '<div>CRITICAL HIT!!</div>'); fx.slam(s, {from: 3, dur: .28, rot: -25}); shake(26, .35); flash('#ffffff', .25, .5); });
   c.at(7.9, () => { const s = P(r, 760, 575, 'cap', 'Top score · next best 6.7%', {fontSize: '46px'}); fx.from(s, {y: 40, dur: .3, ease: BACK}); });
+  c.at(8.6, () => { kill(hit); const s = P(r, 760, 440, 'hudf', 'KNOWLEDGE WORK · 4 / 4 TOP SCORES', {fontSize: '30px', color: 'var(--gold)', background: 'rgba(7,6,15,.8)', padding: '10px 18px 8px'}); fx.from(s, {y: 20, dur: .3}); });
   c.at(9.4, () => { BG.mod({energy: .2}); });
 }},
 
-/* 04 COMBO: knowledge work count-ups */
-{genre: 'COMBO', dur: 9.6, bg: {mode: 'grid', hue: 268, hue2: 205, energy: .5}, trans: 'split', score: true, marks: ['vals', 'fin', 'auto'], build(c) {
-  const r = c.root;
-  c.at(0, () => header(r, 'KNOWLEDGE WORK', '#b38cff', 'Enterprise work', 'Legal, finance and business workflows'));
-  const CARDS = [
-    {id: 'vals', x: 390, t: 'Vals Index', d: 'Finance, coding, legal and tax work, weighted by U.S. GDP', tag: '#1 OVERALL'},
-    {id: 'fin', x: 960, t: 'Vals Finance Agent v2', d: 'Multi-step financial research', tag: 'TOP SCORE'},
-    {id: 'auto', x: 1530, t: 'AutomationBench', d: "Zapier's benchmark for end-to-end business functions", tag: 'RANK #1'},
-  ];
-  const RIV = ['GPT-6 Astra', 'Claude Fable 5.1', 'Claude Opus 5.5'];
-  let combo;
-  const comboUp = () => {
-    if (!combo) { combo = P(r, CX, 960, 'combo', ''); fx.pop(combo); }
-    combo.innerHTML = `COMBO <b>×${SC.wins()}</b>`;
-    A(combo.lastChild, [{transform: 'scale(2.2)', opacity: .3}, {transform: 'scale(1)', opacity: 1}], .3, BACK);
-  };
-  CARDS.forEach((d, i) => {
-    const t0 = .55 + i*1.75, b = B[d.id];
-    let card, num;
-    c.at(t0, () => {
-      card = P(r, d.x, 590, 'kcard', `<div class="hudf kl">KNOWLEDGE WORK</div><div class="bk kt">${d.t}</div><div class="bd kd">${d.d}</div><div class="disp kv tabnum">0.0${PCT}</div><div class="kr hudf">${RIV.map((n, j) => `<span>${n}</span><b>${b.v[j + 1].toFixed(1)}%</b>`).join('')}</div>`);
-      A(card, [{transform: `translate(${(i - 1) * 300}px,200px) rotate(${(i - 1) * 8}deg) scale(.6)`, opacity: 0}, {transform: 'none', opacity: 1}], .38, BACK);
-      num = card.querySelector('.kv');
-      shake(10, .2); BG.kick(.4); flash('#b38cff', .2, .3);
-    });
-    c.at(t0 + .3, () => count(c, num, b.v[0], .7, {suf: PCT}));
-    c.at(t0 + 1.05, () => {
-      num.classList.add('goldx'); fx.slam(num, {from: 1.6, dur: .22});
-      const tg = h('div', 'ktag hudf', d.tag, card); fx.pop(tg);
-      SC.hit(d.id);
-      FX.burst(d.x, 590, {n: 90, colors: ['#ffd23f','#ffffff','#b38cff'], speed: [400, 1500]});
-      shake(20, .3); punch(.04);
-      comboUp();
-    });
-  });
-  c.at(6.0, () => {
-    BG.set({mode: 'fever', hue: 268, hue2: 45, energy: 1, speed: 1.3}); BG.kick(1.4);
-    const b = P(r, CX, CY, 'banner', '<div><span class="hudf">FEVER</span>KNOWLEDGE WORK: 4 / 4 TOP SCORES<span class="hudf">FEVER</span></div>');
-    A(b, [{transform: 'scaleY(0)'}, {transform: 'scaleY(1)'}], .25, OUT);
-    flash('#ffffff', .4, .9); shake(34, .6); punch(.07);
-    FX.confetti(180, {x: CX, y: 600}); FX.rainOn({rate: 30});
-  });
-  c.at(6.9, () => { const s = P(r, CX, 655, 'bd', "Vals Index · AutomationBench · Vals Finance Agent v2 · Harvey's Legal Agent Benchmark", {fontSize: '30px', color: '#fff', background: 'rgba(7,6,15,.8)', padding: '6px 22px'}); fx.from(s, {y: 20, dur: .3}); });
-}},
-
-/* 05 RUSH: MAD-style rapid edit through the remaining wins */
-{genre: 'RUSH', dur: 10.6, bg: {mode: 'tunnel', hue: 268, energy: .7, speed: 1.3}, trans: 'invert', score: true, marks: ['deepswe', 'vibe', 'lab', 'riem', 'ale', 'chart', 'lvb', 'cwe'], build(c) {
+/* 06 RUSH: MAD-style rapid edit through the remaining wins */
+{genre: 'RUSH', dur: 9.9, bg: {mode: 'tunnel', hue: 268, energy: .7, speed: 1.3}, trans: 'invert', score: true, marks: ['vibe', 'lab', 'riem', 'ale', 'chart', 'lvb', 'cwe'], build(c) {
   const r = c.root;
   const deck = h('div', 'full', null, r), top = h('div', 'full', null, r);
   const ITEMS = [
-    {id: 'deepswe', cat: 'AGENTIC CODING', tag: 'NEW STATE OF THE ART', bg: '#8fd0ff', fg: '#07060f'},
-    {id: 'vibe', cat: 'AGENTIC CODING', bg: '#07060f', fg: '#ffffff'},
-    {id: 'lab', cat: 'SCIENCE & MATH', bg: '#b38cff', fg: '#07060f'},
-    {id: 'riem', cat: 'SCIENCE & MATH', bg: '#07060f', fg: '#ffffff'},
-    {id: 'ale', cat: 'COMPUTER USE · PASS RATE', bg: '#ffd23f', fg: '#07060f'},
-    {id: 'chart', cat: 'MULTIMODAL', bg: '#07060f', fg: '#ffffff'},
+    {id: 'vibe', cat: 'AGENTIC CODING', bg: '#8fd0ff', fg: '#07060f'},
+    {id: 'lab', cat: 'SCIENCE & MATH', bg: '#07060f', fg: '#ffffff'},
+    {id: 'riem', cat: 'SCIENCE & MATH', bg: '#b38cff', fg: '#07060f'},
+    {id: 'ale', cat: 'COMPUTER USE · PASS RATE', bg: '#07060f', fg: '#ffffff'},
+    {id: 'chart', cat: 'MULTIMODAL', bg: '#ffd23f', fg: '#07060f'},
     {id: 'lvb', cat: 'MULTIMODAL · LONG VIDEO', tag: 'STATE OF THE ART', bg: '#8fd0ff', fg: '#07060f'},
   ];
   const ENTER = [
@@ -1007,7 +1051,7 @@ const SLIDES = [
       shake(18, .2); punch(.03);
     });
   });
-  c.at(6.7, () => {
+  c.at(5.85, () => {
     FX.speedOn(null);
     deck.innerHTML = '';
     const k = h('div', 'full', null, deck, {background: '#07060f'});
@@ -1022,23 +1066,24 @@ const SLIDES = [
     P(k, 1440, 590, 'disp tabnum', B.cwe.v[1].toFixed(1) + PCT, {fontSize: '300px', color: '#07060f'});
     shake(16, .25); flash('#ffffff', .2, .4);
   });
-  c.at(7.2, () => {
+  c.at(6.35, () => {
     const s = P(deck, CX, 830, 'rdraw', '<div>DRAW · TIED FOR FIRST</div>'); fx.slam(s, {from: 2.4, dur: .25, rot: -20});
     SC.hit('cwe'); shake(28, .35); flash('#ff2fa8', .25, .5);
     FX.burst(CX, 830, {n: 120, colors: ['#ff2fa8','#ffffff','#8fd0ff'], speed: [400, 1600]});
   });
-  c.at(8.4, () => {
+  c.at(6.75, () => { const s = P(deck, CX, 285, 'hudf', 'THREE-WAY TIE AT 68% · GROK 4.7 ALSO SCORES 68% (DEEPMIND CYBER PAGE)', {fontSize: '24px', color: '#fff', background: '#07060f', padding: '8px 16px 6px'}); fx.from(s, {y: 16, dur: .25}); });
+  c.at(7.55, () => {
     deck.innerHTML = '';
     BG.set({mode: 'fever', hue: 268, hue2: 205, energy: 1, speed: 1.3}); BG.kick(1.3);
     const t = P(deck, CX, 470, 'disp goldx', '#1 IN 12 OF 18', {fontSize: '230px'});
     fx.slam(t, {from: 3, dur: .3}); flash('#ffffff', .4, .9); shake(40, .6); punch(.08);
     FX.burst(CX, 470, {n: 220, colors: ['#ffd23f','#ffffff','#8fd0ff','#b38cff'], speed: [600, 2200], jx: 600});
   });
-  c.at(9.0, () => { const s = P(deck, CX, 700, 'bk', '', {fontSize: '64px', color: '#fff', textShadow: '0 0 20px rgba(0,0,0,.9)'}); typeOn(c, s, 'Plus 1 tie. And the other 5?', 30); });
+  c.at(8.15, () => { const s = P(deck, CX, 700, 'bk', '', {fontSize: '64px', color: '#fff', textShadow: '0 0 20px rgba(0,0,0,.9)'}); typeOn(c, s, 'Plus 1 tie. And the other 5?', 30); });
 }},
 
-/* 06 VS: boss fight, the five benchmarks where a rival scored higher */
-{genre: 'VS', dur: 10.4, bg: {mode: 'stripes', hue: 355, energy: .6}, trans: 'shatter', score: true, marks: ['fswe', 'tb4', 'ptb', 'tbs', 'osw'], build(c) {
+/* 07 VS: boss fight, every row where a rival scored higher lands at once */
+{genre: 'VS', dur: 5.8, bg: {mode: 'stripes', hue: 355, energy: .6}, trans: 'shatter', score: true, marks: ['fswe', 'tb4', 'ptb', 'tbs', 'osw'], build(c) {
   const r = c.root;
   const sir = h('div', 'siren', null, r);
   const t1 = h('div', 'tape', null, r, {top: '120px', transform: 'rotate(-2deg)'});
@@ -1064,24 +1109,26 @@ const SLIDES = [
     ['aa', "INDEPENDENT · NOT IN GOOGLE'S TABLE", 0, 'CLAUDE OPUS 5.5'],
   ];
   const AA = {n: 'Artificial Analysis Index', v: ['53', '58']};
+  const rows = [];
   ROWS.forEach((d, i) => {
-    const t0 = 1.55 + i*.82, b = B[d[0]], aa = d[0] === 'aa';
+    const b = B[d[0]], aa = d[0] === 'aa';
     const nm = aa ? AA.n : b.n, va = aa ? AA.v[0] : b.v[0].toFixed(1), vb = aa ? AA.v[1] : b.v[d[2]].toFixed(1);
-    let row;
-    c.at(t0, () => {
-      row = h('div', 'vrow', `<div class="vn"><b>${nm}</b><small>${d[1]}</small></div><div class="va disp tabnum">${va}</div><div class="vvs disp">VS</div><div class="vb disp tabnum">${vb}</div><div class="vr hudf">${d[3]}</div><div class="vl"></div>`, r, {top: (285 + i*112) + 'px', height: '100px', borderLeftColor: aa ? 'var(--ar)' : ''});
-      A(row, [{transform: 'translateX(1900px) skewX(-20deg)'}, {transform: 'none'}], .25, OUT);
-      shake(8, .15);
-    });
-    c.at(t0 + .38, () => {
-      const l = row.querySelector('.vl'); l.innerHTML = '<span>LOSS</span>'; fx.slam(l.firstChild, {from: 2.4, dur: .22, rot: -20});
-      if (!aa) SC.hit(d[0]);
-      shake(18, .25); flash('#ff3b4e', .2, .35);
-      FX.burst(1700, 335 + i*112, {n: 40, colors: ['#ff3b4e','#ffffff'], speed: [300, 900]});
-      if (i === 0) { const cb = P(r, 1540, 205, 'cbreak', 'COMBO BREAK'); fx.slam(cb, {from: 2, dur: .25, rot: 20}); setTimeout(() => fx.glitch(cb, .3), 300); }
+    c.at(1.35 + i*.04, () => {
+      const row = rows[i] = h('div', 'vrow', `<div class="vn"><b>${nm}</b><small>${d[1]}</small></div><div class="va disp tabnum">${va}</div><div class="vvs disp">VS</div><div class="vb disp tabnum">${vb}</div><div class="vr hudf">${d[3]}</div><div class="vl"></div>`, r, {top: (285 + i*112) + 'px', height: '100px', borderLeftColor: aa ? 'var(--ar)' : ''});
+      A(row, [{transform: 'translateX(1900px) skewX(-20deg)'}, {transform: 'none'}], .22, OUT);
     });
   });
-  c.at(6.7, () => {
+  c.at(1.4, () => shake(16, .25));
+  c.at(1.85, () => {
+    ROWS.forEach((d, i) => {
+      const l = rows[i].querySelector('.vl'); l.innerHTML = '<span>LOSS</span>'; fx.slam(l.firstChild, {from: 2.4, dur: .22, rot: -20});
+      if (d[0] !== 'aa') SC.hit(d[0]);
+      FX.burst(1700, 335 + i*112, {n: 40, colors: ['#ff3b4e','#ffffff'], speed: [300, 900]});
+    });
+    const cb = P(r, 1540, 205, 'cbreak', 'COMBO BREAK'); fx.slam(cb, {from: 2, dur: .25, rot: 20}); setTimeout(() => fx.glitch(cb, .3), 300);
+    flash('#ff3b4e', .35, .8); shake(44, .6); punch(.08); BG.kick(1.4);
+  });
+  c.at(3.5, () => {
     const d = h('div', 'full', null, r, {background: 'rgba(7,6,15,.88)'}); A(d, [{opacity: 0}, {opacity: 1}], .25, OUT);
     BG.set({mode: 'rays', hue: 268, hue2: 205, energy: .6});
     const p = P(r, CX, 545, 'tally', `<div class="hudf tt">GOOGLE'S TABLE · 18 BENCHMARKS</div><div class="tg"><div class="w"><b class="disp">12</b><span class="hudf">TOP SCORE</span></div><div class="t"><b class="disp">1</b><span class="hudf">TIE</span></div><div class="l"><b class="disp">5</b><span class="hudf">LOSS</span></div></div>`);
@@ -1090,83 +1137,23 @@ const SLIDES = [
   });
 }},
 
-/* 07 JACKPOT: data-center memory */
-{genre: 'JACKPOT', dur: 10.4, bg: {mode: 'plasma', hue: 268, hue2: 205, energy: .4}, trans: 'zoom', build(c) {
+/* 08 INSIDE: quantum, one quick cut */
+{genre: 'INSIDE', dur: 5.4, bg: {mode: 'dark', hue: 250, energy: .4}, trans: 'wipe', build(c) {
   const r = c.root;
-  c.at(0, () => header(r, 'MISSION 01', '#ffd23f', 'Inside Google: data centers', 'Argon is already powering internal workflows'));
-  let l1, l2, lab, slot, scr, dk;
-  c.at(.5, () => { l1 = P(r, CX, 360, 'bd', '', {fontSize: '46px', color: '#fff'}); typeOn(c, l1, 'A team of Argon agents analyzed fleet-wide profiling telemetry', 50); });
-  c.at(1.95, () => { l2 = P(r, CX, 430, 'bd', '', {fontSize: '46px', color: 'var(--blue)'}); typeOn(c, l2, 'and autonomously applied memory optimizations.', 50); });
-  c.at(3.0, () => {
-    A(l1, [{opacity: 1}, {opacity: .35}], .3, 'linear'); A(l2, [{opacity: 1}, {opacity: .35}], .3, 'linear');
-    BG.set({mode: 'rays', hue: 45, hue2: 268, energy: .5});
-    lab = P(r, CX, 530, 'hudf', 'MEMORY FREED', {fontSize: '40px', color: 'var(--gold)'}); fx.pop(lab);
-    slot = P(r, CX, 680, 'disp tabnum', '???', {fontSize: '240px', color: '#fff'});
-    FX.implode({x: CX, y: 680, rate: 150});
-    const G = ['???', '8▓▓', '1▒7', '?5?', '▓4▒', '2?▒'];
-    const t0 = E.t; scr = c.tick(t => { slot.textContent = G[Math.floor((t - t0) / .06) % G.length]; });
-  });
-  [3.4, 3.8, 4.1, 4.35].forEach((t, i) => c.at(t, () => { FX.ring(CX, 680, {color: 'rgba(255,210,63,.8)', r0: 420, r1: 40, w: 6, life: .4}); shake(6 + i*4, .2); BG.kick(.2); }));
-  c.at(4.6, () => { c.untick(scr); FX.implode(null); kill(l1); kill(l2); kill(lab); dk = h('div', 'full', null, r, {background: '#000'}); BG.mod({energy: 0}); });
-  c.at(4.9, () => {
-    dk.remove();
-    slot.innerHTML = '300+<span class="unit">TiB</span>'; slot.classList.add('goldx'); slot.style.fontSize = '330px';
-    slot.parentNode.style.top = '615px';
-    fx.slam(slot, {from: 3, dur: .34, blur: 30});
-    const ov = P(r, CX, 405, 'bk', 'Over', {fontSize: '64px', color: '#fff'}); fx.pop(ov);
-    flash('#ffffff', .6, 1); shake(56, 1); punch(.12);
-    BG.set({mode: 'fever', hue: 45, hue2: 268, energy: 1.2, speed: 1.5}); BG.kick(1.6);
-    [0, .1, .2].forEach((d, j) => FX.ring(CX, 615, {color: ['#ffffff','#ffd23f','#b38cff'][j], r1: 1500 - j*200, w: 40 - j*10, life: .7 + d}));
-    FX.burst(CX, 615, {n: 300, colors: ['#ffffff','#ffd23f','#ff2fa8','#8fd0ff','#b38cff'], speed: [900, 2800], life: [.7, 1.5], size: [2, 7]});
-    FX.confetti(240, {x: CX, y: 700}); FX.rainOn({rate: 40});
-    const s = P(r, 1640, 330, 'sfx', 'ドドドド', {fontSize: '120px'}); fx.slam(s, {from: 2, dur: .25, rot: 20});
-  });
-  let jb;
-  c.at(5.6, () => { jb = P(r, CX, 880, 'jband', '<div>JACKPOT!! · JACKPOT!! · JACKPOT!!</div>'); A(jb, [{transform: 'translateX(2600px)'}, {transform: 'none'}], .3, OUT); shake(20, .3); });
-  c.at(6.8, () => {
-    kill(jb);
-    const e = P(r, CX, 880, 'est', '<span class="hudf">ESTIMATED TOTAL SAVINGS</span><b>500 TiB – 1 PiB</b>');
-    fx.slam(e, {from: 1.6, dur: .28}); shake(24, .35); flash('#ffd23f', .25, .5);
-  });
-  c.at(7.7, () => { const s = P(r, CX, 975, 'bd', 'Over 300 TiB freed once rolled out across Google data centers', {fontSize: '26px', color: '#fff', background: 'rgba(7,6,15,.7)', padding: '4px 18px'}); fx.from(s, {y: 16, dur: .3}); });
-}},
-
-/* 08 MISSIONS: quantum + Rust, split screen */
-{genre: 'MISSION', dur: 10.2, bg: {mode: 'dark', hue: 250, energy: .4}, trans: 'wipe', build(c) {
-  const r = c.root;
-  const L = h('div', 'full', null, r, {clipPath: 'polygon(0 0,1010px 0,910px 100%,0 100%)', background: 'linear-gradient(160deg,#2a1260,#0b0620 70%)'});
-  const R = h('div', 'full', null, r, {clipPath: 'polygon(1010px 0,100% 0,100% 100%,910px 100%)', background: 'linear-gradient(200deg,#0d3a5c,#05101c 70%)'});
-  c.at(0, () => { A(L, [{transform: 'translateY(-100%)'}, {transform: 'none'}], .3, OUT); A(R, [{transform: 'translateY(100%)'}, {transform: 'none'}], .3, OUT); flash('#ffffff', .2, .5); shake(16, .25); });
-  c.at(.35, () => { const m = P(L, 460, 185, 'mchip', 'MISSION 02 · QUANTUM', {color: 'var(--ar)'}); fx.pop(m); });
-  c.at(.6, () => { const s = P(L, 460, 300, 'bd', 'Optimizing the spacetime resources<br>(qubits × gates) of quantum subroutines', {fontSize: '34px', color: '#fff', textAlign: 'center'}); fx.from(s, {y: 20, dur: .3}); });
-  c.at(1.3, () => { const s = P(L, 460, 420, 'bk', 'Beat the published baseline by', {fontSize: '40px', color: '#d9caff'}); fx.from(s, {x: -40, dur: .25}); });
+  const L = h('div', 'full', null, r, {background: 'linear-gradient(160deg,#2a1260,#0b0620 70%)'});
+  c.at(0, () => { A(L, [{transform: 'translateY(-100%)'}, {transform: 'none'}], .3, OUT); flash('#ffffff', .2, .5); shake(16, .25); });
+  c.at(.3, () => { const m = P(L, CX, 190, 'mchip', 'INSIDE GOOGLE · QUANTUM', {color: 'var(--ar)'}); fx.pop(m); });
+  c.at(.5, () => { const s = P(L, CX, 290, 'bd', 'Optimizing the spacetime resources (qubits × gates) of quantum subroutines', {fontSize: '36px', color: '#fff'}); fx.from(s, {y: 20, dur: .3}); });
+  c.at(1.1, () => { const s = P(L, CX, 390, 'bk', 'Beat the published baseline by', {fontSize: '44px', color: '#d9caff'}); fx.from(s, {x: -40, dur: .25}); });
   let n40;
-  c.at(1.6, () => { n40 = P(L, 460, 600, 'disp tabnum', '0' + PCT, {fontSize: '300px', color: '#fff'}); count(c, n40, 40, .45, {dec: 0, suf: PCT}); });
-  c.at(2.1, () => { n40.classList.add('goldx'); fx.slam(n40, {from: 1.6, dur: .22}); flash('#ffd23f', .3, .6); shake(30, .4); punch(.05); FX.burst(460, 600, {n: 120, colors: ['#ffd23f','#ffffff','#b38cff'], speed: [400, 1600]}); });
-  c.at(2.3, () => { const b = P(L, 460, 810, 'band-gold', '<div>IN MINUTES</div>'); fx.from(b, {x: -300, dur: .25}); });
-  c.at(2.55, () => { const s = P(L, 460, 905, 'bd', "Google doesn't name the baseline in the announcement", {fontSize: '22px', color: '#c9b8f2'}); fx.from(s, {dur: .3}); });
-  c.at(2.75, () => { const s = P(L, 660, 690, 'mclear', '<div>MISSION CLEAR</div>'); fx.slam(s, {from: 2.6, dur: .25, rot: -30}); A(s, [{opacity: 1, transform: 'scale(1)'}, {opacity: 0, transform: 'scale(1.3)'}], .25, IN, {delay: .9, fill: 'forwards'}); shake(20, .3); });
-  c.at(3.2, () => { const m = P(R, 1460, 185, 'mchip', 'MISSION 03 · RUST', {color: 'var(--blue)'}); fx.pop(m); BG.kick(.4); });
-  c.at(3.4, () => { const s = P(R, 1460, 285, 'bd', "libgav1 · Google's open-source video decoder", {fontSize: '34px', color: '#fff'}); fx.from(s, {y: 20, dur: .3}); });
-  let n32, n27;
-  c.at(3.85, () => { n32 = P(R, 1460, 420, 'disp tabnum', '0K', {fontSize: '150px', color: '#fff'}); count(c, n32, 32, .5, {dec: 0, suf: 'K'}); });
-  c.at(4.2, () => { const s = P(R, 1460, 525, 'bk', 'lines of SIMD code replaced', {fontSize: '36px', color: 'var(--blue)'}); fx.from(s, {y: 20, dur: .25}); shake(10, .2); });
-  c.at(4.5, () => { const s = P(R, 1460, 578, 'bd', 'in an existing Rust port, with safe Rust the compiler vectorizes', {fontSize: '24px', color: '#b8d6ea'}); fx.from(s, {dur: .3}); });
-  c.at(5.0, () => { n27 = P(R, 1460, 735, 'disp tabnum', '1.0×', {fontSize: '260px', color: '#fff'}); count(c, n27, 2.7, .5, {from: 1, suf: '×'}); });
-  c.at(5.55, () => { n27.classList.add('goldx'); fx.slam(n27, {from: 1.6, dur: .22}); flash('#ffd23f', .3, .6); shake(30, .4); punch(.05); FX.burst(1460, 735, {n: 120, colors: ['#ffd23f','#ffffff','#8fd0ff'], speed: [400, 1600]}); });
-  c.at(5.75, () => { const s = P(R, 1460, 888, 'bk', 'faster than the existing Rust port', {fontSize: '40px', color: '#fff'}); fx.from(s, {y: 20, dur: .25}); });
-  c.at(6.1, () => { const s = P(R, 1460, 958, '', '<span class="tchip">IDENTICAL VIDEO OUTPUT</span><span class="tchip">MEMORY-SAFE</span>'); fx.from(s, {y: 20, dur: .25}); });
-  c.at(6.5, () => { const s = P(R, 1690, 640, 'mclear', '<div>MISSION CLEAR</div>'); fx.slam(s, {from: 2.6, dur: .25, rot: -30}); A(s, [{opacity: 1, transform: 'scale(1)'}, {opacity: 0, transform: 'scale(1.3)'}], .25, IN, {delay: .7, fill: 'forwards'}); shake(20, .3); });
-  c.at(7.4, () => {
-    A(L, [{filter: 'brightness(1)'}, {filter: 'brightness(.25)'}], .3, 'linear'); A(R, [{filter: 'brightness(1)'}, {filter: 'brightness(.25)'}], .3, 'linear');
-    const n = P(r, CX, CY, 'next', '<div class="hudf" style="font-size:30px;color:var(--blue)">NEXT UP</div><div class="disp" style="font-size:190px;color:#fff">C/C++ → RUST</div><div class="bk" style="font-size:46px;color:#fff">Migrations scaling up to 800K+ lines</div><div class="bd" style="font-size:30px;color:#b8d6ea">Fuchsia Zircon kernel · rigorous auditing and review before production</div>');
-    A(n, [{transform: 'scaleY(0)'}, {transform: 'scaleY(1)'}], .28, OUT);
-    flash('#ffffff', .3, .6); shake(26, .4);
-  });
+  c.at(1.4, () => { n40 = P(L, CX, 590, 'disp tabnum', '0' + PCT, {fontSize: '320px', color: '#fff'}); count(c, n40, 40, .45, {dec: 0, suf: PCT}); });
+  c.at(1.9, () => { n40.classList.add('goldx'); fx.slam(n40, {from: 1.6, dur: .22}); flash('#ffd23f', .3, .6); shake(30, .4); punch(.05); FX.burst(CX, 590, {n: 140, colors: ['#ffd23f','#ffffff','#b38cff'], speed: [400, 1600]}); });
+  c.at(2.15, () => { const b = P(L, CX, 820, 'band-gold', '<div>IN MINUTES</div>'); fx.from(b, {x: -300, dur: .25}); shake(14, .2); });
+  c.at(2.5, () => { const s = P(L, CX, 925, 'bd', "Google doesn't name the baseline in the announcement", {fontSize: '22px', color: '#c9b8f2'}); fx.from(s, {dur: .3}); });
 }},
 
-/* 09 CYBER: find / validate / patch + the Wiz case */
-{genre: 'CYBER', dur: 11, bg: {mode: 'stripes', hue: 355, energy: .5}, trans: 'glitch', build(c) {
+/* 09 CYBER: find / validate / patch + Google's cyber numbers + the Wiz case */
+{genre: 'CYBER', dur: 13.7, bg: {mode: 'stripes', hue: 355, energy: .5}, trans: 'glitch', build(c) {
   const r = c.root;
   const s1 = h('div', 'full', null, r);
   h('div', 'siren', null, s1);
@@ -1187,9 +1174,28 @@ const SLIDES = [
     A(b, [{transform: 'translateX(-2600px)'}, {transform: 'none'}], .3, OUT); shake(24, .35);
   });
   c.at(2.7, () => { const s = P(s1, CX, 880, 'bd', 'Argon can find, validate and patch critical software vulnerabilities', {fontSize: '36px', color: '#fff', background: 'rgba(7,6,15,.75)', padding: '6px 22px'}); fx.from(s, {y: 20, dur: .3}); });
-  let s2, ty, al;
+  let sn;
   c.at(3.4, () => {
     s1.remove();
+    BG.set({mode: 'data', hue: 355, hue2: 268, energy: .5});
+    sn = h('div', 'full', null, r);
+    const ch = P(sn, CX, 230, 'chip', "GOOGLE'S INTERNAL CYBER BENCHMARKS", {color: '#ffb3bb'}); fx.pop(ch);
+  });
+  [['REAL-WORLD VULNERABILITY DISCOVERY', 85.8, 71.0, 520], ['WIZ PENETRATION TESTING', 70.9, 58.2, 1400]].forEach((d, i) => {
+    let v;
+    c.at(3.7 + i*.75, () => {
+      P(sn, d[3], 370, 'hudf', d[0], {fontSize: '28px', color: '#fff'});
+      v = P(sn, d[3], 560, 'disp tabnum', '0.0' + PCT, {fontSize: '260px', color: '#fff'});
+      count(c, v, d[1], .5, {suf: PCT});
+      P(sn, d[3], 740, 'bd', `vs ${d[2].toFixed(1)}% for Gemini 3.8 Flash Cyber`, {fontSize: '34px', color: '#ffb3bb'});
+      shake(12, .2); BG.kick(.4);
+    });
+    c.at(4.25 + i*.75, () => { v.classList.add('redx'); fx.slam(v, {from: 1.6, dur: .22}); flash('#ff3b4e', .25, .5); shake(26, .35); FX.burst(d[3], 560, {n: 100, colors: ['#ff3b4e','#ffffff','#ffd23f'], speed: [400, 1500]}); });
+  });
+  c.at(5.4, () => { const s = P(sn, CX, 880, 'hudf', "COMPARED WITH GOOGLE'S OWN EARLIER CYBER MODEL · NOT RIVAL LABS", {fontSize: '22px', color: 'rgba(255,255,255,.7)'}); fx.from(s, {dur: .3}); });
+  let s2, ty, al;
+  c.at(6.1, () => {
+    sn.remove();
     BG.set({mode: 'data', hue: 355, hue2: 205, energy: .5});
     s2 = h('div', 'full', null, r);
     const rd = P(s2, 560, 590, 'radar', '<i></i>'); fx.pop(rd, {dur: .3});
@@ -1199,13 +1205,13 @@ const SLIDES = [
     typeOn(c, ty, 'Scanning healthcare software used by hospitals worldwide', 42);
   });
   let fill;
-  c.at(4.7, () => {
+  c.at(7.4, () => {
     const sc = P(s2, 1350, 690, 'scan', '<span class="hudf">SCANNING…</span><div class="tr"><i></i></div>');
     fill = sc.querySelector('i');
     A(fill, [{transform: 'scaleX(0)'}, {transform: 'scaleX(1)'}], .9, 'cubic-bezier(.5,0,.9,.6)');
   });
-  [4.9, 5.2, 5.45].forEach((t, i) => c.at(t, () => { shake(6 + i*5, .2); BG.kick(.3); }));
-  c.at(5.7, () => {
+  [7.6, 7.9, 8.15].forEach((t, i) => c.at(t, () => { shake(6 + i*5, .2); BG.kick(.3); }));
+  c.at(8.4, () => {
     al = h('div', 'full', null, r, {background: 'rgba(40,0,8,.9)'});
     const t = P(al, CX, 460, 'disp redx', 'CRITICAL VULNERABILITY', {fontSize: '150px'});
     fx.slam(t, {from: 2.8, dur: .3, blur: 24});
@@ -1214,8 +1220,8 @@ const SLIDES = [
     BG.set({mode: 'stripes', hue: 355, energy: 1.2, speed: 1.6}); BG.kick(1.5);
     FX.ring(CX, 460, {color: '#ff3b4e', r1: 1400, w: 40}); FX.burst(CX, 460, {n: 220, colors: ['#ff3b4e','#ffffff','#ffd23f'], speed: [700, 2400], jx: 600});
   });
-  c.at(6.6, () => { const b = P(al, CX, 770, 'band-gold', '<div>MISSED BY PREVIOUS FRONTIER MODELS</div>'); fx.slam(b, {from: 1.8, dur: .25}); shake(26, .35); flash('#ffd23f', .2, .4); });
-  c.at(7.9, () => {
+  c.at(9.3, () => { const b = P(al, CX, 770, 'band-gold', '<div>MISSED BY PREVIOUS FRONTIER MODELS</div>'); fx.slam(b, {from: 1.8, dur: .25}); shake(26, .35); flash('#ffd23f', .2, .4); });
+  c.at(10.6, () => {
     s2.remove(); al.remove();
     BG.set({mode: 'rays', hue: 355, hue2: 268, energy: .8}); BG.kick(1.2);
     const u = P(r, CX, 300, 'chip', 'UNLOCKED', {color: 'var(--gold)', fontSize: '30px'}); fx.pop(u);
@@ -1224,8 +1230,8 @@ const SLIDES = [
     FX.burst(CX, 480, {n: 200, colors: ['#ffffff','#ff3b4e','#ffd23f'], speed: [600, 2000], jx: 700});
     setTimeout(() => { g.classList.remove('stroke-w'); g.classList.add('redx'); }, 450);
   });
-  c.at(8.5, () => { const s = P(r, CX, 650, 'bd', "For trusted defenders and Google's internal teams", {fontSize: '46px', color: '#fff'}); fx.from(s, {y: 30, dur: .3}); });
-  c.at(8.9, () => { const s = P(r, CX, 728, 'hudf', 'ROLLING OUT VIA THE FAIRWIND PROGRAM', {fontSize: '28px', color: 'var(--gold)'}); fx.from(s, {y: 20, dur: .3}); });
+  c.at(11.2, () => { const s = P(r, CX, 650, 'bd', "For trusted defenders and Google's internal teams", {fontSize: '46px', color: '#fff'}); fx.from(s, {y: 30, dur: .3}); });
+  c.at(11.6, () => { const s = P(r, CX, 728, 'hudf', 'ROLLING OUT VIA THE FAIRWIND PROGRAM', {fontSize: '28px', color: 'var(--gold)'}); fx.from(s, {y: 20, dur: .3}); });
 }},
 
 /* 10 SHIELD: four safeguard areas + training-feedback rule */
@@ -1289,6 +1295,7 @@ const SLIDES = [
     FX.burst(480, d[3] + 70, {n: 40, colors: ['#ffd23f','#ffffff'], speed: [200, 700], dir: -Math.PI/2, spread: Math.PI});
     if (i === 2) { flash('#ffd23f', .3, .6); shake(26, .35); }
   }));
+  c.at(1.7, () => { const s = P(r, 480, 945, 'bd', 'After the intro period: $4 input · $20 output', {fontSize: '30px', color: '#fff', background: 'rgba(7,6,15,.8)', padding: '6px 18px'}); fx.from(s, {y: 20, dur: .3}); });
   c.at(1.95, () => { const s = P(r, 840, 300, 'stampr', '<div>INTRO PRICE</div>'); fx.slam(s, {from: 2.4, dur: .25, rot: 20}); A(s, [{opacity: 1, transform: 'scale(1)'}, {opacity: 0, transform: 'scale(1.3)'}], .25, IN, {delay: 1, fill: 'forwards'}); shake(16, .25); });
   const nx = 1200, NODES = [
     [420, 'ACCESS · NOW', 'Fairwind first', 'trusted cyber defenders', true],
@@ -1304,8 +1311,8 @@ const SLIDES = [
   c.at(3.8, () => { const y = P(r, nx - 40, 420, 'here', 'YOU ARE HERE ▶', null, 1, .5); fx.pop(y); flash('#ffd23f', .2, .35); FX.ring(nx, 420, {color: '#ffd23f', r1: 300, w: 10}); });
 }},
 
-/* 12 RESULT: tame -> mission complete -> result board -> final message */
-{genre: 'RESULT', dur: 15.5, bg: {mode: 'dark', hue: 268, energy: 0}, trans: 'cut', build(c) {
+/* 12 RESULT: tame -> result board -> final message */
+{genre: 'RESULT', dur: 14.4, bg: {mode: 'dark', hue: 268, energy: 0}, trans: 'cut', build(c) {
   const r = c.root;
   const hold = h('div', 'full', null, r);
   c.at(0, () => { const t = P(hold, CX, 470, 'hudf', 'FINAL STAGE // GEMINI 4 ARGON', {fontSize: '34px', color: '#d9caff'}); A(t, [{letterSpacing: '0em', opacity: 0}, {letterSpacing: '.4em', opacity: 1}], .8, OUT); });
@@ -1314,7 +1321,6 @@ const SLIDES = [
   c.at(1.3, () => FX.implode({x: CX, y: CY, rate: 160, colors: ['#b38cff','#ffffff']}));
   [[1.4, 5, 8], [1.85, 8, 13], [2.25, 12, 19]].forEach(([t, n, a]) => c.at(t, () => { h('div', 'full', cracks(n), hold); shake(a, .2); punch(.015); }));
   c.at(2.6, () => { hold.remove(); FX.implode(null); });
-  let mc;
   c.at(2.75, () => {
     flash('#ffffff', .7, 1);
     BG.set({mode: 'fever', hue: 268, energy: 1.1, speed: 1.6}); BG.kick(1.6);
@@ -1322,41 +1328,37 @@ const SLIDES = [
     FX.ring(CX, CY, {color: '#ffffff', r1: 1500, w: 50}); FX.ring(CX, CY, {color: '#ffd23f', r1: 1200, w: 30, life: .8}); FX.ring(CX, CY, {color: '#b38cff', r1: 900, w: 20, life: 1});
     FX.burst(CX, CY, {n: 280, colors: ['#ffffff','#ffd23f','#b38cff','#8fd0ff'], speed: [900, 2800], life: [.6, 1.4], size: [2, 7]});
     FX.confetti(220, {x: CX, y: 700});
-    mc = P(r, CX, CY, 'disp goldx', 'MISSION COMPLETE', {fontSize: '210px'});
-    fx.slam(mc, {from: 4, dur: .32, blur: 26});
-    const s = P(r, 300, 250, 'sfx', 'ドーン!!', {fontSize: '130px'}); fx.slam(s, {from: 2, dur: .25, rot: -30});
   });
-  c.at(3.6, () => { r.querySelectorAll('.sfx').forEach(kill); A(mc.parentNode, [{transform: 'translate(-50%,-50%)'}, {transform: 'translate(-50%,-50%) translateY(-370px) scale(.42)'}], .35, OUT); BG.mod({energy: .5}); });
+  c.at(3.4, () => BG.mod({energy: .5}));
   let res;
   const ROWS = [
     ['MAX OUTPUT', '1,000,000 tokens', '15.6× the previous 64K cap', true],
     ['BENCHMARKS', '#1 in 12 of 18', "+1 tie · 5 behind in Google's table", false],
+    ['CODING', '77.9%', 'DeepSWE v1.1 · new state of the art', true],
     ['LEGAL AGENT', '19.6%', 'next best 6.7%', true],
-    ['MEMORY FREED', '300+ TiB', 'est. 500 TiB – 1 PiB total', true],
-    ['RUST DECODER', '2.7× faster', 'than the existing Rust port', false],
+    ['VULN DISCOVERY', '85.8%', 'vs 71.0% for Gemini 3.8 Flash Cyber', false],
     ['PROMPT INJECTION', '0.7%', 'lowest on Gray Swan IPI (k=15)', false],
   ];
-  c.at(3.85, () => {
-    res = P(r, CX, 600, 'res', `<div class="res-h"><span class="hudf">RESULT</span><span class="hd">GEMINI 4 ARGON · SEP 30, 2026</span></div>` + ROWS.map(d => `<div class="rr" data-row><span>${d[0]}</span><b class="${d[3] ? 'g' : ''}">${d[1]}</b><small>${d[2]}</small></div>`).join(''));
+  c.at(2.75, () => {
+    res = P(r, CX, 550, 'res', `<div class="res-h"><span class="hudf">RESULT</span><span class="hd">GEMINI 4 ARGON · SEP 30, 2026</span></div>` + ROWS.map(d => `<div class="rr" data-row><span>${d[0]}</span><b class="${d[3] ? 'g' : ''}">${d[1]}</b><small>${d[2]}</small></div>`).join(''));
     A(res, [{transform: 'scaleY(0)', opacity: 0}, {transform: 'scaleY(1)', opacity: 1}], .3, OUT);
     res.querySelectorAll('[data-row]').forEach(el => { el.style.opacity = 0; });
   });
-  ROWS.forEach((d, i) => c.at(4.25 + i*.42, () => {
+  ROWS.forEach((d, i) => c.at(3.15 + i*.42, () => {
     const el = res.querySelectorAll('[data-row]')[i];
     fx.from(el, {x: -60, dur: .25, blur: 6}); shake(d[3] ? 16 : 8, .2);
-    if (d[3]) { flash('#ffd23f', .15, .3); FX.burst(CX, 380 + i*80, {n: 50, colors: ['#ffd23f','#ffffff'], speed: [300, 1100], jx: 400}); }
+    if (d[3]) { flash('#ffd23f', .15, .3); FX.burst(CX, 330 + i*80, {n: 50, colors: ['#ffd23f','#ffffff'], speed: [300, 1100], jx: 400}); }
   }));
-  c.at(8.0, () => {
+  c.at(6.9, () => {
     A(res, [{transform: 'scale(1)', opacity: 1, filter: 'none'}, {transform: 'scale(1.8)', opacity: 0, filter: 'blur(20px)'}], .3, IN);
-    A(mc, [{opacity: 1}, {opacity: 0}], .25, 'linear');
     FX.burst(CX, 600, {n: 200, colors: ['#ffd23f','#ffffff','#b38cff'], speed: [500, 2000], jx: 700, jy: 300});
     flash('#ffffff', .4, .8); shake(30, .5);
     BG.set({mode: 'dark', hue: 268, energy: 0});
   });
   let qq;
-  c.at(8.5, () => { qq = P(r, CX, CY, 'bk', '', {fontSize: '80px', color: '#fff'}); typeOn(c, qq, 'So, what is Gemini 4 Argon?', 30); });
-  [9.5, 9.8, 10.05].forEach(t => c.at(t, () => { FX.ring(CX, CY, {color: 'rgba(255,210,63,.85)', r0: 420, r1: 40, w: 6, life: .35}); shake(8, .15); }));
-  c.at(10.3, () => {
+  c.at(7.4, () => { qq = P(r, CX, CY, 'bk', '', {fontSize: '80px', color: '#fff'}); typeOn(c, qq, 'So, what is Gemini 4 Argon?', 30); });
+  [8.4, 8.7, 8.95].forEach(t => c.at(t, () => { FX.ring(CX, CY, {color: 'rgba(255,210,63,.85)', r0: 420, r1: 40, w: 6, life: .35}); shake(8, .15); }));
+  c.at(9.2, () => {
     kill(qq);
     flash('#ffd23f', .6, 1);
     BG.set({mode: 'fever', hue: 268, hue2: 45, energy: 1.2, speed: 1.1}); BG.kick(1.6);
@@ -1369,18 +1371,18 @@ const SLIDES = [
     fx.slam(a, {from: 4, dur: .3, blur: 26});
     camTo(c, {z: 1.04}, 5, eOut);
   });
-  c.at(10.75, () => {
+  c.at(9.65, () => {
     const b = P(r, CX, 560, 'disp goldx', 'A LONG-HORIZON PARTNER.', {fontSize: '160px'});
     fx.slam(b, {from: 5, dur: .34, blur: 26}); flash('#ffffff', .5, .9); shake(50, .9); punch(.1);
     FX.burst(CX, 560, {n: 220, colors: ['#ffd23f','#ffffff'], speed: [600, 2200], jx: 700});
   });
-  c.at(11.6, () => { const s = P(r, CX, 735, 'bd', 'Gemini 4 Argon · rolling out to trusted cyber defenders first', {fontSize: '44px', color: '#fff', textShadow: '0 0 24px rgba(0,0,0,.9)'}); fx.from(s, {y: 40, dur: .4}); shake(10, .2); });
-  c.at(12.3, () => sweepOn(r, CX, 560, 'A LONG-HORIZON PARTNER.', 160));
-  c.at(12.9, () => {
-    const s = P(r, CX, 900, 'credit', 'Unofficial recap. Sources: Google, “Gemini 4 Argon: our next era of frontier intelligence” (Sep 30, 2026); Google DeepMind’s benchmark table<br>(methodology: deepmind.google/models/evals-methodology/gemini-4-argon) and Fairwind Program page; Artificial Analysis Intelligence Index.');
+  c.at(10.5, () => { const s = P(r, CX, 735, 'bd', 'Gemini 4 Argon · rolling out to trusted cyber defenders first', {fontSize: '44px', color: '#fff', textShadow: '0 0 24px rgba(0,0,0,.9)'}); fx.from(s, {y: 40, dur: .4}); shake(10, .2); });
+  c.at(11.2, () => sweepOn(r, CX, 560, 'A LONG-HORIZON PARTNER.', 160));
+  c.at(11.8, () => {
+    const s = P(r, CX, 900, 'credit', 'Unofficial recap. Sources: Google, “Gemini 4 Argon: our next era of frontier intelligence” (Sep 30, 2026); Google DeepMind’s benchmark table<br>(methodology: deepmind.google/models/evals-methodology/gemini-4-argon) and cyber / Fairwind Program page; Artificial Analysis Intelligence Index.');
     fx.from(s, {dur: .5});
   });
-  c.at(13.9, () => sweepOn(r, CX, 560, 'A LONG-HORIZON PARTNER.', 160));
+  c.at(12.8, () => sweepOn(r, CX, 560, 'A LONG-HORIZON PARTNER.', 160));
 }},
 ];
 
