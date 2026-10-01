@@ -10,12 +10,25 @@ description: Turns the given content (script, bullet points, file, or URL) into 
 ## Usage
 
 - Take the presentation content from the arguments (text / file path / URL). If none is given, ask for the content before starting.
+- **Do not start building right away. First present a structure plan and get the user's confirmation** (see "Structure check" below). Skip the confirmation and go straight to implementation only when the user has explicitly said no confirmation is needed (e.g. "no need to confirm", "build it without checking with me", 「確認不要」, 「確認なしで作って」).
 - Implement it following the "Direction spec" below. How you implement it (libraries, how the timeline is held, how effects are built) is up to you and should fit the content.
 - The output is a single HTML file that opens directly in a browser. Save it where the user specifies; otherwise save to `.dopagaki/<YYYYMMDD>-<slug>.html`. Commit only when the user asks.
 - Numbers that appear in the spec (`87`, `RANK S`, `COMBO ×12`, etc.) are examples of the effect patterns. Do not present numbers that are not in the source content as if they were facts.
 - After implementing, actually play it in a browser and confirm that it runs to the end without any interaction, that no console errors appear, and that the important text is readable at the key moments.
 - On delivery, tell the user the file path, total duration, control keys, and how to record it (go fullscreen and screen-record). If the user cannot open the file directly (e.g. remote execution), publish it as an Artifact and share the URL (load the `artifact-design` skill before publishing).
 - Write the on-screen text in the language of the source content.
+
+## Structure check
+
+Once you have the content, design the structure and show it to the user before writing any HTML. Summarize the following as a table or list that can be reviewed at a glance:
+
+- Title (theme) and the conclusion message that will be shown biggest at the end
+- Estimated total duration
+- For each slide (cut), in playback order: number / approximate seconds / directing genre (§13) / central message / main wording and numbers taken from the source / the payoff (what appears, and how, at REVEAL and IMPACT)
+- The hook for the first 1–3 seconds, and the flow of the final result sequence
+- What you cut or condensed from the source, and anything you are unsure of (numbers you could not verify, points open to interpretation, etc.)
+
+After presenting it, do not proceed to implementation; wait for the reply. If the user asks for changes, show the revised structure again, and start implementing only once they approve (e.g. "OK", "go ahead and build it"). Leave the second-by-second timeline and effect details out of the structure plan; decide those during implementation.
 
 ## Direction spec
 
