@@ -801,7 +801,7 @@ const SLIDES = [
     h('div', 'bk', 'GraphWalks', rp, {fontSize: '50px', color: '#fff'});
     h('div', 'bd', 'BFS (F1), 256K to 1M tokens of context', rp, {fontSize: '24px', color: 'var(--dim)'});
   });
-  const base = 575, maxH = 300, bx = [70, 230, 390, 550], bw = 120;
+  const base = 545, maxH = 280, bx = [70, 230, 390, 550], bw = 120;
   const BARS = [['ARGON', B.gw.v[0]], ['ASTRA', B.gw.v[1]], ['FABLE 5.1', B.gw.v[2]], ['OPUS 5.5', B.gw.v[3]]];
   function gbar(i, live) {
     const d = BARS[i], hg = d[1] / 100 * maxH;
@@ -820,7 +820,7 @@ const SLIDES = [
     FX.burst(1190, 580, {n: 110, colors: ['#8fd0ff','#ffffff'], speed: [400, 1500]});
   });
   c.at(6.95, () => {
-    const g = h('div', 'g128', `<span class="hudf">UP TO 128K</span><b class="disp tabnum">${B.gw.v128[0].toFixed(1)}%</b><span class="bdg">TOP</span>`, rp, {position: 'absolute', left: '50px', top: '624px', width: '650px', boxSizing: 'border-box'});
+    const g = h('div', 'g128', `<span class="hudf">UP TO 128K</span><b class="disp tabnum">${B.gw.v128[0].toFixed(1)}%</b><span class="bdg">TOP</span>`, rp, {position: 'absolute', left: '50px', top: '600px', width: '650px', boxSizing: 'border-box'});
     fx.from(g, {y: 30, dur: .3, ease: BACK}); shake(12, .2);
   });
   c.at(8.8, () => { fx.glitch(pl, .35); fx.glitch(rp, .35); });
