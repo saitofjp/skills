@@ -141,19 +141,15 @@ body{color:var(--paper);font-family:var(--f-body);-webkit-font-smoothing:antiali
 /* ---------- boss ---------- */
 .siren{position:absolute;left:50%;top:50%;width:3200px;height:3200px;margin:-1600px 0 0 -1600px;background:conic-gradient(from 0deg,rgba(255,40,60,.28) 0 16deg,transparent 16deg 180deg,rgba(255,40,60,.28) 180deg 196deg,transparent 196deg);animation:spin 1.6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.tape{position:absolute;left:-100px;width:2120px;height:46px;background:repeating-linear-gradient(-45deg,var(--gold) 0 34px,#07060f 34px 68px);animation:tape .9s linear infinite}
-@keyframes tape{to{background-position:96.17px 0}}
-.warn{color:var(--red);-webkit-text-stroke:6px #fff;text-shadow:0 0 70px rgba(255,0,30,.8)}
-.vrow{position:absolute;left:150px;width:1620px;height:104px;display:grid;grid-template-columns:560px 200px 120px 200px 340px 1fr;align-items:center;background:linear-gradient(90deg,rgba(40,8,16,.92),rgba(12,6,14,.9));border-left:6px solid var(--red);box-sizing:border-box;padding-left:26px}
+.vrow{position:absolute;left:150px;width:1620px;height:104px;display:grid;grid-template-columns:560px 200px 120px 200px 340px 1fr;align-items:center;background:linear-gradient(90deg,rgba(24,18,44,.9),rgba(10,8,20,.85));border-left:6px solid rgba(162,159,204,.6);box-sizing:border-box;padding-left:26px}
 .vn b{display:block;font:900 40px/1.05 var(--f-body);color:#fff;text-transform:uppercase}
-.vn small{display:block;font:700 17px/1.2 var(--f-hud);color:#d9a3aa;letter-spacing:.12em;margin-top:6px}
+.vn small{display:block;font:700 17px/1.2 var(--f-hud);color:var(--dim);letter-spacing:.12em;margin-top:6px}
 .va{font-size:76px;color:#cfcbe6;text-align:center}
-.vvs{font-size:44px;color:var(--red);text-align:center}
-.vb{font-size:76px;color:#fff;text-align:center;text-shadow:0 0 24px rgba(255,59,78,.8)}
-.vr{font-size:22px;color:#ffb3bb;letter-spacing:.12em}
+.vvs{font-size:44px;color:var(--dim);text-align:center}
+.vb{font-size:76px;color:#fff;text-align:center}
+.vr{font-size:22px;color:#c9c4ee;letter-spacing:.12em}
 .vl{display:grid;place-items:center}
-.vl span{font:400 48px/1 var(--f-disp);color:#fff;background:var(--red);padding:8px 16px 10px;transform:rotate(-8deg);letter-spacing:.04em}
-.cbreak{font:400 96px/1 var(--f-disp);color:#fff;-webkit-text-stroke:4px var(--red);text-shadow:0 0 30px var(--red);transform:rotate(6deg);letter-spacing:.04em}
+.vl span{font:700 20px/1 var(--f-hud);color:#c9c4ee;border:2px solid rgba(201,196,238,.5);padding:8px 12px 6px;letter-spacing:.16em}
 .tally{display:flex;flex-direction:column;align-items:center;gap:26px;padding:40px 70px 46px;background:rgba(10,8,22,.94);border:4px solid #fff;box-shadow:0 0 60px rgba(179,140,255,.4)}
 .tally .tt{font-size:30px;color:#d9caff}
 .tg{display:flex;gap:80px}
@@ -162,7 +158,7 @@ body{color:var(--paper);font-family:var(--f-body);-webkit-font-smoothing:antiali
 .tg span{font-size:30px;letter-spacing:.2em}
 .tg .w b,.tg .w span{color:var(--blue)} .tg .w b{text-shadow:0 0 40px rgba(143,208,255,.8)}
 .tg .t b,.tg .t span{color:#fff}
-.tg .l b,.tg .l span{color:var(--red)} .tg .l b{text-shadow:0 0 40px rgba(255,59,78,.7)}
+.tg .l b,.tg .l span{color:var(--dim)}
 
 /* ---------- coding / inside google ---------- */
 .mchip{font:700 28px/1 var(--f-hud);letter-spacing:.2em;padding:12px 18px 10px;border:3px solid currentColor}
@@ -1082,24 +1078,10 @@ const SLIDES = [
   c.at(8.15, () => { const s = P(deck, CX, 700, 'bk', '', {fontSize: '64px', color: '#fff', textShadow: '0 0 20px rgba(0,0,0,.9)'}); typeOn(c, s, 'Plus 1 tie. And the other 5?', 30); });
 }},
 
-/* 07 VS: boss fight, every row where a rival scored higher lands at once */
-{genre: 'VS', dur: 5.8, bg: {mode: 'stripes', hue: 355, energy: .6}, trans: 'shatter', score: true, marks: ['fswe', 'tb4', 'ptb', 'tbs', 'osw'], build(c) {
+/* 07 VS: the five where a rival scored higher, shown plainly (no impact effects) */
+{genre: 'VS', dur: 4.8, bg: {mode: 'dark', hue: 268, hue2: 205, energy: .3}, trans: 'wipe', score: true, marks: ['fswe', 'tb4', 'ptb', 'tbs', 'osw'], build(c) {
   const r = c.root;
-  const sir = h('div', 'siren', null, r);
-  const t1 = h('div', 'tape', null, r, {top: '120px', transform: 'rotate(-2deg)'});
-  const t2 = h('div', 'tape', null, r, {top: '920px', transform: 'rotate(2deg)'});
-  let boss;
-  c.at(0, () => {
-    boss = P(r, CX, CY, 'disp warn', 'BOSS FIGHT', {fontSize: '330px'});
-    fx.slam(boss, {from: 3, dur: .3}); flash('#ff3b4e', .4, .8); shake(40, .6); punch(.08); BG.kick(1.2);
-    const s = P(r, 1600, 780, 'sfx', 'ゴゴゴ', {fontSize: '130px'}); fx.pop(s);
-  });
-  c.at(1.05, () => {
-    A(boss, [{opacity: 1, transform: 'scale(1)'}, {opacity: 0, transform: 'scale(2.4)', filter: 'blur(12px)'}], .3, IN);
-    [t1, t2, sir].forEach(e => A(e, [{opacity: 1}, {opacity: 0}], .3, 'linear'));
-    r.querySelectorAll('.sfx').forEach(kill);
-  });
-  c.at(1.2, () => header(r, 'BOSS FIGHT', '#ff3b4e', 'Not a clean sweep', 'Where a rival scored higher'));
+  c.at(0, () => header(r, 'ALSO', 'var(--dim)', 'Not a clean sweep', 'Where a rival scored higher'));
   const ROWS = [
     ['fswe', 'AGENTIC CODING', 1, 'GPT-6 ASTRA'],
     ['tb4', 'AGENTIC CODING', 3, 'CLAUDE OPUS 5.5'],
@@ -1113,27 +1095,19 @@ const SLIDES = [
   ROWS.forEach((d, i) => {
     const b = B[d[0]], aa = d[0] === 'aa';
     const nm = aa ? AA.n : b.n, va = aa ? AA.v[0] : b.v[0].toFixed(1), vb = aa ? AA.v[1] : b.v[d[2]].toFixed(1);
-    c.at(1.35 + i*.04, () => {
-      const row = rows[i] = h('div', 'vrow', `<div class="vn"><b>${nm}</b><small>${d[1]}</small></div><div class="va disp tabnum">${va}</div><div class="vvs disp">VS</div><div class="vb disp tabnum">${vb}</div><div class="vr hudf">${d[3]}</div><div class="vl"></div>`, r, {top: (285 + i*112) + 'px', height: '100px', borderLeftColor: aa ? 'var(--ar)' : ''});
-      A(row, [{transform: 'translateX(1900px) skewX(-20deg)'}, {transform: 'none'}], .22, OUT);
+    c.at(.35 + i*.05, () => {
+      rows[i] = h('div', 'vrow', `<div class="vn"><b>${nm}</b><small>${d[1]}</small></div><div class="va disp tabnum">${va}</div><div class="vvs disp">VS</div><div class="vb disp tabnum">${vb}</div><div class="vr hudf">${d[3]}</div><div class="vl"></div>`, r, {top: (285 + i*112) + 'px', height: '100px'});
+      fx.from(rows[i], {y: 16, dur: .3});
     });
   });
-  c.at(1.4, () => shake(16, .25));
-  c.at(1.85, () => {
-    ROWS.forEach((d, i) => {
-      const l = rows[i].querySelector('.vl'); l.innerHTML = '<span>LOSS</span>'; fx.slam(l.firstChild, {from: 2.4, dur: .22, rot: -20});
-      if (d[0] !== 'aa') SC.hit(d[0]);
-      FX.burst(1700, 335 + i*112, {n: 40, colors: ['#ff3b4e','#ffffff'], speed: [300, 900]});
-    });
-    const cb = P(r, 1540, 205, 'cbreak', 'COMBO BREAK'); fx.slam(cb, {from: 2, dur: .25, rot: 20}); setTimeout(() => fx.glitch(cb, .3), 300);
-    flash('#ff3b4e', .35, .8); shake(44, .6); punch(.08); BG.kick(1.4);
-  });
-  c.at(3.5, () => {
-    const d = h('div', 'full', null, r, {background: 'rgba(7,6,15,.88)'}); A(d, [{opacity: 0}, {opacity: 1}], .25, OUT);
-    BG.set({mode: 'rays', hue: 268, hue2: 205, energy: .6});
-    const p = P(r, CX, 545, 'tally', `<div class="hudf tt">GOOGLE'S TABLE · 18 BENCHMARKS</div><div class="tg"><div class="w"><b class="disp">12</b><span class="hudf">TOP SCORE</span></div><div class="t"><b class="disp">1</b><span class="hudf">TIE</span></div><div class="l"><b class="disp">5</b><span class="hudf">LOSS</span></div></div>`);
-    fx.slam(p, {from: 1.8, dur: .3}); flash('#ffffff', .35, .7); shake(30, .5); punch(.05);
-    FX.burst(CX, 545, {n: 160, colors: ['#8fd0ff','#ffffff','#ff3b4e'], speed: [500, 1800], jx: 500});
+  c.at(.9, () => ROWS.forEach((d, i) => {
+    const l = rows[i].querySelector('.vl'); l.innerHTML = '<span>BEHIND</span>'; fx.from(l.firstChild, {dur: .3});
+    if (d[0] !== 'aa') SC.hit(d[0], false);
+  }));
+  c.at(2.7, () => {
+    const d = h('div', 'full', null, r, {background: 'rgba(7,6,15,.85)'}); A(d, [{opacity: 0}, {opacity: 1}], .25, OUT);
+    const p = P(r, CX, 545, 'tally', `<div class="hudf tt">GOOGLE'S TABLE · 18 BENCHMARKS</div><div class="tg"><div class="w"><b class="disp">12</b><span class="hudf">TOP SCORE</span></div><div class="t"><b class="disp">1</b><span class="hudf">TIE</span></div><div class="l"><b class="disp">5</b><span class="hudf">BEHIND</span></div></div>`);
+    fx.from(p, {scale: .92, dur: .35});
   });
 }},
 
