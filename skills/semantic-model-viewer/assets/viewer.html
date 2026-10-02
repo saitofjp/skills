@@ -21,13 +21,21 @@
   --node: #ffffff;
   --node-line: #8f96a3;
   --edge: #7c8390;
-  --accent: #2563d9;
-  --accent-rgb: 37, 99, 217;
-  --evidence: #b86e00;
-  --evidence-rgb: 184, 110, 0;
-  --uncertain: #b24a1e;
-  --pos: #c4532d;
-  --neg: #2b7f8f;
+  /* data colors: one meaning each (see references/two-pane.md) */
+  --focus: #ffd21f;          /* what you are looking at: a highlighter */
+  --focus-rgb: 255, 210, 31;
+  --focus-ink: #b38f00;      /* the same, for thin marks */
+  --rel: #7c8594;            /* related, without a sign */
+  --rel-rgb: 124, 133, 148;
+  --pos: #d9480f;            /* + moves with */
+  --pos-rgb: 217, 72, 15;
+  --neg: #1c6fd6;            /* − moves against */
+  --neg-rgb: 28, 111, 214;
+  --evidence: #7048e8;       /* what an inference rests on */
+  --evidence-rgb: 112, 72, 232;
+  --uncertain: #7a5230;
+  --ui: #2b2f36;             /* controls, kept apart from data colors */
+  --ui-fg: #ffffff;
   --chip: #eef0f4;
   --shadow: 0 8px 28px rgba(20, 24, 33, .12);
   --font: system-ui, -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
@@ -38,9 +46,9 @@
   :root:not([data-theme="light"]) {
     --bg: #121418; --panel: #1a1d23; --fg: #e8eaee; --muted: #9aa1ad; --line: #2c3038;
     --node: #1f232a; --node-line: #737b88; --edge: #8a919d;
-    --accent: #6b9dff; --accent-rgb: 107, 157, 255;
-    --evidence: #f0a73a; --evidence-rgb: 240, 167, 58; --uncertain: #f08a5d;
-    --pos: #f08a6a; --neg: #5cc2d1;
+    --focus: #ffd21f; --focus-rgb: 255, 210, 31; --focus-ink: #ffd21f; --rel: #9aa1ad; --rel-rgb: 154, 161, 173;
+    --pos: #ff8a4c; --pos-rgb: 255, 138, 76; --neg: #6ba8ff; --neg-rgb: 107, 168, 255;
+    --evidence: #a78bfa; --evidence-rgb: 167, 139, 250; --uncertain: #c9a27e; --ui: #e8eaee; --ui-fg: #121418;
     --chip: #262a32; --shadow: 0 8px 28px rgba(0, 0, 0, .45);
     color-scheme: dark;
   }
@@ -48,9 +56,9 @@
 :root[data-theme="dark"] {
   --bg: #121418; --panel: #1a1d23; --fg: #e8eaee; --muted: #9aa1ad; --line: #2c3038;
   --node: #1f232a; --node-line: #737b88; --edge: #8a919d;
-  --accent: #6b9dff; --accent-rgb: 107, 157, 255;
-  --evidence: #f0a73a; --evidence-rgb: 240, 167, 58; --uncertain: #f08a5d;
-  --pos: #f08a6a; --neg: #5cc2d1;
+  --focus: #ffd21f; --focus-rgb: 255, 210, 31; --focus-ink: #ffd21f; --rel: #9aa1ad; --rel-rgb: 154, 161, 173;
+  --pos: #ff8a4c; --pos-rgb: 255, 138, 76; --neg: #6ba8ff; --neg-rgb: 107, 168, 255;
+  --evidence: #a78bfa; --evidence-rgb: 167, 139, 250; --uncertain: #c9a27e; --ui: #e8eaee; --ui-fg: #121418;
   --chip: #262a32; --shadow: 0 8px 28px rgba(0, 0, 0, .45);
   color-scheme: dark;
 }
@@ -59,7 +67,7 @@ html, body { height: 100%; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.6 var(--font); display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); overflow: hidden; }
 button, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
 
 /* ---------- header ---------- */
 header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
@@ -70,7 +78,7 @@ header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; pad
 .seg-ctl { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--bg); }
 .seg-ctl button { border: 0; background: transparent; padding: 5px 12px; font-size: 13px; }
 .seg-ctl button + button { border-left: 1px solid var(--line); }
-.seg-ctl button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.seg-ctl button[aria-pressed="true"] { background: var(--ui); color: var(--ui-fg); }
 .ctl-label { font-size: 11px; color: var(--muted); margin-right: 6px; letter-spacing: .04em; }
 .ctl { display: inline-flex; align-items: center; }
 .ctl[hidden] { display: none; }
@@ -81,22 +89,26 @@ main { display: grid; grid-template-columns: minmax(280px, 41%) minmax(0, 1fr); 
 #sourcePane { position: absolute; inset: 0; overflow: auto; padding: 22px 30px 40vh 26px; scroll-behavior: auto; }
 #source { white-space: pre-wrap; font-size: 15px; line-height: 2; max-width: 44em; margin: 0; overflow-wrap: anywhere; }
 #ticks { position: absolute; top: 0; right: 0; width: 8px; bottom: 0; pointer-events: none; }
-#ticks i { position: absolute; right: 1px; width: 6px; height: 3px; border-radius: 2px; background: var(--accent); pointer-events: auto; cursor: pointer; }
+#ticks i { position: absolute; right: 1px; width: 6px; height: 3px; border-radius: 2px; background: var(--focus-ink); pointer-events: auto; cursor: pointer; }
 #ticks i.ev { background: var(--evidence); }
 #ticks i.weak { opacity: .45; }
+#ticks i.pos { background: var(--pos); }
+#ticks i.neg { background: var(--neg); }
 
-.seg { border-radius: 3px; cursor: pointer; transition: background-color .15s, box-shadow .15s; text-decoration: underline dotted rgba(var(--accent-rgb), .22); text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.seg { border-radius: 3px; cursor: pointer; transition: background-color .15s, box-shadow .15s; text-decoration: underline dotted rgba(var(--rel-rgb), .45); text-underline-offset: 4px; text-decoration-thickness: 1px; }
 body.focusing .seg { text-decoration-color: transparent; }
-.seg.lit { background-color: rgba(var(--accent-rgb), calc(var(--hl) * .36)); }
-.seg.hot { box-shadow: inset 0 -2px 0 var(--accent); background-color: rgba(var(--accent-rgb), .30); }
-.seg.ev { background-color: rgba(var(--evidence-rgb), .22); box-shadow: inset 0 -2px 0 var(--evidence); }
+.seg.lit { background-color: rgba(var(--rel-rgb), calc(var(--hl) * .38)); }
+.seg.lit.pos { background-color: rgba(var(--pos-rgb), calc(var(--hl) * .44)); }
+.seg.lit.neg { background-color: rgba(var(--neg-rgb), calc(var(--hl) * .44)); }
+.seg.hot { box-shadow: inset 0 -2px 0 var(--fg); background-color: rgba(var(--focus-rgb), .55); }
+.seg.ev { background-color: rgba(var(--evidence-rgb), .2); box-shadow: inset 0 -2px 0 var(--evidence); }
 .seg.flash { animation: flash 1.2s ease-out; }
-@keyframes flash { 0%, 30% { background-color: rgba(var(--accent-rgb), .55); } 100% { background-color: transparent; } }
+@keyframes flash { 0%, 30% { background-color: rgba(var(--focus-rgb), .8); } 100% { background-color: transparent; } }
 /* formation states */
 body.formation .seg { cursor: default; text-decoration-color: transparent; }
 body.formation #source { color: var(--muted); }
-.seg.formed { color: var(--fg); background-color: rgba(var(--accent-rgb), .08); }
-.seg.current { color: var(--fg); background-color: rgba(var(--accent-rgb), .32); box-shadow: inset 0 -2px 0 var(--accent); }
+.seg.formed { color: var(--fg); background-color: rgba(var(--rel-rgb), .1); }
+.seg.current { color: var(--fg); background-color: rgba(var(--focus-rgb), .55); box-shadow: inset 0 -2px 0 var(--fg); }
 #source .reading { color: var(--fg); }
 
 #graphPane { position: relative; min-height: 0; overflow: hidden; }
@@ -116,18 +128,19 @@ body.formation #source { color: var(--muted); }
 .node.prov-inferred .box, .node.prov-uncertain .box { stroke-dasharray: 5 3; }
 .node.prov-uncertain .box { stroke: var(--uncertain); }
 .node.prov-abstracted .box { stroke-dasharray: 1.5 2.5; stroke-width: 1.6; }
-.node.is-focus .box { stroke: var(--accent); stroke-width: 2.6; fill: color-mix(in srgb, var(--accent) 12%, var(--node)); }
-.node.is-near .box { stroke: var(--accent); stroke-width: 1.7; }
+.node.is-focus .box { stroke: var(--fg); stroke-width: 2.8; fill: color-mix(in srgb, var(--focus) 34%, var(--node)); }
+.node.is-near .box { stroke: var(--rel); stroke-width: 1.9; }
 .node.is-evidence .box { stroke: var(--evidence); stroke-width: 2.2; }
 .node.is-hover .box { stroke-width: 2.6; }
-.node.in-view .box { fill: color-mix(in srgb, var(--accent) 6%, var(--node)); }
+.node.in-view .box { fill: color-mix(in srgb, var(--focus) 12%, var(--node)); }
 .node.tiny text, .node.tiny .badge, .node.tiny .qmark, .node.tiny .box, .node.tiny .box2 { display: none; }
 .node .dot { display: none; fill: var(--node-line); }
 .node.tiny .dot { display: inline; }
-.node.tiny.is-focus .dot, .node.tiny.is-near .dot { fill: var(--accent); }
+.node.tiny.is-focus .dot { fill: var(--focus-ink); }
+.node.tiny.is-near .dot { fill: var(--rel); }
 .node.tiny.is-evidence .dot { fill: var(--evidence); }
 .node.notag .tag { display: none; }
-.node .ring { fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0; }
+.node .ring { fill: none; stroke: var(--focus-ink); stroke-width: 2.4; opacity: 0; }
 
 .edge { --hl: 1; opacity: calc(var(--edge-idle, .55) * (1 - var(--focusing, 0)) + var(--focusing, 0) * (.06 + .94 * var(--hl))); transition: opacity .2s; cursor: pointer; }
 .edge .line { fill: none; stroke: var(--edge); stroke-width: 1.3; }
@@ -142,13 +155,24 @@ body.formation #source { color: var(--muted); }
 .edge.pol-minus .line { stroke: var(--neg); }
 .edge.pol-minus .arrow { fill: var(--neg); }
 .node text.state { fill: var(--muted); text-anchor: start; }
-.node .state-when { fill: var(--accent); font-weight: 600; }
+.node .state-when { fill: var(--fg); font-weight: 700; }
 .node.nostate .state, .node.nostate .state-when, .node.nostate .sep { display: none; }
 .node .sep { stroke: var(--line); stroke-width: 1; }
 .node.role-conclusion .box { stroke-width: 2.4; stroke: var(--fg); }
 .node.role-conclusion .box2 { stroke: var(--fg); }
-.edge.is-focus .line, .edge.is-near .line { stroke: var(--accent); stroke-width: 2.2; }
-.edge.is-focus .arrow, .edge.is-near .arrow { fill: var(--accent); }
+.edge.is-focus .line { stroke: var(--fg); stroke-width: 2.6; }
+.edge.is-focus .arrow { fill: var(--fg); }
+.edge.is-near .line { stroke: var(--rel); stroke-width: 2.2; }
+.edge.is-near .arrow { fill: var(--rel); }
+.edge.is-focus.pol-plus .line, .edge.is-focus.pol-minus .line { stroke-width: 3; }
+.edge.is-near.pol-plus .line, .edge.is-focus.pol-plus .line { stroke: var(--pos); }
+.edge.is-near.pol-plus .arrow, .edge.is-focus.pol-plus .arrow { fill: var(--pos); }
+.edge.is-near.pol-minus .line, .edge.is-focus.pol-minus .line { stroke: var(--neg); }
+.edge.is-near.pol-minus .arrow, .edge.is-focus.pol-minus .arrow { fill: var(--neg); }
+.node.is-near.near-plus .box { stroke: var(--pos); }
+.node.is-near.near-minus .box { stroke: var(--neg); }
+.node.tiny.is-near.near-plus .dot { fill: var(--pos); }
+.node.tiny.is-near.near-minus .dot { fill: var(--neg); }
 .edge.is-focus .elabel, .edge.is-near .elabel { fill: var(--fg); font-weight: 600; }
 .edge.is-evidence .line { stroke: var(--evidence); stroke-width: 2.2; }
 .edge.is-evidence .arrow { fill: var(--evidence); }
@@ -167,10 +191,11 @@ body.formation .node, body.formation .edge { --focusing: 1; }
 body.formation .node.formed { --hl: .62; }
 body.formation .edge.formed { --hl: .5; }
 body.formation .node.current { --hl: 1; }
-body.formation .node.current .box { stroke: var(--accent); stroke-width: 2.4; }
+body.formation .node.current .box { stroke: var(--fg); stroke-width: 2.6; fill: color-mix(in srgb, var(--focus) 34%, var(--node)); }
 body.formation .edge.current { --hl: 1; }
-body.formation .edge.current .line { stroke: var(--accent); stroke-width: 2.2; }
-body.formation .edge.current .arrow { fill: var(--accent); }
+body.formation .edge.current .line { stroke-width: 2.8; }
+body.formation .edge.current:not(.pol-plus):not(.pol-minus) .line { stroke: var(--fg); }
+body.formation .edge.current:not(.pol-plus):not(.pol-minus) .arrow { fill: var(--fg); }
 body.formation .edge.current .elabel { display: inline; fill: var(--fg); font-weight: 600; }
 body.formation.complete .node, body.formation.complete .edge { --hl: 1; }
 body.formation .partof { opacity: .35; }
@@ -180,14 +205,14 @@ body.formation .partof { opacity: .35; }
 .overlay > * { pointer-events: auto; }
 #tools { right: 12px; bottom: 12px; display: flex; gap: 6px; }
 .icon-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); box-shadow: var(--shadow); display: grid; place-items: center; font-size: 16px; line-height: 1; }
-.icon-btn[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+.icon-btn[aria-pressed="true"] { background: var(--ui); color: var(--ui-fg); border-color: var(--ui); }
 .text-btn { height: 32px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); box-shadow: var(--shadow); font-size: 12px; }
-.text-btn[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+.text-btn[aria-pressed="true"] { background: var(--ui); color: var(--ui-fg); border-color: var(--ui); }
 #legend { left: 12px; bottom: 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: 11.5px; color: var(--muted); box-shadow: var(--shadow); display: grid; gap: 3px; }
 #legend svg { vertical-align: middle; margin-right: 6px; }
 #legend[hidden] { display: none; }
 #offscreen { inset: 0; }
-#offscreen .chip { position: absolute; transform: translate(-50%, -50%); max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--panel); border: 1.5px solid var(--accent); color: var(--fg); box-shadow: var(--shadow); cursor: pointer; }
+#offscreen .chip { position: absolute; transform: translate(-50%, -50%); max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--panel); border: 1.5px solid var(--fg); color: var(--fg); box-shadow: var(--shadow); cursor: pointer; }
 #offscreen .chip.ev { border-color: var(--evidence); }
 #offscreen .chip.weak { opacity: .7; border-style: dashed; }
 
@@ -201,7 +226,7 @@ body.formation .partof { opacity: .35; }
 #details .pill.prov-explicit { color: var(--fg); }
 #details .pill.prov-inferred, #details .pill.prov-abstracted { color: var(--evidence); }
 #details .pill.prov-uncertain { color: var(--uncertain); }
-#details .pin { font-size: 11px; color: var(--accent); }
+#details .pin { font-size: 11px; color: var(--fg); }
 #details .close { margin-left: auto; border: 0; background: transparent; color: var(--muted); font-size: 18px; line-height: 1; padding: 0 2px; }
 #details h3 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 12px 0 4px; font-weight: 600; }
 #details ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
@@ -225,7 +250,7 @@ body.formation .partof { opacity: .35; }
 body.formation #fbar { display: flex; }
 body.formation #tools, body.formation #legend, body.formation #details { display: none; }
 #caption { align-self: center; max-width: min(760px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 8px 14px; text-align: center; }
-#caption .phase { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+#caption .phase { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
 #caption .main { font-size: 15px; font-weight: 600; line-height: 1.45; }
 #caption .quote { font-size: 12.5px; color: var(--muted); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 #controls { align-self: center; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 6px 8px; }
@@ -233,13 +258,13 @@ body.formation #tools, body.formation #legend, body.formation #details { display
 #progress { font-family: var(--mono); font-size: 12px; color: var(--muted); min-width: 64px; text-align: center; }
 #steps { right: 12px; top: 12px; width: min(300px, calc(100% - 24px)); max-height: calc(100% - 210px); overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 8px; font-size: 12px; display: none; }
 body.formation #steps.open { display: block; }
-#steps h3 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); margin: 8px 6px 2px; }
+#steps h3 { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 8px 6px 2px; }
 #steps button { all: unset; display: block; width: 100%; box-sizing: border-box; padding: 3px 6px; border-radius: 6px; cursor: pointer; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #steps button:hover { background: var(--chip); }
 #steps button.done { color: var(--fg); }
-#steps button.now { background: rgba(var(--accent-rgb), .14); color: var(--fg); font-weight: 600; }
+#steps button.now { background: rgba(var(--focus-rgb), .38); color: var(--fg); font-weight: 600; }
 
-.ghost { position: fixed; left: 0; top: 0; z-index: 20; pointer-events: none; padding: 1px 6px; border-radius: 6px; background: rgba(var(--accent-rgb), .9); color: #fff; font-size: 13px; white-space: nowrap; box-shadow: var(--shadow); }
+.ghost { position: fixed; left: 0; top: 0; z-index: 20; pointer-events: none; padding: 1px 6px; border-radius: 6px; background: rgba(var(--focus-rgb), .95); color: #1c1e23; font-size: 13px; white-space: nowrap; box-shadow: var(--shadow); }
 
 @media (max-width: 860px) {
   body { overflow: auto; }
@@ -413,7 +438,7 @@ const I18N = {
     byFocus: 'From a focus', byReading: 'In reading order', steps: 'Steps',
     node: 'Node', relation: 'Relation', relations: 'relations', pinned: 'pinned · Esc to release', hint: 'Hover the text or the graph. Click to pin.',
     mentions: 'In the text', basis: 'Derived from', basisOf: 'Basis for', partOf: 'Part of', contains: 'Contains', links: 'Relations', other: 'Other fields', shownAs: 'Shown inside',
-    formHere: 'Form from here', states: 'States', legendPlus: 'raises (+)', legendMinus: 'lowers (−)', close: 'Hide details (stays pinned)', noSpan: 'No span of its own', note: 'Note',
+    formHere: 'Form from here', states: 'States', legendFocus: 'focus (what you point at)', legendPlus: '+ raises · moves with', legendMinus: '− lowers · moves against', close: 'Hide details (stays pinned)', noSpan: 'No span of its own', note: 'Note',
     explicit: 'explicit — stated in the text', inferred: 'inferred — follows from the text, not stated', abstracted: 'abstracted — a grouping made while modeling', uncertain: 'uncertain — the text allows more than one reading',
     legendExplicit: 'explicit', legendInferred: 'inferred', legendAbstracted: 'abstracted', legendUncertain: 'uncertain', legendPart: 'part of', legendBasis: 'derived from',
     phase_focus: 'Focus', phase_direct: 'Direct relations', phase_secondary: 'Secondary relations', phase_overall: 'Overall structure', phase_complete: 'Complete', phase_reading: 'Reading', phase_custom: 'Step',
@@ -422,7 +447,7 @@ const I18N = {
     byFocus: '中心から広げる', byReading: '読む順に', steps: '手順',
     node: 'Node', relation: 'Relation', relations: '件の関係', pinned: '固定中 · Escで解除', hint: '本文かグラフにカーソルを重ねる。クリックで固定。',
     mentions: '原文での位置', basis: '根拠（導出元）', basisOf: 'これを根拠とする要素', partOf: '含まれる先', contains: '含むもの', links: '関係', other: 'その他の項目', shownAs: '表示上の所属',
-    formHere: 'ここから形成', states: '状態', legendPlus: '押し上げ（＋）', legendMinus: '押し下げ（−）', close: '詳細を閉じる（固定は維持）', noSpan: '原文に直接の位置なし', note: 'メモ',
+    formHere: 'ここから形成', states: '状態', legendFocus: '焦点（いま指しているもの）', legendPlus: '＋ 押し上げ・同じ向き', legendMinus: '− 押し下げ・逆向き', close: '詳細を閉じる（固定は維持）', noSpan: '原文に直接の位置なし', note: 'メモ',
     explicit: 'explicit — 原文に明示', inferred: 'inferred — 原文から推論（明示はされていない）', abstracted: 'abstracted — モデル化でまとめたもの', uncertain: 'uncertain — 複数の読みがありうる',
     legendExplicit: '明示', legendInferred: '推論', legendAbstracted: '抽象化', legendUncertain: '不確実', legendPart: '部分', legendBasis: '根拠',
     phase_focus: '中心', phase_direct: '直接の関係', phase_secondary: '二次の関係', phase_overall: '全体構造', phase_complete: '完成', phase_reading: '読み進める', phase_custom: 'ステップ',
@@ -1020,9 +1045,9 @@ function applyHighlight() {
   svg.style.setProperty('--focusing', f ? 1 : 0);
   layers.basis.querySelectorAll('.basis').forEach(b => b.classList.remove('on'));
   if (!f) {
-    nodeDom.forEach(({ g }) => { g.style.setProperty('--hl', 1); g.classList.remove('is-focus', 'is-near', 'is-evidence', 'is-hover'); });
+    nodeDom.forEach(({ g }) => { g.style.setProperty('--hl', 1); g.classList.remove('is-focus', 'is-near', 'is-evidence', 'is-hover', 'near-plus', 'near-minus'); });
     edgeDom.forEach(({ g }) => { g.style.setProperty('--hl', 1); g.classList.remove('is-focus', 'is-near', 'is-evidence', 'is-hover'); });
-    segs.forEach(s => { s.el.classList.remove('lit', 'hot', 'ev'); s.el.style.removeProperty('--hl'); });
+    segs.forEach(s => { s.el.classList.remove('lit', 'hot', 'ev', 'pos', 'neg'); s.el.style.removeProperty('--hl'); });
     renderDetails(null);
     updateTicks(); updateOffscreen();
     return;
@@ -1032,11 +1057,20 @@ function applyHighlight() {
   const ev = evidenceOf(focusEls);
   const evVis = new Set([...ev].map(el => visOf(el, G)).filter(Boolean));
   const intensityOfVis = vid => INTENSITY(dist.has(vid) ? dist.get(vid) : Infinity);
+  // ＋: moves with the focus, −: moves against it, '': no sign (see two-pane.md)
+  const signOf = rs => { const ps = new Set(rs.map(r => r.polarity)); return ps.size === 1 ? [...ps][0] : ''; };
+  const fv0 = G.byId.get(f.vid);
+  const nearSign = new Map();
+  if (fv0 && fv0.kind === 'node') {
+    G.edges.filter(e => e.a === fv0 || e.b === fv0).forEach(e => nearSign.set((e.a === fv0 ? e.b : e.a).id, signOf(e.rels)));
+  }
   nodeDom.forEach(({ g }, id) => {
     const i = Math.max(intensityOfVis(id), evVis.has(id) ? .8 : 0);
     g.style.setProperty('--hl', i);
     g.classList.toggle('is-focus', id === f.vid);
     g.classList.toggle('is-near', id !== f.vid && intensityOfVis(id) >= .6);
+    g.classList.toggle('near-plus', nearSign.get(id) === '+');
+    g.classList.toggle('near-minus', nearSign.get(id) === '-');
     g.classList.toggle('is-evidence', evVis.has(id) && id !== f.vid);
     g.classList.toggle('is-hover', !!(pinned && hover && hover.vid === id && id !== pinned.vid));
   });
@@ -1063,19 +1097,20 @@ function applyHighlight() {
   const groupEls = !isEdge && fv ? (G.members.get(fv.id) || []).filter(m => !hotIds.has(m.id)) : [];
   const innerRels = !isEdge && fv ? rels.filter(r => G.relVis.get(r.id) === fv.id) : [];
   const linkRels = around.flatMap(e => e.rels).filter(r => !hotIds.has(r.id));
-  const weight = new Map();
+  const weight = new Map(), sign = new Map();
   const put = (el, w) => weight.set(el.id, Math.max(weight.get(el.id) || 0, w));
   groupEls.forEach(el => put(el, .3));          // parts folded into the focus
   innerRels.forEach(r => put(r, .3));
-  linkRels.forEach(r => put(r, .6));            // the words that state its relations
+  linkRels.forEach(r => { put(r, .6); sign.set(r.id, r.polarity); });   // the words that state its relations
   // the other ends count only where they share a sentence with the focus or one of its relations
   const ctx = new Set();
   [...focusEls, ...groupEls, ...linkRels].forEach(el => el.spans.forEach(sp => ctx.add(sentenceAt(sp.start))));
   const ends = isEdge ? [fv.a, fv.b] : around.map(e => (e.a === fv ? e.b : e.a));
   const nearEls = new Set(ends.flatMap(n => G.members.get(n.id) || [n]));
+  if (!isEdge) ends.forEach(n => (G.members.get(n.id) || [n]).forEach(m => sign.set(m.id, nearSign.get(n.id) || '')));
   const nearW = isEdge ? .4 : .25;
   segs.forEach(s => {
-    let best = 0, hot = false, isEv = false;
+    let best = 0, hot = false, isEv = false, sg = '';
     const inCtx = ctx.has(sentenceAt(s.start));
     for (const o of s.owners) {
       if (hotIds.has(o.el.id)) { hot = true; continue; }
@@ -1083,9 +1118,11 @@ function applyHighlight() {
       let w = weight.get(o.el.id) || 0;
       if (!w && inCtx && nearEls.has(o.el)) w = nearW;
       if (o.len > 60) w *= .45;
-      best = Math.max(best, w);
+      if (w > best) { best = w; sg = sign.get(o.el.id) || ''; }
     }
     s.el.classList.toggle('lit', best > 0);
+    s.el.classList.toggle('pos', best > 0 && sg === '+');
+    s.el.classList.toggle('neg', best > 0 && sg === '-');
     s.el.style.setProperty('--hl', best.toFixed(3));
     s.el.classList.toggle('hot', hot);
     s.el.classList.toggle('ev', isEv && !hot);
@@ -1200,7 +1237,7 @@ function updateTicks() {
     const lit = parseFloat(s.el.style.getPropertyValue('--hl') || 0);
     if (!strong && !ev && lit < .35) return;
     const y = Math.round((s.el.offsetTop / H) * (ph - 4));
-    const cls = strong ? '' : ev ? 'ev' : 'weak';
+    const cls = strong ? '' : ev ? 'ev' : s.el.classList.contains('pos') ? 'pos' : s.el.classList.contains('neg') ? 'neg' : 'weak';
     if (!marks.has(y) || cls === '') marks.set(y, { cls, top: s.el.offsetTop });
   });
   marks.forEach(({ cls, top }, y) => {
@@ -1350,6 +1387,7 @@ function renderDetails(f) {
     row(line('6 4'), T.legendInferred),
     row(line('1.5 3'), T.legendAbstracted),
     row(`<path d="M1 6H29" stroke="var(--uncertain)" stroke-width="1.6" stroke-dasharray="6 4" fill="none"/>`, T.legendUncertain),
+    row(`<rect x="1" y="1" width="28" height="10" rx="3" fill="var(--focus)"/><path d="M1 11H29" stroke="var(--fg)" stroke-width="2"/>`, T.legendFocus),
     rels.some(r => r.polarity) ? row(`<path d="M1 6H29" stroke="var(--pos)" stroke-width="2" fill="none"/>`, T.legendPlus) : null,
     rels.some(r => r.polarity) ? row(`<path d="M1 6H29" stroke="var(--neg)" stroke-width="2" fill="none"/>`, T.legendMinus) : null,
     row(`<path d="M1 6H29" stroke="var(--evidence)" stroke-width="1.6" stroke-dasharray="2 4" stroke-linecap="round" fill="none"/>`, T.legendBasis),
@@ -1860,7 +1898,8 @@ function setMode(m) {
     svg.style.setProperty('--focusing', 1);
     nodeDom.forEach(({ g }) => { g.classList.remove('is-focus', 'is-near', 'is-evidence', 'is-hover', 'in-view'); g.style.removeProperty('--hl'); });
     edgeDom.forEach(({ g }) => { g.classList.remove('is-focus', 'is-near', 'is-evidence', 'is-hover'); g.style.removeProperty('--hl'); });
-    segs.forEach(s => { s.el.classList.remove('lit', 'hot', 'ev'); s.el.style.removeProperty('--hl'); });
+    segs.forEach(s => { s.el.classList.remove('lit', 'hot', 'ev', 'pos', 'neg'); s.el.style.removeProperty('--hl'); });
+    nodeDom.forEach(({ g }) => g.classList.remove('near-plus', 'near-minus'));
     $('#ticks').replaceChildren(); $('#offscreen').replaceChildren();
     restartFormation(true);
   } else {

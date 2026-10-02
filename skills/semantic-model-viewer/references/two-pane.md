@@ -13,6 +13,21 @@ Two Pane puts the source text and the Semantic Model side by side and keeps them
 | Right pane | The graph. Overlays: details card (top right), legend and usage hint (bottom left), tools (follow text, zoom, fit; bottom right), chips for highlighted nodes that are outside the view |
 | Narrow screens (< 860 px) | Text above, graph below |
 
+### Colors
+
+Each data color has one meaning, the same in the text and in the graph. Controls use a neutral ink so they never read as data.
+
+| Color | Meaning |
+|---|---|
+| Yellow highlighter, ink underline / ink border | The focus: what the cursor points at, or what is pinned |
+| Orange-red | `+`: moves with the focus (raises it, or is raised by it) |
+| Blue | `−`: moves against the focus (lowers it, or is lowered by it) |
+| Grey | Related without a sign (support, condition, part) |
+| Purple | What an inference rests on (`derivedFrom`) |
+| Brown, dashed with "?" | `uncertain` |
+
+Orange-red and blue were chosen so that the sign stays legible with the common forms of color blindness; the sign is also written on the edge label (＋ / −).
+
 ### Graph encoding
 
 Every visual variable carries information. None is decoration.
@@ -26,12 +41,12 @@ Every visual variable carries information. None is decoration.
 | Arrowhead | Direction of the relation (`directed: false` has none) |
 | Edge label | `label`, else `type`. When the current scale has more than 36 edges, labels show only for edges in focus |
 | Small mono text above a label | The node's `type` (hidden when zoomed out) |
-| Lines under a label | The node's `states`: when (accent) and how it stands. Up to two in the box; the hover card and the details card list all |
-| Edge color | `polarity`: warm for `+` (raises), cool for `-` (lowers), grey without a sign. The label is prefixed with ＋ or − |
+| Lines under a label | The node's `states`: when (bold) and how it stands. Up to two in the box; the hover card and the details card list all |
+| Edge color | `polarity`: orange-red for `+` (raises), blue for `-` (lowers), grey without a sign. The label is prefixed with ＋ or − |
 | Bold double border | `role: "conclusion"`: what the text concludes |
 | Badge `+n` | Parts folded into this node at the current scale |
 | Dotted grey connector | Part of (`parent`) |
-| Dotted amber connector | Derived from (`derivedFrom`), shown while tracing evidence |
+| Dotted purple connector | Derived from (`derivedFrom`), shown while tracing evidence |
 | Dot instead of a box | The node is too small to read at this zoom (it becomes a box again when zoomed in) |
 
 ## Source ↔ model mapping
@@ -55,19 +70,19 @@ Distance is measured on the graph at the current scale. A step between a node an
 | 2 | second-order nodes | 25% |
 | more | unrelated | 0% highlight; still drawn faintly, never hidden |
 
-- In the graph, nodes and edges fade with the intensity. The focus and anything at 60% or more is outlined in the accent color. The graph shows the whole neighborhood; the text shows only where the focus is written.
+- In the graph, nodes and edges fade with the intensity. The focus gets the highlighter and an ink border. Directly related nodes are outlined in the color of the sign that connects them, and edges keep their sign color. The graph shows the whole neighborhood; the text shows only where the focus is written.
 - In the text, the weights are local, so that a factor mentioned twenty times does not color the whole document:
 
   | Spans of | Weight |
   |---|---|
   | the element under the cursor (or pinned) | 100%, underlined |
-  | the relations of the focus: the words that state them | 60% |
+  | the relations of the focus: the words that state them | 60%, in the color of the relation's sign |
   | parts folded into the focus, and relations inside it | 30% |
-  | the nodes at the other end of those relations | 25% (40% when the focus is a relation), only in sentences where the focus or one of its relations is written |
+  | the nodes at the other end of those relations | 25% (40% when the focus is a relation), only in sentences where the focus or one of its relations is written, in the color of the sign that connects them (grey when the relations disagree or have none) |
   | anything further away | not tinted in the text |
 
   A span longer than 60 characters counts at 45% of its weight, so a paragraph-sized unit does not drown the words inside it. "Sentence" here is a reading unit cut at sentence-final punctuation and line breaks, used only to keep highlights local.
-- **Evidence.** If the focused element has `derivedFrom`, everything it was derived from, followed recursively, is marked amber in the graph and in the text, with dotted amber connectors. An inference can be walked back to the words it rests on.
+- **Evidence.** If the focused element has `derivedFrom`, everything it was derived from, followed recursively, is marked purple in the graph and in the text, with dotted purple connectors. An inference can be walked back to the words it rests on.
 
 ## Interaction
 

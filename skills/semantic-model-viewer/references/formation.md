@@ -45,7 +45,7 @@ With `formation.strategy: "custom"`, `formation.steps` gives the order: `[{"add"
 | The arrowhead and the label appear after the line has grown | The direction of the relation is part of its meaning and can differ from the expansion order |
 | The node at the end of the line appears | Reached through that relation |
 | A ring pulses around a node | Mentioned again (reading order) |
-| This step's elements in the accent color; earlier ones dimmed; later ones absent | What is new now, against the context already built |
+| This step's elements under the highlighter (yellow, ink border); earlier ones dimmed; later ones absent | What is new now, against the context already built |
 | The camera starts close on the focus and widens as the structure grows; in reading order it follows the current sentence; at Complete it fits everything | From the center to the overall structure |
 
 Within a step, items start one after another (120–260 ms apart) and overlap. A relation waits until both of its ends are on screen. Up to six text-to-node flights run per step; further nodes appear in place. With `prefers-reduced-motion`, nothing flies or grows: the same steps appear directly.
