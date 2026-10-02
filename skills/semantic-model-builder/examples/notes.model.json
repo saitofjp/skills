@@ -1,0 +1,102 @@
+{
+  "version": "semantic-model/1",
+  "sourceText": "駅前の商店街では、昨年から空き店舗が増えている。郊外に大型店ができ、買い物客がそちらに流れたためだ。\n一方で、家賃が下がった空き店舗を借りて、若い店主が小さな店を開く例が少しずつ増えている。パン屋や古本屋など、大型店にはない店が多い。\n商店街の組合は、来年度から家賃の一部を補助し、月に一度の共同イベントで新しい店を呼び込む方針を決めた。",
+  "summary": [
+    {"text": "商店街は、"},
+    {"text": "大型店に客を奪われて空き店舗が増えたが、", "refs": ["vacancy"]},
+    {"text": "若い店主の出店という芽を", "refs": ["newcomers"]},
+    {"text": "家賃補助とイベントで育てる。", "refs": ["plan"]}
+  ],
+  "nodes": [
+    {
+      "id": "vacancy",
+      "label": "空き店舗が増えている",
+      "type": "現状",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 0, "end": 50, "text": "駅前の商店街では、昨年から空き店舗が増えている。郊外に大型店ができ、買い物客がそちらに流れたためだ。"}],
+      "points": [
+        {
+          "label": "昨年から増加",
+          "when": "昨年から",
+          "sourceSpans": [{"start": 9, "end": 23, "text": "昨年から空き店舗が増えている"}]
+        },
+        {
+          "label": "原因：郊外の大型店に客が流れた",
+          "sourceSpans": [{"start": 24, "end": 46, "text": "郊外に大型店ができ、買い物客がそちらに流れた"}]
+        }
+      ]
+    },
+    {
+      "id": "newcomers",
+      "label": "若い店主の出店という芽",
+      "type": "兆し",
+      "provenance": "explicit",
+      "sourceSpans": [
+        {
+          "start": 51,
+          "end": 117,
+          "text": "一方で、家賃が下がった空き店舗を借りて、若い店主が小さな店を開く例が少しずつ増えている。パン屋や古本屋など、大型店にはない店が多い。"
+        }
+      ],
+      "points": [
+        {
+          "label": "家賃が下がった空き店舗を借りて出店",
+          "sourceSpans": [{"start": 55, "end": 70, "text": "家賃が下がった空き店舗を借りて"}]
+        },
+        {
+          "label": "パン屋・古本屋など、大型店にない店",
+          "sourceSpans": [{"start": 95, "end": 113, "text": "パン屋や古本屋など、大型店にはない店"}]
+        }
+      ]
+    },
+    {
+      "id": "plan",
+      "label": "組合の方針：補助とイベントで呼び込む",
+      "type": "方針",
+      "provenance": "explicit",
+      "role": "conclusion",
+      "sourceSpans": [{"start": 118, "end": 169, "text": "商店街の組合は、来年度から家賃の一部を補助し、月に一度の共同イベントで新しい店を呼び込む方針を決めた。"}],
+      "points": [
+        {
+          "label": "家賃の一部を補助",
+          "when": "来年度から",
+          "sourceSpans": [{"start": 126, "end": 139, "text": "来年度から家賃の一部を補助"}]
+        },
+        {"label": "月に一度の共同イベント", "sourceSpans": [{"start": 141, "end": 152, "text": "月に一度の共同イベント"}]}
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "vacancy-newcomers",
+      "source": "vacancy",
+      "target": "newcomers",
+      "type": "enables",
+      "label": "安く借りられる",
+      "polarity": "+",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 55, "end": 66, "text": "家賃が下がった空き店舗"}]
+    },
+    {
+      "id": "newcomers-plan",
+      "source": "newcomers",
+      "target": "plan",
+      "type": "motivates",
+      "label": "この芽を育てる",
+      "provenance": "inferred",
+      "sourceSpans": [{"start": 153, "end": 162, "text": "新しい店を呼び込む"}],
+      "note": "方針は「新しい店を呼び込む」とだけ言い、若い店主の出店を受けたものとは書いていない。流れからそう読んだ。"
+    },
+    {
+      "id": "vacancy-plan",
+      "source": "vacancy",
+      "target": "plan",
+      "type": "motivates",
+      "label": "空き店舗を埋める",
+      "provenance": "inferred",
+      "sourceSpans": [{"start": 153, "end": 162, "text": "新しい店を呼び込む"}],
+      "note": "空き店舗対策とは明示されていないが、新しい店を呼び込むことは空き店舗を埋めることになる。"
+    }
+  ],
+  "metadata": {"title": "駅前商店街の空き店舗（作例）", "language": "ja"}
+}

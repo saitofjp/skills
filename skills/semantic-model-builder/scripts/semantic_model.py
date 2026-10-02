@@ -15,9 +15,9 @@ Standard library only.
   semantic_model.py validate MODEL.json [--json]
       Check the contract. Exit status 1 when there are errors.
   semantic_model.py outline MODEL.json
-      Read the model aloud: from its conclusions through their reasons. It should
-      explain the text to someone who has not read it. Also lists signs that the
-      model copies the wording instead of the meaning.
+      Read the notes back: the summary, then every chunk with its points and the
+      relations to other chunks, in the order of the notes. It should explain the
+      text to someone who has not read it.
   semantic_model.py summary MODEL.json
       A Markdown overview for checking the evidence against the text.
 """
@@ -33,7 +33,7 @@ PROVENANCE = ("explicit", "inferred", "abstracted", "uncertain")
 _SENTENCE_END = set("。．！？!?")
 _CLOSERS = set("」』）)】〕］]\"'”’")
 _DIGITS = set("0123456789０１２３４５６７８９")
-_DRAFT_KEYS = ("quote", "sentence", "occurrence")
+_DRAFT_KEYS = ("quote", "sentence", "sentences", "occurrence")
 
 
 class ContractError(Exception):
@@ -110,7 +110,11 @@ def _clip(s, width=40):
 
 
 def resolve_span(span, text, sentences):
-    """Return a span with start/end/text; draft keys (quote, sentence, occurrence) are consumed."""
+    """Return a span with start/end/text; draft keys (quote, sentence(s), occurrence) are consumed.
+
+    Draft forms: "quote", {"quote", "sentence"|"sentences", "occurrence"}, a whole sentence
+    {"sentence": n}, or a passage of whole sentences {"sentences": [first, last]}.
+    """
     if isinstance(span, str):
         span = {"quote": span}
     if not isinstance(span, dict):
@@ -128,15 +132,14 @@ def resolve_span(span, text, sentences):
         return {"start": s, "end": e, "text": actual, **extra}
 
     quote = span.get("quote")
+    within = _sentence_range(span, sentences)
+    if quote is None and within is not None:
+        s, e, _ = within
+        return {"start": s, "end": e, "text": text[s:e], **extra}
     if not isinstance(quote, str) or not quote:
-        raise ContractError("a span needs start/end or a non-empty quote")
-    lo, hi, where = 0, len(text), "the text"
+        raise ContractError("a span needs start/end, a non-empty quote, or sentence numbers")
+    lo, hi, where = within or (0, len(text), "the text")
     sentence = span.get("sentence")
-    if sentence is not None:
-        if not isinstance(sentence, int) or not 1 <= sentence <= len(sentences):
-            raise ContractError(f"sentence {sentence!r} is not between 1 and {len(sentences)}")
-        lo, hi = sentences[sentence - 1]
-        where = f"sentence {sentence}"
     hits = _find_all(text, quote, lo, hi)
     occurrence = span.get("occurrence")
     if occurrence is not None:
@@ -156,6 +159,22 @@ def resolve_span(span, text, sentences):
             'add "sentence" or "occurrence"'
         )
     return {"start": start, "end": start + len(quote), "text": quote, **extra}
+
+
+def _sentence_range(span, sentences):
+    """(start, end, where) of {"sentence": n} or {"sentences": [first, last]} (inclusive), else None."""
+    if "sentences" in span:
+        pair = span["sentences"]
+        if (not isinstance(pair, list) or len(pair) != 2 or not all(type(k) is int for k in pair)
+                or not 1 <= pair[0] <= pair[1] <= len(sentences)):
+            raise ContractError(f"sentences must be [first, last] between 1 and {len(sentences)} (got {pair!r})")
+        return sentences[pair[0] - 1][0], sentences[pair[1] - 1][1], f"sentences {pair[0]}-{pair[1]}"
+    if "sentence" in span:
+        k = span["sentence"]
+        if type(k) is not int or not 1 <= k <= len(sentences):
+            raise ContractError(f"sentence {k!r} is not between 1 and {len(sentences)}")
+        return sentences[k - 1][0], sentences[k - 1][1], f"sentence {k}"
+    return None
 
 
 def _not_found_hint(quote, text, sentences, sentence):
@@ -179,8 +198,8 @@ def _check_offsets(s, e, length):
 def merge_drafts(drafts):
     """Merge drafts written in parts (e.g. one per section) into one; return (draft, warnings).
 
-    Elements with the same id are one element: their sourceSpans and derivedFrom
-    are combined, and for any other field the first value given wins.
+    Elements with the same id are one element: their sourceSpans, points and
+    derivedFrom are combined, and for any other field the first value given wins.
     """
     merged = {"nodes": [], "relations": [], "metadata": {}}
     index, warnings = {}, []
@@ -210,8 +229,8 @@ def merge_drafts(drafts):
                 for key, value in el.items():
                     if key == "sourceSpans":
                         first["sourceSpans"] = list(first.get("sourceSpans") or []) + list(value or [])
-                    elif key == "states":
-                        first["states"] = list(first.get("states") or []) + list(value or [])
+                    elif key == "points":
+                        first["points"] = list(first.get("points") or []) + list(value or [])
                     elif key == "derivedFrom":
                         first["derivedFrom"] = list(dict.fromkeys(list(first.get("derivedFrom") or []) + list(value or [])))
                     elif key not in first:
@@ -257,17 +276,17 @@ def resolve_model(draft, source_text=None):
                 except ContractError as exc:
                     errors.append(f"{element.get('id', '?')}: span {k}: {exc}")
             element["sourceSpans"] = _dedupe_spans(resolved)
-            for n, state in enumerate(element.get("states") or [], 1):
-                if not isinstance(state, dict):
+            for n, point in enumerate(element.get("points") or [], 1):
+                if not isinstance(point, dict):
                     continue
                 spans = []
-                for k, span in enumerate(state.get("sourceSpans") or [], 1):
+                for k, span in enumerate(point.get("sourceSpans") or [], 1):
                     try:
                         spans.append(resolve_span(span, text, sentences))
                     except ContractError as exc:
-                        errors.append(f"{element.get('id', '?')}: state {n}: span {k}: {exc}")
-                state["sourceSpans"] = _dedupe_spans(spans)
-    head = ("version", "sourceText", "nodes", "relations", "metadata")
+                        errors.append(f"{element.get('id', '?')}: point {n}: span {k}: {exc}")
+                point["sourceSpans"] = _dedupe_spans(spans)
+    head = ("version", "sourceText", "summary", "nodes", "relations", "metadata")
     ordered = {k: model[k] for k in head if k in model}
     ordered.update((k, v) for k, v in model.items() if k not in ordered)
     return ordered, errors
@@ -299,11 +318,11 @@ def _check_spans(spans, name, text, errors):
 
 
 def all_spans(el):
-    """An element's own spans plus those of its states."""
+    """An element's own spans plus those of its points."""
     out = list(el.get("sourceSpans") or [])
-    for state in el.get("states") or []:
-        if isinstance(state, dict):
-            out += list(state.get("sourceSpans") or [])
+    for point in el.get("points") or []:
+        if isinstance(point, dict):
+            out += list(point.get("sourceSpans") or [])
     return out
 
 
@@ -364,25 +383,25 @@ def validate_model(model):
 
         spans = _check_spans(el.get("sourceSpans"), name, text, errors)
 
-        states = el.get("states")
-        if states is not None:
+        points = el.get("points")
+        if points is not None:
             if kind != "node":
-                errors.append(f"{name}: states are for nodes only")
-            elif not isinstance(states, list):
-                errors.append(f"{name}: states must be a list")
+                errors.append(f"{name}: points are for nodes only")
+            elif not isinstance(points, list):
+                errors.append(f"{name}: points must be a list")
             else:
-                for n, state in enumerate(states, 1):
-                    where = f"{name}: state {n}"
-                    if not isinstance(state, dict) or not isinstance(state.get("label"), str) or not state["label"].strip():
+                for n, point in enumerate(points, 1):
+                    where = f"{name}: point {n}"
+                    if not isinstance(point, dict) or not isinstance(point.get("label"), str) or not point["label"].strip():
                         errors.append(f"{where} needs a non-empty label")
                         continue
-                    if "when" in state and not isinstance(state["when"], str):
+                    if "when" in point and not isinstance(point["when"], str):
                         errors.append(f"{where}: when must be a string")
-                    sprov = state.get("provenance", prov)
-                    if sprov not in PROVENANCE:
+                    pprov = point.get("provenance", prov)
+                    if pprov not in PROVENANCE:
                         errors.append(f"{where}: provenance must be one of {', '.join(PROVENANCE)}")
-                    if not _check_spans(state.get("sourceSpans", []), where, text, errors) and sprov == "explicit":
-                        warnings.append(f"{where} ({state['label']!r}) has no sourceSpans - point at the words that state it")
+                    if not _check_spans(point.get("sourceSpans", []), where, text, errors) and pprov == "explicit":
+                        warnings.append(f"{where} ({point['label']!r}) has no sourceSpans - point at the words that state it")
         if "polarity" in el and (kind != "relation" or el["polarity"] not in ("+", "-")):
             errors.append(f"{name}: polarity is for relations and must be \"+\" or \"-\"")
         if "role" in el and not isinstance(el["role"], str):
@@ -434,6 +453,25 @@ def validate_model(model):
         if prov == "uncertain" and not el.get("note"):
             warnings.append(f"{name}: uncertain without a note - say what the competing readings are")
 
+    summary = model.get("summary")
+    if summary is not None:
+        if not isinstance(summary, list) or not summary:
+            errors.append("summary must be a non-empty list of {text, refs} parts")
+        else:
+            for k, part in enumerate(summary, 1):
+                if not isinstance(part, dict) or not isinstance(part.get("text"), str) or not part["text"]:
+                    errors.append(f"summary part {k} needs a non-empty text")
+                    continue
+                refs = part.get("refs", [])
+                if not isinstance(refs, list) or not all(isinstance(r, str) for r in refs):
+                    errors.append(f"summary part {k}: refs must be a list of node ids")
+                    continue
+                for r in refs:
+                    if kinds.get(r) != "node":
+                        errors.append(f"summary part {k}: refs {r!r} must be a node id")
+            if not any(isinstance(p, dict) and p.get("refs") for p in summary):
+                warnings.append("summary refers to no node - point each phrase at the chunks it stands for")
+
     parents = {el["id"]: el.get("parent") for kind, el in elements if kind == "node"}
     for start in parents:
         seen, cur = set(), start
@@ -458,15 +496,20 @@ def validate_model(model):
 # ---------------------------------------------------------------- summary
 
 
+def _coverage(model):
+    covered = [False] * len(model["sourceText"])
+    for el in model["nodes"] + model["relations"]:
+        for span in all_spans(el):
+            for p in range(span["start"], span["end"]):
+                covered[p] = True
+    return covered
+
+
 def summarize(model):
     text = model["sourceText"]
     nodes, relations = model["nodes"], model["relations"]
     by_id = {el["id"]: el for el in nodes + relations}
-    covered = [False] * len(text)
-    for el in nodes + relations:
-        for span in all_spans(el):
-            for p in range(span["start"], span["end"]):
-                covered[p] = True
+    covered = _coverage(model)
     meaningful = [p for p, ch in enumerate(text) if not ch.isspace()]
     ratio = sum(covered[p] for p in meaningful) / max(1, len(meaningful))
     sentences = split_sentences(text)
@@ -499,17 +542,19 @@ def summarize(model):
                f"{ratio:.0%} of non-space characters fall inside some span")
     out.append(f"- Nodes: {len(nodes)} ({count(nodes)})")
     out.append(f"- Relations: {len(relations)} ({count(relations)})")
+    if model.get("summary"):
+        out.append(f"- Summary: {''.join(part['text'] for part in model['summary'])}")
     out += ["", "## Nodes", "", "| id | label | type | parent | provenance | spans |", "|---|---|---|---|---|---|"]
     for n in nodes:
         out.append(f"| {cell(n['id'])} | {cell(n['label'])} | {cell(n['type'])} | {cell(n.get('parent', ''))} "
                    f"| {n['provenance']} | {cell(quotes(n))} |")
-    staged = [n for n in nodes if n.get("states")]
-    if staged:
-        out += ["", "## States", "", "| node | when | state | provenance | spans |", "|---|---|---|---|---|"]
-        for n in staged:
-            for st in n["states"]:
-                out.append(f"| {cell(n['label'])} | {cell(st.get('when', ''))} | {cell(st['label'])} "
-                           f"| {st.get('provenance', n['provenance'])} | {cell(quotes(st))} |")
+    noted = [n for n in nodes if n.get("points")]
+    if noted:
+        out += ["", "## Points", "", "| node | when | point | provenance | spans |", "|---|---|---|---|---|"]
+        for n in noted:
+            for pt in n["points"]:
+                out.append(f"| {cell(n['label'])} | {cell(pt.get('when', ''))} | {cell(pt['label'])} "
+                           f"| {pt.get('provenance', n['provenance'])} | {cell(quotes(pt))} |")
     out += ["", "## Relations", "", "| id | relation | provenance | spans |", "|---|---|---|---|"]
     for r in relations:
         src = by_id.get(r["source"], {}).get("label", r["source"])
@@ -538,131 +583,99 @@ def summarize(model):
 
 # ---------------------------------------------------------------- outline
 
-# Heuristics for "the model copies the wording": connectives used as relation names,
-# relations and nodes about the document rather than its subject.
-_CONNECTIVES = {
-    "こうしたもとで", "そうしたもとで", "こうしたもと", "こうしたなか", "そうしたなか", "そのうえで", "この間", "一方",
-    "これに加え", "これらに加え", "加え", "に加え", "ことから", "ため", "ので", "から", "なか", "もとで", "のもとで",
-    "踏まえると", "を踏まえると", "背景に", "を背景に", "もあって", "こともあり", "なかにあっては", "続き", "続くなか",
-    "therefore", "thus", "hence", "so", "because", "since", "meanwhile", "in addition", "given", "under", "then", "and",
-}
-_TEXT_RELATIONS = {"describes", "mentions", "refers_to", "concerns", "examines", "summarizes", "restates", "elaborates",
-                   "elaborated_by", "details", "introduces", "lists"}
-_TEXT_NODE_TYPES = {"section", "heading", "chapter", "paragraph", "sentence", "topic", "summary", "examination", "framework"}
+
+def note_order(model):
+    """The notes in reading order: [(id, number, depth)].
+
+    Nodes keep their order in `nodes`; a node's parts follow it and are numbered
+    under it (2, 2.1, 2.2). The viewer numbers the cards the same way.
+    """
+    ids = {n["id"] for n in model["nodes"]}
+    children, roots = {}, []
+    for n in model["nodes"]:
+        if n.get("parent") in ids:
+            children.setdefault(n["parent"], []).append(n["id"])
+        else:
+            roots.append(n["id"])
+    out = []
+
+    def walk(nid, number, depth):
+        out.append((nid, number, depth))
+        for k, child in enumerate(children.get(nid, []), 1):
+            walk(child, f"{number}.{k}", depth + 1)
+
+    for k, root in enumerate(roots, 1):
+        walk(root, str(k), 0)
+    return out
+
+
+def _sentence_list(spans, sentences):
+    """Which sentences some span touches, as "S2, S31-39"."""
+    hit = [k for k, (s, e) in enumerate(sentences, 1) if any(sp["start"] < e and s < sp["end"] for sp in spans)]
+    runs = []
+    for k in hit:
+        if runs and k == runs[-1][1] + 1:
+            runs[-1][1] = k
+        else:
+            runs.append([k, k])
+    return ", ".join(f"S{a}" if a == b else f"S{a}-{b}" for a, b in runs)
 
 
 def outline(model):
+    text = model["sourceText"]
+    sentences = split_sentences(text)
     nodes = {n["id"]: n for n in model["nodes"]}
-    order = {n["id"]: k for k, n in enumerate(model["nodes"])}
-    incoming, children = {}, {}
+    order = note_order(model)
+    number = {nid: num for nid, num, _ in order}
+    incoming, outgoing = {}, {}
     for r in model["relations"]:
+        outgoing.setdefault(r["source"], []).append(r)
         incoming.setdefault(r["target"], []).append(r)
-    for n in model["nodes"]:
-        if n.get("parent"):
-            children.setdefault(n["parent"], []).append(n["id"])
 
-    def states(n):
-        parts = [(f"{st['when']}: " if st.get("when") else "") + st["label"] for st in n.get("states") or []]
-        return f"  ｜ {' / '.join(parts)}" if parts else ""
+    def prov(el):
+        return "" if el.get("provenance", "explicit") == "explicit" else f" [{el['provenance']}]"
 
     def word(r):
-        w = r.get("label") or r["type"]
-        return w + (f" ({r['polarity']})" if r.get("polarity") else "")
+        return (r.get("label") or r["type"]) + {"+": " (+)", "-": " (-)"}.get(r.get("polarity"), "") + prov(r)
 
-    # How much explanation hangs below a node: everything reachable back through its reasons,
-    # without passing through a conclusion (a feedback loop would otherwise count everything).
-    weights = {}
-    stops = {n["id"] for n in model["nodes"] if n.get("role") == "conclusion"}
+    covered = _coverage(model)
+    meaningful = [p for p, ch in enumerate(text) if not ch.isspace()]
+    ratio = sum(covered[p] for p in meaningful) / max(1, len(meaningful))
+    out = ["# Notes: the model read back", "",
+           "Read this without the text. The summary should say what the text comes to in one sentence;",
+           "each chunk should say what its passage means and keep what matters in it (numbers,",
+           "conditions, timing, who); the arrows should say how the chunks bear on each other.", "",
+           f"{len(nodes)} nodes, {len(model['relations'])} relations; "
+           f"{ratio:.0%} of the text is inside some span.", ""]
 
-    def weight(nid):
-        if nid not in weights:
-            todo, found = [nid], set()
-            while todo:
-                for r in incoming.get(todo.pop(), []):
-                    src = r["source"]
-                    if src not in found and src not in stops:
-                        found.add(src)
-                        todo.append(src)
-            weights[nid] = len(found)
-        return weights[nid]
-
-    lines, seen, later = [], set(), []
-
-    def walk(nid, depth, line):
-        n = nodes[nid]
-        pad = "  " * depth
-        if nid in seen:
-            lines.append(f"{pad}- {line}  (see above)")
-            return
-        if depth > 3 and (incoming.get(nid) or children.get(nid)):
-            lines.append(f"{pad}- {line}{states(n)}  (continued below)")
-            later.append(nid)
-            return
-        seen.add(nid)
-        lines.append(f"{pad}- {line}{states(n)}")
-        for r in sorted(incoming.get(nid, []), key=lambda r: (-weight(r["source"]), order.get(r["source"], 0))):
-            src = nodes[r["source"]]
-            arrow = "—" if r.get("directed", True) is False else "→"
-            walk(src["id"], depth + 1, f"{src['label']} —{word(r)}{arrow} {n['label']}")
-        for c in children.get(nid, []):
-            if c in seen:
-                continue
-            if depth < 1:
-                walk(c, depth + 1, f"⊂ {nodes[c]['label']}")
-            else:
-                lines.append(f"{pad}  - ⊂ {nodes[c]['label']}{states(nodes[c])}")
-                if incoming.get(c) or children.get(c):
-                    later.append(c)
-
-    roots = [n for n in model["nodes"] if n.get("role") == "conclusion"]
-    out = ["# Outline: the model read aloud", "",
-           "Read this without the text. It should explain what the text says and why, more plainly than the",
-           "text does. If it reads like the text reworded sentence by sentence, the model holds the wording,",
-           "not the meaning.", ""]
-    if not roots:
-        best = max(model["nodes"], key=lambda n: len(incoming.get(n["id"], [])), default=None)
-        roots = [best] if best else []
-        out.append("(No node has role \"conclusion\"; starting from the node with the most incoming relations.)")
+    summary = model.get("summary")
+    if summary:
+        out += ["## Summary", "", "".join(part["text"] for part in summary), ""]
+        out += [f"- 「{part['text']}」 → " + ", ".join(f"{number[r]} {nodes[r]['label']}" for r in part["refs"])
+                for part in summary if part.get("refs")]
         out.append("")
-    for n in roots:
-        walk(n["id"], 0, f"**{n['label']}**")
-    # what the conclusion does not reach, largest stories first
-    rest = later + sorted((n["id"] for n in model["nodes"] if n["id"] not in seen and not n.get("parent")),
-                          key=lambda nid: (-weight(nid), order[nid]))
-    first = True
-    for nid in rest:
-        if nid in seen:
-            continue
-        if first:
-            lines += ["", "Further:"]
-            first = False
-        walk(nid, 0, nodes[nid]["label"])
-    out += lines
 
-    smells = []
-    conn = [r for r in model["relations"] if (r.get("label") or "").strip().lower() in _CONNECTIVES]
-    if conn:
-        smells.append(f"{len(conn)} relation(s) are named by a connective, not by what they do: "
-                      + ", ".join(f"{r['id']} ({r['label']})" for r in conn[:6]) + (" …" if len(conn) > 6 else ""))
-    textual = [r for r in model["relations"] if r["type"] in _TEXT_RELATIONS]
-    if textual:
-        smells.append(f"{len(textual)} relation(s) are about the text rather than its subject: "
-                      + ", ".join(f"{r['id']} ({r['type']})" for r in textual[:6]) + (" …" if len(textual) > 6 else ""))
-    doc_nodes = [n for n in model["nodes"] if n["type"].lower() in _TEXT_NODE_TYPES]
-    if doc_nodes:
-        smells.append(f"{len(doc_nodes)} node(s) look like document structure: " + ", ".join(n["label"] for n in doc_nodes[:6]))
-    heads = {}
-    for n in model["nodes"]:
-        for sep in ("：", ":"):
-            if sep in n["label"]:
-                heads.setdefault(n["label"].split(sep, 1)[0].strip(), []).append(n["label"])
-                break
-    split = {h: ls for h, ls in heads.items() if len(ls) > 1}
-    if split:
-        smells.append("the same subject is split over several nodes (one node with states instead?): "
-                      + "; ".join(f"{h} ×{len(ls)}" for h, ls in list(split.items())[:6]))
-    out += ["", "## Signs of modeling the words", ""]
-    out += [f"- {s}" for s in smells] if smells else ["- none found"]
+    out += ["## Notes", ""]
+    for nid, num, depth in order:
+        n = nodes[nid]
+        pad = "    " * depth
+        where = _sentence_list(n.get("sourceSpans") or [], sentences) or "no words of its own"
+        star = "★ " if n.get("role") == "conclusion" else ""
+        out.append(f"{pad}{star}{num} {n['label']}{prov(n)}  ({where})")
+        for pt in n.get("points") or []:
+            when = f"{pt['when']}: " if pt.get("when") else ""
+            out.append(f"{pad}    - {when}{pt['label']}{prov(pt)}")
+        for r in incoming.get(nid, []):
+            arrow = "—" if r.get("directed", True) is False else "←"
+            out.append(f"{pad}    {arrow} {number[r['source']]} {nodes[r['source']]['label']}: {word(r)}")
+        for r in outgoing.get(nid, []):
+            arrow = "—" if r.get("directed", True) is False else "→"
+            out.append(f"{pad}    {arrow} {number[r['target']]} {nodes[r['target']]['label']}: {word(r)}")
+
+    gaps = [(k, s, e) for k, (s, e) in enumerate(sentences, 1) if not any(covered[s:e])]
+    if gaps:
+        out += ["", "## Sentences no span touches", ""]
+        out += [f"- S{k}: {_clip(text[s:e], 80)}" for k, s, e in gaps]
     return "\n".join(out) + "\n"
 
 
@@ -716,7 +729,7 @@ def main(argv=None):
     p = sub.add_parser("validate", help="check a model against the contract")
     p.add_argument("model")
     p.add_argument("--json", action="store_true")
-    p = sub.add_parser("outline", help="read the model aloud, from its conclusions")
+    p = sub.add_parser("outline", help="read the notes back: summary, chunks, points, relations")
     p.add_argument("model")
     p = sub.add_parser("summary", help="print a Markdown overview of a model")
     p.add_argument("model")
