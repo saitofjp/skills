@@ -44,7 +44,7 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
 
    Then look at it yourself: drag slowly from the text to the model. Do the headlines read as a story, and does the summary land?
 4. **Deliver.** Give the path and how to use it:
-   - ▶ (or Space) plays to the summary. Drag the gauge's knob, or click its labels (← → also move it).
+   - ▶ (or Space) plays to the summary. Drag the gauge's knob to watch every piece move; click its labels (or press ← →) to switch at once.
    - At the model, drag into a branch for linear notes, slides or a table (↑ ↓ switch between the branches).
    - Hover to link the text and the notes, click to pin, Esc to release. Light / Dark in the header switches the theme.
 

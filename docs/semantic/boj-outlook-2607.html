@@ -2690,8 +2690,9 @@ const linkOrder = (() => {
 })();
 const linear = t => t;
 // ▶ moves the knob as a steady hand would, through the same frames as dragging, at a pace to read by
-const playMs = lo => lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500;
-const PLAY_HOLD = 1200;
+const PLAY_SPEED = 1.5;
+const playMs = lo => (lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500) / PLAY_SPEED;
+const PLAY_HOLD = 800;
 let sess = null;
 function setStage(name) {
   const st = STAGES[name];
@@ -2877,16 +2878,23 @@ function route(a, b) {       // the stages passed through on the way from a to b
 }
 const segOf = (a, b) => SEGS.find(([x, y]) => (x === a && y === b) || (x === b && y === a));
 let goToken = 0;
-const segMs = lo => lo === 'text' ? 1700 : lo === 'chunks' ? 1900 : 950;
-// moving the knob is what the page shows, so it always moves, as it does under the hand
-async function goTo(target, opts = {}) {
-  if (!STAGES[target]) return false;
-  const my = ++goToken, play = !!opts.play;
-  const pace = lo => opts.ms || (play ? playMs(lo) : segMs(lo));
+// the knob moves through the frames only under the hand and in the play; a click or a key switches at once
+function goTo(target, opts = {}) {
+  if (!STAGES[target]) return Promise.resolve(false);
+  if (opts.play) return playTo(target);
+  goToken++;
+  if (sess) endSeg(sess.u >= 0.5 ? 1 : 0);
+  if (S.stage !== target) { setStage(target); FIELD.t = levelOf(S.stage); drawField(); afterRender(); }
+  drawGauge();
+  arrived();
+  return Promise.resolve(true);
+}
+async function playTo(target) {     // the drag, played: along the gauge at a steady pace, a moment at each stage
+  const my = ++goToken;
   let carried = false;
   if (sess) {   // between two stages: carry on toward the target from where the knob is
     const s = sess, back = route(s.b, target).includes(s.a), to = back ? 0 : 1;
-    await tweenU(to, pace(s.a) * Math.abs(to - s.u), play ? linear : easeInOut);
+    await tweenU(to, playMs(s.a) * Math.abs(to - s.u), linear);
     if (my !== goToken) return false;
     endSeg(to);
     carried = true;
@@ -2894,10 +2902,10 @@ async function goTo(target, opts = {}) {
   const path = route(S.stage, target);
   for (let i = 1; i < path.length; i++) {
     const a = path[i - 1], b = path[i], [lo, hi] = segOf(a, b), up = a === lo;
-    if (play && (i > 1 || carried)) { await sleep(PLAY_HOLD); if (my !== goToken) return false; }   // a moment at each stage
+    if (i > 1 || carried) { await sleep(PLAY_HOLD); if (my !== goToken) return false; }
     beginSeg(lo, hi);
     frame(up ? 0 : 1);
-    await tweenU(up ? 1 : 0, pace(lo), play ? linear : i === path.length - 1 && up ? settle : easeInOut);
+    await tweenU(up ? 1 : 0, playMs(lo), linear);
     if (my !== goToken) return false;
     endSeg(up ? 1 : 0);
   }
@@ -2926,7 +2934,7 @@ function drawClock() {
 async function play() {
   if (playing) { playing = false; goToken++; clearInterval(CLOCK.iv); drawGauge(); return; }
   playing = true;
-  if (S.stage === 'summary' && !sess) await goTo('text', { ms: 1 });
+  if (S.stage === 'summary' && !sess) goTo('text');
   CLOCK.total = planMs(); CLOCK.t0 = performance.now();
   clearInterval(CLOCK.iv); CLOCK.iv = setInterval(drawClock, 250);
   drawGauge();

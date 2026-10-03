@@ -31,7 +31,7 @@ The look is flat, as on a printed manga page, dark by default (black paper, whit
 
 ## The gauge is continuous
 
-Drag the knob, and the page stands at any point between two neighbouring stages. Every keyed piece (a chunk's card, its number, its headline, each point) is drawn between where it is in one stage and where it is in the other. Pieces start one after another: passages in the text's order, notes in the notes' order. Letting go settles to the nearer stage. Clicking a label, or pressing ← / →, moves the knob there by the same path.
+Drag the knob, and the page stands at any point between two neighbouring stages. Every keyed piece (a chunk's card, its number, its headline, each point) is drawn between where it is in one stage and where it is in the other. Pieces start one after another: passages in the text's order, notes in the notes' order. Letting go settles to the nearer stage. Only dragging and ▶ move through the frames: clicking a label, or pressing an arrow key, switches to that stage at once.
 
 | Segment | As the knob moves right |
 |---|---|
@@ -43,9 +43,9 @@ A caption band names what is happening: the chunk being wrapped, the line being 
 
 ## The play
 
-▶ is the drag, played: the knob travels along the gauge by itself, through the same frames, as a steady hand would move it. It moves at a constant pace slow enough to read (about 0.7 s for each chunk as it wraps, and 0.4 s for each line as it grows, with at least 6 s per segment) and stops for a moment at each stage. For the BOJ example, the play takes about 30 seconds; the timecode in the HUD shows where it is.
+▶ is the drag, played: the knob travels along the gauge by itself, through the same frames, as a steady hand would move it. It moves at a constant pace (about 0.47 s for each chunk, and 0.27 s for each line as it grows, with at least 4 s per segment) and stops for a moment at each stage. For the BOJ example, the play takes about 20 seconds; the timecode in the HUD shows where it is.
 
-Moving the knob is what the page shows, so it always animates, by hand or by ▶, even with `prefers-reduced-motion`. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps.
+Dragging and ▶ always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps.
 
 ## Layers
 
@@ -104,10 +104,10 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 |---|---|
 | Drag the gauge's knob | Move continuously between stages; let go to settle |
 | Hover or click a box on the minimap | Focus or pin that chunk; the form and the text scroll to it |
-| Click a label on the gauge | Move to that stage, along the gauge |
+| Click a label on the gauge | Switch to that stage at once |
 | ▶ PLAY or Space | Play to the summary: the knob moves by itself, as in dragging; again (PAUSE) to stop where it is |
-| ← / → | Toward the text / toward the summary (from Linear, on to Slides) |
-| ↑ / ↓ (at the model or a form) | A summary, B linear, C table: the forms as they lie on the gauge |
+| ← / → | Switch toward the text / toward the summary (from Linear, on to Slides) |
+| ↑ / ↓ (at the model or a form) | Switch between A summary, B linear and C table, as they lie on the gauge |
 | Hover text, a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread |
 | Click | Pin it. The details card (top left) lists its passages (click to go there), points, lines, parts and evidence. |
 | Click again, click the background, or Esc | Release |
