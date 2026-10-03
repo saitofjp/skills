@@ -21,6 +21,7 @@ Live examples are published with GitHub Pages from [`docs/`](docs/): <https://sa
 
 - [日銀展望レポート ドパガキ版](https://saitofjp.github.io/skills/dopagaki/boj-outlook-2607.html) — made with `dopagaki-generator` from the Bank of Japan's Outlook Report (July 2026). It auto-plays in the browser and is an unofficial summary.
 - [津田健次郎 対 TikTok 判決のノート](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html) — made with `semantic-model-builder` and `semantic-model-viewer` from the Tokyo District Court's ruling of 30 September 2026 on a request to delete videos narrated in a voice like the voice actor's (about 5,000 characters in 13 chunks, 11 lines, one sentence: the court held that a voice, like a likeness, is a symbol of the person and can be protected by the right of publicity, but dismissed the claim because the videos were already deleted). The rule is marked as the key, apart from the conclusion. The model is in [`docs/semantic/`](docs/semantic/).
+- [日銀展望レポートのノート](https://saitofjp.github.io/skills/semantic/boj-outlook-2607.html) — made with `semantic-model-builder` and `semantic-model-viewer` from the Bank of Japan's Outlook Report (July 2026), Basic View (about 9,000 characters in 17 chunks, 20 lines, one sentence: "keep raising the policy rate"). Press ▶ or drag the gauge from the text to the summary, then into the other forms. An unofficial example; the model is in [`docs/semantic/`](docs/semantic/).
 
 ## Install
 
