@@ -13,7 +13,7 @@ The page shows one Semantic Model together with its text. The model is the text 
 The gauge is a compact game HUD at the top right (at the bottom on a phone), in English only:
 
 - **The plate.** A flat panel with corner marks, one cut corner and hairline rules. The type is small, monospaced and widely spaced, and the focus colour is used sparingly.
-- **The readout.** A large index (`01`–`03` for the levels; `A`, `B`, `B2`, `C` for the forms), the stage's name, and figures taken from the model (`17 NOTES · 20 LINKS`). The name decodes, letter by letter, when the knob reaches a new stage.
+- **The readout.** A large index (`01`–`03` for the levels; `A`, `B`, `B2`, `C` for the forms), the stage's name, and figures taken from the model (`13 NOTES · 11 LINKS`). The name decodes, letter by letter, when the knob reaches a new stage.
 - **The play control.** `PLAY` / `PAUSE`, with a timecode: how long the play takes from here (`T-00:24`), and while it runs, the time elapsed (`00:07 / 00:24`).
 - **The graph.** It is the control, and the model sits at its centre: a diamond in a ring, framed by turning lock brackets. The levels below it (text, chunks) run into it from the left along a ruled track; its forms leave it to the right as a tree, a series: A, the summary, straight on; B linear (and along its row on to B2 slides) and C table hanging from that line. The knob is a small diamond with a pulse.
 
@@ -39,11 +39,11 @@ Drag the knob, and the page stands at any point between two neighbouring stages.
 | Chunks → Model | The structuring. Rows of the same chunk merge into its card, the cards nest their parts and take their places in the notes' order, and the numbers turn from the text's order (`07`) into the notes' (`4.1`). Then the lines grow, from the conclusion outward through its reasons (Formation). |
 | Model → summary, linear or table | The model splits in two. A copy of the whole structure recedes into the corner and becomes the minimap, while its cards turn into the form: points come out of their cards into the linear notes, drop into table cells, or the cards fly into the phrases of the one sentence. |
 
-A caption band names what is happening: the chunk being wrapped, the line being drawn (`6 ← 3.3 ２％に近づいたので`), or the form. It cuts in afresh each time it changes.
+A caption band names what is happening: the chunk being wrapped, the line being drawn (`7 ← 6 削除済みだから理由がない`), or the form. It cuts in afresh each time it changes.
 
 ## The play
 
-▶ is the drag, played: the knob travels along the gauge by itself, through the same frames, as a steady hand would move it. It moves at a constant pace (about 0.47 s for each chunk, and 0.27 s for each line as it grows, with at least 4 s per segment) and stops for a moment at each stage. For the BOJ example, the play takes about 20 seconds; the timecode in the HUD shows where it is.
+▶ is the drag, played: the knob travels along the gauge by itself, through the same frames, as a steady hand would move it. It moves at a constant pace (about 0.47 s for each chunk, and 0.27 s for each line as it grows, with at least 4 s per segment) and stops for a moment at each stage. For the ruling example, the play takes about 16 seconds; the timecode in the HUD shows where it is.
 
 Dragging and ▶ always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps.
 

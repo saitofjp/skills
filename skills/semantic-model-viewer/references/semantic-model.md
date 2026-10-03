@@ -63,7 +63,7 @@ There is no type vocabulary.
 | `summary` | Document | What the text comes to, in one sentence, as parts: `[{ "text", "refs"? }]`. `refs` are the node ids a phrase stands for, so each phrase leads back to its notes and from there to the text. |
 | `parent` | Node | The chunk this one is part of. Nodes are numbered in their order in `nodes`, with parts under their parent (2, 2.1, 2.2). Put them in the order the notes should be read. |
 | `role` | Node | `"conclusion"` marks what the text concludes. The viewer gives it the strongest card and links toward it. `"key"` marks what matters most to a reader when that is not the conclusion: a rule laid down on the way, a finding the text singles out, a turn. Say in `note` what in the text shows its weight. The viewer marks it ◆ KEY. |
-| `label` | Relation | The words to show on the line (e.g. `２％に近づいたので`). Falls back to `type`. |
+| `label` | Relation | The words to show on the line (e.g. `削除済みだから理由がない`). Falls back to `type`. |
 | `polarity` | Relation | `"+"` or `"-"`: the source raises or lowers the target. |
 | `directed` | Relation | `false` when direction carries no meaning. Default `true`. |
 | `derivedFrom` | Node, Relation | Ids of the elements this one was inferred or abstracted from. The viewer walks an inference back to the text through it. |

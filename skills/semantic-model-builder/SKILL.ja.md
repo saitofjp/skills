@@ -46,4 +46,4 @@ description: 文章をSemantic Modelにする。よくできる学生が教科�
 - [references/semantic-model.md](references/semantic-model.md)：形式（塊、要点、要約、スパン、来歴、検証）。英語。
 - [examples/notes.model.json](examples/notes.model.json)：短い文章を3つの塊にした例。要点、線、要約を含む。
 - [examples/minimal.model.json](examples/minimal.model.json)：1文を語の粒度でモデルにした例。形式は粒度を決めない。
-- 実寸の例：日本銀行「経済・物価情勢の展望（2026年7月）」基本的見解。約9,000字を17の塊にした。[モデル](https://github.com/saitofjp/skills/blob/main/docs/semantic/boj-outlook-2607.model.json)と[表示](https://saitofjp.github.io/skills/semantic/boj-outlook-2607.html)。
+- 実寸の例：東京地裁の判決（令和8年9月30日、声優 対 TikTok）。約5,000字を13の塊にし、結論（請求棄却）と key（声も肖像と同じくパブリシティ権で守られうる）を分けた。[モデル](https://github.com/saitofjp/skills/blob/main/docs/semantic/tsuda-tiktok-2609.model.json)と[表示](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html)。
