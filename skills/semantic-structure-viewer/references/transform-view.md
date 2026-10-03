@@ -2,7 +2,7 @@
 
 What [`assets/viewer.html`](../assets/viewer.html) does. Keep this file in step with the template when either changes.
 
-The page shows one Semantic Model together with its text. The model is the text wrapped into chunks, with headlines, points, lines between chunks and a one-sentence summary. One control moves the page: a gauge that draws the meta-structure itself.
+The page shows one Semantic Structure together with its text. The model is the text wrapped into chunks, with headlines, points, lines between chunks and a one-sentence summary. One control moves the page: a gauge that draws the meta-structure itself.
 
 ```
 01 Text ■━━━ 02 Chunks ⬡━━━ 03 Model ◈━━┯━━━━━━━━━━━━ □ A Summary

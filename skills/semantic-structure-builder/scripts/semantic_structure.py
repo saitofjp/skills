@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
-"""Semantic Model contract tool (semantic-model/1).
+"""Semantic Structure contract tool (semantic-structure/1).
 
-Shared by semantic-model-builder and semantic-model-viewer. This file is
+Shared by semantic-structure-builder and semantic-structure-viewer. This file is
 copied verbatim into both skills; edit the builder copy and run
 scripts/sync_semantic_shared.py from the repository root.
 
 Standard library only.
 
-  semantic_model.py sentences SOURCE.txt [--json]
+  semantic_structure.py sentences SOURCE.txt [--json]
       Number the sentences of a source text (use the numbers in draft spans).
-  semantic_model.py resolve DRAFT.json [DRAFT2.json ...] --source SOURCE.txt -o MODEL.json
+  semantic_structure.py resolve DRAFT.json [DRAFT2.json ...] --source SOURCE.txt -o MODEL.json
       Merge drafts written in parts, turn quote spans into offsets, validate.
       Writes nothing while there are errors.
-  semantic_model.py validate MODEL.json [--json]
+  semantic_structure.py validate MODEL.json [--json]
       Check the contract. Exit status 1 when there are errors.
-  semantic_model.py outline MODEL.json
+  semantic_structure.py outline MODEL.json
       Read the notes back: the summary, then every chunk with its points and the
       relations to other chunks, in the order of the notes. It should explain the
       text to someone who has not read it.
-  semantic_model.py summary MODEL.json
+  semantic_structure.py summary MODEL.json
       A Markdown overview for checking the evidence against the text.
 """
 
@@ -27,7 +27,7 @@ import json
 import sys
 from pathlib import Path
 
-VERSION = "semantic-model/1"
+VERSION = "semantic-structure/1"
 PROVENANCE = ("explicit", "inferred", "abstracted", "uncertain")
 
 _SENTENCE_END = set("。．！？!?")
@@ -302,7 +302,7 @@ def _check_spans(spans, name, text, errors):
         return []
     for k, span in enumerate(spans, 1):
         if isinstance(span, str) or (isinstance(span, dict) and any(key in span for key in _DRAFT_KEYS)):
-            errors.append(f"{name}: span {k} is a draft span; run `semantic_model.py resolve`")
+            errors.append(f"{name}: span {k} is a draft span; run `semantic_structure.py resolve`")
             continue
         if not isinstance(span, dict):
             errors.append(f"{name}: span {k} must be an object")
@@ -539,7 +539,7 @@ def summarize(model):
         return f"{src} —{el.get('label') or el.get('type')}→ {tgt}"
 
     title = model.get("metadata", {}).get("title")
-    out = [f"# Semantic Model summary{': ' + title if title else ''}", ""]
+    out = [f"# Semantic Structure summary{': ' + title if title else ''}", ""]
     out.append(f"- Source: {len(text)} characters, {len(sentences)} sentences; "
                f"{ratio:.0%} of non-space characters fall inside some span")
     out.append(f"- Nodes: {len(nodes)} ({count(nodes)})")

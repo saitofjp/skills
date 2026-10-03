@@ -1,9 +1,9 @@
 ---
-name: semantic-model-viewer
-description: Shows a Semantic Model (notes made by semantic-model-builder) next to its text as one self-contained, animated HTML page, the Transform View. A single gauge, a compact HUD with the model at its centre, draws the meta-structure and is the control. Drag it from the text, to the text wrapped into chunks passage by passage (listed beside it in the text's order), to the model, where the chunks merge and take their places, and every piece moves continuously between the stages; ▶ plays the same animation to the summary. From the model, straight branches lead to its forms, A the summary in one sentence, B linear notes (and on to B2, 16:9 slides) and C a table; at a form, the text, the form and the model (as a minimap in the corner) are shown and lit together. Use it whenever the user wants to see, explore, present or visualize a semantic model or the notes of a text, read a text next to its notes, watch a text turn into a structure and a summary, or plan slides from it. Triggers include "show the semantic model", "show the notes next to the text", "visualize this model", "transform view", 「Semantic Modelを表示して」「原文とノートを並べて見せて」「構造になっていく様子を見せて」「トランスフォームビューで見せて」.
+name: semantic-structure-viewer
+description: Shows the Semantic Structure of a text (a model of what it means, written as notes by semantic-structure-builder) next to the text as one self-contained, animated HTML page, the Transform View. A single gauge, a compact HUD with the model at its centre, draws the meta-structure and is the control. Drag it from the text, to the text wrapped into chunks passage by passage (listed beside it in the text's order), to the model, where the chunks merge and take their places, and every piece moves continuously between the stages; ▶ plays the same animation to the summary. From the model, straight branches lead to its forms, A the summary in one sentence, B linear notes (and on to B2, 16:9 slides) and C a table; at a form, the text, the form and the model (as a minimap in the corner) are shown and lit together. Use it whenever the user wants to see, explore, present or visualize the semantic structure or the notes of a text, read a text next to its notes, watch a text turn into a structure and a summary, or plan slides from it. Triggers include "show the semantic structure", "show the notes next to the text", "visualize this model", "transform view", 「意味構造を表示して」「原文とノートを並べて見せて」「構造になっていく様子を見せて」「トランスフォームビューで見せて」.
 ---
 
-# Semantic Model Viewer
+# Semantic Structure Viewer
 
 One page shows one model and its text. One control moves it: a gauge that draws the meta-structure, with the model at its centre. It is a compact HUD at the top right, in English.
 
@@ -18,11 +18,11 @@ One page shows one model and its text. One control moves it: a gauge that draws 
   - Meanwhile a copy of the structure recedes into the corner as a minimap, like the small map in a game. The text is on the left, the form in the centre and the model in the corner, and the focus lights all three.
 - **The conclusion and the key:** the chunk the text concludes with is the inverted card. The key (`role: "key"`, ◆ KEY), what matters most to a reader when that is not the conclusion, has a heavy frame in every form, so it is not lost behind the conclusion.
 
-The page is a fixed template, [`assets/viewer.html`](assets/viewer.html). It works with any model that follows the contract ([`references/semantic-model.md`](references/semantic-model.md)) and needs no network. It never derives meaning from the text: everything it shows comes from the model.
+The page is a fixed template, [`assets/viewer.html`](assets/viewer.html). It works with any model that follows the contract ([`references/semantic-structure.md`](references/semantic-structure.md)) and needs no network. It never derives meaning from the text: everything it shows comes from the model.
 
 ## Input
 
-- A Semantic Model file (`semantic-model/1`). If the user has only a text, make the notes first with [`semantic-model-builder`](../semantic-model-builder/SKILL.md). Do not work out the structure here.
+- A Semantic Structure file (`semantic-structure/1`). If the user has only a text, make the notes first with [`semantic-structure-builder`](../semantic-structure-builder/SKILL.md). Do not work out the structure here.
 - Where the user wants to start, if they say.
 
 ## Steps
@@ -67,6 +67,6 @@ Pass them as flags, or as a JSON file with `--view`. They live in their own bloc
 
 ## Reference
 
-- [references/semantic-model.md](references/semantic-model.md): the input contract (shared with the builder).
+- [references/semantic-structure.md](references/semantic-structure.md): the input contract (shared with the builder).
 - [references/transform-view.md](references/transform-view.md): the gauge, the layers, the forms, the motion, the field, the source ↔ model mapping and the controls.
 - [assets/viewer.html](assets/viewer.html): the template. Opened as is, it shows a short example (a shopping street in three chunks).

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Embed a Semantic Model (and optional view options) into the viewer template.
+"""Embed a Semantic Structure (and optional view options) into the viewer template.
 
   build_viewer.py MODEL.json -o OUT.html [--view VIEW.json]
                   [--stage text|chunks|model|summary|linear|slides|table]
                   [--focus NODE_ID] [--theme dark|light|auto] [--no-follow]
 
-The model is validated with semantic_model.py first; nothing is written while
+The model is validated with semantic_structure.py first; nothing is written while
 it has errors. View options are presentation only and never change the model.
 Standard library only.
 """
@@ -19,7 +19,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-import semantic_model  # noqa: E402  (shared contract tool, copied from semantic-model-builder)
+import semantic_structure  # noqa: E402  (shared contract tool, copied from semantic-structure-builder)
 
 TEMPLATE = HERE.parent / "assets" / "viewer.html"
 BLOCK = r'(<script type="application/json" id="{id}">)(.*?)(</script>)'
@@ -68,7 +68,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     model = json.loads(Path(args.model).read_text(encoding="utf-8"))
-    errors, warnings = semantic_model.validate_model(model)
+    errors, warnings = semantic_structure.validate_model(model)
     for w in warnings:
         print(f"WARNING {w}")
     if errors:
@@ -89,11 +89,11 @@ def main(argv=None):
         sys.exit(f"{args.output} not written")
 
     page = Path(args.template).read_text(encoding="utf-8")
-    page = replace_block(page, "semantic-model", model)
+    page = replace_block(page, "semantic-structure", model)
     page = replace_block(page, "semantic-view", view)
     title = (model.get("metadata") or {}).get("title")
     if title:
-        page = re.sub(r"<title>.*?</title>", f"<title>{html.escape(title)} — Semantic Model Viewer</title>", page, count=1)
+        page = re.sub(r"<title>.*?</title>", f"<title>{html.escape(title)} — Semantic Structure Viewer</title>", page, count=1)
     Path(args.output).write_text(page, encoding="utf-8")
     print(f"wrote {args.output} ({len(model['nodes'])} nodes, {len(model['relations'])} relations)")
 

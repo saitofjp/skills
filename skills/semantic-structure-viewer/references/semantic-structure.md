@@ -1,18 +1,20 @@
-# Semantic Model contract (`semantic-model/1`)
+# Semantic Structure contract (`semantic-structure/1`)
 
-The Semantic Model is the only thing `semantic-model-builder` and `semantic-model-viewer` share. The builder writes it; the viewer only reads it.
+The Semantic Structure is the only thing `semantic-structure-builder` and `semantic-structure-viewer` share. The builder writes it; the viewer only reads it.
+
+It is a model of what a text means. In the terms of text comprehension, the chunks' headlines and the one sentence are the text's macrostructure, its meaning from the top down; the points keep what must not be lost from the details; the lines are how the parts hold together; the conclusion and the key say which parts weigh most. Everything is grounded in the text's words.
 
 The model is a set of **notes on a text**. The text is wrapped into chunks. Each chunk becomes a note with a headline (its message) and points (what in it must not be lost). Lines between chunks say how they bear on each other, and one sentence says what the whole comes to. Every piece points back to the words it rests on.
 
 The contract is small on purpose. It fixes what a view needs in order to draw the notes and trace them back to the text. How to chunk, what to call things, and what to keep are left to the modeler.
 
-> This file is copied verbatim into both skills. Edit the copy in `semantic-model-builder`, then run `python3 scripts/sync_semantic_shared.py` from the repository root.
+> This file is copied verbatim into both skills. Edit the copy in `semantic-structure-builder`, then run `python3 scripts/sync_semantic_shared.py` from the repository root.
 
 ## Shape
 
 ```json
 {
-  "version": "semantic-model/1",
+  "version": "semantic-structure/1",
   "sourceText": "駅前の商店街では、昨年から空き店舗が増えている。…",
   "summary": [
     { "text": "商店街は、" },
@@ -58,7 +60,7 @@ There is no type vocabulary.
 
 | Field | On | Use |
 |---|---|---|
-| `version` | Document | `"semantic-model/1"`. |
+| `version` | Document | `"semantic-structure/1"`. |
 | `points` | Node | What in the chunk must not be lost: numbers, conditions, timing, who, the reason. A list of `{ "label", "when"?, "sourceSpans", "provenance"?, "note"? }`. A point's spans are the words that say it. Its provenance defaults to its node's. `when` places the point in time; the viewer's table uses it for columns. |
 | `summary` | Document | What the text comes to, in one sentence, as parts: `[{ "text", "refs"? }]`. `refs` are the node ids a phrase stands for, so each phrase leads back to its notes and from there to the text. |
 | `parent` | Node | The chunk this one is part of. Nodes are numbered in their order in `nodes`, with parts under their parent (2, 2.1, 2.2). Put them in the order the notes should be read. |
@@ -95,7 +97,7 @@ When torn between `explicit` and `inferred`, choose `inferred`. The text's own h
 
 ### Writing spans without counting characters
 
-Write drafts with quotes and sentence numbers, and let `semantic_model.py resolve` turn them into offsets:
+Write drafts with quotes and sentence numbers, and let `semantic_structure.py resolve` turn them into offsets:
 
 ```jsonc
 "sourceSpans": [{ "sentences": [31, 39] }]                 // a passage: sentences 31 to 39
@@ -105,7 +107,7 @@ Write drafts with quotes and sentence numbers, and let `semantic_model.py resolv
 "sourceSpans": [{ "quote": "原油価格", "occurrence": 2 }]    // its 2nd occurrence
 ```
 
-Sentence numbers come from `semantic_model.py sentences`. Spans that already have `start`/`end` are checked, not moved. A long text can be drafted in several files; elements with the same id are merged (spans, points and `derivedFrom` are combined; for other fields the first value wins).
+Sentence numbers come from `semantic_structure.py sentences`. Spans that already have `start`/`end` are checked, not moved. A long text can be drafted in several files; elements with the same id are merged (spans, points and `derivedFrom` are combined; for other fields the first value wins).
 
 ## What a view may and may not do
 
@@ -116,7 +118,7 @@ Sentence numbers come from `semantic_model.py sentences`. Spans that already hav
 ## Validation
 
 ```bash
-python3 scripts/semantic_model.py validate model.json
+python3 scripts/semantic_structure.py validate model.json
 ```
 
 Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`.

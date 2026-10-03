@@ -1,5 +1,5 @@
 {
-  "version": "semantic-model/1",
+  "version": "semantic-structure/1",
   "sourceText": "AはBを使ってCした。DはCに影響した。",
   "nodes": [
     {

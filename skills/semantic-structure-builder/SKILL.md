@@ -1,11 +1,11 @@
 ---
-name: semantic-model-builder
-description: Turns a text into a Semantic Model, written as notes the way a good student turns a textbook into a notebook. The text is wrapped into chunks; each chunk gets a headline that says its message and points that keep what must not be lost (numbers, conditions, timing, who, why); lines between chunks say how they bear on each other; one sentence says what the whole comes to. Every headline, point and line points back to the words it rests on and says whether the text states it. The notes are meant to be clear enough to plan a presentation from, one chunk per section. Use it when the user wants to understand, summarize into notes, structure, or map a document, or prepare input for semantic-model-viewer. Triggers include "make notes of this", "build a semantic model of this", "structure this text", 「ノートにまとめて」「意味構造を作って」「Semantic Modelにして」「この文章を構造化して」.
+name: semantic-structure-builder
+description: Builds the Semantic Structure of a text, a model of what the text means, and writes it down as notes the way a good student turns a textbook into a notebook. The text is wrapped into chunks; each chunk gets a headline that says its message and points that keep what must not be lost (numbers, conditions, timing, who, why); lines between chunks say how they bear on each other; one sentence says what the whole comes to. Every headline, point and line points back to the words it rests on and says whether the text states it. The notes are meant to be clear enough to plan a presentation from, one chunk per section. Use it when the user wants to understand, summarize into notes, structure, or map a document, or prepare input for semantic-structure-viewer. Triggers include "make notes of this", "build the semantic structure of this", "structure this text", 「ノートにまとめて」「意味構造を作って」「意味構造にして」「この文章を構造化して」.
 ---
 
-# Semantic Model Builder
+# Semantic Structure Builder
 
-Make the notes a good student makes from a textbook: the text wrapped into chunks, each chunk with a headline and the points that matter, lines between the chunks, and one sentence for the whole. Write them for someone who has not read the text.
+Build the semantic structure of a text, a model of what it means, and write it down as the notes a good student makes from a textbook: the text wrapped into chunks, each chunk with a headline and the points that matter, lines between the chunks, and one sentence for the whole. Write them for someone who has not read the text.
 
 You are the one reading the text, so you decide how to chunk it, what to call things and what to keep. This skill only fixes the goal and the file format. It does not prescribe a procedure.
 
@@ -20,7 +20,7 @@ You are the one reading the text, so you decide how to chunk it, what to call th
 
 Chunk at the size the text needs. A paragraph-sized passage is often one chunk; a section with distinct parts is a chunk with parts (`parent`). In a two-sentence text, a chunk may be a phrase. A summary at the top of a report and the section that develops it are the same chunk, with two passages.
 
-The format is [references/semantic-model.md](references/semantic-model.md). [`semantic-model-viewer`](../semantic-model-viewer/SKILL.md) shows the notes next to the text and turns them into structure, linear notes, a table or the one sentence.
+The format is [references/semantic-structure.md](references/semantic-structure.md). [`semantic-structure-viewer`](../semantic-structure-viewer/SKILL.md) shows the notes next to the text and turns them into structure, linear notes, a table or the one sentence.
 
 ## Input and output
 
@@ -30,18 +30,18 @@ The format is [references/semantic-model.md](references/semantic-model.md). [`se
 
 ## The tool
 
-`scripts/semantic_model.py` in this skill's folder (Python 3, standard library only):
+`scripts/semantic_structure.py` in this skill's folder (Python 3, standard library only):
 
 - `sentences source.txt` numbers the sentences, so a draft can say `{"sentences": [31, 39]}` for a passage, `{"sentence": 2}` for one sentence, or quote the words for a point.
 - `resolve draft*.json --source source.txt -o model.json` merges drafts, turns quotes and sentence numbers into offsets, and checks the contract. It writes nothing while there are errors.
 - `outline model.json` reads the notes back: the summary, then each chunk with its passages (S31–39), points and lines. Read it as someone who has not seen the text. If it does not explain the text, or something important is missing, change the notes.
 - `summary model.json` lists the evidence: every element with its quotes, everything not stated explicitly, and the sentences no span touches.
 
-When you report, give the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer `semantic-model-viewer`.
+When you report, give the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer `semantic-structure-viewer`.
 
 ## Reference
 
-- [references/semantic-model.md](references/semantic-model.md): the format (chunks, points, summary, spans, provenance, validation).
+- [references/semantic-structure.md](references/semantic-structure.md): the format (chunks, points, summary, spans, provenance, validation).
 - [examples/notes.model.json](examples/notes.model.json): a short text as three chunks with points, lines and a summary.
 - [examples/minimal.model.json](examples/minimal.model.json): one sentence at word scale. The format does not fix the scale.
 - A full-size example: a ruling of the Tokyo District Court (30 September 2026, a voice actor against TikTok), about 5,000 characters in 13 chunks, with a conclusion (the claim is dismissed) and a key (a voice, like a likeness, can be protected by the right of publicity). See the [model](https://github.com/saitofjp/skills/blob/main/docs/semantic/tsuda-tiktok-2609.model.json) and the [view](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html).
