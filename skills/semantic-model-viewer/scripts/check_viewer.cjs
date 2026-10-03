@@ -6,7 +6,7 @@
 
   Checks: no console errors and no model problems; dragging the gauge's knob moves the page
   continuously from the text to the chunks to the model, and letting go settles it; each of the model's
-  forms renders, with the model as a minimap; hovering a mapped word focuses the model
+  forms (summary, linear, slides, table) renders, with the model as a minimap; ▶ plays to the summary; hovering a mapped word focuses the model
   and draws the thread; clicking pins it and opens the details card; Escape releases it;
   nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
@@ -60,7 +60,7 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   ok('letting go settles on the model');
 
   // each form
-  for (const f of ['linear', 'table', 'summary', 'model']) {
+  for (const f of ['summary', 'linear', 'slides', 'table', 'model']) {
     await page.evaluate(f => window.__semanticViewer.goTo(f, { ms: 60 }), f);
     await still();
     st = await state();
@@ -69,7 +69,18 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
     const mini = await V(() => !document.querySelector('#minimap').hidden && document.querySelectorAll('#mmSvg .mm-box').length);
     if (f !== 'model' && !mini) return fail(`the minimap is missing at the ${f} form`);
   }
-  ok('turns into linear, table and summary with the model as a minimap, and back to the model');
+  ok('turns into the summary, linear notes, slides and a table, with the model as a minimap, and back');
+
+  // ▶ plays the way to the goal, the summary
+  await V(() => window.__semanticViewer.goTo('chunks', { ms: 1 }));
+  await still();
+  await page.mouse.click(...at(22, 58));
+  try {
+    await page.waitForFunction(() => window.__semanticViewer.state.stage === 'summary' && !window.__semanticViewer.state.moving, null, { timeout: 30000 });
+  } catch (e) { return fail('▶ did not play to the summary: ' + JSON.stringify(await state())); }
+  ok('▶ plays from where the knob is to the summary');
+  await V(() => window.__semanticViewer.goTo('model', { ms: 1 }));
+  await still();
 
   // text -> model, with the thread between them
   const seg = page.locator('#text .seg.c').first();
@@ -89,6 +100,13 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   await page.keyboard.press('Escape');
   if (await V(() => window.__semanticViewer.state.pinned)) return fail('Escape did not release the pin');
   ok('Escape releases the pin');
+
+  // the light / dark switch
+  await page.click('#themeCtl button[data-theme-set="dark"]');
+  if ((await V(() => document.documentElement.dataset.theme)) !== 'dark') return fail('the theme switch did not change to dark');
+  await page.click('#themeCtl button[data-theme-set="light"]');
+  if ((await V(() => document.documentElement.dataset.theme)) !== 'light') return fail('the theme switch did not change back to light');
+  ok('switches between light and dark');
 
   // and back down
   await V(() => window.__semanticViewer.goTo('text', { ms: 60 }));

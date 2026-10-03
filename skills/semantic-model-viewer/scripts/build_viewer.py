@@ -2,7 +2,7 @@
 """Embed a Semantic Model (and optional view options) into the viewer template.
 
   build_viewer.py MODEL.json -o OUT.html [--view VIEW.json]
-                  [--stage text|chunks|model|linear|table|summary]
+                  [--stage text|chunks|model|summary|linear|slides|table]
                   [--focus NODE_ID] [--theme dark|light|auto] [--no-follow]
 
 The model is validated with semantic_model.py first; nothing is written while
@@ -38,7 +38,7 @@ def replace_block(page, block_id, value):
     return pattern.sub(lambda m: m.group(1) + "\n" + embed_json(value) + "\n" + m.group(3), page, count=1)
 
 
-STAGES = ("text", "chunks", "model", "linear", "table", "summary")
+STAGES = ("text", "chunks", "model", "summary", "linear", "slides", "table")
 
 
 def check_view(view, model):
@@ -62,7 +62,7 @@ def main(argv=None):
     parser.add_argument("--view", help="JSON file with view options")
     parser.add_argument("--stage", choices=STAGES, help="where the gauge starts (default text)")
     parser.add_argument("--focus", help="node id to pin when it opens")
-    parser.add_argument("--theme", choices=["dark", "light", "auto"], help="default dark")
+    parser.add_argument("--theme", choices=["dark", "light", "auto"], help="default light")
     parser.add_argument("--no-follow", action="store_true", help="do not move the notes with the text scroll")
     parser.add_argument("--template", default=str(TEMPLATE))
     args = parser.parse_args(argv)

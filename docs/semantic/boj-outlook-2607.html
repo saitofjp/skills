@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -38,7 +38,7 @@
   --link: rgba(190, 205, 235, .5);
   --band: #e8ecf4; --band-fg: #0a0d14;
   /* data colors: one meaning each */
-  --focus: #ffd21f; --focus-rgb: 255, 210, 31; --focus-ink: #ffd21f;
+  --focus: #2dd4bf; --focus-rgb: 45, 212, 191; --focus-ink: #2dd4bf; --on-focus: #06201d;
   --rel: #9aa6bd; --rel-rgb: 154, 166, 189;
   --pos: #ff6b3d; --pos-rgb: 255, 107, 61;     /* + : moves with, raises */
   --neg: #4f9dff; --neg-rgb: 79, 157, 255;     /* − : moves against, lowers */
@@ -58,7 +58,7 @@
   --card: #ffffff; --card-hi: transparent; --card-line: #111622; --accent: #111622;
   --frame: rgba(30, 50, 90, .04); --slab: rgba(40, 70, 130, .05); --slab-line: rgba(40, 70, 130, .2); --bracket: rgba(30, 50, 90, .3);
   --thread: #1b2a47; --link: rgba(40, 55, 85, .45); --band: #111622; --band-fg: #f5f7fa;
-  --focus: #ffd21f; --focus-rgb: 255, 210, 31; --focus-ink: #a37f00;
+  --focus: #0d9488; --focus-rgb: 13, 148, 136; --focus-ink: #0b7a70; --on-focus: #ffffff;
   --rel: #6d7689; --rel-rgb: 109, 118, 137; --pos: #d0451b; --pos-rgb: 208, 69, 27; --neg: #1f5fbf; --neg-rgb: 31, 95, 191;
   --evidence: #6f45e0; --evidence-rgb: 111, 69, 224; --ui: #111622; --ui-fg: #ffffff; --chip: rgba(30, 50, 90, .07); --tone: rgba(17, 22, 34, .16);
   --shadow: none;
@@ -76,6 +76,11 @@ header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; pad
 .titles { min-width: 0; flex: 1 1 240px; }
 .titles h1 { font-size: 15px; line-height: 1.3; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .02em; }
 .titles .src { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.theme-ctl { display: inline-flex; border: 1.5px solid var(--card-line); flex: none; }
+.theme-ctl button { border: 0; background: transparent; padding: 4px 10px; font: 700 11px/1.2 var(--mono); letter-spacing: .08em; color: var(--muted); }
+.theme-ctl button + button { border-left: 1.5px solid var(--card-line); }
+.theme-ctl button[aria-pressed="true"] { background: var(--ui); color: var(--ui-fg); }
 
 /* ---------- main: the ground (text) and the space above it (model) ---------- */
 main { position: relative; display: flex; min-height: 0; overflow: hidden; }
@@ -95,16 +100,16 @@ body[data-stop="text"] #marks, body[data-stop="text"] #slabs { visibility: hidde
 /* ---------- L0: text ---------- */
 .seg.c { cursor: pointer; border-radius: 2px; transition: background-color .25s, box-shadow .25s, color .25s; }
 body[data-stop="text"] .seg.c { cursor: text; }
-.seg.hn { background: rgba(var(--focus-rgb), .13); color: var(--ink); }
-.seg.hq { background: rgba(var(--focus-rgb), .42); color: var(--ink); }
-.seg.hp { background: rgba(var(--focus-rgb), .92); color: #111622; box-shadow: inset 0 -2px var(--focus-ink); }
+.seg.hn { background: rgba(var(--focus-rgb), .08); color: var(--ink); }
+.seg.hq { background: rgba(var(--focus-rgb), .16); color: var(--ink); box-shadow: inset 0 -1.5px rgba(var(--focus-rgb), .7); }
+.seg.hp { background: rgba(var(--focus-rgb), .26); color: var(--ink); box-shadow: inset 0 -3px var(--focus); }
 .seg.hr { box-shadow: inset 0 -2px var(--rel); color: var(--ink); }
 .seg.hr.pos { box-shadow: inset 0 -2px var(--pos); background: rgba(var(--pos-rgb), .14); }
 .seg.hr.neg { box-shadow: inset 0 -2px var(--neg); background: rgba(var(--neg-rgb), .14); }
 .seg.hx { box-shadow: inset 0 -2px var(--focus); }
 .seg.he { background: rgba(var(--evidence-rgb), .24); }
 .seg.flash { animation: wash 1.5s ease-out; }
-@keyframes wash { 0% { background: rgba(var(--focus-rgb), .5); color: var(--ink); } 100% { background: transparent; } }
+@keyframes wash { 0% { background: rgba(var(--focus-rgb), .3); color: var(--ink); } 100% { background: transparent; } }
 
 /* ---------- L1: chunks lifted off the text ---------- */
 #slabs rect.slab { fill: var(--slab); stroke: var(--slab-line); stroke-width: 1; }
@@ -117,7 +122,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #marks .br path.hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; cursor: pointer; }
 #marks .br text { font: 700 10.5px/1 var(--mono); fill: var(--muted); text-anchor: end; dominant-baseline: hanging; pointer-events: auto; cursor: pointer; }
 #marks .br.reading path.line { stroke: var(--ink-2); }
-#marks .br.f0 path.line { stroke: var(--focus); stroke-width: 3; }
+#marks .br.f0 path.line { stroke: var(--focus); stroke-width: 3.5; }
 #marks .br.f0 text { fill: var(--focus); }
 #marks .br.f1 path.line { stroke: var(--rel); stroke-width: 2.4; }
 #marks .br.f1.pos path.line { stroke: var(--pos); } #marks .br.f1.neg path.line { stroke: var(--neg); }
@@ -126,6 +131,28 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #marks .br.grow path.line { stroke: var(--ink); stroke-width: 3; stroke-dasharray: 1; animation: grow .7s var(--ease-settle) both; }
 @keyframes grow { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes fadein { from { opacity: 0; } }
+/* slides: each note on a 16:9 page */
+.rep.slides .deck { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; max-width: 760px; }
+.slide { position: relative; aspect-ratio: 16 / 9; background: var(--card); border: 1.5px solid var(--card-line); border-left: 6px solid var(--accent); padding: 4% 6% 5%; display: flex; flex-direction: column; justify-content: center; overflow: hidden; min-width: 0; }
+.slide .sno { position: absolute; right: 14px; bottom: 10px; font: 700 10px/1 var(--mono); letter-spacing: .12em; color: var(--muted); }
+.slide .kicker { display: block; font: 700 10px/1.2 var(--mono); letter-spacing: .26em; color: var(--muted); margin-bottom: 12px; }
+.slide .sh { display: flex; gap: 16px; align-items: baseline; }
+.slide .num { font: 800 clamp(20px, 2.6vw, 36px)/1 var(--mono); color: var(--muted); letter-spacing: -.02em; flex: none; }
+.slide .head { font-size: clamp(17px, 2vw, 27px); font-weight: 900; line-height: 1.35; color: var(--ink); letter-spacing: .01em; }
+.slide .pts { margin: 16px 0 0; padding: 0 0 0 22px; list-style: none; display: grid; gap: 4px; }
+.slide .pt { font-size: clamp(12px, 1.2vw, 15px); }
+.slide.section { background-image: radial-gradient(var(--tone) 1px, transparent 1.3px); background-size: 7px 7px; }
+.slide.section .head { font-size: clamp(20px, 2.5vw, 33px); }
+.slide.concl { background: var(--band); border-color: var(--band); }
+.slide.concl .head, .slide.concl .pt { color: var(--band-fg); } .slide.concl .num, .slide.concl .kicker, .slide.concl .sno { color: var(--band-fg); opacity: .6; }
+.slide.cover h2 { font-size: clamp(20px, 2.4vw, 32px); line-height: 1.4; margin: 0; }
+.slide.cover .lede { margin: 18px 0 0; font-size: clamp(13px, 1.3vw, 16px); line-height: 1.8; color: var(--ink-2); border-left: 3px solid var(--focus); padding-left: 12px; }
+.slide.closing { border-left-color: var(--focus); }
+.slide.closing .gist { margin: 0; font-size: clamp(16px, 1.9vw, 25px); line-height: 1.75; font-weight: 800; }
+.slide.f0 { border-color: var(--focus); box-shadow: 0 0 0 2px var(--focus); }
+.slide.f1 { border-left-color: var(--rel); } .slide.f1.pos { border-left-color: var(--pos); } .slide.f1.neg { border-left-color: var(--neg); }
+.focusing .slide.dim > :not(.sno) { opacity: .35; }
+
 /* the chunks, listed: what chunks there are, at a glance */
 .rep .kick { font: 700 10.5px/1 var(--mono); letter-spacing: .3em; color: var(--muted); margin: 0 0 16px; }
 .rep.chunks .clist { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; max-width: 560px; }
@@ -134,9 +161,9 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .crow .num { font: 700 11px/1.5 var(--mono); color: var(--muted); flex: none; }
 .crow .head { font-size: 13.5px; line-height: 1.45; font-weight: 800; color: var(--ink); }
 .crow.d1 .head { font-size: 12.5px; font-weight: 700; }
-.crow.concl { background: var(--band); border-color: var(--band); border-left-color: var(--focus); } .crow.concl .head { color: var(--band-fg); } .crow.concl .num { color: var(--band-fg); opacity: .6; }
+.crow.concl { background: var(--band); border-color: var(--band); } .crow.concl .head { color: var(--band-fg); } .crow.concl .num { color: var(--band-fg); opacity: .6; }
 .crow.reading { border-color: var(--ink-2); }
-.crow.f0 { border-color: var(--focus); } .crow.f0 .head { background: linear-gradient(transparent 60%, rgba(var(--focus-rgb), .55) 60%); }
+.crow.f0 { border-color: var(--focus); box-shadow: 0 0 0 2px var(--focus); } .crow.f0 .head { background: linear-gradient(transparent 62%, rgba(var(--focus-rgb), .28) 62%); }
 .crow.f1 { border-left-color: var(--rel); } .crow.f1.pos { border-left-color: var(--pos); } .crow.f1.neg { border-left-color: var(--neg); }
 .focusing .crow.dim { opacity: .35; }
 
@@ -155,23 +182,23 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .when { display: inline-block; font: 700 11px/1.5 var(--mono); color: var(--ink); background: var(--chip); border: 1px solid var(--rule); border-radius: 4px; padding: 0 5px; margin-right: 6px; }
 .card .kids { margin-top: 12px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
 .card { min-width: 0; }
-.card.concl { background: var(--band); border-color: var(--band); border-left: 4px solid var(--focus); }
+.card.concl { background: var(--band); border-color: var(--band); border-left: 4px solid var(--band); }
 .card.concl .head, .card.concl .pt { color: var(--band-fg); }
 .card.concl .num, .card.concl .kicker { color: var(--band-fg); opacity: .6; }
 .card.concl .when { color: var(--band-fg); border-color: rgba(0, 0, 0, .2); background: rgba(0, 0, 0, .06); }
 :root[data-theme="light"] .card.concl .when { border-color: rgba(255, 255, 255, .25); background: rgba(255, 255, 255, .08); }
-.card.concl .pts .pt::before { background: var(--focus); }
+.card.concl .pts .pt::before { background: var(--band-fg); opacity: .5; }
 .card.prov-inferred, .card.prov-uncertain { border-style: dashed; border-left-style: solid; }
 .card.prov-abstracted { border-style: dotted; border-left-style: solid; }
 .card.reading { border-color: var(--ink-2); }
-.card.f0 { border-color: var(--focus); box-shadow: 0 0 0 2px var(--focus); }
-.card.f0 > .ch .head { background: linear-gradient(transparent 60%, rgba(var(--focus-rgb), .55) 60%); }
+.card.f0 { border-color: var(--focus); box-shadow: 0 0 0 3px var(--focus); }
+.card.f0 > .ch .head { background: linear-gradient(transparent 62%, rgba(var(--focus-rgb), .28) 62%); }
 .card.f1 { border-color: var(--rel); box-shadow: 0 0 0 1px var(--rel); }
 .card.f1.pos { border-color: var(--pos); box-shadow: 0 0 0 1px var(--pos); }
 .card.f1.neg { border-color: var(--neg); box-shadow: 0 0 0 1px var(--neg); }
 .card.ev { border-color: var(--evidence); box-shadow: 0 0 0 1px var(--evidence); }
 .card.cur { border-color: var(--ink); box-shadow: 0 0 0 2px var(--ink); }
-.pt.fp { background: rgba(var(--focus-rgb), .85); color: #111622; }
+.pt.fp { background: rgba(var(--focus-rgb), .18); color: var(--ink); box-shadow: inset 3px 0 var(--focus); }
 .focusing .card.dim > .ch, .focusing .card.dim > .pts, .focusing .card.dim > .kicker { opacity: .28; }
 .focusing .card.dim { border-color: var(--rule); box-shadow: none; }
 .card.stamp { animation: stamp .7s var(--ease-settle); }
@@ -202,10 +229,10 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .rep.table tr.d1 th.rowh { border-left-width: 2px; }
 .rep.table th.rowh .num { font: 700 11px/1.5 var(--mono); color: var(--muted); display: block; }
 .rep.table th.rowh .head { font-weight: 800; color: var(--ink); line-height: 1.45; }
-.rep.table tr.concl th.rowh { background: var(--band); border-left-color: var(--focus); } .rep.table tr.concl th.rowh .head { color: var(--band-fg); } .rep.table tr.concl th.rowh .num { color: var(--band-fg); opacity: .6; }
+.rep.table tr.concl th.rowh { background: var(--band); border-left-color: var(--band); } .rep.table tr.concl th.rowh .head { color: var(--band-fg); } .rep.table tr.concl th.rowh .num { color: var(--band-fg); opacity: .6; }
 .rep.table ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
 .rep.table .pt { font-size: 12.5px; }
-.rep.table tr.f0 th.rowh .head { background: linear-gradient(transparent 60%, rgba(var(--focus-rgb), .55) 60%); }
+.rep.table tr.f0 th.rowh .head { background: linear-gradient(transparent 62%, rgba(var(--focus-rgb), .28) 62%); }
 .rep.table tr.f0 th.rowh { border-left-color: var(--focus); }
 .rep.table tr.f1 th.rowh { border-left-color: var(--rel); } .rep.table tr.f1.pos th.rowh { border-left-color: var(--pos); } .rep.table tr.f1.neg th.rowh { border-left-color: var(--neg); }
 .focusing .rep.table tr.dim { opacity: .35; }
@@ -215,8 +242,8 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .rep.summary .gist { font-size: clamp(20px, 2.3vw, 30px); line-height: 1.8; font-weight: 800; letter-spacing: .03em; max-width: 34em; margin: 0 auto; color: var(--ink); }
 .phrase { cursor: pointer; background-image: linear-gradient(var(--ink), var(--ink)); background-size: 100% 2px; background-repeat: no-repeat; background-position: 0 94%; transition: background-color .2s, opacity .2s; border-radius: 3px; }
 .phrase sup { font: 700 11px/1 var(--mono); color: var(--muted); margin-left: 3px; letter-spacing: 0; }
-.phrase.f0 { background-color: rgba(var(--focus-rgb), .85); color: #111622; background-image: linear-gradient(#111622, #111622); }
-.phrase.f0 sup { color: #111622; }
+.phrase.f0 { background-color: rgba(var(--focus-rgb), .2); background-image: linear-gradient(var(--focus), var(--focus)); background-size: 100% 4px; }
+.phrase.f0 sup { color: var(--focus-ink); }
 .focusing .gist .phrase.dim { opacity: .35; }
 .rep.summary.sweep .phrase { animation: sweep .8s var(--ease-settle) both; }
 @keyframes sweep { from { background-size: 0 2px; opacity: .15; } to { background-size: 100% 2px; opacity: 1; } }
@@ -247,7 +274,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #links .link.f0 path.l, #links .link.f1 path.l { opacity: 1; stroke-width: 2.2; }
 #links .link.f0 path.l { stroke: var(--focus); } #links .link.f0 path.a { fill: var(--focus); }
 #links .link.f0 .lbl rect { fill: var(--focus); stroke: var(--focus); }
-#links .link.f0 .lbl text { fill: #111622; }
+#links .link.f0 .lbl text { fill: var(--on-focus); }
 #links .link.ev path.l { stroke: var(--evidence); opacity: 1; stroke-width: 2.2; }
 #links .link.grow path.l { stroke-dasharray: 1; animation: grow .8s var(--ease-settle) both; }
 #links .link.grow.prov-inferred path.l, #links .link.grow.prov-uncertain path.l, #links .link.grow.prov-abstracted path.l { stroke-dasharray: 5 4; animation: fadein .6s ease-out both; }
@@ -292,17 +319,22 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #gauge text.lv { fill: var(--muted); font: 700 9px/1 var(--mono); letter-spacing: .08em; }
 #gauge text.on { fill: var(--ink); }
 #gauge .g-label { cursor: pointer; }
-#gauge .g-knob { fill: var(--focus); stroke: var(--space); stroke-width: 2.5; }
-#gauge .g-halo { fill: rgba(var(--focus-rgb), .18); }
+#gauge .g-knob { fill: var(--focus); stroke: var(--space); stroke-width: 2.5; pointer-events: none; }
+#gauge .g-goal { stroke-width: 2.2; }
+#gauge .g-play { cursor: pointer; }
+#gauge .g-play circle { fill: var(--ui); }
+#gauge .g-play path { fill: var(--ui-fg); }
+#gauge .g-play:hover circle, #gauge .g-play:focus-visible circle { fill: var(--focus); }
+#gauge .g-halo { fill: rgba(var(--focus-rgb), .18); pointer-events: none; }
 /* the minimap: the model, small, beside its form */
-#minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: 320px; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
+#minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: 400px; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
 #minimap[hidden] { display: none; }
-main.mm-top #minimap { bottom: auto; top: 14px; }
+main.mm-top #minimap { bottom: auto; top: 14px; width: 340px; }
 #minimap .mm-label { position: absolute; left: 8px; top: 5px; font: 700 9px/1 var(--mono); letter-spacing: .22em; color: var(--muted); }
-#mmSvg { display: block; width: 100%; height: auto; max-height: 220px; }
+#mmSvg { display: block; width: 100%; height: auto; max-height: 300px; }
 #mmSvg .mm-box rect { fill: var(--card); stroke: var(--card-line); stroke-width: 1; cursor: pointer; }
 #mmSvg .mm-box.unit > rect { fill: var(--frame); stroke: var(--ink-2); stroke-width: 1.2; }
-#mmSvg .mm-box.concl > rect { fill: var(--band); stroke: var(--focus); stroke-width: 1.6; }
+#mmSvg .mm-box.concl > rect { fill: var(--band); stroke: var(--band); stroke-width: 1.6; }
 #mmSvg .mm-box text { font: 700 8px/1 var(--mono); fill: var(--muted); pointer-events: none; }
 #mmSvg .mm-box.concl text { fill: var(--band-fg); }
 #mmSvg .mm-box.inview > rect { stroke: var(--ink); }
@@ -311,13 +343,11 @@ main.mm-top #minimap { bottom: auto; top: 14px; }
 #mmSvg .mm-view { fill: none; stroke: var(--focus); stroke-width: 1.2; stroke-dasharray: 3 2; }
 #mmSvg .mm-link { fill: none; stroke: var(--link); stroke-width: .9; opacity: .7; }
 #mmSvg .mm-link.pos { stroke: var(--pos); } #mmSvg .mm-link.neg { stroke: var(--neg); }
-#mmSvg .mm-box.f0 > rect { stroke: var(--focus); stroke-width: 2; fill: rgba(var(--focus-rgb), .35); }
+#mmSvg .mm-box.f0 > rect { stroke: var(--focus); stroke-width: 2.6; fill: rgba(var(--focus-rgb), .22); }
 #mmSvg .mm-box.f1 > rect { stroke: var(--rel); stroke-width: 1.6; } #mmSvg .mm-box.f1.pos > rect { stroke: var(--pos); } #mmSvg .mm-box.f1.neg > rect { stroke: var(--neg); }
 .focusing #mmSvg .mm-box.dim { opacity: .4; }
 .focusing #mmSvg .mm-link:not(.f0):not(.f1) { opacity: .15; }
 #mmSvg .mm-link.f0, #mmSvg .mm-link.f1 { opacity: 1; stroke-width: 1.6; } #mmSvg .mm-link.f0 { stroke: var(--focus); }
-#pointer path.mm { stroke-dasharray: 4 3; opacity: .7; }
-#pointer rect.end { fill: var(--focus); stroke: var(--space); stroke-width: 1.5; }
 #ticker { position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%); z-index: 39; pointer-events: none; display: flex; gap: 12px; align-items: baseline; max-width: calc(100% - 32px); padding: 8px 26px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-left: 4px solid var(--focus); opacity: 0; transition: opacity .25s; }
 #ticker.on { opacity: 1; }
 #ticker .k { font: 800 10px/1 var(--mono); letter-spacing: .22em; opacity: .6; flex: none; }
@@ -351,6 +381,9 @@ main.narrow #ticker .m { font-size: 12.5px; }
 <body data-stop="text">
 <header>
   <div class="titles"><h1 id="title">Semantic Model</h1><div class="src" id="sourceLine"></div></div>
+  <div class="theme-ctl" id="themeCtl" role="group" aria-label="Theme">
+    <button type="button" data-theme-set="light" data-i18n="light">Light</button><button type="button" data-theme-set="dark" data-i18n="dark">Dark</button>
+  </div>
 </header>
 <main id="main">
   <canvas id="field" aria-hidden="true"></canvas>
@@ -1999,8 +2032,12 @@ if (!model || typeof model.sourceText !== 'string') {
   document.body.textContent = 'No Semantic Model is embedded in this page.';
   return;
 }
-if (viewOpt.theme === 'light') document.documentElement.dataset.theme = 'light';
-else if (viewOpt.theme === 'auto' && matchMedia('(prefers-color-scheme: light)').matches) document.documentElement.dataset.theme = 'light';
+// light by default; "dark", or "auto" to follow the system. The reader can switch, and the choice is remembered here.
+const THEME_KEY = 'semantic-model-viewer:theme';
+let savedTheme = null;
+try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) { /* storage unavailable */ }
+document.documentElement.dataset.theme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme
+  : viewOpt.theme === 'dark' || (viewOpt.theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
 const meta = model.metadata && typeof model.metadata === 'object' ? model.metadata : {};
 const text = model.sourceText;
 const cps = Array.from(text);                 // offsets are Unicode code points
@@ -2011,28 +2048,28 @@ const LANG = viewOpt.lang || meta.language || (/[぀-ヿ一-鿿]/.test(text) ? '
 const I18N = {
   en: {
     focusAxis: 'Focus', formAxis: 'Form', stopText: 'Text', stopChunks: 'Chunks', stopModel: 'Model',
-    repStructure: 'Structure', repLinear: 'Linear', repTable: 'Table', repSummary: 'Summary',
+    repStructure: 'Structure', repLinear: 'Linear', repTable: 'Table', repSummary: 'Summary', repSlides: 'Slides', light: 'Light', dark: 'Dark', goal: 'GOAL', play: 'Play to the summary', pause: 'Pause',
     byNotes: 'Notes order', byReading: 'Reading order',
     phase_text: 'Text', phase_wrap: 'Chunk', phase_notes: 'Notes', phase_structure: 'Structure', phase_link: 'Link', phase_summary: 'One sentence',
     capNotes: 'Each chunk becomes a note: its message, and what matters in it', capStructure: 'The notes take their places: what leads to what',
     capText: 'characters', conclusion: 'CONCLUSION', headline: 'Headline', points: 'Points', other: 'Other chunks', noSummary: 'This model has no summary.',
     inText: 'In the text', links: 'Relations', basis: 'Derived from', basisOf: 'Basis for', partOf: 'Part of', contains: 'Contains', note: 'Note',
     goText: 'Down to the text', release: 'Release', close: 'Hide (stays pinned)',
-    hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks; on the right, the chunks at a glance. Keep dragging to rise to the model.', hintText: 'Drag the knob on the gauge to the right: the text is wrapped into chunks, and the chunks become a model.',
+    hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks; on the right, the chunks at a glance. Keep dragging to rise to the model.', hintText: 'Drag the knob on the gauge to the right: the text is wrapped into chunks, the chunks become a model, and the model one sentence. ▶ plays it to the summary.',
     kWrap: 'WRAP', kForm: 'MODEL', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS',
     explicit: 'explicit — stated in the text', inferred: 'inferred — follows from the text, not stated', abstracted: 'abstracted — a grouping made while modeling', uncertain: 'uncertain — more than one reading',
     problems: 'Some parts of the model could not be shown',
   },
   ja: {
     focusAxis: 'フォーカス', formAxis: '表現', stopText: '原文', stopChunks: '塊', stopModel: 'モデル',
-    repStructure: '構造', repLinear: '線形', repTable: '表', repSummary: '要約',
+    repStructure: '構造', repLinear: '線形', repTable: '表', repSummary: '要約', repSlides: 'スライド', light: 'ライト', dark: 'ダーク', goal: 'GOAL', play: '要約まで再生', pause: '一時停止',
     byNotes: 'ノート順', byReading: '読む順',
     phase_text: '原文', phase_wrap: '塊を巻く', phase_notes: 'ノートにする', phase_structure: '構造にする', phase_link: 'つなぐ', phase_summary: '一言にする',
     capNotes: '塊がノートになる：その塊のメッセージと、落とせない要点', capStructure: 'ノートが持ち場につく：何が何につながるか',
     capText: '字', conclusion: '結論', headline: '見出し', points: '要点', other: 'ほかの塊', noSummary: 'このモデルには要約（summary）がありません。',
     inText: '原文', links: 'つながり', basis: '根拠（導出元）', basisOf: 'これを根拠とするもの', partOf: '含まれる先', contains: '含むもの', note: 'メモ',
     goText: '原文へ降りる', release: '解除', close: '閉じる（固定は維持）',
-    hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を塊に巻いた層。右はどんな塊があるかの一覧。さらに右へ動かすとモデルになる。', hintText: '下のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルになる。',
+    hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を塊に巻いた層。右はどんな塊があるかの一覧。さらに右へ動かすとモデルになる。', hintText: '下のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルに、モデルが一言の要約になる。▶ で要約まで再生。',
     kWrap: '塊を巻く', kForm: 'モデルにする', kLink: 'つなぐ', kRep: '表現', chunksN: 'CHUNKS · 塊',
     explicit: 'explicit — 原文に明示', inferred: 'inferred — 原文から推論（明示はない）', abstracted: 'abstracted — モデル化でまとめたもの', uncertain: 'uncertain — 複数の読みがありうる',
     problems: 'モデルの一部を表示できませんでした',
@@ -2179,10 +2216,12 @@ const STAGES = {
   linear: { stop: 'model', rep: 'linear' },
   table: { stop: 'model', rep: 'table' },
   summary: { stop: 'model', rep: 'summary' },
+  slides: { stop: 'model', rep: 'slides' },
 };
-const TRUNK = ['text', 'chunks', 'model'];
-const FORMS = ['linear', 'table', 'summary'];
-const SEGS = [['text', 'chunks'], ['chunks', 'model'], ...FORMS.map(f => ['model', f])];
+// text — chunks — model — summary is the trunk, and the summary its goal; linear (and from it slides) and table branch off the model
+const PARENT = { chunks: 'text', model: 'chunks', summary: 'model', linear: 'model', table: 'model', slides: 'linear' };
+const FORMS = ['summary', 'linear', 'table', 'slides'];
+const SEGS = Object.entries(PARENT).map(([child, parent]) => [parent, child]);
 const first = STAGES[viewOpt.stage] ? viewOpt.stage : 'text';
 const S = { stage: first, stop: STAGES[first].stop, rep: STAGES[first].rep, hover: null, pinned: null, hoverSeg: null, follow: viewOpt.follow !== false };
 const isWrapped = () => S.stop !== 'text';
@@ -2363,11 +2402,28 @@ function renderChunks() {
     style: n.depth ? `margin-left:${Math.min(n.depth, 3) * 18}px` : null },
     h('b', { class: 'num', 'data-key': `num:${n.id}` }, n.num), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)))));
 }
+function renderSlides() {
+  const deck = h('div', { class: 'deck' });
+  const total = order.length + 1 + (summary.length ? 1 : 0);
+  let k = 0;
+  const sno = () => h('span', { class: 'sno' }, `${String(++k).padStart(2, '0')} / ${String(total).padStart(2, '0')}`);
+  deck.append(h('section', { class: 'slide cover' }, sno(), h('span', { class: 'kicker' }, meta.source ? 'NOTES' : 'NOTES'),
+    h('h2', {}, meta.title || ''), summary.length ? h('p', { class: 'lede' }, summary.map(p => p.text).join('')) : null));
+  order.forEach(n => {
+    const kick = [n.role === 'conclusion' ? T.conclusion : '', n.type].filter(Boolean).join(' · ');
+    deck.append(h('section', { class: `slide box ${n.children.length ? 'section' : 'content'}${n.role === 'conclusion' ? ' concl' : ''}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
+      sno(), kick ? h('span', { class: 'kicker' }, kick) : null,
+      h('div', { class: 'sh' }, h('b', { class: 'num', 'data-key': `num:${n.id}` }, titleNum(n)), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)),
+      n.points.length ? h('ul', { class: 'pts' }, ...n.points.map(p => pointEl(p))) : null));
+  });
+  if (summary.length) deck.append(h('section', { class: 'slide closing' }, sno(), h('span', { class: 'kicker' }, 'SUMMARY'), h('p', { class: 'gist' }, summary.map(p => p.text).join(''))));
+  repEl.append(deck);
+}
 function renderRep() {
   repEl.innerHTML = '';
   repEl.className = 'rep ' + S.rep;
   if (S.stop === 'text') return;
-  ({ chunks: renderChunks, structure: renderStructure, linear: renderLinear, table: renderTable, summary: renderSummary })[S.rep]();
+  ({ chunks: renderChunks, structure: renderStructure, linear: renderLinear, table: renderTable, summary: renderSummary, slides: renderSlides })[S.rep]();
   repEl.append(svgEl('svg', { id: 'links' }));
 }
 
@@ -2748,31 +2804,47 @@ function tweenU(to, ms, ease = easeInOut) {
     tw = requestAnimationFrame(step);
   });
 }
+const chain = x => { const out = [x]; while (PARENT[out[out.length - 1]]) out.push(PARENT[out[out.length - 1]]); return out; };
 function route(a, b) {       // the stages passed through on the way from a to b
-  const head = FORMS.includes(a) ? [a, 'model'] : [a];
-  const tail = FORMS.includes(b) ? ['model', b] : [b];
-  const from = TRUNK.indexOf(head[head.length - 1]), to = TRUNK.indexOf(tail[0]), dir = Math.sign(to - from);
-  const path = head.slice();
-  for (let i = from; i !== to; i += dir) path.push(TRUNK[i + dir]);
-  return path.concat(tail.slice(1)).filter((x, i, arr) => i === 0 || x !== arr[i - 1]);
+  const ca = chain(a), cb = chain(b), meet = ca.find(x => cb.includes(x));
+  return [...ca.slice(0, ca.indexOf(meet) + 1), ...cb.slice(0, cb.indexOf(meet)).reverse()];
 }
 const segOf = (a, b) => SEGS.find(([x, y]) => (x === a && y === b) || (x === b && y === a));
 let goToken = 0;
+const segMs = (lo, story) => lo === 'text' ? (story ? 4200 : 1700) : lo === 'chunks' ? (story ? 4200 : 1900) : (story ? 1600 : 950);
 async function goTo(target, opts = {}) {
-  if (!STAGES[target]) return;
+  if (!STAGES[target]) return false;
   const my = ++goToken;
-  if (sess) endSeg(sess.u >= 0.5 ? 1 : 0);
+  if (sess) {   // between two stages: carry on toward the target from where the knob is
+    const s = sess, back = route(s.b, target).includes(s.a), to = back ? 0 : 1;
+    const ms = reduceMotion ? 0 : (opts.ms || segMs(s.a, opts.story)) * Math.abs(to - s.u);
+    await tweenU(to, ms, easeInOut);
+    if (my !== goToken) return false;
+    endSeg(to);
+  }
   const path = route(S.stage, target);
   for (let i = 1; i < path.length; i++) {
     const a = path[i - 1], b = path[i], [lo, hi] = segOf(a, b), up = a === lo;
+    if (opts.story && i > 1 && !reduceMotion) { await sleep(700); if (my !== goToken) return false; }
     beginSeg(lo, hi);
     frame(up ? 0 : 1);
-    const ms = reduceMotion ? 0 : (opts.ms || (lo === 'text' ? 1700 : lo === 'chunks' ? 1900 : 950));
+    const ms = reduceMotion ? 0 : (opts.ms || segMs(lo, opts.story));
     await tweenU(up ? 1 : 0, ms, i === path.length - 1 && up ? settle : easeInOut);
-    if (my !== goToken) return;
+    if (my !== goToken) return false;
     endSeg(up ? 1 : 0);
   }
   arrived();
+  return true;
+}
+// ▶ plays the way to the goal, the summary: from where the knob is, or from the text again
+let playing = false;
+async function play() {
+  if (playing) { playing = false; goToken++; drawGauge(); return; }
+  playing = true; drawGauge();
+  if (S.stage === 'summary' && !sess) await goTo('text', { ms: 1 });
+  const done = await goTo('summary', { story: true });
+  if (done || !sess) playing = false;
+  drawGauge();
 }
 function arrived() {
   if (FORMS.includes(S.stage)) slate(formLabel(S.stage), T.kRep);
@@ -3076,26 +3148,16 @@ function drawPointer() {
   if (!f || S.stop === 'text' || G.narrow || sess) return;
   const host = main.getBoundingClientRect(), tp = textPane.getBoundingClientRect();
   const inPane = (el, r) => { const pane = el.closest('#stage, #textPane'); if (!pane) return true; const c = pane.getBoundingClientRect(); return r.bottom > c.top && r.top < c.bottom; };
-  // the three corners: the words, the form, and (at a form) the model's minimap
+  // the words and the note; the model's minimap, at a form, is lit by the focus itself
   const mel = modelSideEl(f), mr = mel && mel.getBoundingClientRect();
   const center = mr && inPane(mel, mr) ? { x: mr.left - host.left, y: mr.top + Math.min(mr.height / 2, 12) - host.top, right: mr.right - host.left } : null;
   const tr = textSideRect(f);
   const words = tr ? { x: Math.min(tp.right - 6, tp.left + GUTTER + G.colW + 8) - host.left, y: tr.top + tr.height / 2 - host.top } : null;
-  const mm = $('#minimap');
-  const n = f.kind === 'node' ? f : f.kind === 'point' ? f.node : f.kind === 'rel' ? f.target : f.kind === 'phrase' ? f.refs[0] : null;
-  const boxEl = !mm.hidden && n && mm.querySelector(`.mm-box[data-node="${n.id}"] rect`);
-  const br = boxEl && boxEl.getBoundingClientRect();
-  const mini = br ? { x: br.left + br.width / 2 - host.left, y: br.top + br.height / 2 - host.top } : null;
   if (words && center && center.x - words.x > 8) {
     const dx = (center.x - 6 - words.x) * 0.5;
     svgEl('path', { d: `M${words.x},${words.y} C${words.x + dx},${words.y} ${center.x - 6 - dx},${center.y} ${center.x - 6},${center.y}` }, pointerSvg);
     svgEl('circle', { cx: words.x, cy: words.y, r: 2.5 }, pointerSvg);
     svgEl('circle', { class: 'end', cx: center.x - 6, cy: center.y, r: 4 }, pointerSvg);
-  }
-  if (mini) {   // straight, as the minimap's own lines are
-    const from = center ? { x: Math.min(center.right, mini.x), y: center.y } : words;
-    if (from) svgEl('path', { class: 'mm', d: `M${from.x},${from.y} L${mini.x},${mini.y}` }, pointerSvg);
-    svgEl('rect', { class: 'end', x: mini.x - 3.5, y: mini.y - 3.5, width: 7, height: 7 }, pointerSvg);
   }
 }
 
@@ -3206,89 +3268,81 @@ function focusIn(n) {
   const show = () => { scrollTextTo(n.home || n.spans[0], true); applyFocus(); };
   if (S.stage === 'chunks' || S.stage === 'text') show(); else goTo('chunks').then(show);
 }
-const GZ = { text: [44, 50], chunks: [184, 50], model: [324, 50] };
-const TIP = { linear: [452, 16], table: [452, 50], summary: [452, 84] };
-const branchD = {}, branchPts = {};
-FORMS.forEach(f => {
-  const [x0, y0] = GZ.model, [x1, y1] = TIP[f];
-  branchD[f] = `M${x0},${y0} L${x1},${y1}`;
-  branchPts[f] = Array.from({ length: 33 }, (_, j) => [x0 + (x1 - x0) * j / 32, y0 + (y1 - y0) * j / 32]);
-});
+// where each stage sits on the gauge: the trunk on one line, the branches leaving the model straight
+const GP = { text: [64, 58], chunks: [168, 58], model: [272, 58], summary: [452, 58], linear: [334, 22], slides: [452, 22], table: [334, 96] };
+const LEVEL_TAG = { text: 'L0', chunks: 'L1', model: 'L2', summary: 'L3' };
 const GG = {};
 const stageLabel = st => ({ text: T.stopText, chunks: T.stopChunks, model: T.stopModel })[st] || formLabel(st);
 function buildGauge() {
   gaugeSvg.innerHTML = '';
   const g = (tag, attrs, parent = gaugeSvg) => svgEl(tag, attrs, parent);
-  g('path', { class: 'g-hit', d: `M${GZ.text} L${GZ.model}` });
-  FORMS.forEach(f => g('path', { class: 'g-hit', d: branchD[f] }));
-  g('line', { class: 'g-line', x1: GZ.text[0], y1: GZ.text[1], x2: GZ.model[0], y2: GZ.model[1] });
-  GG.fill = g('line', { class: 'g-fill', x1: GZ.text[0], y1: GZ.text[1], x2: GZ.text[0], y2: GZ.text[1] });
-  FORMS.forEach(f => {
-    GG['b_' + f] = g('path', { class: 'g-branch', d: branchD[f], pathLength: 1, 'stroke-dasharray': 1, 'stroke-dashoffset': 1 });
-    GG['bf_' + f] = g('path', { class: 'g-branch-fill', d: branchD[f], pathLength: 1, 'stroke-dasharray': '0 1' });
+  SEGS.forEach(([a, b]) => g('line', { class: 'g-hit', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] }));
+  SEGS.forEach(([a, b]) => {
+    const trunk = !!LEVEL_TAG[b];
+    g('line', { class: trunk ? 'g-line' : 'g-branch', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] });
+    GG['f_' + b] = g('line', { class: trunk ? 'g-fill' : 'g-branch-fill', x1: GP[a][0], y1: GP[a][1], x2: GP[a][0], y2: GP[a][1] });
   });
-  TRUNK.forEach((st, i) => {
-    const [x, y] = GZ[st];
-    GG['n_' + st] = g('circle', { class: 'g-node', cx: x, cy: y, r: 6 });
-    const lab = g('g', { class: 'g-label', 'data-stage': st });
-    g('rect', { x: x - 36, y: y + 10, width: 72, height: 42, fill: 'transparent' }, lab);
-    g('text', { class: 'lv', x, y: y + 25, 'text-anchor': 'middle' }, lab).textContent = 'L' + i;
-    (GG['t_' + st] = g('text', { x, y: y + 42, 'text-anchor': 'middle' }, lab)).textContent = stageLabel(st);
+  Object.keys(STAGES).forEach(st => {
+    const [x, y] = GP[st], lab = g('g', { class: 'g-label', 'data-stage': st });
+    if (st === 'summary') {
+      GG['n_' + st] = g('path', { class: 'g-node g-goal', d: `M${x},${y - 9} L${x + 9},${y} L${x},${y + 9} L${x - 9},${y} Z` });
+      g('rect', { x: x - 36, y: y + 10, width: 72, height: 42, fill: 'transparent' }, lab);
+      g('text', { class: 'lv', x, y: y + 25, 'text-anchor': 'middle' }, lab).textContent = `${LEVEL_TAG[st]} · ${T.goal}`;
+      (GG['t_' + st] = g('text', { x, y: y + 42, 'text-anchor': 'middle' }, lab)).textContent = stageLabel(st);
+    } else if (LEVEL_TAG[st]) {
+      GG['n_' + st] = g('circle', { class: 'g-node', cx: x, cy: y, r: 6 });
+      g('rect', { x: x - 36, y: y + 10, width: 72, height: 42, fill: 'transparent' }, lab);
+      g('text', { class: 'lv', x, y: y + 25, 'text-anchor': 'middle' }, lab).textContent = LEVEL_TAG[st];
+      (GG['t_' + st] = g('text', { x, y: y + 42, 'text-anchor': 'middle' }, lab)).textContent = stageLabel(st);
+    } else {
+      GG['n_' + st] = g('rect', { class: 'g-tip', x: x - 5, y: y - 5, width: 10, height: 10 });
+      const left = st !== 'slides';   // labels sit clear of the lines
+      g('rect', { x: left ? x - 70 : x + 6, y: y - 13, width: 64, height: 26, fill: 'transparent' }, lab);
+      (GG['t_' + st] = g('text', { x: left ? x - 12 : x + 12, y: y + 4, 'text-anchor': left ? 'end' : 'start' }, lab)).textContent = formLabel(st);
+    }
   });
-  FORMS.forEach(f => {
-    const [x, y] = TIP[f];
-    GG['n_' + f] = g('rect', { class: 'g-tip', x: x - 5, y: y - 5, width: 10, height: 10 });
-    const lab = g('g', { class: 'g-label', 'data-stage': f });
-    g('rect', { x: x - 8, y: y - 13, width: 96, height: 26, fill: 'transparent' }, lab);
-    (GG['t_' + f] = g('text', { x: x + 13, y: y + 4 }, lab)).textContent = formLabel(f);
-    GG['g_' + f] = [GG['n_' + f], lab];
-  });
+  const pb = g('g', { class: 'g-play', role: 'button', tabindex: 0, 'aria-label': T.play });
+  g('circle', { cx: 22, cy: 58, r: 13 }, pb);
+  GG.playIcon = g('path', { d: '' }, pb);
+  pb.addEventListener('click', ev => { ev.stopPropagation(); play(); });
+  pb.addEventListener('pointerdown', ev => ev.stopPropagation());
   GG.halo = g('circle', { class: 'g-halo', r: 15 });
   GG.knob = g('circle', { class: 'g-knob', r: 8 });
 }
 function knobPos() {
-  if (sess) {
-    const u = clamp(sess.u, 0, 1);
-    if (FORMS.includes(sess.b)) { const pts = branchPts[sess.b], i = u * 32, i0 = Math.min(31, Math.floor(i)), f = i - i0, p0 = pts[i0], p1 = pts[i0 + 1];
-      return [p0[0] + (p1[0] - p0[0]) * f, p0[1] + (p1[1] - p0[1]) * f]; }
-    const A = GZ[sess.a], B = GZ[sess.b];
-    return [A[0] + (B[0] - A[0]) * u, A[1]];
-  }
-  return FORMS.includes(S.stage) ? TIP[S.stage] : GZ[S.stage];
+  if (sess) { const u = clamp(sess.u, 0, 1), A = GP[sess.a], B = GP[sess.b]; return [A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u]; }
+  return GP[S.stage];
 }
-const growOf = () => 1;   // the forms are on the gauge from the start
 function drawGauge() {
   if (!GG.knob) return;
-  const [kx, ky] = knobPos(), gr = growOf();
-  const onBranch = sess ? FORMS.includes(sess.b) : FORMS.includes(S.stage);
-  GG.fill.setAttribute('x2', onBranch ? GZ.model[0] : kx);
-  FORMS.forEach(f => {
-    GG['b_' + f].setAttribute('stroke-dashoffset', String(1 - gr));
-    const active = sess ? sess.b === f : S.stage === f;
-    const fu = active ? (sess ? clamp(sess.u, 0, 1) : 1) : 0;
-    GG['bf_' + f].setAttribute('stroke-dasharray', `${fu} 1`);
-    GG['g_' + f].forEach(el => { el.style.opacity = String(gr); });
-    GG['g_' + f][1].style.pointerEvents = gr > 0.5 ? 'auto' : 'none';
-    GG['n_' + f].classList.toggle('on', active && fu > 0.999);
-    GG['t_' + f].classList.toggle('on', !sess && S.stage === f);
+  const [kx, ky] = knobPos();
+  const walked = chain(sess ? sess.a : S.stage);       // the way from the text to here
+  SEGS.forEach(([a, b]) => {
+    const line = GG['f_' + b];
+    let end = GP[a];
+    if (walked.includes(b)) end = GP[b];
+    else if (sess && sess.a === a && sess.b === b) end = [kx, ky];
+    line.setAttribute('x2', end[0]); line.setAttribute('y2', end[1]);
   });
-  TRUNK.forEach(st => {
-    GG['n_' + st].classList.toggle('on', onBranch || kx >= GZ[st][0] - 0.5);
+  Object.keys(STAGES).forEach(st => {
+    GG['n_' + st].classList.toggle('on', walked.includes(st) || (!!sess && sess.b === st && sess.u > 0.999));
     GG['t_' + st].classList.toggle('on', !sess && S.stage === st);
   });
+  GG.playIcon.setAttribute('d', playing ? 'M17,52 h4 v12 h-4 Z M24,52 h4 v12 h-4 Z' : 'M18,51 L29,58 L18,65 Z');
+  GG.playIcon.parentNode.setAttribute('aria-label', playing ? T.pause : T.play);
   GG.knob.setAttribute('cx', kx); GG.knob.setAttribute('cy', ky);
   GG.halo.setAttribute('cx', kx); GG.halo.setAttribute('cy', ky);
   gaugeSvg.setAttribute('aria-valuetext', stageLabel(sess ? (sess.u >= 0.5 ? sess.b : sess.a) : S.stage));
 }
 function svgPoint(ev) { const r = gaugeSvg.getBoundingClientRect(); return [(ev.clientX - r.left) * 560 / r.width, (ev.clientY - r.top) * 120 / r.height]; }
-function project([x, y]) {   // the nearest point on the trunk or, once grown, on a branch
-  const tx = clamp(x, GZ.text[0], GZ.model[0]), low = tx <= GZ.chunks[0];
-  let best = { d: Math.hypot(x - tx, y - GZ.text[1]), seg: low ? ['text', 'chunks'] : ['chunks', 'model'],
-    u: low ? (tx - GZ.text[0]) / (GZ.chunks[0] - GZ.text[0]) : (tx - GZ.chunks[0]) / (GZ.model[0] - GZ.chunks[0]) };
-  if (growOf() > 0.5) FORMS.forEach(f => branchPts[f].forEach((pt, j) => {
-    const d = Math.hypot(x - pt[0], y - pt[1]);
-    if (j > 0 && d < best.d) best = { d, seg: ['model', f], u: j / 32 };
-  }));
+function project([x, y]) {   // the nearest point on any line of the gauge
+  let best = { d: Infinity };
+  SEGS.forEach(([a, b]) => {
+    const [x0, y0] = GP[a], [x1, y1] = GP[b], vx = x1 - x0, vy = y1 - y0;
+    const u = clamp(((x - x0) * vx + (y - y0) * vy) / (vx * vx + vy * vy), 0, 1);
+    const d = Math.hypot(x - (x0 + vx * u), y - (y0 + vy * u));
+    if (d < best.d - 0.5) best = { d, seg: [a, b], u };
+  });
   return best;
 }
 function moveKnob(t) {
@@ -3306,7 +3360,7 @@ gaugeSvg.addEventListener('pointerdown', ev => {
   const lab = ev.target.closest && ev.target.closest('.g-label');
   drag = { x: ev.clientX, y: ev.clientY, lab: lab ? lab.dataset.stage : null, moved: false };
   gaugeSvg.setPointerCapture(ev.pointerId);
-  goToken++;
+  goToken++; playing = false;
   cancelAnimationFrame(tw);
 });
 gaugeSvg.addEventListener('pointermove', ev => {
@@ -3328,17 +3382,18 @@ const endDrag = ev => {
 };
 gaugeSvg.addEventListener('pointerup', endDrag);
 gaugeSvg.addEventListener('pointercancel', endDrag);
-let lastForm = 'linear';
-function stepStage(dir) {
-  const st = S.stage;
-  if (FORMS.includes(st)) lastForm = st;
-  if (dir > 0) goTo(st === 'text' ? 'chunks' : st === 'chunks' ? 'model' : st === 'model' ? lastForm : st);
-  else goTo(FORMS.includes(st) ? 'model' : st === 'model' ? 'chunks' : 'text');
+const NEXT = { text: 'chunks', chunks: 'model', model: 'summary', linear: 'slides' };
+function stepStage(dir) {   // → toward the summary (or on to the slides), ← back toward the text
+  playing = false;
+  const to = dir > 0 ? NEXT[S.stage] : PARENT[S.stage];
+  if (to) goTo(to);
 }
-function cycleForm(dir) {
+function cycleForm(dir) {   // ↑ ↓ between the model's forms, as they lie on the gauge: linear, summary, table
   if (S.stage !== 'model' && !FORMS.includes(S.stage)) return;
-  const i = FORMS.indexOf(S.stage);
-  goTo(FORMS[i < 0 ? (dir > 0 ? 0 : FORMS.length - 1) : (i + dir + FORMS.length) % FORMS.length]);
+  const col = ['linear', 'summary', 'table'], at = S.stage === 'slides' ? 'linear' : S.stage;
+  const i = col.indexOf(at);
+  playing = false;
+  goTo(col[i < 0 ? (dir > 0 ? 2 : 0) : clamp(i + dir, 0, 2)]);
 }
 
 /* =====================================================================
@@ -3413,9 +3468,23 @@ document.addEventListener('keydown', ev => {
   if (ev.target.closest && ev.target.closest('select, input, textarea')) return;
   const inPane = ev.target.closest && ev.target.closest('#textPane, #stage');
   if (ev.key === 'Escape') { if (S.pinned) setPinned(null); else setHover(null); }
+  else if (ev.key === ' ' && !inPane) { ev.preventDefault(); play(); }
   else if (ev.key === 'ArrowRight') { ev.preventDefault(); stepStage(1); }
   else if (ev.key === 'ArrowLeft') { ev.preventDefault(); stepStage(-1); }
   else if ((ev.key === 'ArrowUp' || ev.key === 'ArrowDown') && !inPane) { ev.preventDefault(); cycleForm(ev.key === 'ArrowDown' ? 1 : -1); }
+});
+function showTheme() {
+  $$('#themeCtl button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeSet === document.documentElement.dataset.theme)));
+}
+$('#themeCtl').addEventListener('click', ev => {
+  const b = ev.target.closest('button');
+  if (!b || b.dataset.themeSet === document.documentElement.dataset.theme) return;
+  document.documentElement.dataset.theme = b.dataset.themeSet;
+  try { localStorage.setItem(THEME_KEY, b.dataset.themeSet); } catch (e) { /* storage unavailable */ }
+  showTheme();
+  FIELD.sig = null;      // the composition takes its colours from the theme
+  layoutField();
+  drawPointer();
 });
 let resizeTO = 0;
 addEventListener('resize', () => { clearTimeout(resizeTO); resizeTO = setTimeout(() => { if (sess) endSeg(sess.u >= 0.5 ? 1 : 0); renderAll(); afterRender(); drawGauge(); }, 120); });
@@ -3430,6 +3499,7 @@ if (problems.length) {
   const p = $('#problems'); p.hidden = false;
   p.append(h('b', {}, T.problems), h('ul', {}, ...problems.slice(0, 8).map(x => h('li', {}, x))));
 }
+showTheme();
 buildGauge();
 buildMinimap();
 renderAll();
