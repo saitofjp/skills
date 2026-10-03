@@ -1,9 +1,9 @@
 ---
-name: semantic-model-viewer
-description: Semantic Model（semantic-model-builderが作るノート）を、原文と並べて、1枚で完結するアニメーション付きのHTMLページ（トランスフォームビュー）として表示する。操作部は、メタ構造を描いた1本のゲージ（中心にモデルを置いた小さなHUD）。つまみを、原文から、一節ずつ塊に巻いた原文（横に原文の順の一覧）、塊がまとまって持ち場につくモデルへと動かすと、部品が段階の間を連続して変化する。▶ は同じアニメーションを要約まで再生する。モデルからは、表現へまっすぐな枝が伸びる。A 一言の要約、B 線形のノート（その先に B2 16:9のスライド）、C 表。表現の段階では、原文・表現・モデル（隅の縮小マップ）の3つが並んで同時に光る。Semantic Modelや文章のノートを見たい・探りたい・発表したい・可視化したいとき、原文とノートを並べて読みたいとき、文章が構造と要約になる様子を見たいとき、そこからスライドの構成を考えたいときに使う。「Semantic Modelを表示して」「原文とノートを並べて見せて」「構造になっていく様子を見せて」「トランスフォームビューで見せて」などで使う。
+name: semantic-structure-viewer
+description: 文章の意味構造（semantic-structure-builderが作る、文章が意味していることのモデルとノート）を、原文と並べて、1枚で完結するアニメーション付きのHTMLページ（トランスフォームビュー）として表示する。操作部は、メタ構造を描いた1本のゲージ（中心にモデルを置いた小さなHUD）。つまみを、原文から、一節ずつ塊に巻いた原文（横に原文の順の一覧）、塊がまとまって持ち場につくモデルへと動かすと、部品が段階の間を連続して変化する。▶ は同じアニメーションを要約まで再生する。モデルからは、表現へまっすぐな枝が伸びる。A 一言の要約、B 線形のノート（その先に B2 16:9のスライド）、C 表。表現の段階では、原文・表現・モデル（隅の縮小マップ）の3つが並んで同時に光る。意味構造や文章のノートを見たい・探りたい・発表したい・可視化したいとき、原文とノートを並べて読みたいとき、文章が構造と要約になる様子を見たいとき、そこからスライドの構成を考えたいときに使う。「意味構造を表示して」「原文とノートを並べて見せて」「構造になっていく様子を見せて」「トランスフォームビューで見せて」などで使う。
 ---
 
-# Semantic Model Viewer
+# Semantic Structure Viewer
 
 > 英語版 [SKILL.md](SKILL.md) と同じ内容の日本語版。
 
@@ -20,11 +20,11 @@ description: Semantic Model（semantic-model-builderが作るノート）を、�
   - 同時に、構造の写しが隅へ縮んでいき、ゲームの縮小マップのように残る。左に原文、中央に表現、隅にモデルが並び、焦点を合わせると3つが同時に光る。
 - **結論と注目：** 原文の結論は反転したカードで示す。注目（`role: "key"`、◆ 注目）は、結論ではないが読み手にとっていちばん大事な塊で、どの表現でも太い枠で示し、結論の陰に埋もれないようにする。
 
-ページは固定のテンプレート [`assets/viewer.html`](assets/viewer.html) である。契約（[`references/semantic-model.md`](references/semantic-model.md)）に従うモデルなら何でも表示でき、ネットワークは要らない。原文から意味を取り出すことはせず、表示するものはすべてモデルから来る。
+ページは固定のテンプレート [`assets/viewer.html`](assets/viewer.html) である。契約（[`references/semantic-structure.md`](references/semantic-structure.md)）に従うモデルなら何でも表示でき、ネットワークは要らない。原文から意味を取り出すことはせず、表示するものはすべてモデルから来る。
 
 ## 入力
 
-- Semantic Modelのファイル（`semantic-model/1`）。原文しか無いときは、先に [`semantic-model-builder`](../semantic-model-builder/SKILL.ja.md) でノートを作る。ここで構造を考え出さない。
+- 意味構造（Semantic Structure）のファイル（`semantic-structure/1`）。原文しか無いときは、先に [`semantic-structure-builder`](../semantic-structure-builder/SKILL.ja.md) でノートを作る。ここで構造を考え出さない。
 - ユーザーが望むなら、どこから始めるか。
 
 ## 手順
@@ -69,6 +69,6 @@ description: Semantic Model（semantic-model-builderが作るノート）を、�
 
 ## 参照
 
-- [references/semantic-model.md](references/semantic-model.md)：入力の契約（builderと共通）。英語。
+- [references/semantic-structure.md](references/semantic-structure.md)：入力の契約（builderと共通）。英語。
 - [references/transform-view.md](references/transform-view.md)：ゲージ、層、表現、動き、背景の構図、原文 ↔ モデルの対応、操作。英語。
 - [assets/viewer.html](assets/viewer.html)：テンプレート。そのまま開くと、短い作例（駅前商店街を3つの塊にしたもの）を表示する。

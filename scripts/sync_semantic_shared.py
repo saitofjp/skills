@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Keep the files shared by semantic-model-builder and semantic-model-viewer identical.
+"""Keep the files shared by semantic-structure-builder and semantic-structure-viewer identical.
 
 Each skill must work when installed alone, so both carry their own copy of the
-Semantic Model contract and its tool. The builder's copy is the original.
+Semantic Structure contract and its tool. The builder's copy is the original.
 
   python3 scripts/sync_semantic_shared.py          # copy builder -> viewer
   python3 scripts/sync_semantic_shared.py --check  # exit 1 if the copies differ
@@ -15,9 +15,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "skills" / "semantic-model-builder"
-COPIES = [ROOT / "skills" / "semantic-model-viewer"]
-SHARED = ["references/semantic-model.md", "scripts/semantic_model.py"]
+SOURCE = ROOT / "skills" / "semantic-structure-builder"
+COPIES = [ROOT / "skills" / "semantic-structure-viewer"]
+SHARED = ["references/semantic-structure.md", "scripts/semantic_structure.py"]
 
 
 def main():

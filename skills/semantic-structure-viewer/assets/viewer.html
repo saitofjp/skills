@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Semantic Model Viewer</title>
+<title>Semantic Structure Viewer</title>
 <meta name="description" content="A text and its model side by side. Rise from the text to its chunks to the model, and turn the model into structure, linear notes, a table or one sentence.">
 <style>
 /*
-  Semantic Model Viewer — the Transform View of one Semantic Model (semantic-model/1).
+  Semantic Structure Viewer — the Transform View of one Semantic Structure (semantic-structure/1).
   Concept: rise through the layers of meaning. The text is the ground; chunks lift off it;
   the model floats above, in a classical, unruly geometry composed from the model itself,
   which lies shattered near the text and comes together as you rise.
@@ -409,7 +409,7 @@ main.narrow #rep { padding-bottom: 190px; }
 </head>
 <body data-stop="text">
 <header>
-  <div class="titles"><h1 id="title">Semantic Model</h1><div class="src" id="sourceLine"></div></div>
+  <div class="titles"><h1 id="title">Semantic Structure</h1><div class="src" id="sourceLine"></div></div>
   <div class="theme-ctl" id="themeCtl" role="group" aria-label="Theme">
     <button type="button" data-theme-set="light" data-i18n="light">Light</button><button type="button" data-theme-set="dark" data-i18n="dark">Dark</button>
   </div>
@@ -436,10 +436,10 @@ main.narrow #rep { padding-bottom: 190px; }
 </main>
 <div id="fly" aria-hidden="true"></div>
 
-<!-- The Semantic Model (semantic-model/1). build_viewer.py replaces this block. -->
-<script type="application/json" id="semantic-model">
+<!-- The Semantic Structure (semantic-structure/1). build_viewer.py replaces this block. -->
+<script type="application/json" id="semantic-structure">
 {
- "version": "semantic-model/1",
+ "version": "semantic-structure/1",
  "sourceText": "駅前の商店街では、昨年から空き店舗が増えている。郊外に大型店ができ、買い物客がそちらに流れたためだ。\n一方で、家賃が下がった空き店舗を借りて、若い店主が小さな店を開く例が少しずつ増えている。パン屋や古本屋など、大型店にはない店が多い。\n商店街の組合は、来年度から家賃の一部を補助し、月に一度の共同イベントで新しい店を呼び込む方針を決めた。",
  "summary": [
   {
@@ -678,18 +678,18 @@ const PROV = ['explicit', 'inferred', 'abstracted', 'uncertain'];
 const problems = [];
 let model, viewOpt;
 try {
-  model = readJSON('semantic-model');
+  model = readJSON('semantic-structure');
   viewOpt = readJSON('semantic-view') || {};
 } catch (e) {
-  document.body.textContent = 'Could not read the embedded Semantic Model: ' + e.message;
+  document.body.textContent = 'Could not read the embedded Semantic Structure: ' + e.message;
   return;
 }
 if (!model || typeof model.sourceText !== 'string') {
-  document.body.textContent = 'No Semantic Model is embedded in this page.';
+  document.body.textContent = 'No Semantic Structure is embedded in this page.';
   return;
 }
 // dark by default; "light", or "auto" to follow the system. The reader can switch, and the choice is remembered here.
-const THEME_KEY = 'semantic-model-viewer:theme';
+const THEME_KEY = 'semantic-structure-viewer:theme';
 let savedTheme = null;
 try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) { /* storage unavailable */ }
 document.documentElement.dataset.theme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme
@@ -2316,7 +2316,7 @@ addEventListener('resize', () => { clearTimeout(resizeTO); resizeTO = setTimeout
    10. Start
    ===================================================================== */
 $('#title').textContent = meta.title || (LANG === 'ja' ? '無題' : 'Untitled');
-document.title = (meta.title ? meta.title + ' — ' : '') + 'Semantic Model';
+document.title = (meta.title ? meta.title + ' — ' : '') + 'Semantic Structure';
 if (meta.source) $('#sourceLine').textContent = meta.source;
 if (problems.length) {
   const p = $('#problems'); p.hidden = false;

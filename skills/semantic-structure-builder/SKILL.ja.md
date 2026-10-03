@@ -1,13 +1,13 @@
 ---
-name: semantic-model-builder
-description: 文章をSemantic Modelにする。よくできる学生が教科書をノートにまとめるように書く。文章を塊に巻き、塊ごとに、そのメッセージを言う見出しと、落とせない要点（数字・条件・時期・主体・理由）を付ける。塊の間には、互いにどう効くかを示す線を引き、全体を一言の文にする。見出し・要点・線はどれも、拠り所の原文の言葉を指し、原文が明示しているかどうかを示す。塊ごとに1セクションで発表を組み立てられるくらい分かりやすいノートを目指す。文書を理解したい・ノートにまとめたい・構造化したい・図にしたいとき、semantic-model-viewerの入力を作るときに使う。「ノートにまとめて」「意味構造を作って」「Semantic Modelにして」「この文章を構造化して」などで使う。
+name: semantic-structure-builder
+description: 文章の意味構造（Semantic Structure）を作る。文章が意味していることのモデルで、よくできる学生が教科書をノートにまとめるように書き表す。文章を塊に巻き、塊ごとに、そのメッセージを言う見出しと、落とせない要点（数字・条件・時期・主体・理由）を付ける。塊の間には、互いにどう効くかを示す線を引き、全体を一言の文にする。見出し・要点・線はどれも、拠り所の原文の言葉を指し、原文が明示しているかどうかを示す。塊ごとに1セクションで発表を組み立てられるくらい分かりやすいノートを目指す。文書を理解したい・ノートにまとめたい・構造化したい・図にしたいとき、semantic-structure-viewerの入力を作るときに使う。「ノートにまとめて」「意味構造を作って」「意味構造にして」「この文章を構造化して」などで使う。
 ---
 
-# Semantic Model Builder
+# Semantic Structure Builder
 
 > 英語版 [SKILL.md](SKILL.md) と同じ内容の日本語版。
 
-よくできる学生が教科書から作るノートを作る。文章を塊に巻き、塊ごとに見出しと大事な要点を付け、塊の間に線を引き、全体を一言にする。原文を読んでいない人に向けて書く。
+文章の意味構造、つまり文章が意味していることのモデルを作り、よくできる学生が教科書から作るノートとして書き表す。文章を塊に巻き、塊ごとに見出しと大事な要点を付け、塊の間に線を引き、全体を一言にする。原文を読んでいない人に向けて書く。
 
 文章を読むのはあなたなので、どう塊にするか、何と呼ぶか、何を残すかはあなたが決める。このスキルが定めるのは目標とファイルの形式だけで、手順は決めない。
 
@@ -22,7 +22,7 @@ description: 文章をSemantic Modelにする。よくできる学生が教科�
 
 塊の大きさは文章に合わせる。段落ほどの一節が1つの塊になることが多く、はっきり分かれる部分を持つ節は、部分を持つ塊（`parent`）にする。2文の文章なら、句が1つの塊になってもよい。報告書の冒頭の要約と、それを展開する節は同じ塊で、一節を2つ持つ。
 
-形式は [references/semantic-model.md](references/semantic-model.md)（英語）。[`semantic-model-viewer`](../semantic-model-viewer/SKILL.ja.md) は、ノートを原文の隣に表示し、構造・線形のノート・表・一言に変形する。
+形式は [references/semantic-structure.md](references/semantic-structure.md)（英語）。[`semantic-structure-viewer`](../semantic-structure-viewer/SKILL.ja.md) は、ノートを原文の隣に表示し、構造・線形のノート・表・一言に変形する。
 
 ## 入力と出力
 
@@ -32,18 +32,18 @@ description: 文章をSemantic Modelにする。よくできる学生が教科�
 
 ## ツール
 
-このスキルのフォルダにある `scripts/semantic_model.py`（Python 3、標準ライブラリのみ）。
+このスキルのフォルダにある `scripts/semantic_structure.py`（Python 3、標準ライブラリのみ）。
 
 - `sentences source.txt` は文に番号を振る。下書きでは、一節を `{"sentences": [31, 39]}`、1文を `{"sentence": 2}` と書き、要点は言葉を引用して書ける。
 - `resolve draft*.json --source source.txt -o model.json` は、下書きをまとめ、引用と文番号をオフセットに変え、形式を検査する。エラーがある間は何も書き出さない。
 - `outline model.json` はノートを読み上げる。要約、続いて塊ごとに、一節の位置（S31–39）・要点・線を出す。原文を見ていない人のつもりで読み、原文の説明になっていない、または大事なことが欠けていれば、ノートを直す。
 - `summary model.json` は根拠の一覧を出す。各要素とその引用、明示されていないもの、どのスパンも触れていない文を並べる。
 
-報告では、`model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえで `semantic-model-viewer` を勧める。
+報告では、`model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえで `semantic-structure-viewer` を勧める。
 
 ## 参照
 
-- [references/semantic-model.md](references/semantic-model.md)：形式（塊、要点、要約、スパン、来歴、検証）。英語。
+- [references/semantic-structure.md](references/semantic-structure.md)：形式（塊、要点、要約、スパン、来歴、検証）。英語。
 - [examples/notes.model.json](examples/notes.model.json)：短い文章を3つの塊にした例。要点、線、要約を含む。
 - [examples/minimal.model.json](examples/minimal.model.json)：1文を語の粒度でモデルにした例。形式は粒度を決めない。
 - 実寸の例：東京地裁の判決（令和8年9月30日、声優 対 TikTok）。約5,000字を13の塊にし、結論（請求棄却）と key（声も肖像と同じくパブリシティ権で守られうる）を分けた。[モデル](https://github.com/saitofjp/skills/blob/main/docs/semantic/tsuda-tiktok-2609.model.json)と[表示](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html)。
