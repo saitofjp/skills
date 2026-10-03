@@ -21,7 +21,7 @@
   --ground: rgba(15, 19, 27, .9);    /* L0: the text */
   --sky: rgba(12, 16, 25, .28);       /* L2: the model's space, the figure shows through */
   --field: 165, 188, 240;             /* the field: shards on the ground, a composition above */
-  --field-a: .075;
+  --field-a: .048;
   --ink: #e8ecf4;
   --ink-2: #b4bdcd;
   --muted: #7d889d;
@@ -53,7 +53,7 @@
   color-scheme: dark;
 }
 :root[data-theme="light"] {
-  --space: #e9edf3; --ground: rgba(246, 248, 251, .9); --sky: rgba(240, 244, 249, .3); --field: 30, 45, 85; --field-a: .06;
+  --space: #e9edf3; --ground: rgba(246, 248, 251, .9); --sky: rgba(240, 244, 249, .3); --field: 30, 45, 85; --field-a: .038;
   --ink: #111622; --ink-2: #39414f; --muted: #687286; --rule: rgba(30, 50, 90, .14);
   --card: #ffffff; --card-hi: transparent; --card-line: #111622; --accent: #111622;
   --frame: rgba(30, 50, 90, .04); --slab: rgba(40, 70, 130, .05); --slab-line: rgba(40, 70, 130, .2); --bracket: rgba(30, 50, 90, .3);
@@ -3058,7 +3058,7 @@ function renderComposition() {
   const c = off.getContext('2d');
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   const cs = getComputedStyle(document.documentElement);
-  const col = cs.getPropertyValue('--field').trim() || '165,188,240', base = +cs.getPropertyValue('--field-a') || 0.075;
+  const col = cs.getPropertyValue('--field').trim() || '165,188,240', base = +cs.getPropertyValue('--field-a') || 0.048;
   FIELD.col = col; FIELD.base = base;
   c.fillStyle = `rgba(${col},${Math.min(1, base * BOOST)})`;
   c.fill(FIELD.comp.fill, 'evenodd');
