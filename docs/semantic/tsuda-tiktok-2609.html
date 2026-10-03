@@ -144,6 +144,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .slide.section { background-image: radial-gradient(var(--tone) 1px, transparent 1.3px); background-size: 7px 7px; }
 .slide.section .head { font-size: clamp(20px, 2.5vw, 33px); }
 .slide.concl { background: var(--band); border-color: var(--band); }
+.slide.key { border: 3px solid var(--ink); border-left: 12px solid var(--ink); }
 .slide.concl .head, .slide.concl .pt { color: var(--band-fg); } .slide.concl .num, .slide.concl .kicker, .slide.concl .sno { color: var(--band-fg); opacity: .6; }
 .slide.cover h2 { font-size: clamp(20px, 2.4vw, 32px); line-height: 1.4; margin: 0; }
 .slide.cover .lede { margin: 18px 0 0; font-size: clamp(13px, 1.3vw, 16px); line-height: 1.8; color: var(--ink-2); border-left: 3px solid var(--focus); padding-left: 12px; }
@@ -188,6 +189,8 @@ body[data-stop="text"] .seg.c { cursor: text; }
 :root[data-theme="light"] .rep.structure .card:has(> .kids):not(.concl), :root[data-theme="light"] .slide.section { background-image: none; }
 :root[data-theme="light"] .card.concl .when { border-color: rgba(255, 255, 255, .25); background: rgba(255, 255, 255, .08); }
 .card.concl .pts .pt::before { background: var(--band-fg); opacity: .5; }
+.card.key { border: 2.5px solid var(--ink); border-left: 7px solid var(--ink); }
+.card.key > .kicker, .slide.key > .kicker { color: var(--ink); opacity: 1; }
 .card.prov-inferred, .card.prov-uncertain { border-style: dashed; border-left-style: solid; }
 .card.prov-abstracted { border-style: dotted; border-left-style: solid; }
 .card.reading { border-color: var(--ink-2); }
@@ -229,6 +232,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .rep.table tr.d1 th.rowh { border-left-width: 2px; }
 .rep.table th.rowh .num { font: 700 11px/1.5 var(--mono); color: var(--muted); display: block; }
 .rep.table th.rowh .head { font-weight: 800; color: var(--ink); line-height: 1.45; }
+.rep.table tr.key th.rowh { border-left: 7px solid var(--ink); } .rep.table tr.key th.rowh .head::before { content: '◆ '; }
 .rep.table tr.concl th.rowh { background: var(--band); border-left-color: var(--band); } .rep.table tr.concl th.rowh .head { color: var(--band-fg); } .rep.table tr.concl th.rowh .num { color: var(--band-fg); opacity: .6; }
 .rep.table ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
 .rep.table .pt { font-size: 12.5px; }
@@ -351,6 +355,7 @@ body:not(.narrow) header { padding-right: 436px; }
 #mmSvg .mm-box rect { fill: var(--card); stroke: var(--card-line); stroke-width: 1; cursor: pointer; }
 #mmSvg .mm-box.unit > rect { fill: var(--frame); stroke: var(--ink-2); stroke-width: 1.2; }
 #mmSvg .mm-box.concl > rect { fill: var(--band); stroke: var(--band); stroke-width: 1.6; }
+#mmSvg .mm-box.key > rect { stroke: var(--ink); stroke-width: 2.4; }
 #mmSvg .mm-box text { font: 700 8px/1 var(--mono); fill: var(--muted); pointer-events: none; }
 #mmSvg .mm-box.concl text { fill: var(--band-fg); }
 #mmSvg .mm-box.inview > rect { stroke: var(--ink); }
@@ -456,7 +461,7 @@ main.narrow #rep { padding-bottom: 190px; }
    ]
   },
   {
-   "text": "東京地裁は、人の声にもパブリシティ権が及びうる基準を示しつつ、",
+   "text": "東京地裁は、人の声も肖像と同じく人格の象徴で、パブリシティ権で守られうると示したが、",
    "refs": [
     "standard"
    ]
@@ -1108,7 +1113,7 @@ main.narrow #rep { padding-bottom: 190px; }
   },
   {
    "id": "standard",
-   "label": "基準：人の声もパブリシティ権で守られうる。顧客吸引力があり、専らそれを使う目的なら侵害",
+   "label": "基準：人の声も、肖像と同じく人格の象徴。その顧客吸引力を専ら利用すればパブリシティ権の侵害",
    "type": "基準",
    "provenance": "explicit",
    "sourceSpans": [
@@ -1159,7 +1164,9 @@ main.narrow #rep { padding-bottom: 190px; }
       }
      ]
     }
-   ]
+   ],
+   "role": "key",
+   "note": "判決は争点3（削除済みか）だけで結論を出せたのに、その前に、声のパブリシティ権について一般的な基準を「解するのが相当」として示し、「もっとも」で争点3へ移っている。結論に要らない判断をあえて述べたのはここだけで、この事件を離れても通じる。読み手が持ち帰るべき点として key にする。結論（棄却）は別の塊に置く。"
   },
   {
    "id": "gone",
@@ -1596,7 +1603,7 @@ const I18N = {
     byNotes: 'Notes order', byReading: 'Reading order',
     phase_text: 'Text', phase_wrap: 'Chunk', phase_notes: 'Notes', phase_structure: 'Structure', phase_link: 'Link', phase_summary: 'One sentence',
     capNotes: 'Each chunk becomes a note: its message, and what matters in it', capStructure: 'The notes take their places: what leads to what',
-    capText: 'characters', conclusion: 'CONCLUSION', headline: 'Headline', points: 'Points', other: 'Other chunks', noSummary: 'This model has no summary.',
+    capText: 'characters', conclusion: 'CONCLUSION', key: 'KEY', headline: 'Headline', points: 'Points', other: 'Other chunks', noSummary: 'This model has no summary.',
     inText: 'In the text', links: 'Relations', basis: 'Derived from', basisOf: 'Basis for', partOf: 'Part of', contains: 'Contains', note: 'Note',
     goText: 'Down to the text', release: 'Release', close: 'Hide (stays pinned)',
     hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks, passage by passage; on the right, the chunks in the text\'s order. Keep dragging to rise to the model, where they merge and take their places.', hintText: 'Drag the knob on the gauge (top right) to the right: the text is wrapped into chunks, the chunks become a model, and the model one sentence. ▶ plays it to the summary.',
@@ -1610,7 +1617,7 @@ const I18N = {
     byNotes: 'ノート順', byReading: '読む順',
     phase_text: '原文', phase_wrap: '塊を巻く', phase_notes: 'ノートにする', phase_structure: '構造にする', phase_link: 'つなぐ', phase_summary: '一言にする',
     capNotes: '塊がノートになる：その塊のメッセージと、落とせない要点', capStructure: 'ノートが持ち場につく：何が何につながるか',
-    capText: '字', conclusion: '結論', headline: '見出し', points: '要点', other: 'ほかの塊', noSummary: 'このモデルには要約（summary）がありません。',
+    capText: '字', conclusion: '結論', key: '注目', headline: '見出し', points: '要点', other: 'ほかの塊', noSummary: 'このモデルには要約（summary）がありません。',
     inText: '原文', links: 'つながり', basis: '根拠（導出元）', basisOf: 'これを根拠とするもの', partOf: '含まれる先', contains: '含むもの', note: 'メモ',
     goText: '原文へ降りる', release: '解除', close: '閉じる（固定は維持）',
     hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を一節ずつ塊に巻いた層。右は原文の順に並んだ塊の一覧。さらに右へ動かすと、塊がまとまって持ち場につき、モデルになる。', hintText: '右上のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルに、モデルが一言の要約になる。▶ で要約まで再生。',
@@ -1877,9 +1884,12 @@ function pointEl(p, noWhen) {
   return h('li', { class: 'pt', 'data-key': `pt:${p.node.id}:${p.k}`, 'data-node': p.node.id, 'data-pt': p.k },
     p.when && !noWhen ? h('span', { class: 'when' }, p.when) : null, p.label);
 }
+// the conclusion is what the text concludes; the key is what matters most to a reader when that is something else
+const roleCls = n => n.role === 'conclusion' ? ' concl' : n.role === 'key' ? ' key' : '';
+const kickOf = n => [n.role === 'conclusion' ? T.conclusion : n.role === 'key' ? '◆ ' + T.key : '', n.type].filter(Boolean).join(' · ');
 function cardEl(n, withPoints) {
-  const kick = [n.role === 'conclusion' ? T.conclusion : '', n.type].filter(Boolean).join(' · ');
-  const c = h('div', { class: `card box d${Math.min(n.depth, 1)} prov-${n.prov}${n.role === 'conclusion' ? ' concl' : ''}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
+  const kick = kickOf(n);
+  const c = h('div', { class: `card box d${Math.min(n.depth, 1)} prov-${n.prov}${roleCls(n)}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
     kick ? h('span', { class: 'kicker' }, kick) : null,
     h('div', { class: 'ch' }, h('b', { class: 'num', 'data-key': `num:${n.id}` }, n.num), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)));
   if (withPoints && n.points.length) c.append(h('ul', { class: 'pts' }, ...n.points.map(p => pointEl(p))));
@@ -1920,7 +1930,7 @@ function renderTable() {
   const whens = [];
   order.forEach(n => n.points.forEach(p => { if (p.when && !whens.includes(p.when)) whens.push(p.when); }));
   const head = h('tr', {}, h('th', {}, T.headline), ...whens.map(w => h('th', {}, w)), h('th', {}, T.points));
-  const rows = order.map(n => h('tr', { class: `box d${Math.min(n.depth, 1)}${n.role === 'conclusion' ? ' concl' : ''}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
+  const rows = order.map(n => h('tr', { class: `box d${Math.min(n.depth, 1)}${roleCls(n)}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
     h('th', { class: 'rowh' }, h('b', { class: 'num', 'data-key': `num:${n.id}` }, n.num), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)),
     ...whens.map(w => h('td', {}, h('ul', {}, ...n.points.filter(p => p.when === w).map(p => pointEl(p, true))))),
     h('td', {}, h('ul', {}, ...n.points.filter(p => !p.when).map(p => pointEl(p))))));
@@ -1968,8 +1978,8 @@ function renderSlides() {
   deck.append(h('section', { class: 'slide cover' }, sno(), h('span', { class: 'kicker' }, meta.source ? 'NOTES' : 'NOTES'),
     h('h2', {}, meta.title || ''), summary.length ? h('p', { class: 'lede' }, summary.map(p => p.text).join('')) : null));
   order.forEach(n => {
-    const kick = [n.role === 'conclusion' ? T.conclusion : '', n.type].filter(Boolean).join(' · ');
-    deck.append(h('section', { class: `slide box ${n.children.length ? 'section' : 'content'}${n.role === 'conclusion' ? ' concl' : ''}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
+    const kick = kickOf(n);
+    deck.append(h('section', { class: `slide box ${n.children.length ? 'section' : 'content'}${roleCls(n)}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
       sno(), kick ? h('span', { class: 'kicker' }, kick) : null,
       h('div', { class: 'sh' }, h('b', { class: 'num', 'data-key': `num:${n.id}` }, titleNum(n)), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)),
       n.points.length ? h('ul', { class: 'pts' }, ...n.points.map(p => pointEl(p))) : null));
@@ -2023,7 +2033,7 @@ function buildMinimap() {
   order.forEach(n => {
     const b = MM.box.get(n.id);
     if (!b) return;
-    const g = svgEl('g', { class: `mm-box ${n.parent ? 'part' : 'unit'}${n.role === 'conclusion' ? ' concl' : ''}`, 'data-node': n.id }, svg);
+    const g = svgEl('g', { class: `mm-box ${n.parent ? 'part' : 'unit'}${roleCls(n)}`, 'data-node': n.id }, svg);
     svgEl('rect', { x: b.x, y: b.y, width: b.w, height: b.h }, g);
     svgEl('text', { x: b.x + 4, y: b.y + (n.parent ? 8.5 : 12) }, g).textContent = n.num;
   });

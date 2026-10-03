@@ -85,6 +85,7 @@ Dragging and ▶ always animate, even with `prefers-reduced-motion`, because the
 | Grey | Related, no sign |
 | Purple | What an inference rests on (`derivedFrom`) |
 | Inverted card | `role: "conclusion"` |
+| Heavy frame, ◆ KEY (注目) | `role: "key"`: what matters most to a reader when that is not the conclusion |
 | Dashed border or line | `inferred` / `uncertain`. Dotted means `abstracted`. |
 
 ## The field

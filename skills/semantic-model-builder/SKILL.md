@@ -13,7 +13,8 @@ You are the one reading the text, so you decide how to chunk it, what to call th
 
 - **They are clear at a glance.** Each headline says the chunk's message in a few words, not its topic: "2026: oil weighs, growth continues", not "Outlook for 2026". The chunks, in order, tell the story. Someone could plan a presentation from them, one chunk per section, the way [`dopagaki-generator`](../dopagaki-generator/SKILL.md) plans one message per slide.
 - **They keep what matters.** Points hold the numbers, conditions, timing, actors and reasons that the message depends on. Nothing important is left only in the text.
-- **They show how the chunks bear on each other.** A line says what one chunk does to another (raises, is the reason for, sets the pace of), with a sign when it has one. A connective in the text is evidence for a line, not its name. Mark what the text concludes (`role: "conclusion"`).
+- **They show how the chunks bear on each other.** A line says what one chunk does to another (raises, is the reason for, sets the pace of), with a sign when it has one. A connective in the text is evidence for a line, not its name.
+- **They say what matters most.** Mark what the text concludes (`role: "conclusion"`). What matters most to a reader is not always the conclusion: a rule laid down on the way, a finding the text singles out, a turn against what came before. Mark that chunk `role: "key"`, and say in its `note` what in the text shows its weight: the space it gets, a general statement, a "however", being said although the conclusion did not need it. Give it its weight in the summary as well. A court that dismisses a claim on one ground after setting out a rule on another is the typical case: the dismissal is the conclusion, the rule is the key. Do not make the key the conclusion, and do not judge weight by anything outside the text.
 - **They come to one sentence.** `summary` says what the whole text comes to, and each phrase names the chunks it stands for.
 - **They can be checked.** Every headline, point and line points at the words it rests on. What the text states is `explicit`. What you inferred is `inferred`, with a `note` saying why. Nothing comes from outside the text.
 
@@ -36,7 +37,7 @@ The format is [references/semantic-model.md](references/semantic-model.md). [`se
 - `outline model.json` reads the notes back: the summary, then each chunk with its passages (S31–39), points and lines. Read it as someone who has not seen the text. If it does not explain the text, or something important is missing, change the notes.
 - `summary model.json` lists the evidence: every element with its quotes, everything not stated explicitly, and the sentences no span touches.
 
-When you report, give the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Then offer `semantic-model-viewer`.
+When you report, give the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer `semantic-model-viewer`.
 
 ## Reference
 

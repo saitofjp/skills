@@ -406,6 +406,8 @@ def validate_model(model):
             errors.append(f"{name}: polarity is for relations and must be \"+\" or \"-\"")
         if "role" in el and not isinstance(el["role"], str):
             errors.append(f"{name}: role must be a string")
+        elif el.get("role") == "key" and not el.get("note"):
+            warnings.append(f"{name}: a key chunk should say in its note what in the text shows its weight")
 
         derived = el.get("derivedFrom")
         if derived is not None:
@@ -660,7 +662,7 @@ def outline(model):
         n = nodes[nid]
         pad = "    " * depth
         where = _sentence_list(n.get("sourceSpans") or [], sentences) or "no words of its own"
-        star = "★ " if n.get("role") == "conclusion" else ""
+        star = "★ " if n.get("role") == "conclusion" else "◆ " if n.get("role") == "key" else ""
         out.append(f"{pad}{star}{num} {n['label']}{prov(n)}  ({where})")
         for pt in n.get("points") or []:
             when = f"{pt['when']}: " if pt.get("when") else ""

@@ -16,6 +16,7 @@ One page shows one model and its text. One control moves it: a gauge that draws 
   - These are representations of the model, so they branch from the model, in straight lines, and are reached only through it.
   - Moving the knob into a branch turns the model into that form: the cards fly into the phrases of the one sentence, points come out of their cards into linear notes, or drop into table cells. From the linear notes, the slides: each card grows into a 16:9 page, a plan for a presentation.
   - Meanwhile a copy of the structure recedes into the corner as a minimap, like the small map in a game. The text is on the left, the form in the centre and the model in the corner, and the focus lights all three.
+- **The conclusion and the key:** the chunk the text concludes with is the inverted card. The key (`role: "key"`, ◆ KEY), what matters most to a reader when that is not the conclusion, has a heavy frame in every form, so it is not lost behind the conclusion.
 
 The page is a fixed template, [`assets/viewer.html`](assets/viewer.html). It works with any model that follows the contract ([`references/semantic-model.md`](references/semantic-model.md)) and needs no network. It never derives meaning from the text: everything it shows comes from the model.
 
