@@ -44,15 +44,17 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
 
   // drag the knob along the gauge: text -> chunks -> model, with stops in between
   const box = await page.locator('#gaugeSvg').boundingBox();
-  const at = (x, y) => [box.x + x * box.width / 600, box.y + y * box.height / 150];
-  await page.mouse.move(...at(134, 82));
+  const G = await V(() => window.__semanticViewer.gauge);
+  const at = (x, y) => [box.x + x * box.width / G.w, box.y + y * box.height / G.h];
+  const along = (a, b, k) => at(G.at[a][0] + (G.at[b][0] - G.at[a][0]) * k, G.at[a][1] + (G.at[b][1] - G.at[a][1]) * k);
+  await page.mouse.move(...along('text', 'chunks', 0));
   await page.mouse.down();
-  for (const x of [150, 175, 200]) { await page.mouse.move(...at(x, 82), { steps: 3 }); }
+  for (const k of [0.3, 0.6, 0.8]) { await page.mouse.move(...along('text', 'chunks', k), { steps: 3 }); }
   const mid = await state();
   if (!mid.moving || !(mid.u > 0.5 && mid.u < 1)) return fail('dragging the knob does not move the page between text and chunks: ' + JSON.stringify(mid));
   const ghosts = await V(() => document.querySelectorAll('#fly > *').length);
   ok(`dragging stands the page between text and chunks (u=${mid.u.toFixed(2)}, ${ghosts} pieces in flight)`);
-  for (const x of [230, 260, 290, 298]) { await page.mouse.move(...at(x, 82), { steps: 3 }); }
+  for (const k of [0.3, 0.6, 0.85, 0.96]) { await page.mouse.move(...along('chunks', 'model', k), { steps: 3 }); }
   await page.mouse.up();
   await still();
   let st = await state();
@@ -74,9 +76,9 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   // ▶ plays the way to the goal, the summary
   await V(() => window.__semanticViewer.goTo('chunks', { ms: 1 }));
   await still();
-  await page.mouse.click(...at(52, 82));
+  await page.click('#gauge .g-play');
   try {
-    await page.waitForFunction(() => window.__semanticViewer.state.stage === 'summary' && !window.__semanticViewer.state.moving, null, { timeout: 30000 });
+    await page.waitForFunction(() => window.__semanticViewer.state.stage === 'summary' && !window.__semanticViewer.state.moving, null, { timeout: 60000 });
   } catch (e) { return fail('▶ did not play to the summary: ' + JSON.stringify(await state())); }
   ok('▶ plays from where the knob is to the summary');
   await V(() => window.__semanticViewer.goTo('model', { ms: 1 }));

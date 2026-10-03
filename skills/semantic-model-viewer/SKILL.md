@@ -5,13 +5,13 @@ description: Shows a Semantic Model (notes made by semantic-model-builder) next 
 
 # Semantic Model Viewer
 
-One page shows one model and its text. One control moves it: a gauge that draws the meta-structure, with the model at its core.
+One page shows one model and its text. One control moves it: a gauge that draws the meta-structure, with the model at its core. It is a compact HUD at the top right, in English.
 
 - **The trunk, text ━ chunks ━ model ━ summary (focus out / in):**
   - Dragging the knob right abstracts, and dragging it left returns to the words.
   - The page can stand anywhere in between. Chunks wrap one by one, and their list on the right grows into cards. The cards take their places, and the lines grow from the conclusion outward (the Formation).
   - At the chunk and model layers, the text and its notes sit side by side, with their pointers linked (the Two Pane view).
-  - The trunk ends at the goal, the summary in one sentence: the cards fly into the phrases that name them. **▶** plays the way there, from wherever the knob is.
+  - The trunk ends at the goal, the summary in one sentence: the cards fly into the phrases that name them. **▶** plays the way there, from wherever the knob is, as a sequence: a title card for each stage, one beat per chunk with the text gliding to its passage, and the lines in waves from the conclusion.
 - **The branches, linear (→ slides) / table (transform):**
   - These are representations of the model, so they branch from the model node, in straight lines, and are reached only through it.
   - Moving the knob into a branch turns the model into that form: points come out of their cards into linear notes, or drop into table cells. From the linear notes, the slides: each card grows into a 16:9 page, a plan for a presentation.

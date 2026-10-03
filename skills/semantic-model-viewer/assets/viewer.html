@@ -86,14 +86,14 @@ header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; pad
 main { position: relative; display: flex; min-height: 0; overflow: hidden; }
 #field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 #textPane { flex: none; height: 100%; overflow: auto; position: relative; z-index: 1; background: var(--ground); scrollbar-width: thin; transform-origin: 50% 60%; }
-#page { position: relative; padding: 34px 0 180px var(--gutter, 48px); width: max-content; isolation: isolate; }
+#page { position: relative; padding: 34px 0 120px var(--gutter, 48px); width: max-content; isolation: isolate; }
 #slabs { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 0; }
 #text { position: relative; z-index: 1; width: var(--col, 520px); font-size: 15px; line-height: 2; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink-2); }
 #marks { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 2; }
 #tags { position: absolute; z-index: 3; top: 0; left: calc(var(--gutter, 48px) + var(--col, 520px) + 26px); width: calc(var(--tagw, 220px) - 34px); }
 #modelPane { flex: 1 1 0; min-width: 0; position: relative; z-index: 1; background: var(--sky); border-left: 1px solid var(--rule); }
 #stage { position: absolute; inset: 0; overflow: auto; scrollbar-width: thin; z-index: 1; }
-#rep { position: relative; min-height: 100%; padding: 28px 28px 170px; }
+#rep { position: relative; min-height: 100%; padding: var(--hud-clear, 28px) 28px 120px; }
 body[data-stop="text"] #modelPane { display: none; }
 body[data-stop="text"] #marks, body[data-stop="text"] #slabs { visibility: hidden; }
 
@@ -289,7 +289,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #pointer circle.end { fill: var(--focus); stroke: var(--space); stroke-width: 1.5; }
 
 /* details (pinned) */
-#details { position: absolute; left: 14px; top: 58px; width: min(360px, calc(100% - 28px)); max-height: 42%; overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 12px 14px; z-index: 9; font-size: 12.5px; }
+#details { position: absolute; left: 14px; top: 14px; width: min(360px, calc(100% - 28px)); max-height: 42%; overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 12px 14px; z-index: 9; font-size: 12.5px; }
 #details .x { position: absolute; top: 6px; right: 8px; border: 0; background: transparent; font-size: 16px; color: var(--muted); }
 #details h2 { font-size: 14px; margin: 0 24px 6px 0; line-height: 1.45; }
 #details h3 { font: 700 9.5px/1 var(--mono); letter-spacing: .18em; color: var(--muted); margin: 12px 0 5px; text-transform: uppercase; }
@@ -303,50 +303,49 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #details .row { display: flex; gap: 6px; margin-top: 10px; }
 #details .row button { border: 1px solid var(--rule); background: transparent; border-radius: 7px; padding: 3px 9px; font-size: 12px; }
 
-/* the gauge: the meta-structure, text — chunks — model — its forms, is the control */
-#gauge { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 40; width: min(600px, calc(100% - 16px)); touch-action: none; user-select: none; -webkit-user-select: none; --hud-bg: #0a0e16; --hud-line: rgba(160, 182, 228, .32); --hud-ink: #e8ecf4; }
-:root[data-theme="light"] #gauge { --hud-bg: #ffffff; --hud-line: rgba(17, 22, 34, .3); --hud-ink: #111622; }
+/* the HUD: the meta-structure, text — chunks — model — its forms, is the control. It hangs at the top right. */
+#gauge { position: fixed; right: 14px; top: 10px; z-index: 40; width: 372px; touch-action: none; user-select: none; -webkit-user-select: none;
+  --hud-bg: #070a11; --hud-line: rgba(170, 190, 232, .2); --hud-dim: rgba(178, 194, 228, .56); --hud-ink: #eef2f8; }
+:root[data-theme="light"] #gauge { --hud-bg: #ffffff; --hud-line: rgba(13, 18, 32, .16); --hud-dim: rgba(13, 18, 32, .52); --hud-ink: #0d1220; }
 #gauge svg { display: block; width: 100%; height: auto; cursor: grab; overflow: visible; }
 #gauge svg.dragging { cursor: grabbing; }
-#gauge .h-frame { fill: var(--hud-bg); stroke: var(--hud-line); stroke-width: 1.2; }
-#gauge .h-corner { fill: none; stroke: var(--focus); stroke-width: 2.4; }
-#gauge .h-cap { fill: var(--muted); font: 700 8.5px/1 var(--mono); letter-spacing: .28em; }
-#gauge .h-read { fill: var(--hud-ink); font: 800 11px/1 var(--mono); letter-spacing: .18em; }
-#gauge .h-read tspan.k { fill: var(--focus); }
-#gauge .g-line { fill: none; stroke: var(--hud-line); stroke-width: 2; stroke-dasharray: 6 4; }
-#gauge .g-tick { fill: none; stroke: var(--hud-line); stroke-width: 7; stroke-dasharray: 1 11; }
-#gauge .g-fill { fill: none; stroke: var(--focus); stroke-width: 3.2; }
-#gauge .g-hit { fill: none; stroke: transparent; stroke-width: 26; }
-#gauge .g-node { fill: var(--hud-bg); stroke: var(--hud-line); stroke-width: 1.8; }
+#gauge text { font-family: var(--mono); font-size: 7px; font-weight: 700; letter-spacing: .24em; fill: var(--hud-dim); }
+#gauge .h-plate { fill: var(--hud-bg); stroke: var(--hud-line); stroke-width: 1; }
+#gauge .h-mark { fill: none; stroke: var(--hud-ink); stroke-width: 1.2; }
+#gauge .h-chamfer { fill: none; stroke: var(--focus); stroke-width: 2; }
+#gauge .h-acc { fill: var(--focus); }
+#gauge .h-rule { stroke: var(--hud-line); stroke-width: 1; }
+#gauge .h-idx { font-size: 30px; font-weight: 300; letter-spacing: -.02em; fill: var(--hud-ink); }
+#gauge .h-name { font-size: 12.5px; font-weight: 800; letter-spacing: .3em; fill: var(--hud-ink); }
+#gauge .h-time { letter-spacing: .16em; }
+#gauge .h-time.on { fill: var(--focus); }
+#gauge .g-track { stroke: var(--hud-line); stroke-width: 1; }
+#gauge .g-ruler { stroke: var(--hud-dim); stroke-width: 5; stroke-dasharray: 1 5; opacity: .45; }
+#gauge .g-fill { stroke: var(--focus); stroke-width: 2; }
+#gauge .g-hit { stroke: transparent; stroke-width: 18; }
+#gauge .g-node { fill: var(--hud-bg); stroke: var(--hud-dim); stroke-width: 1.2; }
 #gauge .g-node.on { fill: var(--focus); stroke: var(--focus); }
-#gauge .g-glyph { fill: none; stroke: var(--hud-ink); stroke-width: 1.4; opacity: .7; pointer-events: none; }
-#gauge .on + .g-glyph, #gauge .g-glyph.on { stroke: var(--hud-bg); opacity: 1; }
-#gauge .g-core-in { fill: var(--hud-line); }
-#gauge .g-core-in.on { fill: var(--focus); }
-#gauge .g-orbit { fill: none; stroke: var(--focus); stroke-width: 1.2; stroke-dasharray: 3 5; opacity: .75; transform-box: fill-box; transform-origin: center; animation: orbit 18s linear infinite; pointer-events: none; }
-@keyframes orbit { to { transform: rotate(360deg); } }
-#gauge text { fill: var(--muted); font-size: 11.5px; font-weight: 800; letter-spacing: .04em; }
-#gauge text.lv { fill: var(--muted); font: 700 8.5px/1 var(--mono); letter-spacing: .2em; }
-#gauge text.on { fill: var(--hud-ink); }
-#gauge .g-core-label { font-size: 14px; letter-spacing: .06em; }
-#gauge .g-core-label tspan.tag { fill: var(--focus); font: 800 9px/1 var(--mono); letter-spacing: .2em; }
-#gauge .g-core { stroke-width: 2.4; }
-#gauge .g-reticle { fill: none; stroke: var(--focus); stroke-width: 2; opacity: .55; pointer-events: none; }
-#gauge .g-goal-tag { fill: var(--focus); font: 800 8.5px/1 var(--mono); letter-spacing: .26em; }
+#gauge .g-core-ring { fill: none; stroke: var(--hud-line); stroke-width: 1; }
+#gauge .g-lock { fill: none; stroke: var(--hud-dim); stroke-width: 1.4; transform-box: fill-box; transform-origin: center; animation: lock 12s linear infinite; }
+#gauge .g-lock.on { stroke: var(--focus); }
+@keyframes lock { to { transform: rotate(360deg); } }
+#gauge .g-goal { fill: none; stroke: var(--focus); stroke-width: 1; stroke-dasharray: 2 2; }
+#gauge .g-goal-tag { fill: var(--focus); }
 #gauge .g-label { cursor: pointer; }
-#gauge .g-label:hover text { fill: var(--hud-ink); }
-#gauge .g-knob { fill: var(--focus); stroke: var(--hud-bg); stroke-width: 2.5; pointer-events: none; }
-#gauge .g-halo { fill: none; stroke: var(--focus); stroke-width: 1.3; opacity: .8; pointer-events: none; }
+#gauge .g-label text.on, #gauge .g-label:hover text { fill: var(--hud-ink); }
+#gauge .g-knob { fill: var(--focus); stroke: var(--hud-bg); stroke-width: 1.5; pointer-events: none; }
+#gauge .g-halo { fill: none; stroke: var(--focus); stroke-width: 1; pointer-events: none; transform-box: fill-box; transform-origin: center; animation: halo 1.8s cubic-bezier(.2, .7, .3, 1) infinite; }
+@keyframes halo { from { transform: scale(.5); opacity: .9; } to { transform: scale(1.7); opacity: 0; } }
 #gauge .g-play { cursor: pointer; }
-#gauge .g-play polygon { fill: var(--hud-ink); }
-#gauge .g-play path { fill: var(--hud-bg); }
-#gauge .g-play text { fill: var(--hud-bg); font: 800 10px/1 var(--mono); letter-spacing: .2em; }
-#gauge .g-play:hover polygon, #gauge .g-play:focus-visible polygon, #gauge .g-play.on polygon { fill: var(--focus); }
-#gauge .g-play.on text, #gauge .g-play.on path, #gauge .g-play:hover text, #gauge .g-play:hover path { fill: var(--on-focus); }
+#gauge .g-play polygon { fill: transparent; stroke: var(--hud-ink); stroke-width: 1; }
+#gauge .g-play path { fill: var(--hud-ink); }
+#gauge .g-play text { fill: var(--hud-ink); font-size: 7.5px; letter-spacing: .3em; }
+#gauge .g-play:hover polygon, #gauge .g-play:focus-visible polygon, #gauge .g-play.on polygon { fill: var(--focus); stroke: var(--focus); }
+#gauge .g-play:hover path, #gauge .g-play:hover text, #gauge .g-play.on path, #gauge .g-play.on text, #gauge .g-play:focus-visible path, #gauge .g-play:focus-visible text { fill: var(--on-focus); }
+body:not(.narrow) header { padding-right: 404px; }
 /* the minimap: the model, small, beside its form */
 #minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: 380px; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
 #minimap[hidden] { display: none; }
-main.mm-top #minimap { bottom: auto; top: 14px; width: 360px; }
 #minimap .mm-label { position: absolute; left: 8px; top: 5px; font: 700 9px/1 var(--mono); letter-spacing: .22em; color: var(--muted); }
 #mmSvg { display: block; width: 100%; height: auto; max-height: 300px; }
 #mmSvg .mm-box rect { fill: var(--card); stroke: var(--card-line); stroke-width: 1; cursor: pointer; }
@@ -365,8 +364,13 @@ main.mm-top #minimap { bottom: auto; top: 14px; width: 360px; }
 .focusing #mmSvg .mm-box.dim { opacity: .4; }
 .focusing #mmSvg .mm-link:not(.f0):not(.f1) { opacity: .15; }
 #mmSvg .mm-link.f0, #mmSvg .mm-link.f1 { opacity: 1; stroke-width: 1.6; } #mmSvg .mm-link.f0 { stroke: var(--focus); }
-#ticker { position: absolute; left: 50%; bottom: 166px; transform: translateX(-50%); z-index: 39; pointer-events: none; display: flex; gap: 12px; align-items: baseline; max-width: calc(100% - 32px); padding: 8px 26px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-left: 4px solid var(--focus); opacity: 0; transition: opacity .25s; }
+#ticker { position: absolute; left: var(--ticker-x, 50%); bottom: 26px; transform: translateX(-50%); z-index: 39; pointer-events: none; display: flex; gap: 12px; align-items: baseline; max-width: var(--ticker-w, calc(100% - 32px)); padding: 8px 26px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-left: 4px solid var(--focus); opacity: 0; transition: opacity .25s; }
 #ticker.on { opacity: 1; }
+#ticker.cut { animation: cutin .46s cubic-bezier(.2, .9, .25, 1) both; }
+#ticker.cut .n, #ticker.cut .m { animation: slidein .52s cubic-bezier(.2, .9, .25, 1) both; }
+#ticker.cut .m { animation-delay: .05s; }
+@keyframes cutin { from { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); } to { clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); } }
+@keyframes slidein { from { transform: translateX(-16px); opacity: 0; } }
 #ticker .k { font: 800 10px/1 var(--mono); letter-spacing: .22em; opacity: .6; flex: none; }
 #ticker .n { font: 800 18px/1 var(--mono); flex: none; }
 #ticker .m { font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -382,6 +386,13 @@ main.mm-top #minimap { bottom: auto; top: 14px; width: 360px; }
 main.scrubbing *, main.scrubbing *::before { transition: none !important; }
 .slate { font: 800 12px/1 var(--mono); letter-spacing: .3em; padding: 9px 22px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); border-left: 4px solid var(--focus); }
 .slate b { margin-right: 10px; opacity: .6; }
+/* a title card: each stage of the play is announced, as in an opening sequence */
+.tcard { pointer-events: none; }
+.tcard .band { display: grid; grid-template-columns: auto auto; align-items: end; column-gap: 18px; width: max-content; max-width: 86%; padding: 16px 64px 16px 30px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 34px) 100%, 0 100%); border-left: 6px solid var(--focus); }
+.tcard .ti { grid-row: span 2; font: 300 54px/.86 var(--mono); letter-spacing: -.03em; opacity: .32; }
+.tcard .tn { font: 900 30px/1 var(--font); letter-spacing: .24em; font-style: italic; }
+.tcard .ts { font-size: 13px; font-weight: 700; opacity: .7; margin-top: 6px; }
+.tcard .streak { height: 2px; margin-top: 8px; background: var(--focus); transform-origin: 0 50%; }
 
 /* narrow screens: text above, model below */
 main.narrow { flex-direction: column; }
@@ -392,6 +403,9 @@ main.narrow .rep.linear .stack { margin-right: 44px; }
 main.narrow #details { max-height: 34%; top: auto; bottom: 120px; }
 main.narrow #minimap { display: none; }
 main.narrow #ticker .m { font-size: 12.5px; }
+main.narrow #gauge { top: auto; bottom: 8px; left: 0; right: 0; margin: 0 auto; width: min(420px, calc(100% - 16px)); }
+main.narrow #ticker { bottom: 172px; }
+main.narrow #rep { padding-bottom: 190px; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -419,7 +433,7 @@ main.narrow #ticker .m { font-size: 12.5px; }
   <div id="hint"></div>
   <div id="ticker" aria-hidden="true"><span class="k"></span><span class="n"></span><span class="m"></span></div>
   <div id="minimap" hidden><span class="mm-label">MODEL</span><svg id="mmSvg" aria-label="The model, small"></svg></div>
-  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 560 120" role="slider" aria-label="Text, chunks, model" tabindex="0"></svg></div>
+  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 344 132" role="slider" aria-label="Text, chunks, model" tabindex="0"></svg></div>
   <div id="problems" hidden></div>
 </main>
 <div id="fly" aria-hidden="true"></div>
@@ -699,8 +713,9 @@ const I18N = {
     capText: 'characters', conclusion: 'CONCLUSION', headline: 'Headline', points: 'Points', other: 'Other chunks', noSummary: 'This model has no summary.',
     inText: 'In the text', links: 'Relations', basis: 'Derived from', basisOf: 'Basis for', partOf: 'Part of', contains: 'Contains', note: 'Note',
     goText: 'Down to the text', release: 'Release', close: 'Hide (stays pinned)',
-    hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks; on the right, the chunks at a glance. Keep dragging to rise to the model.', hintText: 'Drag the knob on the gauge to the right: the text is wrapped into chunks, the chunks become a model, and the model one sentence. ▶ plays it to the summary.',
-    kWrap: 'WRAP', kForm: 'MODEL', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS',
+    hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks; on the right, the chunks at a glance. Keep dragging to rise to the model.', hintText: 'Drag the knob on the gauge (top right) to the right: the text is wrapped into chunks, the chunks become a model, and the model one sentence. ▶ plays it to the summary.',
+    kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS',
+    cardChunks: 'The text, wrapped into chunks', cardModel: 'The chunks, as one model', cardSummary: 'The model, in one sentence',
     explicit: 'explicit — stated in the text', inferred: 'inferred — follows from the text, not stated', abstracted: 'abstracted — a grouping made while modeling', uncertain: 'uncertain — more than one reading',
     problems: 'Some parts of the model could not be shown',
   },
@@ -713,8 +728,9 @@ const I18N = {
     capText: '字', conclusion: '結論', headline: '見出し', points: '要点', other: 'ほかの塊', noSummary: 'このモデルには要約（summary）がありません。',
     inText: '原文', links: 'つながり', basis: '根拠（導出元）', basisOf: 'これを根拠とするもの', partOf: '含まれる先', contains: '含むもの', note: 'メモ',
     goText: '原文へ降りる', release: '解除', close: '閉じる（固定は維持）',
-    hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を塊に巻いた層。右はどんな塊があるかの一覧。さらに右へ動かすとモデルになる。', hintText: '下のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルに、モデルが一言の要約になる。▶ で要約まで再生。',
-    kWrap: '塊を巻く', kForm: 'モデルにする', kLink: 'つなぐ', kRep: '表現', chunksN: 'CHUNKS · 塊',
+    hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を塊に巻いた層。右はどんな塊があるかの一覧。さらに右へ動かすとモデルになる。', hintText: '右上のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルに、モデルが一言の要約になる。▶ で要約まで再生。',
+    kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS · 塊',
+    cardChunks: '本文を塊に巻く', cardModel: '塊をひとつのモデルにする', cardSummary: 'モデルを一言にする',
     explicit: 'explicit — 原文に明示', inferred: 'inferred — 原文から推論（明示はない）', abstracted: 'abstracted — モデル化でまとめたもの', uncertain: 'uncertain — 複数の読みがありうる',
     problems: 'モデルの一部を表示できませんでした',
   },
@@ -895,11 +911,19 @@ function applyLayout() {
     // the text keeps its width on every layer, so it never reflows; on the ground it is centred
     const w = GUTTER + G.colW + 30;
     textPane.style.height = '100%'; textPane.style.width = w + 'px';
-    textPane.style.marginLeft = S.stop === 'text' ? Math.max(0, (G.mw - w) / 2) + 'px' : '0';
+    // centred, but clear of the HUD
+    const hudLeft = G.mw - 14 - $('#gauge').offsetWidth - 16;
+    textPane.style.marginLeft = S.stop === 'text' ? Math.max(0, Math.min((G.mw - w) / 2, hudLeft - w)) + 'px' : '0';
   }
   const mm = $('#minimap');
   mm.hidden = !FORMS.includes(S.stage) || G.narrow;
-  main.classList.toggle('mm-top', G.mw / 2 + 300 + 16 + 380 + 14 > G.mw);   // keep clear of the gauge
+  // the model's side starts below the HUD
+  body.classList.toggle('narrow', G.narrow);
+  const hud = $('#gauge').getBoundingClientRect(), top = main.getBoundingClientRect().top;
+  const overNotes = !G.narrow && S.stop !== 'text';
+  rs.setProperty('--ticker-x', overNotes ? Math.round(textPane.offsetWidth + (G.mw - textPane.offsetWidth) / 2) + 'px' : '50%');
+  rs.setProperty('--ticker-w', overNotes ? Math.round(G.mw - textPane.offsetWidth - 40) + 'px' : 'calc(100% - 32px)');
+  rs.setProperty('--hud-clear', (G.narrow ? 28 : Math.max(28, Math.round(hud.bottom - top + 16))) + 'px');
   const hint = $('#hint');
   if (hint.textContent !== (hint.textContent = S.stop === 'model' ? T.hintModel : S.stop === 'chunks' ? T.hintChunks : T.hintText)) {
     hint.classList.remove('gone'); clearTimeout(hint._t); hint._t = setTimeout(() => hint.classList.add('gone'), 7000);
@@ -1282,6 +1306,53 @@ const linkOrder = (() => {
   rels.forEach(r => { if (!out.has(r.id)) out.set(r.id, k++); });
   return out;
 })();
+/* ---- the play: a story in beats. Each chunk is wrapped in its own beat, the lines grow in waves from the
+   conclusion outward, and every beat is followed by a hold. Dragging uses the continuous timings instead. ---- */
+const STORY = (() => {
+  const I0 = 0.1, U = Math.max(1, roots.length), W = (1 - I0) / U;
+  const members = roots.map(u => order.filter(n => unitOf(n) === u));
+  const wrapAt = n => {      // where a chunk's own moment starts, within its unit's beat
+    const k = Math.max(0, roots.indexOf(unitOf(n))), ms = members[k] || [n], j = Math.max(0, ms.indexOf(n)), J = ms.length - 1;
+    return { d: I0 + W * k + (J ? 0.4 * j / J : 0) * W };
+  };
+  // waves of lines: a line belongs to the wave of its target's distance from the conclusion
+  const dist = new Map(order.map(n => [n.id, conclusions.includes(n) ? 0 : Infinity]));
+  for (let changed = true; changed;) {
+    changed = false;
+    order.forEach(t => {
+      const d = dist.get(t.id);
+      if (d === Infinity) return;
+      [t.parent, ...t.children].filter(Boolean).forEach(m => { if (dist.get(m.id) > d) { dist.set(m.id, d); changed = true; } });
+      rels.forEach(r => { if (r.target === t && dist.get(r.source.id) > d + 1) { dist.set(r.source.id, d + 1); changed = true; } });
+    });
+  }
+  const raw = new Map(rels.map(r => [r.id, dist.get(r.target.id) === Infinity ? 1000 + Math.floor((linkOrder.get(r.id) || 0) / 4) : dist.get(r.target.id)]));
+  const levels = [...new Set(raw.values())].sort((a, b) => a - b), Wn = levels.length;
+  const wave = new Map();
+  levels.forEach((lv, w) => {
+    const rs = rels.filter(r => raw.get(r.id) === lv).sort((a, b) => (linkOrder.get(a.id) || 0) - (linkOrder.get(b.id) || 0));
+    rs.forEach((r, i) => wave.set(r.id, { w, i, c: rs.length }));
+  });
+  return { I0, U, W, members, wrapAt, wave, Wn };
+})();
+const linear = t => t;
+function beatsFor(kind) {
+  const out = [];
+  let from = 0;
+  const add = (to, ms, ease, hold, extra = {}) => { out.push({ from, to, ms, ease, hold, ...extra }); from = to; };
+  if (kind === 'text-chunks') {
+    add(STORY.I0, 900, easeInOut, 300);
+    roots.forEach((u, k) => add(STORY.I0 + STORY.W * (k + 1), 1100, linear, 640, { unit: k }));
+  } else if (kind === 'chunks-model') {
+    add(0.5, 2100, easeInOut, 450);
+    for (let w = 0; w < STORY.Wn; w++) add(0.52 + 0.48 * (w + 1) / STORY.Wn, 900, linear, 620, { wave: w });
+    if (!STORY.Wn) add(1, 300, linear, 0);
+  } else add(1, kind === 'model-summary' ? 2600 : 1600, easeInOut, 0);
+  return out;
+}
+const CARD_MS = 1250;
+const CARDS = { 'text-chunks': ['02', 'CHUNKS', 'cardChunks'], 'chunks-model': ['03', 'MODEL', 'cardModel'], 'model-summary': ['04', 'SUMMARY', 'cardSummary'] };
+const storyMs = kind => (CARDS[kind] ? CARD_MS : 0) + beatsFor(kind).reduce((a, b) => a + b.ms + b.hold, 0);
 let sess = null;
 function setStage(name) {
   const st = STAGES[name];
@@ -1311,10 +1382,10 @@ function modelGhost() {      // the whole structure, which recedes into the mini
   wrap.append(c); fly.append(wrap);
   return { el: c, x: cr.left, y: cr.top, w: cr.width, h: cr.height, clip: st };
 }
-function beginSeg(a, b) {
+function beginSeg(a, b, story = false) {
   const kind = a + '-' + b;
   setStage(a);
-  const A = snapshot(), paneA = textPane.getBoundingClientRect().left;
+  const A = snapshot(), paneA = textPane.getBoundingClientRect().left, scroll0 = textPane.scrollTop;
   const toForm = a === 'model' && FORMS.includes(b);
   const ctxA = toForm ? null : contextGhost();
   const shrink = toForm ? modelGhost() : null;
@@ -1323,29 +1394,43 @@ function beginSeg(a, b) {
   const N = Math.max(1, order.length - 1);
   const ordOf = key => { const n = nodes.get(key.split(':')[1]); return n ? n.ord / N : 0.5; };
   const [d0, spread, dur] = kind === 'text-chunks' ? [0.16, 0.62, 0.22] : kind === 'chunks-model' ? [0, 0.3, 0.42] : [0, 0.28, 0.55];
+  story = story && (kind === 'text-chunks' || kind === 'chunks-model');
+  const timing = key => {
+    const pt = key.startsWith('pt:');
+    if (!story) return { d: d0 + spread * ordOf(key) + (pt ? 0.05 : 0), dur };
+    if (kind === 'chunks-model') return { d: 0.24 * ordOf(key), dur: 0.24 };
+    const n = nodes.get(key.split(':')[1]);
+    return n ? { d: STORY.wrapAt(n).d + (0.15 + (pt ? 0.03 : 0)) * STORY.W, dur: 0.42 * STORY.W } : { d: STORY.I0, dur: STORY.W };
+  };
   const pieces = [];
   new Set([...A.keys(), ...B.keys()]).forEach(key => {
     if (key.startsWith('passage:')) return;
     const ra = A.get(key), rb = B.get(key);
-    const pc = { d: d0 + spread * ordOf(key) + (key.startsWith('pt:') ? 0.05 : 0), dur, uniform: !(rb || ra).box };
+    const pc = { key, ...timing(key), uniform: !(rb || ra).box };
     if (rb) rb.el.classList.add('landing');
     if (ra && rb) Object.assign(pc, { from: ra.r, to: rb.r, gA: ghost(ra), gB: ghost(rb), baseA: ra.r, baseB: rb.r });
-    else if (rb) { const src = firstOf(fallbacks(key), A); Object.assign(pc, { from: src ? shrinkInto(src.r, rb.r) : null, to: rb.r, gB: ghost(rb), baseB: rb.r }); }
+    else if (rb) { const src = firstOf(fallbacks(key), A); Object.assign(pc, { from: src ? shrinkInto(src.r, rb.r) : null, to: rb.r, gB: ghost(rb), baseB: rb.r, fromText: kind === 'text-chunks' }); }
     else { const dst = firstOf(fallbacks(key), B); Object.assign(pc, { from: ra.r, to: dst ? shrinkInto(dst.r, ra.r) : null, gA: ghost(ra), baseA: ra.r }); }
     pieces.push(pc);
   });
   // in the text: brackets and slabs, one chunk after another
-  const wraps = kind === 'text-chunks' ? order.map(n => ({ n, d: 0.04 + 0.62 * n.ord / N,
+  const wraps = kind === 'text-chunks' ? order.map(n => ({ n, ...(story ? { d: STORY.wrapAt(n).d, len: 0.35 * STORY.W } : { d: 0.04 + 0.62 * n.ord / N, len: 0.2 }),
     brs: $$(`#marks .br[data-node="${n.id}"]`), sls: $$(`#slabs .sl[data-node="${n.id}"]`) })) : [];
   // in the model: lines, from the conclusion outward
   const L = Math.max(1, rels.length - 1);
-  const links = kind === 'chunks-model' ? $$('#links .link', repEl).map(g => ({ g, d: 0.5 + 0.38 * (linkOrder.get(g.dataset.rel) || 0) / L, r: elsById.get(g.dataset.rel) })) : [];
+  const linkAt = id => {
+    const v = STORY.wave.get(id);
+    if (!story || !v) return { d: 0.5 + 0.38 * (linkOrder.get(id) || 0) / L, len: 0.1 };
+    const len = 0.48 / STORY.Wn, start = 0.52 + len * v.w;
+    return { d: start + 0.2 * len * v.i / Math.max(1, v.c - 1), len: 0.8 * len, w: v.w };
+  };
+  const links = kind === 'chunks-model' ? $$('#links .link', repEl).map(g => ({ g, ...linkAt(g.dataset.rel), r: elsById.get(g.dataset.rel) })) : [];
   if (shrink) {   // where the model lands: the minimap, which is drawn in b
     const m = $('#mmSvg').getBoundingClientRect(), { w, h: hh0, x, y } = shrink;
     const sc = Math.min(m.width / w, m.height / hh0);
     shrink.to = { s: sc, x: m.left + (m.width - w * sc) / 2, y: m.top + (m.height - hh0 * sc) / 2 };
   }
-  sess = { a, b, kind, pieces, ctxA, shrink, dx: paneA - paneB, wraps, links, u: 0 };
+  sess = { a, b, kind, story, pieces, ctxA, shrink, dx: paneA - paneB, scroll0, wraps, links, u: 0 };
   main.classList.add('scrubbing');
   cancelAnimationFrame(FIELD.raf); FIELD.raf = 0;
   frame(0);
@@ -1359,10 +1444,14 @@ function frame(u) {
   if (!s) return;
   s.u = u;
   const uc = clamp(u, 0, 1);
+  const lead = s.story ? (s.kind === 'text-chunks' ? STORY.I0 : 0.5) : 0.55;    // in the play, the ground moves first
+  const eg = easeInOut(clamp(u / lead, 0, 1));
+  const shiftX = -s.dx * eg, shiftY = s.scroll0 - textPane.scrollTop;          // where the text is now, against where it was
   for (const p of s.pieces) {
-    const raw = (u - p.d) / p.dur, t = clamp(raw, 0, 1.15), o = clamp(raw, 0, 1);
-    const e = t <= 1 ? easeInOut(t) : t;             // past the end (a settling overshoot) it keeps going a little
-    const at = p.from && p.to ? lerpRect(p.from, p.to, e) : null;
+    const raw = (u - p.d) / p.dur, o = clamp(raw, 0, 1);
+    const e = raw < 1 ? easeInOut(o) : 1 + Math.min(0.15, Math.max(0, u - 1) / p.dur);   // a settling overshoot carries it a little past the end
+    const from = p.fromText && p.from ? { ...p.from, left: p.from.left + shiftX, top: p.from.top + shiftY } : p.from;
+    const at = from && p.to ? lerpRect(from, p.to, e) : null;
     const fadeA = p.uniform ? 1 - smooth(0.42, 0.56, o) : 1 - smooth(0.25, 0.7, o), fadeB = p.uniform ? smooth(0.46, 0.6, o) : smooth(0.3, 0.8, o);
     if (p.gA) { place(p.gA, p.baseA, at || p.baseA, p.uniform); p.gA.style.opacity = String(p.gB ? fadeA : 1 - smooth(0.35, 0.95, o)); }
     if (p.gB) {
@@ -1371,8 +1460,7 @@ function frame(u) {
     }
   }
   // the ground slides aside, and tilts back for a moment as we rise
-  const eg = easeInOut(clamp(u / 0.55, 0, 1));
-  const tilt = s.kind === 'text-chunks' || s.kind === 'chunks-model' ? 8 * Math.sin(Math.PI * uc) : 0;
+  const tilt = s.kind === 'text-chunks' || s.kind === 'chunks-model' ? (s.story ? 6 * Math.sin(Math.PI * clamp(u / (2 * lead), 0, 1)) : 8 * Math.sin(Math.PI * uc)) : 0;
   textPane.style.transform = `translateX(${s.dx * (1 - eg)}px)` + (tilt && !reduceMotion ? ` perspective(1600px) rotateX(${tilt}deg)` : '');
   if (s.ctxA) s.ctxA.style.opacity = String(1 - smooth(0, 0.5, uc));
   const mm = $('#minimap');
@@ -1382,10 +1470,10 @@ function frame(u) {
     s.shrink.el.style.opacity = String((0.85 - 0.3 * Math.sin(Math.PI * k)) * (1 - smooth(0.8, 1, uc)));
     mm.style.opacity = String(smooth(0.75, 1, uc));
   } else mm.style.opacity = '';
-  if (s.kind === 'text-chunks') modelPane.style.opacity = String(smooth(0.02, 0.4, uc));
+  if (s.kind === 'text-chunks') modelPane.style.opacity = String(s.story ? smooth(0, STORY.I0, uc) : smooth(0.02, 0.4, uc));
   repEl.style.opacity = s.kind === 'chunks-model' || s.kind === 'text-chunks' ? '1' : String(smooth(0.4, 1, uc));
   s.wraps.forEach(w => {
-    const k = clamp((u - w.d) / 0.2, 0, 1);
+    const k = clamp((u - w.d) / w.len, 0, 1);
     w.brs.forEach(g => { const line = g.querySelector('path.line'), tx = g.querySelector('text');
       if (line) { line.style.strokeDasharray = '1'; line.style.strokeDashoffset = String(1 - k); }
       if (tx) tx.style.opacity = String(k); });
@@ -1393,7 +1481,7 @@ function frame(u) {
       const slab = g.querySelector('rect.slab'); if (slab) slab.style.fill = k > 0 && k < 1 ? `rgba(var(--focus-rgb), ${(0.22 * Math.sin(Math.PI * k)).toFixed(3)})` : ''; });
   });
   s.links.forEach(l => {
-    const k = clamp((u - l.d) / 0.1, 0, 1), path = l.g.querySelector('path.l');
+    const k = clamp((u - l.d) / l.len, 0, 1), path = l.g.querySelector('path.l');
     if (path) { if (l.r && l.r.prov === 'explicit') { path.style.strokeDasharray = '1'; path.style.strokeDashoffset = String(1 - k); } else path.style.opacity = String(k); }
     const ar = l.g.querySelector('path.a'); if (ar) ar.style.opacity = String(smooth(0.7, 1, k));
     if (l.g.classList.contains('show')) { const lb = l.g.querySelector('.lbl'); if (lb) lb.style.opacity = String(smooth(0.75, 1, k)); }
@@ -1407,23 +1495,34 @@ function showTicker(s, u) {
   let k = '', n = '', m = '';
   if (u > 0.01 && u < 0.99) {
     if (s.kind === 'text-chunks') {
-      const w = s.wraps.filter(w => u >= w.d + 0.1).pop();
+      const w = s.wraps.filter(w => (!s.story || !w.n.parent) && u >= w.d + w.len * 0.3).pop();   // in the play, a unit at a time
       if (w) { k = T.kWrap; n = titleNum(w.n); m = w.n.label; }
     } else if (s.kind === 'chunks-model') {
-      const l = s.links.filter(l => u >= l.d).sort((a, b) => a.d - b.d).pop();
-      if (l && l.r) { k = T.kLink; n = l.r.target.num; m = `← ${l.r.source.num}  ${l.r.label}`; }
+      const on = s.links.filter(l => u >= l.d && l.r).sort((a, b) => a.d - b.d);
+      const l = on[on.length - 1];
+      if (l && s.story && l.w != null) {      // a wave: where its lines go, and where they come from
+        const wv = on.filter(x => x.w === l.w).map(x => x.r), tg = [...new Set(wv.map(r => r.target.num))];
+        const said = [...new Set(wv.map(r => r.label).filter(Boolean))];
+        k = T.kLink; n = tg.length <= 3 ? tg.join(' · ') : `${wv.length} LINES`;
+        m = said.length ? said.join('  /  ') : '← ' + [...new Set(wv.map(r => r.source.num))].join('  ');
+      } else if (l) { k = T.kLink; n = l.r.target.num; m = `← ${l.r.source.num}  ${l.r.label}`; }
       else { k = T.kForm; m = meta.title || ''; }
-    } else { k = T.kRep; m = formLabel(s.b); }
+    } else { k = T.kRep; m = EN[s.b]; }
   }
   tickerEl.classList.toggle('on', !!(k || m));
-  $('.k', tickerEl).textContent = k; $('.n', tickerEl).textContent = n; $('.m', tickerEl).textContent = m;
+  const sig = k + '|' + n + '|' + m;
+  if (sig !== tickerEl._sig) {
+    tickerEl._sig = sig;
+    $('.k', tickerEl).textContent = k; $('.n', tickerEl).textContent = n; $('.m', tickerEl).textContent = m;
+    if (k || m) { tickerEl.classList.remove('cut'); void tickerEl.offsetWidth; tickerEl.classList.add('cut'); }
+  }
 }
 function endSeg(final) {
   const s = sess;
   if (!s) return;
   sess = null;
   main.classList.remove('scrubbing');
-  fly.querySelectorAll(':scope > :not(.slate)').forEach(el => el.remove());
+  fly.querySelectorAll(':scope > :not(.slate):not(.tcard)').forEach(el => el.remove());
   $$('.landing').forEach(el => el.classList.remove('landing'));
   textPane.style.transform = ''; modelPane.style.opacity = ''; repEl.style.opacity = ''; $('#minimap').style.opacity = '';
   tickerEl.classList.remove('on');
@@ -1455,47 +1554,137 @@ function route(a, b) {       // the stages passed through on the way from a to b
 }
 const segOf = (a, b) => SEGS.find(([x, y]) => (x === a && y === b) || (x === b && y === a));
 let goToken = 0;
-const segMs = (lo, story) => !story ? (lo === 'text' ? 1700 : lo === 'chunks' ? 1900 : 950)
-  : lo === 'text' ? Math.max(6000, 700 * order.length)               // each chunk is wrapped in its own moment
-  : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length)        // cards take their places, then the lines grow
-  : 3500;
-const linear = t => t;
+const segMs = lo => lo === 'text' ? 1700 : lo === 'chunks' ? 1900 : 950;
+async function runStory(my) {   // the beats of the current segment, each followed by its hold
+  const s = sess, beats = beatsFor(s.kind);
+  const unitSpan = k => STORY.members[k].flatMap(n => n.spans).sort((x, y) => x.start - y.start)[0];
+  for (let i = 0; i < beats.length; i++) {
+    const b = beats[i], next = beats[i + 1];
+    if (s.u >= b.to - 1e-4) continue;
+    const part = clamp((b.to - s.u) / Math.max(1e-6, b.to - b.from), 0, 1);
+    if (b.unit != null && i > 0 && part < 1) glideText(unitSpan(b.unit));
+    if (b.unit == null && next && next.unit != null) glideText(unitSpan(next.unit));      // the opening beat brings the first passage in
+    await tweenU(b.to, reduceMotion ? 0 : b.ms * part, b.ease);
+    if (my !== goToken || sess !== s) return false;
+    impact(s, b);
+    if (b.unit != null && next && next.unit != null) setTimeout(() => { if (sess === s) glideText(unitSpan(next.unit)); }, 160);   // during the hold, on to the next passage
+    if (b.hold) { await sleep(reduceMotion ? Math.max(700, b.hold) : b.hold); if (my !== goToken || sess !== s) return false; }
+  }
+  return true;
+}
+let glideRaf = 0;
+function glideText(sp, ms = 560) {    // the text slides to a passage, so its wrapping is seen
+  const b = sp && spanBox(sp);
+  if (!b) return;
+  const c = textPane.getBoundingClientRect(), from = textPane.scrollTop;
+  const to = clamp(from + b.top - c.top - c.height * 0.2, 0, textPane.scrollHeight - textPane.clientHeight);
+  if (Math.abs(to - from) < 4) return;
+  cancelAnimationFrame(glideRaf);
+  if (reduceMotion) { textPane.scrollTop = to; return; }
+  const t0 = performance.now();
+  const step = now => { const k = clamp((now - t0) / ms, 0, 1); textPane.scrollTop = from + (to - from) * easeInOut(k); if (k < 1) glideRaf = requestAnimationFrame(step); };
+  glideRaf = requestAnimationFrame(step);
+}
+function impact(s, b) {      // a beat lands: its cards flash once
+  if (reduceMotion) return;
+  let ids = null;
+  if (b.unit != null) ids = new Set((STORY.members[b.unit] || []).map(n => n.id));
+  else if (b.wave != null) ids = new Set(rels.filter(r => (STORY.wave.get(r.id) || {}).w === b.wave).map(r => r.target.id));
+  if (!ids) return;
+  const c = getComputedStyle(document.documentElement).getPropertyValue('--focus-rgb').trim();
+  s.pieces.forEach(p => {
+    if (p.gB && p.key.startsWith('card:') && ids.has(p.key.slice(5)))
+      p.gB.animate([{ boxShadow: `0 0 0 2px rgba(${c}, 1)` }, { boxShadow: `0 0 0 12px rgba(${c}, 0)` }], { duration: 560, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+  });
+}
+async function titleCard(idx, name, sub) {
+  if (reduceMotion) return;
+  const host = main.getBoundingClientRect();
+  const band = h('div', { class: 'band' }, h('span', { class: 'ti' }, idx), h('span', { class: 'tn' }, name), h('span', { class: 'ts' }, sub));
+  const streak = h('div', { class: 'streak' });
+  const el = h('div', { class: 'tcard' }, band, streak);
+  Object.assign(el.style, { left: host.left + 'px', top: (host.top + host.height * 0.36) + 'px', width: host.width + 'px' });
+  fly.append(el);
+  const ease = 'cubic-bezier(.7, 0, .2, 1)', out = 'cubic-bezier(.2, .9, .25, 1)';
+  streak.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 420, easing: out, fill: 'both' });
+  band.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 300, easing: ease, fill: 'both' });
+  band.querySelector('.tn').animate([{ transform: 'translateX(48px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 520, delay: 90, easing: out, fill: 'both' });
+  band.querySelector('.ts').animate([{ transform: 'translateX(24px)', opacity: 0 }, { transform: 'none', opacity: .7 }], { duration: 520, delay: 180, easing: out, fill: 'both' });
+  await sleep(CARD_MS - 260);
+  streak.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 240, fill: 'both' });
+  await band.animate([{ clipPath: 'inset(0 0 0 0)' }, { clipPath: 'inset(0 0 0 100%)' }], { duration: 240, easing: ease, fill: 'both' }).finished.catch(() => null);
+  el.remove();
+}
 async function goTo(target, opts = {}) {
   if (!STAGES[target]) return false;
-  const my = ++goToken;
+  const my = ++goToken, story = !!opts.story;
   if (sess) {   // between two stages: carry on toward the target from where the knob is
     const s = sess, back = route(s.b, target).includes(s.a), to = back ? 0 : 1;
-    const ms = reduceMotion ? 0 : (opts.ms || segMs(s.a, opts.story)) * Math.abs(to - s.u);
-    await tweenU(to, ms, opts.story ? linear : easeInOut);
-    if (my !== goToken) return false;
+    if (story && !back && s.story) { if (!await runStory(my)) return false; }
+    else {
+      const ms = reduceMotion ? 0 : (opts.ms || segMs(s.a) * (story ? 1.6 : 1)) * Math.abs(to - s.u);
+      await tweenU(to, ms, easeInOut);
+      if (my !== goToken) return false;
+    }
     endSeg(to);
   }
   const path = route(S.stage, target);
   for (let i = 1; i < path.length; i++) {
     const a = path[i - 1], b = path[i], [lo, hi] = segOf(a, b), up = a === lo;
-    if (opts.story && i > 1) { await sleep(reduceMotion ? 1600 : 1200); if (my !== goToken) return false; }
-    beginSeg(lo, hi);
+    beginSeg(lo, hi, story && up);
     frame(up ? 0 : 1);
-    const ms = reduceMotion ? 0 : (opts.ms || segMs(lo, opts.story));
-    await tweenU(up ? 1 : 0, ms, opts.story ? linear : i === path.length - 1 && up ? settle : easeInOut);
-    if (my !== goToken) return false;
+    if (story && up) {
+      const c = CARDS[lo + '-' + hi];
+      if (c) { await titleCard(c[0], c[1], T[c[2]]); if (my !== goToken) return false; }
+      if (!await runStory(my)) return false;
+    } else {
+      const ms = reduceMotion ? 0 : (opts.ms || segMs(lo));
+      await tweenU(up ? 1 : 0, ms, i === path.length - 1 && up ? settle : easeInOut);
+      if (my !== goToken) return false;
+    }
     endSeg(up ? 1 : 0);
   }
-  arrived();
+  arrived(story);
   return true;
 }
-// ▶ plays the way to the goal, the summary: from where the knob is, or from the text again
 let playing = false;
+const CLOCK = { t0: 0, total: 0, iv: 0 };
+function planMs() {    // how long ▶ takes from here
+  let ms = 0, st = S.stage === 'summary' && !sess ? 'text' : S.stage;
+  if (sess) {
+    const s = sess, back = route(s.b, 'summary').includes(s.a);
+    if (back) ms += segMs(s.a) * 1.6 * s.u;
+    else if (s.story) ms += beatsFor(s.kind).reduce((a, b) => a + (s.u >= b.to ? 0 : (b.ms + b.hold) * clamp((b.to - s.u) / Math.max(1e-6, b.to - b.from), 0, 1)), 0);
+    else ms += segMs(s.a) * 1.6 * (1 - s.u);
+    st = back ? s.a : s.b;
+  }
+  const path = route(st, 'summary');
+  for (let i = 1; i < path.length; i++) {
+    const [lo, hi] = segOf(path[i - 1], path[i]);
+    ms += path[i - 1] === lo ? storyMs(lo + '-' + hi) : segMs(lo);
+  }
+  return ms;
+}
+const clockText = ms => { const t = Math.max(0, Math.round(ms / 1000)); return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; };
+function drawClock() {
+  if (!GG.time) return;
+  GG.time.classList.toggle('on', playing);
+  GG.time.textContent = playing ? `${clockText(Math.min(performance.now() - CLOCK.t0, CLOCK.total))} / ${clockText(CLOCK.total)}` : `T-${clockText(planMs())}`;
+}
 async function play() {
-  if (playing) { playing = false; goToken++; drawGauge(); return; }
-  playing = true; drawGauge();
+  if (playing) { playing = false; goToken++; clearInterval(CLOCK.iv); drawGauge(); return; }
+  playing = true;
   if (S.stage === 'summary' && !sess) await goTo('text', { ms: 1 });
+  CLOCK.total = planMs(); CLOCK.t0 = performance.now();
+  clearInterval(CLOCK.iv); CLOCK.iv = setInterval(drawClock, 250);
+  drawGauge();
   const done = await goTo('summary', { story: true });
   if (done || !sess) playing = false;
+  if (!playing) clearInterval(CLOCK.iv);
   drawGauge();
 }
-function arrived() {
-  if (FORMS.includes(S.stage)) slate(formLabel(S.stage), T.kRep);
+function arrived(story) {
+  if (FORMS.includes(S.stage) && !story) slate(EN[S.stage], T.kRep);
   if (S.stage === 'summary') sweepSummary();
 }
 async function release() {
@@ -1916,77 +2105,100 @@ function focusIn(n) {
   const show = () => { scrollTextTo(n.home || n.spans[0], true); applyFocus(); };
   if (S.stage === 'chunks' || S.stage === 'text') show(); else goTo('chunks').then(show);
 }
-// where each stage sits on the gauge: the model at the core; the text side to its left, its forms to its right
-const GW = 600, GH = 150;
-const GP = { text: [134, 82], chunks: [216, 82], model: [300, 82], summary: [512, 82], linear: [392, 42], slides: [512, 42], table: [392, 122] };
-const LEVEL_TAG = { text: '01', chunks: '02', model: '03', summary: '04' };
+// the HUD: where each stage sits. The model is the core: the text side runs into it, and its forms leave it.
+const GW = 344, GH = 132;
+const GP = { text: [22, 98], chunks: [76, 98], model: [146, 98], summary: [318, 98], linear: [210, 76], slides: [274, 76], table: [210, 120] };
+const IDX = { text: '01', chunks: '02', model: '03', summary: '04', linear: 'A1', slides: 'A2', table: 'B1' };
 const EN = { text: 'TEXT', chunks: 'CHUNKS', model: 'MODEL', summary: 'SUMMARY', linear: 'LINEAR', slides: 'SLIDES', table: 'TABLE' };
+const STAT = (() => {
+  const pts = order.reduce((a, n) => a + n.points.length, 0), whens = new Set(order.flatMap(n => n.points.map(p => p.when).filter(Boolean)));
+  const pages = order.length + 1 + (summary.length ? 1 : 0), phrases = summary.filter(p => p.refs.length).length;
+  return { text: `${textLen.toLocaleString('en')} CHARS`, chunks: `${roots.length} UNITS · ${order.length} CHUNKS`, model: `${order.length} CHUNKS · ${rels.length} LINKS`,
+    summary: summary.length ? `1 SENTENCE · ${phrases} PHRASES` : 'NO SUMMARY', linear: `${order.length} NOTES · ${pts} POINTS`,
+    slides: `${pages} PAGES · 16:9`, table: `${order.length} ROWS · ${whens.size + 2} COLS` };
+})();
 const GG = {};
-const stageLabel = st => ({ text: T.stopText, chunks: T.stopChunks, model: T.stopModel })[st] || formLabel(st);
 const hexPts = (x, y, r) => Array.from({ length: 6 }, (_, k) => { const a = Math.PI / 6 + k * Math.PI / 3; return `${(x + r * Math.cos(a)).toFixed(1)},${(y + r * Math.sin(a)).toFixed(1)}`; }).join(' ');
+const diaPts = (x, y, r) => `${x},${y - r} ${x + r},${y} ${x},${y + r} ${x - r},${y}`;
 function buildGauge() {
   gaugeSvg.setAttribute('viewBox', `0 0 ${GW} ${GH}`);
   gaugeSvg.innerHTML = '';
   const g = (tag, attrs, parent = gaugeSvg) => svgEl(tag, attrs, parent);
-  // the frame: cut corners, bracketed
-  const c = 12;
-  g('polygon', { class: 'h-frame', points: `${c},0 ${GW - c},0 ${GW},${c} ${GW},${GH - c} ${GW - c},${GH} ${c},${GH} 0,${GH - c} 0,${c}` });
-  g('path', { class: 'h-corner', d: `M0,${c + 14} V${c} L${c},0 H${c + 22} M${GW},${GH - c - 14} V${GH - c} L${GW - c},${GH} H${GW - c - 22}` });
-  g('text', { class: 'h-cap', x: 22, y: 20 }).textContent = 'META // NAVIGATOR';
-  GG.read = g('text', { class: 'h-read', x: GW - 24, y: GH - 16, 'text-anchor': 'end' });
-  // lines: dashed until walked, then solid
+  const c = 12;     // the plate: one corner cut, marks at the others
+  g('polygon', { class: 'h-plate', points: `0,0 ${GW},0 ${GW},${GH} ${c},${GH} 0,${GH - c}` });
+  g('path', { class: 'h-mark', d: `M0,9 V0 H9 M${GW - 9},0 H${GW} V9 M${GW},${GH - 9} V${GH} H${GW - 9}` });
+  g('path', { class: 'h-chamfer', d: `M0,${GH - c - 6} V${GH - c} L${c},${GH} H${c + 6}` });
+  g('rect', { class: 'h-acc', x: 14, y: 11, width: 10, height: 3 });
+  g('text', { x: 30, y: 15 }).textContent = 'META NAVIGATOR';
+  GG.time = g('text', { class: 'h-time', x: GW - 14, y: 15, 'text-anchor': 'end' });
+  g('line', { class: 'h-rule', x1: 14, y1: 22, x2: GW - 14, y2: 22 });
+  // the readout: where the knob stands
+  GG.idx = g('text', { class: 'h-idx', x: 12, y: 57 });
+  GG.name = g('text', { class: 'h-name', x: 62, y: 43 });
+  GG.stat = g('text', { class: 'h-stat', x: 62, y: 55 });
+  // ▶
+  const pb = g('g', { class: 'g-play', role: 'button', tabindex: 0, 'aria-label': T.play });
+  g('polygon', { points: `${GW - 78},35 ${GW - 14},35 ${GW - 18},53 ${GW - 82},53` }, pb);
+  GG.playIcon = g('path', { d: '' }, pb);
+  GG.playText = g('text', { x: GW - 58, y: 47 }, pb);
+  pb.addEventListener('click', ev => { ev.stopPropagation(); play(); });
+  pb.addEventListener('pointerdown', ev => ev.stopPropagation());
+  pb.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); play(); } });
+  GG.play = pb;
+  // the lines: a hairline, a ruler on the trunk, and the way walked in the focus colour
   SEGS.forEach(([a, b]) => g('line', { class: 'g-hit', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] }));
   SEGS.forEach(([a, b]) => {
-    g('line', { class: 'g-line', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] });
-    if (LEVEL_TAG[b]) g('line', { class: 'g-tick', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] });
+    g('line', { class: 'g-track', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] });
+    if (IDX[b] && /^\d/.test(IDX[b])) g('line', { class: 'g-ruler', x1: GP[a][0] + 8, y1: GP[a][1], x2: GP[b][0] - 8, y2: GP[b][1] });
     GG['f_' + b] = g('line', { class: 'g-fill', x1: GP[a][0], y1: GP[a][1], x2: GP[a][0], y2: GP[a][1] });
   });
   // the stages
   Object.keys(STAGES).forEach(st => {
     const [x, y] = GP[st], lab = g('g', { class: 'g-label', 'data-stage': st });
-    if (st === 'model') {     // the core
-      g('circle', { class: 'g-orbit', cx: x, cy: y, r: 31 });
-      g('path', { class: 'g-reticle', d: [0, 1, 2, 3, 4, 5].map(k => { const a = Math.PI / 6 + k * Math.PI / 3, c = Math.cos(a), s = Math.sin(a); return `M${(x + 34 * c).toFixed(1)},${(y + 34 * s).toFixed(1)} L${(x + 40 * c).toFixed(1)},${(y + 40 * s).toFixed(1)}`; }).join(' ') });
-      GG['n_' + st] = g('polygon', { class: 'g-node g-core', points: hexPts(x, y, 22) });
-      GG['in_' + st] = g('polygon', { class: 'g-core-in', points: hexPts(x, y, 10) });
-      g('rect', { x: x - 60, y: y + 30, width: 120, height: 26, fill: 'transparent' }, lab);
-      GG['t_' + st] = g('text', { class: 'g-core-label', x, y: y + 52, 'text-anchor': 'middle' }, lab);
-      g('tspan', { class: 'tag' }, GG['t_' + st]).textContent = LEVEL_TAG[st] + ' ';
-      GG['t_' + st].append(`${EN[st]} ${stageLabel(st)}`);
-    } else if (st === 'summary') {      // the goal
-      GG['n_' + st] = g('polygon', { class: 'g-node', points: `${x},${y - 13} ${x + 13},${y} ${x},${y + 13} ${x - 13},${y}` });
-      g('polygon', { class: 'g-glyph', points: `${x},${y - 6} ${x + 6},${y} ${x},${y + 6} ${x - 6},${y}` });
-      g('rect', { x: x + 16, y: y - 18, width: 70, height: 36, fill: 'transparent' }, lab);
-      g('text', { class: 'g-goal-tag', x: x + 20, y: y - 6 }, lab).textContent = `${LEVEL_TAG[st]} GOAL`;
-      (GG['t_' + st] = g('text', { x: x + 20, y: y + 10 }, lab)).textContent = stageLabel(st);
-    } else if (LEVEL_TAG[st]) {
-      GG['n_' + st] = st === 'text' ? g('rect', { class: 'g-node', x: x - 7, y: y - 7, width: 14, height: 14 }) : g('polygon', { class: 'g-node', points: hexPts(x, y, 9) });
-      g('rect', { x: x - 34, y: y + 12, width: 68, height: 40, fill: 'transparent' }, lab);
-      g('text', { class: 'lv', x, y: y + 27, 'text-anchor': 'middle' }, lab).textContent = `${LEVEL_TAG[st]} ${EN[st]}`;
-      (GG['t_' + st] = g('text', { x, y: y + 43, 'text-anchor': 'middle' }, lab)).textContent = stageLabel(st);
-    } else {      // a form: a small frame with what it looks like
-      GG['n_' + st] = g('rect', { class: 'g-node', x: x - 10, y: y - 10, width: 20, height: 20 });
-      const glyph = { linear: `M${x - 5},${y - 4} H${x + 5} M${x - 5},${y} H${x + 5} M${x - 5},${y + 4} H${x + 2}`,
-        table: `M${x - 5},${y - 5} H${x + 5} V${y + 5} H${x - 5} Z M${x},${y - 5} V${y + 5} M${x - 5},${y} H${x + 5}`,
-        slides: `M${x - 6},${y - 4} H${x + 6} V${y + 4} H${x - 6} Z M${x - 3},${y} H${x + 3}` }[st];
-      GG['gl_' + st] = g('path', { class: 'g-glyph', d: glyph });
-      const right = st === 'table';
-      g('rect', right ? { x: x + 12, y: y - 12, width: 80, height: 24, fill: 'transparent' } : { x: x - 44, y: y - 34, width: 88, height: 22, fill: 'transparent' }, lab);
-      (GG['t_' + st] = g('text', right ? { x: x + 17, y: y + 4 } : { x, y: y - 18, 'text-anchor': 'middle' }, lab)).textContent = `${EN[st]} ${stageLabel(st)}`;
+    let tx = x, ty = y + 15, anchor = 'middle';
+    if (st === 'model') {        // the core
+      g('circle', { class: 'g-core-ring', cx: x, cy: y, r: 16 });
+      GG.lock = g('path', { class: 'g-lock', d: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => `M${x + sx * 11},${y + sy * 6} V${y + sy * 11} H${x + sx * 6}`).join(' ') });
+      GG['n_' + st] = g('polygon', { class: 'g-node', points: diaPts(x, y, 6) });
+      ty = y + 27;
+    } else if (st === 'summary') {     // the goal
+      g('polygon', { class: 'g-goal', points: diaPts(x, y, 10) });
+      GG['n_' + st] = g('polygon', { class: 'g-node', points: diaPts(x, y, 5) });
+      g('text', { class: 'g-goal-tag', x, y: y - 14, 'text-anchor': 'middle' }).textContent = 'GOAL';
+      tx = GW - 10; anchor = 'end';
+    } else if (st === 'text') GG['n_' + st] = g('rect', { class: 'g-node', x: x - 3.5, y: y - 3.5, width: 7, height: 7 });
+    else if (st === 'chunks') GG['n_' + st] = g('polygon', { class: 'g-node', points: hexPts(x, y, 4.5) });
+    else {         // a form
+      GG['n_' + st] = g('rect', { class: 'g-node', x: x - 4, y: y - 4, width: 8, height: 8 });
+      if (st === 'table') { tx = x + 10; ty = y + 2.5; anchor = 'start'; } else { ty = y - 9; }
     }
+    GG['t_' + st] = g('text', { x: tx, y: ty, 'text-anchor': anchor }, lab);
+    GG['t_' + st].textContent = EN[st];
+    const w = EN[st].length * 6.2 + 8;
+    g('rect', { x: anchor === 'middle' ? tx - w / 2 : anchor === 'end' ? tx - w : tx - 2, y: ty - 9, width: w, height: 12, fill: 'transparent' }, lab);
   });
-  // ▶: a slanted plate, as in a title sequence
-  const pb = g('g', { class: 'g-play', role: 'button', tabindex: 0, 'aria-label': T.play });
-  g('polygon', { points: '26,66 92,66 84,98 18,98' }, pb);
-  GG.playIcon = g('path', { d: '' }, pb);
-  GG.playText = g('text', { x: 50, y: 86 }, pb);
-  pb.addEventListener('click', ev => { ev.stopPropagation(); play(); });
-  pb.addEventListener('pointerdown', ev => ev.stopPropagation());
-  pb.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); play(); } });
-  GG.play = pb;
-  GG.halo = g('circle', { class: 'g-halo', r: 13 });
-  GG.knob = g('polygon', { class: 'g-knob', points: '0,-8 8,0 0,8 -8,0' });
+  GG.halo = g('circle', { class: 'g-halo', r: 9 });
+  GG.knob = g('polygon', { class: 'g-knob', points: diaPts(0, 0, 4.5) });
+  GG.here = null;
 }
+// the readout decodes when the knob reaches a new stage
+let readRaf = 0;
+function setReadout(st) {
+  if (GG.here === st) return;
+  GG.here = st;
+  GG.idx.textContent = IDX[st]; GG.stat.textContent = STAT[st];
+  const word = EN[st], A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/';
+  cancelAnimationFrame(readRaf);
+  if (reduceMotion) { GG.name.textContent = word; return; }
+  const t0 = performance.now();
+  const step = now => {
+    const k = (now - t0) / 340, n = Math.floor(k * (word.length + 1));
+    GG.name.textContent = k >= 1 ? word : word.split('').map((ch, i) => i < n ? ch : A[(Math.random() * A.length) | 0]).join('');
+    if (k < 1) readRaf = requestAnimationFrame(step);
+  };
+  readRaf = requestAnimationFrame(step);
+}
+const stageLabel = st => ({ text: T.stopText, chunks: T.stopChunks, model: T.stopModel })[st] || formLabel(st);
 function knobPos() {
   if (sess) { const u = clamp(sess.u, 0, 1), A = GP[sess.a], B = GP[sess.b]; return [A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u]; }
   return GP[S.stage];
@@ -2006,18 +2218,17 @@ function drawGauge() {
   Object.keys(STAGES).forEach(st => {
     const on = walked.includes(st) || (!!sess && sess.b === st && sess.u > 0.999);
     GG['n_' + st].classList.toggle('on', on);
-    if (GG['gl_' + st]) GG['gl_' + st].classList.toggle('on', on);
     GG['t_' + st].classList.toggle('on', !sess && S.stage === st);
   });
-  if (GG.in_model) GG.in_model.classList.toggle('on', walked.includes('model'));
+  GG.lock.classList.toggle('on', walked.includes('model'));
   GG.play.classList.toggle('on', playing);
-  GG.playIcon.setAttribute('d', playing ? 'M36,76 h4 v12 h-4 Z M43,76 h4 v12 h-4 Z' : 'M36,75 L47,82 L36,89 Z');
-  GG.playText.textContent = playing ? 'STOP' : 'PLAY';
+  const x = GW - 70, y = 44;
+  GG.playIcon.setAttribute('d', playing ? `M${x},${y - 4} h2.6 v8 h-2.6 Z M${x + 4.4},${y - 4} h2.6 v8 h-2.6 Z` : `M${x},${y - 4.5} L${x + 7},${y} L${x},${y + 4.5} Z`);
+  GG.playText.textContent = playing ? 'PAUSE' : 'PLAY';
   GG.play.setAttribute('aria-label', playing ? T.pause : T.play);
   const here = sess ? (sess.u >= 0.5 ? sess.b : sess.a) : S.stage;
-  GG.read.innerHTML = '';
-  svgEl('tspan', { class: 'k' }, GG.read).textContent = LEVEL_TAG[here] ? `L${+LEVEL_TAG[here] - 1} ` : 'FORM ';
-  GG.read.append(`· ${EN[here]}`);
+  setReadout(here);
+  drawClock();
   GG.knob.setAttribute('transform', `translate(${kx},${ky})`);
   GG.halo.setAttribute('cx', kx); GG.halo.setAttribute('cy', ky);
   gaugeSvg.setAttribute('aria-valuetext', stageLabel(here));
@@ -2056,7 +2267,7 @@ gaugeSvg.addEventListener('pointermove', ev => {
   if (!drag.moved && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) < 4) return;
   if (!drag.moved) { drag.moved = true; gaugeSvg.classList.add('dragging'); S.hover = null; applyFocus(); }
   const t = project(svgPoint(ev));
-  if (t.d < 70) moveKnob(t);
+  if (t.d < 40) moveKnob(t);
 });
 const endDrag = ev => {
   const d = drag;
@@ -2065,7 +2276,7 @@ const endDrag = ev => {
   if (!d) return;
   if (d.moved) { release(); return; }
   const t = project(svgPoint(ev));
-  const target = d.lab || (t.d < 30 ? (t.u < 0.5 ? t.seg[0] : t.seg[1]) : null);
+  const target = d.lab || (t.d < 14 ? (t.u < 0.5 ? t.seg[0] : t.seg[1]) : null);
   if (target && target !== S.stage) goTo(target); else if (sess) release();
 };
 gaugeSvg.addEventListener('pointerup', endDrag);
@@ -2202,6 +2413,7 @@ window.__semanticViewer = {
   goTo: (st, o) => goTo(st, o),
   scrub: (a, b, u) => { if (!sess || sess.a !== a || sess.b !== b) { if (sess) endSeg(0); beginSeg(a, b); } frame(u); },
   release: () => release(),
+  gauge: { w: GW, h: GH, at: GP },
   pin: id => setPinned(elsById.get(id) || null, { scroll: true }), hover: id => setHover(elsById.get(id) || null),
 };
 })();
