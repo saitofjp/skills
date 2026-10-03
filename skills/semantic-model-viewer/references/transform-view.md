@@ -5,9 +5,9 @@ What [`assets/viewer.html`](../assets/viewer.html) does. Keep this file in step 
 The page shows one Semantic Model together with its text. The model is the text wrapped into chunks, with headlines, points, lines between chunks and a one-sentence summary. One control moves the page: a gauge that draws the meta-structure itself.
 
 ```
-                                      ┌─ □ A Summary
-01 Text ■━━━ 02 Chunks ⬡━━━ 03 Model ◈─┼─ □ B Linear ── □ B2 Slides
-                                      └─ □ C Table
+01 Text ■━━━ 02 Chunks ⬡━━━ 03 Model ◈━━┯━━━━━━━━━━━━ □ A Summary
+                                        ├─ □ B Linear ── □ B2 Slides
+                                        └─ □ C Table
 ```
 
 The gauge is a compact game HUD at the top right (at the bottom on a phone), in English only:
@@ -15,7 +15,7 @@ The gauge is a compact game HUD at the top right (at the bottom on a phone), in 
 - **The plate.** A flat panel with corner marks, one cut corner and hairline rules. The type is small, monospaced and widely spaced, and the focus colour is used sparingly.
 - **The readout.** A large index (`01`–`03` for the levels; `A`, `B`, `B2`, `C` for the forms), the stage's name, and figures taken from the model (`17 NOTES · 20 LINKS`). The name decodes, letter by letter, when the knob reaches a new stage.
 - **The play control.** `PLAY` / `PAUSE`, with a timecode: how long the play takes from here (`T-00:24`), and while it runs, the time elapsed (`00:07 / 00:24`).
-- **The graph.** It is the control, and the model sits at its centre: a diamond in a ring, framed by turning lock brackets. The levels below it (text, chunks) run into it from the left along a ruled track; its forms hang from it to the right as a tree, a row for each in a series: A summary, B linear (and on along the same row to B2 slides), C table. The knob is a small diamond with a pulse.
+- **The graph.** It is the control, and the model sits at its centre: a diamond in a ring, framed by turning lock brackets. The levels below it (text, chunks) run into it from the left along a ruled track; its forms leave it to the right as a tree, a series: A, the summary, straight on; B linear (and along its row on to B2 slides) and C table hanging from that line. The knob is a small diamond with a pulse.
 
 The page's content starts below the HUD, and the text, centred at L0, keeps clear of it.
 

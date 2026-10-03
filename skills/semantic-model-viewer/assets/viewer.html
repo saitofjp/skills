@@ -426,7 +426,7 @@ main.narrow #rep { padding-bottom: 190px; }
   <div id="hint"></div>
   <div id="ticker" aria-hidden="true"><span class="k"></span><span class="n"></span><span class="m"></span></div>
   <div id="minimap" hidden><span class="mm-label">MODEL</span><svg id="mmSvg" aria-label="The model, small"></svg></div>
-  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 392 146" role="slider" aria-label="Text, chunks, model" tabindex="0"></svg></div>
+  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 392 150" role="slider" aria-label="Text, chunks, model" tabindex="0"></svg></div>
   <div id="problems" hidden></div>
 </main>
 <div id="fly" aria-hidden="true"></div>
@@ -1997,12 +1997,12 @@ function focusIn(n) {
   if (S.stage === 'chunks' || S.stage === 'text') show(); else goTo('chunks').then(show);
 }
 // the HUD: where each stage sits. The model is the core: the text side runs into it, and its forms leave it.
-const GW = 392, GH = 146;
-const GP = { text: [44, 102], chunks: [120, 102], model: [196, 102], summary: [232, 78], linear: [232, 102], table: [232, 126], slides: [314, 102] };
-// the forms hang from the model as a tree: a bus beside the core, a row for each form, and B carries on to B2
-const SPX = 214;
+const GW = 392, GH = 150;
+const GP = { text: [44, 92], chunks: [120, 92], model: [196, 92], summary: [300, 92], linear: [250, 116], slides: [322, 116], table: [250, 138] };
+// the model's forms: A, the summary, straight on; B (on to B2) and C hang from that line, as in a tree
+const SPX = 232;
 const PATH = {};       // the line from each stage's parent to it
-Object.entries(PARENT).forEach(([b, a]) => { PATH[b] = b === 'summary' || b === 'table' ? [GP[a], [SPX, GP[a][1]], [SPX, GP[b][1]], GP[b]] : [GP[a], GP[b]]; });
+Object.entries(PARENT).forEach(([b, a]) => { PATH[b] = b === 'linear' || b === 'table' ? [GP[a], [SPX, GP[a][1]], [SPX, GP[b][1]], GP[b]] : [GP[a], GP[b]]; });
 const plen = pts => pts.slice(1).reduce((t, q, i) => t + Math.hypot(q[0] - pts[i][0], q[1] - pts[i][1]), 0);
 function along(pts, u) {      // the point at fraction u of the way, and the line walked to it
   let left = clamp(u, 0, 1) * plen(pts);
@@ -2067,7 +2067,7 @@ function buildGauge() {
       g('circle', { class: 'g-core-ring', cx: x, cy: y, r: 16 });
       GG.lock = g('path', { class: 'g-lock', d: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => `M${x + sx * 11},${y + sy * 6} V${y + sy * 11} H${x + sx * 6}`).join(' ') });
       GG['n_' + st] = g('polygon', { class: 'g-node', points: diaPts(x, y, 6) });
-      ty = y + 38;
+      ty = y + 30;
     } else if (st === 'text') GG['n_' + st] = g('rect', { class: 'g-node', x: x - 3.5, y: y - 3.5, width: 7, height: 7 });
     else if (st === 'chunks') GG['n_' + st] = g('polygon', { class: 'g-node', points: hexPts(x, y, 4.5) });
     else {         // a form: A, B (and on to B2), C
@@ -2077,7 +2077,7 @@ function buildGauge() {
     GG['t_' + st] = g('text', { x: tx, y: ty, 'text-anchor': anchor }, lab);
     g('tspan', { class: 'g-idx' }, GG['t_' + st]).textContent = IDX[st] + ' ';
     GG['t_' + st].append(EN[st]);
-    const w = (IDX[st].length + 1 + EN[st].length) * 6.2 + 8;
+    const w = (IDX[st].length + 1 + EN[st].length) * 5.9 + 4;
     lab.prepend(svgEl('rect', { class: 'g-lab', x: anchor === 'middle' ? tx - w / 2 : anchor === 'end' ? tx - w : tx - 2, y: ty - 9, width: w, height: 12 }));   // behind the name
   });
   GG.halo = g('circle', { class: 'g-halo', r: 9 });
@@ -2149,8 +2149,8 @@ function project([x, y]) {   // the nearest point on any line of the gauge
     hits.push(best);
   });
   const min = Math.min(...hits.map(t => t.d)), near = hits.filter(t => t.d < min + 0.75);
-  // on the stub the forms share, keep to the form under way, else go straight on to B
-  return near.find(t => sess && t.seg[1] === sess.b) || near.find(t => t.seg[1] === 'linear') || near[0];
+  // on the stretch the forms share, keep to the form under way, else go straight on to A
+  return near.find(t => sess && t.seg[1] === sess.b) || near.find(t => t.seg[1] === 'summary') || near[0];
 }
 function moveKnob(t) {
   const [lo, hi] = t.seg;
