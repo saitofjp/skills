@@ -155,12 +155,11 @@ body[data-stop="text"] .seg.c { cursor: text; }
 
 /* the chunks, listed: what chunks there are, at a glance */
 .rep .kick { font: 700 10.5px/1 var(--mono); letter-spacing: .3em; color: var(--muted); margin: 0 0 16px; }
-.rep.chunks .clist { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; max-width: 560px; }
+.rep.chunks .clist { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; max-width: 560px; }
 .crow { display: flex; gap: 9px; align-items: baseline; padding: 6px 10px 7px; border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); background: var(--card); cursor: pointer; transition: border-color .2s, opacity .2s; min-width: 0; }
-.crow.d1 { border-left-width: 2px; padding: 4px 9px 5px; }
 .crow .num { font: 700 11px/1.5 var(--mono); color: var(--muted); flex: none; }
 .crow .head { font-size: 13.5px; line-height: 1.45; font-weight: 800; color: var(--ink); }
-.crow.d1 .head { font-size: 12.5px; font-weight: 700; }
+.crow.again .head { font-weight: 700; color: var(--ink-2); }
 .crow.concl { background: var(--band); border-color: var(--band); } .crow.concl .head { color: var(--band-fg); } .crow.concl .num { color: var(--band-fg); opacity: .6; }
 .crow.reading { border-color: var(--ink-2); }
 .crow.f0 { border-color: var(--focus); box-shadow: 0 0 0 2px var(--focus); } .crow.f0 .head { background: linear-gradient(transparent 62%, rgba(var(--focus-rgb), .28) 62%); }
@@ -304,7 +303,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #details .row button { border: 1px solid var(--rule); background: transparent; border-radius: 7px; padding: 3px 9px; font-size: 12px; }
 
 /* the HUD: the meta-structure, text — chunks — model — its forms, is the control. It hangs at the top right. */
-#gauge { position: fixed; right: 14px; top: 10px; z-index: 40; width: 372px; touch-action: none; user-select: none; -webkit-user-select: none;
+#gauge { position: fixed; right: 14px; top: 10px; z-index: 40; width: 404px; touch-action: none; user-select: none; -webkit-user-select: none;
   --hud-bg: #070a11; --hud-line: rgba(170, 190, 232, .2); --hud-dim: rgba(178, 194, 228, .56); --hud-ink: #eef2f8; }
 :root[data-theme="light"] #gauge { --hud-bg: #ffffff; --hud-line: rgba(13, 18, 32, .16); --hud-dim: rgba(13, 18, 32, .52); --hud-ink: #0d1220; }
 #gauge svg { display: block; width: 100%; height: auto; cursor: grab; overflow: visible; }
@@ -329,9 +328,10 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #gauge .g-lock { fill: none; stroke: var(--hud-dim); stroke-width: 1.4; transform-box: fill-box; transform-origin: center; animation: lock 12s linear infinite; }
 #gauge .g-lock.on { stroke: var(--focus); }
 @keyframes lock { to { transform: rotate(360deg); } }
-#gauge .g-goal { fill: none; stroke: var(--focus); stroke-width: 1; stroke-dasharray: 2 2; }
-#gauge .g-goal-tag { fill: var(--focus); }
+#gauge .g-idx { fill: var(--focus); }
 #gauge .g-label { cursor: pointer; }
+#gauge .g-lab { fill: var(--hud-bg); }
+#gauge polyline { fill: none; }
 #gauge .g-label text.on, #gauge .g-label:hover text { fill: var(--hud-ink); }
 #gauge .g-knob { fill: var(--focus); stroke: var(--hud-bg); stroke-width: 1.5; pointer-events: none; }
 #gauge .g-halo { fill: none; stroke: var(--focus); stroke-width: 1; pointer-events: none; transform-box: fill-box; transform-origin: center; animation: halo 1.8s cubic-bezier(.2, .7, .3, 1) infinite; }
@@ -342,7 +342,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #gauge .g-play text { fill: var(--hud-ink); font-size: 7.5px; letter-spacing: .3em; }
 #gauge .g-play:hover polygon, #gauge .g-play:focus-visible polygon, #gauge .g-play.on polygon { fill: var(--focus); stroke: var(--focus); }
 #gauge .g-play:hover path, #gauge .g-play:hover text, #gauge .g-play.on path, #gauge .g-play.on text, #gauge .g-play:focus-visible path, #gauge .g-play:focus-visible text { fill: var(--on-focus); }
-body:not(.narrow) header { padding-right: 404px; }
+body:not(.narrow) header { padding-right: 436px; }
 /* the minimap: the model, small, beside its form */
 #minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: 380px; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
 #minimap[hidden] { display: none; }
@@ -386,13 +386,6 @@ body:not(.narrow) header { padding-right: 404px; }
 main.scrubbing *, main.scrubbing *::before { transition: none !important; }
 .slate { font: 800 12px/1 var(--mono); letter-spacing: .3em; padding: 9px 22px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); border-left: 4px solid var(--focus); }
 .slate b { margin-right: 10px; opacity: .6; }
-/* a title card: each stage of the play is announced, as in an opening sequence */
-.tcard { pointer-events: none; }
-.tcard .band { display: grid; grid-template-columns: auto auto; align-items: end; column-gap: 18px; width: max-content; max-width: 86%; padding: 16px 64px 16px 30px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 34px) 100%, 0 100%); border-left: 6px solid var(--focus); }
-.tcard .ti { grid-row: span 2; font: 300 54px/.86 var(--mono); letter-spacing: -.03em; opacity: .32; }
-.tcard .tn { font: 900 30px/1 var(--font); letter-spacing: .24em; font-style: italic; }
-.tcard .ts { font-size: 13px; font-weight: 700; opacity: .7; margin-top: 6px; }
-.tcard .streak { height: 2px; margin-top: 8px; background: var(--focus); transform-origin: 0 50%; }
 
 /* narrow screens: text above, model below */
 main.narrow { flex-direction: column; }
@@ -433,7 +426,7 @@ main.narrow #rep { padding-bottom: 190px; }
   <div id="hint"></div>
   <div id="ticker" aria-hidden="true"><span class="k"></span><span class="n"></span><span class="m"></span></div>
   <div id="minimap" hidden><span class="mm-label">MODEL</span><svg id="mmSvg" aria-label="The model, small"></svg></div>
-  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 344 132" role="slider" aria-label="Text, chunks, model" tabindex="0"></svg></div>
+  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 392 146" role="slider" aria-label="Text, chunks, model" tabindex="0"></svg></div>
   <div id="problems" hidden></div>
 </main>
 <div id="fly" aria-hidden="true"></div>
@@ -2079,31 +2072,29 @@ const LANG = viewOpt.lang || meta.language || (/[぀-ヿ一-鿿]/.test(text) ? '
 const I18N = {
   en: {
     focusAxis: 'Focus', formAxis: 'Form', stopText: 'Text', stopChunks: 'Chunks', stopModel: 'Model',
-    repStructure: 'Structure', repLinear: 'Linear', repTable: 'Table', repSummary: 'Summary', repSlides: 'Slides', light: 'Light', dark: 'Dark', goal: 'GOAL', play: 'Play to the summary', pause: 'Pause',
+    repStructure: 'Structure', repLinear: 'Linear', repTable: 'Table', repSummary: 'Summary', repSlides: 'Slides', light: 'Light', dark: 'Dark', play: 'Play to the summary', pause: 'Pause',
     byNotes: 'Notes order', byReading: 'Reading order',
     phase_text: 'Text', phase_wrap: 'Chunk', phase_notes: 'Notes', phase_structure: 'Structure', phase_link: 'Link', phase_summary: 'One sentence',
     capNotes: 'Each chunk becomes a note: its message, and what matters in it', capStructure: 'The notes take their places: what leads to what',
     capText: 'characters', conclusion: 'CONCLUSION', headline: 'Headline', points: 'Points', other: 'Other chunks', noSummary: 'This model has no summary.',
     inText: 'In the text', links: 'Relations', basis: 'Derived from', basisOf: 'Basis for', partOf: 'Part of', contains: 'Contains', note: 'Note',
     goText: 'Down to the text', release: 'Release', close: 'Hide (stays pinned)',
-    hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks; on the right, the chunks at a glance. Keep dragging to rise to the model.', hintText: 'Drag the knob on the gauge (top right) to the right: the text is wrapped into chunks, the chunks become a model, and the model one sentence. ▶ plays it to the summary.',
-    kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS',
-    cardChunks: 'The text, wrapped into chunks', cardModel: 'The chunks, as one model', cardSummary: 'The model, in one sentence',
+    hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks, passage by passage; on the right, the chunks in the text\'s order. Keep dragging to rise to the model, where they merge and take their places.', hintText: 'Drag the knob on the gauge (top right) to the right: the text is wrapped into chunks, the chunks become a model, and the model one sentence. ▶ plays it to the summary.',
+    kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS', textOrder: 'IN TEXT ORDER',
     explicit: 'explicit — stated in the text', inferred: 'inferred — follows from the text, not stated', abstracted: 'abstracted — a grouping made while modeling', uncertain: 'uncertain — more than one reading',
     problems: 'Some parts of the model could not be shown',
   },
   ja: {
     focusAxis: 'フォーカス', formAxis: '表現', stopText: '原文', stopChunks: '塊', stopModel: 'モデル',
-    repStructure: '構造', repLinear: '線形', repTable: '表', repSummary: '要約', repSlides: 'スライド', light: 'ライト', dark: 'ダーク', goal: 'GOAL', play: '要約まで再生', pause: '一時停止',
+    repStructure: '構造', repLinear: '線形', repTable: '表', repSummary: '要約', repSlides: 'スライド', light: 'ライト', dark: 'ダーク', play: '要約まで再生', pause: '一時停止',
     byNotes: 'ノート順', byReading: '読む順',
     phase_text: '原文', phase_wrap: '塊を巻く', phase_notes: 'ノートにする', phase_structure: '構造にする', phase_link: 'つなぐ', phase_summary: '一言にする',
     capNotes: '塊がノートになる：その塊のメッセージと、落とせない要点', capStructure: 'ノートが持ち場につく：何が何につながるか',
     capText: '字', conclusion: '結論', headline: '見出し', points: '要点', other: 'ほかの塊', noSummary: 'このモデルには要約（summary）がありません。',
     inText: '原文', links: 'つながり', basis: '根拠（導出元）', basisOf: 'これを根拠とするもの', partOf: '含まれる先', contains: '含むもの', note: 'メモ',
     goText: '原文へ降りる', release: '解除', close: '閉じる（固定は維持）',
-    hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を塊に巻いた層。右はどんな塊があるかの一覧。さらに右へ動かすとモデルになる。', hintText: '右上のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルに、モデルが一言の要約になる。▶ で要約まで再生。',
-    kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS · 塊',
-    cardChunks: '本文を塊に巻く', cardModel: '塊をひとつのモデルにする', cardSummary: 'モデルを一言にする',
+    hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を一節ずつ塊に巻いた層。右は原文の順に並んだ塊の一覧。さらに右へ動かすと、塊がまとまって持ち場につき、モデルになる。', hintText: '右上のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルに、モデルが一言の要約になる。▶ で要約まで再生。',
+    kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS · 塊', textOrder: '原文の順',
     explicit: 'explicit — 原文に明示', inferred: 'inferred — 原文から推論（明示はない）', abstracted: 'abstracted — モデル化でまとめたもの', uncertain: 'uncertain — 複数の読みがありうる',
     problems: 'モデルの一部を表示できませんでした',
   },
@@ -2178,6 +2169,12 @@ const maxDepth = order.reduce((m, n) => Math.max(m, n.depth), 0);
 const ancestors = n => { const out = []; for (let a = n.parent; a; a = a.parent) out.push(a); return out; };
 const descendants = n => n.children.flatMap(c => [c, ...descendants(c)]);
 const unitOf = n => { while (n.parent) n = n.parent; return n; };
+// the text's passages, in the order they are read. At the chunk layer each is a chunk of its own, as the text has it;
+// only the model merges a chunk's passages, nests the parts and puts them in the notes' order.
+const blocks = order.flatMap(n => n.spans.map((sp, k) => ({ n, sp, k }))).sort((a, b) => a.sp.start - b.sp.start || a.sp.end - b.sp.end);
+blocks.forEach((b, i) => { b.i = i; b.no = String(i + 1).padStart(2, '0'); });
+order.forEach(n => { n.blocks = blocks.filter(b => b.n === n); });
+const NB = Math.max(1, blocks.length - 1);
 // home: the passage a chunk is anchored to (its longest span); pos: where it first appears
 order.slice().reverse().forEach(n => {
   n.home = n.spans.slice().sort((a, b) => (b.end - b.start) - (a.end - a.start))[0] || n.children.map(c => c.home).find(Boolean) || null;
@@ -2251,7 +2248,7 @@ const STAGES = {
   summary: { stop: 'model', rep: 'summary' },
   slides: { stop: 'model', rep: 'slides' },
 };
-// text — chunks — model — summary is the trunk, and the summary its goal; linear (and from it slides) and table branch off the model
+// text — chunks — model is the trunk, the meta levels; the model's forms branch off it: A summary, B linear (and on to B2 slides), C table
 const PARENT = { chunks: 'text', model: 'chunks', summary: 'model', linear: 'model', table: 'model', slides: 'linear' };
 const FORMS = ['summary', 'linear', 'table', 'slides'];
 const SEGS = Object.entries(PARENT).map(([child, parent]) => [parent, child]);
@@ -2315,7 +2312,7 @@ function spanBox(sp) {
 function measureBoxes() {
   const pr = page.getBoundingClientRect();
   order.forEach(n => {
-    n.boxes = n.spans.map(sp => { const b = spanBox(sp); return b && { sp, top: b.top - pr.top, bottom: b.bottom - pr.top }; }).filter(Boolean);
+    n.boxes = n.spans.map((sp, k) => { const b = spanBox(sp); return b && { sp, k, top: b.top - pr.top, bottom: b.bottom - pr.top }; }).filter(Boolean);
     const hb = n.home && spanBox(n.home);
     n.homeBox = hb ? { top: hb.top - pr.top, bottom: hb.bottom - pr.top } : null;
   });
@@ -2326,19 +2323,20 @@ function drawMarks(lift = new Set()) {
   if (S.stop === 'text') return;
   const W = page.scrollWidth, H = page.scrollHeight;
   [marks, slabs].forEach(s => { s.setAttribute('width', W); s.setAttribute('height', H); s.style.width = W + 'px'; s.style.height = H + 'px'; });
-  const labels = [];
+  const labels = [], flat = S.stop === 'chunks';
   order.forEach(n => {
     if (!isWrapped(n)) return;
+    const depth = flat ? 0 : n.depth;
     n.boxes.forEach(b => {
-      const x = bracketX(n.depth), y0 = b.top + 3, y1 = b.bottom - 3;
-      const g = svgEl('g', { class: 'br', 'data-node': n.id }, marks);
+      const x = bracketX(flat ? maxDepth : n.depth), y0 = b.top + 3, y1 = b.bottom - 3;
+      const g = svgEl('g', { class: 'br', 'data-node': n.id, 'data-k': b.k }, marks);
       const d = `M${x + 6},${y0} H${x} V${y1} H${x + 6}`;
       svgEl('path', { class: 'line', d, pathLength: 1 }, g);
       svgEl('path', { class: 'hit', d }, g);
-      labels.push({ n, g, y: y0 - 1 });
+      labels.push({ g, y: y0 - 1, text: flat ? (n.blocks.find(x => x.k === b.k) || { no: n.num }).no : n.num });
       // the slab: the passage lifted off the page
-      const inset = n.depth * 5;
-      const sg = svgEl('g', { class: 'sl' + (lift.has(n.id) ? ' lift' : ''), 'data-node': n.id }, slabs);
+      const inset = depth * 5;
+      const sg = svgEl('g', { class: 'sl' + (lift.has(n.id) ? ' lift' : ''), 'data-node': n.id, 'data-k': b.k }, slabs);
       svgEl('rect', { class: 'shadow', x: GUTTER - 6 + inset + 4, y: b.top - 2 + 4, width: G.colW + 12 - inset * 2, height: b.bottom - b.top + 4, rx: 6 }, sg);
       svgEl('rect', { class: 'slab', x: GUTTER - 6 + inset, y: b.top - 2, width: G.colW + 12 - inset * 2, height: b.bottom - b.top + 4, rx: 6 }, sg);
     });
@@ -2347,7 +2345,7 @@ function drawMarks(lift = new Set()) {
   let last = -99;
   labels.forEach(l => {
     const y = Math.max(l.y, last + 13); last = y;
-    const t = svgEl('text', { x: bracketX(0) - 4, y }, l.g); t.textContent = l.n.num;
+    const t = svgEl('text', { x: bracketX(0) - 4, y }, l.g); t.textContent = l.text;
   });
 }
 function layoutText() { measureBoxes(); drawMarks(); }
@@ -2436,12 +2434,11 @@ function renderSummary() {
       style: `left:${r.left - rr.left}px;top:${r.top - rr.top}px;width:${r.width}px;height:${r.height}px` }));
   }));
 }
-function renderChunks() {
-  repEl.append(h('div', { class: 'kick' }, `${T.chunksN}  ${order.length}`));
-  repEl.append(h('div', { class: 'clist' }, ...order.map(n => h('div', {
-    class: `crow box d${Math.min(n.depth, 1)}${n.role === 'conclusion' ? ' concl' : ''}`, 'data-key': `card:${n.id}`, 'data-node': n.id,
-    style: n.depth ? `margin-left:${Math.min(n.depth, 3) * 18}px` : null },
-    h('b', { class: 'num', 'data-key': `num:${n.id}` }, n.num), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)))));
+function renderChunks() {      // one row for each passage, in the text's order: nothing merged, nested or moved yet
+  repEl.append(h('div', { class: 'kick' }, `${T.chunksN}  ${blocks.length}  ·  ${T.textOrder}`));
+  repEl.append(h('div', { class: 'clist' }, ...blocks.map(b => h('div', {
+    class: 'crow box' + (b.n.blocks[0] === b ? '' : ' again'), 'data-key': `blk:${b.n.id}:${b.k}`, 'data-node': b.n.id, 'data-k': b.k },
+    h('b', { class: 'num', 'data-key': `bnum:${b.n.id}:${b.k}` }, b.no), h('span', { class: 'head', 'data-key': `bhead:${b.n.id}:${b.k}` }, b.n.label)))));
 }
 function renderSlides() {
   const deck = h('div', { class: 'deck' });
@@ -2633,6 +2630,13 @@ function snapshot() {
     if (bottom - top < 6) return;
     map.set('passage:' + n.id, { r: { left: b.left, top, width: b.right - b.left, height: bottom - top }, passage: true, box: true });
   });
+  blocks.forEach(bl => {
+    const b = spanBox(bl.sp);
+    if (!b) return;
+    const top = clamp(b.top, c.top, c.bottom), bottom = clamp(b.bottom, c.top, c.bottom);
+    if (bottom - top < 6) return;
+    map.set(`pass:${bl.n.id}:${bl.k}`, { r: { left: b.left, top, width: b.right - b.left, height: bottom - top }, passage: true, box: true });
+  });
   return map;
 }
 function ghost(rec) {
@@ -2651,11 +2655,16 @@ function ghost(rec) {
   fly.append(g);
   return g;
 }
-function fallbacks(key) {
-  const [kind, id] = key.split(':');
+function fallbacks(key) {     // where a piece comes from, or goes to, when the other stage has no such piece
+  const [kind, id, k] = key.split(':');
   const n = nodes.get(id);
   if (!n) return [];
-  return [...(kind !== 'card' ? ['card:' + id] : []), ...ancestors(n).map(a => 'card:' + a.id), 'passage:' + id];
+  const up = [...ancestors(n).map(a => 'card:' + a.id), 'passage:' + id];
+  const twin = { blk: 'card', bnum: 'num', bhead: 'head' }[kind];
+  if (twin) return [`${twin}:${id}`, 'card:' + id, `pass:${id}:${k}`, ...up];      // a passage's row: into its card, or out of its passage
+  const first = n.blocks[0];
+  const row = first ? [{ num: 'bnum', head: 'bhead' }[kind], 'blk'].filter(Boolean).map(x => `${x}:${id}:${first.k}`) : [];
+  return [...(kind !== 'card' ? ['card:' + id] : []), ...row, ...up];
 }
 const firstOf = (keys, map) => { for (const k of keys) if (map.has(k)) return map.get(k); return null; };
 const shrinkInto = (src, size) => ({ left: src.left + 4, top: src.top + 4, width: Math.max(8, Math.min(src.width - 8, size.width)), height: Math.max(6, Math.min(src.height - 8, size.height)) });
@@ -2679,53 +2688,10 @@ const linkOrder = (() => {
   rels.forEach(r => { if (!out.has(r.id)) out.set(r.id, k++); });
   return out;
 })();
-/* ---- the play: a story in beats. Each chunk is wrapped in its own beat, the lines grow in waves from the
-   conclusion outward, and every beat is followed by a hold. Dragging uses the continuous timings instead. ---- */
-const STORY = (() => {
-  const I0 = 0.1, U = Math.max(1, roots.length), W = (1 - I0) / U;
-  const members = roots.map(u => order.filter(n => unitOf(n) === u));
-  const wrapAt = n => {      // where a chunk's own moment starts, within its unit's beat
-    const k = Math.max(0, roots.indexOf(unitOf(n))), ms = members[k] || [n], j = Math.max(0, ms.indexOf(n)), J = ms.length - 1;
-    return { d: I0 + W * k + (J ? 0.4 * j / J : 0) * W };
-  };
-  // waves of lines: a line belongs to the wave of its target's distance from the conclusion
-  const dist = new Map(order.map(n => [n.id, conclusions.includes(n) ? 0 : Infinity]));
-  for (let changed = true; changed;) {
-    changed = false;
-    order.forEach(t => {
-      const d = dist.get(t.id);
-      if (d === Infinity) return;
-      [t.parent, ...t.children].filter(Boolean).forEach(m => { if (dist.get(m.id) > d) { dist.set(m.id, d); changed = true; } });
-      rels.forEach(r => { if (r.target === t && dist.get(r.source.id) > d + 1) { dist.set(r.source.id, d + 1); changed = true; } });
-    });
-  }
-  const raw = new Map(rels.map(r => [r.id, dist.get(r.target.id) === Infinity ? 1000 + Math.floor((linkOrder.get(r.id) || 0) / 4) : dist.get(r.target.id)]));
-  const levels = [...new Set(raw.values())].sort((a, b) => a - b), Wn = levels.length;
-  const wave = new Map();
-  levels.forEach((lv, w) => {
-    const rs = rels.filter(r => raw.get(r.id) === lv).sort((a, b) => (linkOrder.get(a.id) || 0) - (linkOrder.get(b.id) || 0));
-    rs.forEach((r, i) => wave.set(r.id, { w, i, c: rs.length }));
-  });
-  return { I0, U, W, members, wrapAt, wave, Wn };
-})();
 const linear = t => t;
-function beatsFor(kind) {
-  const out = [];
-  let from = 0;
-  const add = (to, ms, ease, hold, extra = {}) => { out.push({ from, to, ms, ease, hold, ...extra }); from = to; };
-  if (kind === 'text-chunks') {
-    add(STORY.I0, 900, easeInOut, 300);
-    roots.forEach((u, k) => add(STORY.I0 + STORY.W * (k + 1), 1100, linear, 640, { unit: k }));
-  } else if (kind === 'chunks-model') {
-    add(0.5, 2100, easeInOut, 450);
-    for (let w = 0; w < STORY.Wn; w++) add(0.52 + 0.48 * (w + 1) / STORY.Wn, 900, linear, 620, { wave: w });
-    if (!STORY.Wn) add(1, 300, linear, 0);
-  } else add(1, kind === 'model-summary' ? 2600 : 1600, easeInOut, 0);
-  return out;
-}
-const CARD_MS = 1250;
-const CARDS = { 'text-chunks': ['02', 'CHUNKS', 'cardChunks'], 'chunks-model': ['03', 'MODEL', 'cardModel'], 'model-summary': ['04', 'SUMMARY', 'cardSummary'] };
-const storyMs = kind => (CARDS[kind] ? CARD_MS : 0) + beatsFor(kind).reduce((a, b) => a + b.ms + b.hold, 0);
+// ▶ moves the knob as a steady hand would, through the same frames as dragging, at a pace to read by
+const playMs = lo => lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500;
+const PLAY_HOLD = 1200;
 let sess = null;
 function setStage(name) {
   const st = STAGES[name];
@@ -2755,7 +2721,7 @@ function modelGhost() {      // the whole structure, which recedes into the mini
   wrap.append(c); fly.append(wrap);
   return { el: c, x: cr.left, y: cr.top, w: cr.width, h: cr.height, clip: st };
 }
-function beginSeg(a, b, story = false) {
+function beginSeg(a, b) {
   const kind = a + '-' + b;
   setStage(a);
   const A = snapshot(), paneA = textPane.getBoundingClientRect().left, scroll0 = textPane.scrollTop;
@@ -2765,21 +2731,18 @@ function beginSeg(a, b, story = false) {
   setStage(b);
   const B = snapshot(), paneB = textPane.getBoundingClientRect().left;
   const N = Math.max(1, order.length - 1);
-  const ordOf = key => { const n = nodes.get(key.split(':')[1]); return n ? n.ord / N : 0.5; };
-  const [d0, spread, dur] = kind === 'text-chunks' ? [0.16, 0.62, 0.22] : kind === 'chunks-model' ? [0, 0.3, 0.42] : [0, 0.28, 0.55];
-  story = story && (kind === 'text-chunks' || kind === 'chunks-model');
-  const timing = key => {
-    const pt = key.startsWith('pt:');
-    if (!story) return { d: d0 + spread * ordOf(key) + (pt ? 0.05 : 0), dur };
-    if (kind === 'chunks-model') return { d: 0.24 * ordOf(key), dur: 0.24 };
-    const n = nodes.get(key.split(':')[1]);
-    return n ? { d: STORY.wrapAt(n).d + (0.15 + (pt ? 0.03 : 0)) * STORY.W, dur: 0.42 * STORY.W } : { d: STORY.I0, dur: STORY.W };
+  const ordOf = key => {        // a passage's row goes in reading order; everything else in the notes' order
+    const [kind, id, k] = key.split(':'), n = nodes.get(id);
+    if (!n) return 0.5;
+    const bl = kind[0] === 'b' && n.blocks.find(b => b.k === +k);
+    return bl ? bl.i / NB : n.ord / N;
   };
+  const [d0, spread, dur] = kind === 'text-chunks' ? [0.16, 0.62, 0.22] : kind === 'chunks-model' ? [0, 0.3, 0.42] : [0, 0.28, 0.55];
   const pieces = [];
   new Set([...A.keys(), ...B.keys()]).forEach(key => {
-    if (key.startsWith('passage:')) return;
+    if (key.startsWith('passage:') || key.startsWith('pass:')) return;
     const ra = A.get(key), rb = B.get(key);
-    const pc = { key, ...timing(key), uniform: !(rb || ra).box };
+    const pc = { d: d0 + spread * ordOf(key) + (key.startsWith('pt:') ? 0.05 : 0), dur, uniform: !(rb || ra).box };
     if (rb) rb.el.classList.add('landing');
     if (ra && rb) Object.assign(pc, { from: ra.r, to: rb.r, gA: ghost(ra), gB: ghost(rb), baseA: ra.r, baseB: rb.r });
     else if (rb) { const src = firstOf(fallbacks(key), A); Object.assign(pc, { from: src ? shrinkInto(src.r, rb.r) : null, to: rb.r, gB: ghost(rb), baseB: rb.r, fromText: kind === 'text-chunks' }); }
@@ -2787,23 +2750,17 @@ function beginSeg(a, b, story = false) {
     pieces.push(pc);
   });
   // in the text: brackets and slabs, one chunk after another
-  const wraps = kind === 'text-chunks' ? order.map(n => ({ n, ...(story ? { d: STORY.wrapAt(n).d, len: 0.35 * STORY.W } : { d: 0.04 + 0.62 * n.ord / N, len: 0.2 }),
-    brs: $$(`#marks .br[data-node="${n.id}"]`), sls: $$(`#slabs .sl[data-node="${n.id}"]`) })) : [];
+  const wraps = kind === 'text-chunks' ? blocks.map(b => ({ n: b.n, b, d: 0.04 + 0.62 * b.i / NB, len: 0.2,
+    brs: $$(`#marks .br[data-node="${b.n.id}"][data-k="${b.k}"]`), sls: $$(`#slabs .sl[data-node="${b.n.id}"][data-k="${b.k}"]`) })) : [];
   // in the model: lines, from the conclusion outward
   const L = Math.max(1, rels.length - 1);
-  const linkAt = id => {
-    const v = STORY.wave.get(id);
-    if (!story || !v) return { d: 0.5 + 0.38 * (linkOrder.get(id) || 0) / L, len: 0.1 };
-    const len = 0.48 / STORY.Wn, start = 0.52 + len * v.w;
-    return { d: start + 0.2 * len * v.i / Math.max(1, v.c - 1), len: 0.8 * len, w: v.w };
-  };
-  const links = kind === 'chunks-model' ? $$('#links .link', repEl).map(g => ({ g, ...linkAt(g.dataset.rel), r: elsById.get(g.dataset.rel) })) : [];
+  const links = kind === 'chunks-model' ? $$('#links .link', repEl).map(g => ({ g, d: 0.5 + 0.38 * (linkOrder.get(g.dataset.rel) || 0) / L, len: 0.1, r: elsById.get(g.dataset.rel) })) : [];
   if (shrink) {   // where the model lands: the minimap, which is drawn in b
     const m = $('#mmSvg').getBoundingClientRect(), { w, h: hh0, x, y } = shrink;
     const sc = Math.min(m.width / w, m.height / hh0);
     shrink.to = { s: sc, x: m.left + (m.width - w * sc) / 2, y: m.top + (m.height - hh0 * sc) / 2 };
   }
-  sess = { a, b, kind, story, pieces, ctxA, shrink, dx: paneA - paneB, scroll0, wraps, links, u: 0 };
+  sess = { a, b, kind, pieces, ctxA, shrink, dx: paneA - paneB, scroll0, wraps, links, u: 0 };
   main.classList.add('scrubbing');
   cancelAnimationFrame(FIELD.raf); FIELD.raf = 0;
   frame(0);
@@ -2817,8 +2774,7 @@ function frame(u) {
   if (!s) return;
   s.u = u;
   const uc = clamp(u, 0, 1);
-  const lead = s.story ? (s.kind === 'text-chunks' ? STORY.I0 : 0.5) : 0.55;    // in the play, the ground moves first
-  const eg = easeInOut(clamp(u / lead, 0, 1));
+  const eg = easeInOut(clamp(u / 0.55, 0, 1));
   const shiftX = -s.dx * eg, shiftY = s.scroll0 - textPane.scrollTop;          // where the text is now, against where it was
   for (const p of s.pieces) {
     const raw = (u - p.d) / p.dur, o = clamp(raw, 0, 1);
@@ -2833,7 +2789,7 @@ function frame(u) {
     }
   }
   // the ground slides aside, and tilts back for a moment as we rise
-  const tilt = s.kind === 'text-chunks' || s.kind === 'chunks-model' ? (s.story ? 6 * Math.sin(Math.PI * clamp(u / (2 * lead), 0, 1)) : 8 * Math.sin(Math.PI * uc)) : 0;
+  const tilt = s.kind === 'text-chunks' || s.kind === 'chunks-model' ? 8 * Math.sin(Math.PI * uc) : 0;
   textPane.style.transform = `translateX(${s.dx * (1 - eg)}px)` + (tilt && !reduceMotion ? ` perspective(1600px) rotateX(${tilt}deg)` : '');
   if (s.ctxA) s.ctxA.style.opacity = String(1 - smooth(0, 0.5, uc));
   const mm = $('#minimap');
@@ -2843,7 +2799,7 @@ function frame(u) {
     s.shrink.el.style.opacity = String((0.85 - 0.3 * Math.sin(Math.PI * k)) * (1 - smooth(0.8, 1, uc)));
     mm.style.opacity = String(smooth(0.75, 1, uc));
   } else mm.style.opacity = '';
-  if (s.kind === 'text-chunks') modelPane.style.opacity = String(s.story ? smooth(0, STORY.I0, uc) : smooth(0.02, 0.4, uc));
+  if (s.kind === 'text-chunks') modelPane.style.opacity = String(smooth(0.02, 0.4, uc));
   repEl.style.opacity = s.kind === 'chunks-model' || s.kind === 'text-chunks' ? '1' : String(smooth(0.4, 1, uc));
   s.wraps.forEach(w => {
     const k = clamp((u - w.d) / w.len, 0, 1);
@@ -2868,17 +2824,11 @@ function showTicker(s, u) {
   let k = '', n = '', m = '';
   if (u > 0.01 && u < 0.99) {
     if (s.kind === 'text-chunks') {
-      const w = s.wraps.filter(w => (!s.story || !w.n.parent) && u >= w.d + w.len * 0.3).pop();   // in the play, a unit at a time
-      if (w) { k = T.kWrap; n = titleNum(w.n); m = w.n.label; }
+      const w = s.wraps.filter(w => u >= w.d + w.len * 0.5).pop();
+      if (w) { k = T.kWrap; n = w.b.no; m = w.n.label; }
     } else if (s.kind === 'chunks-model') {
-      const on = s.links.filter(l => u >= l.d && l.r).sort((a, b) => a.d - b.d);
-      const l = on[on.length - 1];
-      if (l && s.story && l.w != null) {      // a wave: where its lines go, and where they come from
-        const wv = on.filter(x => x.w === l.w).map(x => x.r), tg = [...new Set(wv.map(r => r.target.num))];
-        const said = [...new Set(wv.map(r => r.label).filter(Boolean))];
-        k = T.kLink; n = tg.length <= 3 ? tg.join(' · ') : `${wv.length} LINES`;
-        m = said.length ? said.join('  /  ') : '← ' + [...new Set(wv.map(r => r.source.num))].join('  ');
-      } else if (l) { k = T.kLink; n = l.r.target.num; m = `← ${l.r.source.num}  ${l.r.label}`; }
+      const l = s.links.filter(l => u >= l.d && l.r).sort((a, b) => a.d - b.d).pop();
+      if (l) { k = T.kLink; n = l.r.target.num; m = `← ${l.r.source.num}  ${l.r.label}`; }
       else { k = T.kForm; m = meta.title || ''; }
     } else { k = T.kRep; m = EN[s.b]; }
   }
@@ -2895,7 +2845,7 @@ function endSeg(final) {
   if (!s) return;
   sess = null;
   main.classList.remove('scrubbing');
-  fly.querySelectorAll(':scope > :not(.slate):not(.tcard)').forEach(el => el.remove());
+  fly.querySelectorAll(':scope > :not(.slate)').forEach(el => el.remove());
   $$('.landing').forEach(el => el.classList.remove('landing'));
   textPane.style.transform = ''; modelPane.style.opacity = ''; repEl.style.opacity = ''; $('#minimap').style.opacity = '';
   tickerEl.classList.remove('on');
@@ -2909,10 +2859,10 @@ function tweenU(to, ms, ease = easeInOut) {
   return new Promise(res => {
     const s = sess;
     if (!s) return res();
-    const from = s.u, t0 = performance.now();
+    const from = s.u, t0 = performance.now(), my = goToken;
     cancelAnimationFrame(tw);
     const step = now => {
-      if (sess !== s) return res();
+      if (sess !== s || my !== goToken) return res();     // taken over, or paused: stop where it is
       const k = ms > 0 ? clamp((now - t0) / ms, 0, 1) : 1;
       frame(from + (to - from) * ease(k));
       if (k < 1) tw = requestAnimationFrame(step); else res();
@@ -2928,96 +2878,30 @@ function route(a, b) {       // the stages passed through on the way from a to b
 const segOf = (a, b) => SEGS.find(([x, y]) => (x === a && y === b) || (x === b && y === a));
 let goToken = 0;
 const segMs = lo => lo === 'text' ? 1700 : lo === 'chunks' ? 1900 : 950;
-async function runStory(my) {   // the beats of the current segment, each followed by its hold
-  const s = sess, beats = beatsFor(s.kind);
-  const unitSpan = k => STORY.members[k].flatMap(n => n.spans).sort((x, y) => x.start - y.start)[0];
-  for (let i = 0; i < beats.length; i++) {
-    const b = beats[i], next = beats[i + 1];
-    if (s.u >= b.to - 1e-4) continue;
-    const part = clamp((b.to - s.u) / Math.max(1e-6, b.to - b.from), 0, 1);
-    if (b.unit != null && i > 0 && part < 1) glideText(unitSpan(b.unit));
-    if (b.unit == null && next && next.unit != null) glideText(unitSpan(next.unit));      // the opening beat brings the first passage in
-    await tweenU(b.to, reduceMotion ? 0 : b.ms * part, b.ease);
-    if (my !== goToken || sess !== s) return false;
-    impact(s, b);
-    if (b.unit != null && next && next.unit != null) setTimeout(() => { if (sess === s) glideText(unitSpan(next.unit)); }, 160);   // during the hold, on to the next passage
-    if (b.hold) { await sleep(reduceMotion ? Math.max(700, b.hold) : b.hold); if (my !== goToken || sess !== s) return false; }
-  }
-  return true;
-}
-let glideRaf = 0;
-function glideText(sp, ms = 560) {    // the text slides to a passage, so its wrapping is seen
-  const b = sp && spanBox(sp);
-  if (!b) return;
-  const c = textPane.getBoundingClientRect(), from = textPane.scrollTop;
-  const to = clamp(from + b.top - c.top - c.height * 0.2, 0, textPane.scrollHeight - textPane.clientHeight);
-  if (Math.abs(to - from) < 4) return;
-  cancelAnimationFrame(glideRaf);
-  if (reduceMotion) { textPane.scrollTop = to; return; }
-  const t0 = performance.now();
-  const step = now => { const k = clamp((now - t0) / ms, 0, 1); textPane.scrollTop = from + (to - from) * easeInOut(k); if (k < 1) glideRaf = requestAnimationFrame(step); };
-  glideRaf = requestAnimationFrame(step);
-}
-function impact(s, b) {      // a beat lands: its cards flash once
-  if (reduceMotion) return;
-  let ids = null;
-  if (b.unit != null) ids = new Set((STORY.members[b.unit] || []).map(n => n.id));
-  else if (b.wave != null) ids = new Set(rels.filter(r => (STORY.wave.get(r.id) || {}).w === b.wave).map(r => r.target.id));
-  if (!ids) return;
-  const c = getComputedStyle(document.documentElement).getPropertyValue('--focus-rgb').trim();
-  s.pieces.forEach(p => {
-    if (p.gB && p.key.startsWith('card:') && ids.has(p.key.slice(5)))
-      p.gB.animate([{ boxShadow: `0 0 0 2px rgba(${c}, 1)` }, { boxShadow: `0 0 0 12px rgba(${c}, 0)` }], { duration: 560, easing: 'cubic-bezier(.2, .8, .2, 1)' });
-  });
-}
-async function titleCard(idx, name, sub) {
-  if (reduceMotion) return;
-  const host = main.getBoundingClientRect();
-  const band = h('div', { class: 'band' }, h('span', { class: 'ti' }, idx), h('span', { class: 'tn' }, name), h('span', { class: 'ts' }, sub));
-  const streak = h('div', { class: 'streak' });
-  const el = h('div', { class: 'tcard' }, band, streak);
-  Object.assign(el.style, { left: host.left + 'px', top: (host.top + host.height * 0.36) + 'px', width: host.width + 'px' });
-  fly.append(el);
-  const ease = 'cubic-bezier(.7, 0, .2, 1)', out = 'cubic-bezier(.2, .9, .25, 1)';
-  streak.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 420, easing: out, fill: 'both' });
-  band.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 300, easing: ease, fill: 'both' });
-  band.querySelector('.tn').animate([{ transform: 'translateX(48px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 520, delay: 90, easing: out, fill: 'both' });
-  band.querySelector('.ts').animate([{ transform: 'translateX(24px)', opacity: 0 }, { transform: 'none', opacity: .7 }], { duration: 520, delay: 180, easing: out, fill: 'both' });
-  await sleep(CARD_MS - 260);
-  streak.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 240, fill: 'both' });
-  await band.animate([{ clipPath: 'inset(0 0 0 0)' }, { clipPath: 'inset(0 0 0 100%)' }], { duration: 240, easing: ease, fill: 'both' }).finished.catch(() => null);
-  el.remove();
-}
+// moving the knob is what the page shows, so it always moves, as it does under the hand
 async function goTo(target, opts = {}) {
   if (!STAGES[target]) return false;
-  const my = ++goToken, story = !!opts.story;
+  const my = ++goToken, play = !!opts.play;
+  const pace = lo => opts.ms || (play ? playMs(lo) : segMs(lo));
+  let carried = false;
   if (sess) {   // between two stages: carry on toward the target from where the knob is
     const s = sess, back = route(s.b, target).includes(s.a), to = back ? 0 : 1;
-    if (story && !back && s.story) { if (!await runStory(my)) return false; }
-    else {
-      const ms = reduceMotion ? 0 : (opts.ms || segMs(s.a) * (story ? 1.6 : 1)) * Math.abs(to - s.u);
-      await tweenU(to, ms, easeInOut);
-      if (my !== goToken) return false;
-    }
+    await tweenU(to, pace(s.a) * Math.abs(to - s.u), play ? linear : easeInOut);
+    if (my !== goToken) return false;
     endSeg(to);
+    carried = true;
   }
   const path = route(S.stage, target);
   for (let i = 1; i < path.length; i++) {
     const a = path[i - 1], b = path[i], [lo, hi] = segOf(a, b), up = a === lo;
-    beginSeg(lo, hi, story && up);
+    if (play && (i > 1 || carried)) { await sleep(PLAY_HOLD); if (my !== goToken) return false; }   // a moment at each stage
+    beginSeg(lo, hi);
     frame(up ? 0 : 1);
-    if (story && up) {
-      const c = CARDS[lo + '-' + hi];
-      if (c) { await titleCard(c[0], c[1], T[c[2]]); if (my !== goToken) return false; }
-      if (!await runStory(my)) return false;
-    } else {
-      const ms = reduceMotion ? 0 : (opts.ms || segMs(lo));
-      await tweenU(up ? 1 : 0, ms, i === path.length - 1 && up ? settle : easeInOut);
-      if (my !== goToken) return false;
-    }
+    await tweenU(up ? 1 : 0, pace(lo), play ? linear : i === path.length - 1 && up ? settle : easeInOut);
+    if (my !== goToken) return false;
     endSeg(up ? 1 : 0);
   }
-  arrived(story);
+  arrived();
   return true;
 }
 let playing = false;
@@ -3026,16 +2910,11 @@ function planMs() {    // how long ▶ takes from here
   let ms = 0, st = S.stage === 'summary' && !sess ? 'text' : S.stage;
   if (sess) {
     const s = sess, back = route(s.b, 'summary').includes(s.a);
-    if (back) ms += segMs(s.a) * 1.6 * s.u;
-    else if (s.story) ms += beatsFor(s.kind).reduce((a, b) => a + (s.u >= b.to ? 0 : (b.ms + b.hold) * clamp((b.to - s.u) / Math.max(1e-6, b.to - b.from), 0, 1)), 0);
-    else ms += segMs(s.a) * 1.6 * (1 - s.u);
+    ms += playMs(s.a) * (back ? s.u : 1 - s.u);
     st = back ? s.a : s.b;
   }
   const path = route(st, 'summary');
-  for (let i = 1; i < path.length; i++) {
-    const [lo, hi] = segOf(path[i - 1], path[i]);
-    ms += path[i - 1] === lo ? storyMs(lo + '-' + hi) : segMs(lo);
-  }
+  for (let i = 1; i < path.length; i++) ms += playMs(segOf(path[i - 1], path[i])[0]) + (i > 1 || sess ? PLAY_HOLD : 0);
   return ms;
 }
 const clockText = ms => { const t = Math.max(0, Math.round(ms / 1000)); return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; };
@@ -3051,20 +2930,20 @@ async function play() {
   CLOCK.total = planMs(); CLOCK.t0 = performance.now();
   clearInterval(CLOCK.iv); CLOCK.iv = setInterval(drawClock, 250);
   drawGauge();
-  const done = await goTo('summary', { story: true });
+  const done = await goTo('summary', { play: true });
   if (done || !sess) playing = false;
   if (!playing) clearInterval(CLOCK.iv);
   drawGauge();
 }
-function arrived(story) {
-  if (FORMS.includes(S.stage) && !story) slate(EN[S.stage], T.kRep);
+function arrived() {
+  if (FORMS.includes(S.stage)) slate(EN[S.stage], T.kRep);
   if (S.stage === 'summary') sweepSummary();
 }
 async function release() {
   const s = sess;
   if (!s) return;
   const to = s.u >= 0.5 ? 1 : 0;
-  await tweenU(to, reduceMotion ? 0 : 420, to ? settle : easeInOut);
+  await tweenU(to, 420, to ? settle : easeInOut);
   if (sess === s) { endSeg(to); arrived(); }
 }
 function afterRender() { drawLinks(); applyFocus(); updateInView(); }
@@ -3325,12 +3204,24 @@ function applyFocus() {
 }
 
 /* ---- the thread: from the words on the ground to the note above ---- */
+function rowFor(n) {     // at the chunk layer: the row of the passage being pointed at, else one in view
+  const rows = $$(`.crow[data-node="${n.id}"]`, repEl);
+  if (!rows.length) return null;
+  if (S.hoverSeg != null) {
+    const at = segs[S.hoverSeg].start, b = n.blocks.find(b => b.sp.start <= at && at < b.sp.end);
+    const r = b && rows.find(r => +r.dataset.k === b.k);
+    if (r) return r;
+  }
+  const c = stage.getBoundingClientRect();
+  return rows.find(r => { const q = r.getBoundingClientRect(); return q.bottom > c.top && q.top < c.bottom; }) || rows[0];
+}
 function modelSideEl(f) {
   if (!f) return null;
   const scope = repEl;
   if (f.kind === 'point') return scope.querySelector(`.pt[data-node="${f.node.id}"][data-pt="${f.k}"]`) || modelSideEl(f.node);
   if (f.kind === 'node') {
     for (let a = f; a; a = a.parent) {
+      if (S.stop === 'chunks') { const r = rowFor(a); if (r) return r; continue; }
       if (S.stop === 'model' && S.rep === 'summary') { const p = summary.find(p => p.refs.includes(a)); const el = p && repEl.querySelector(`.phrase[data-phrase="${p.i}"]`); if (el) return el; }
       const el = scope.querySelector(`[data-key="card:${a.id}"]:not(.anchor)`);
       if (el) return el.querySelector(':scope > .ch, :scope > .rowh') || el;
@@ -3479,14 +3370,30 @@ function focusIn(n) {
   if (S.stage === 'chunks' || S.stage === 'text') show(); else goTo('chunks').then(show);
 }
 // the HUD: where each stage sits. The model is the core: the text side runs into it, and its forms leave it.
-const GW = 344, GH = 132;
-const GP = { text: [22, 98], chunks: [76, 98], model: [146, 98], summary: [318, 98], linear: [210, 76], slides: [274, 76], table: [210, 120] };
-const IDX = { text: '01', chunks: '02', model: '03', summary: '04', linear: 'A1', slides: 'A2', table: 'B1' };
+const GW = 392, GH = 146;
+const GP = { text: [44, 102], chunks: [120, 102], model: [196, 102], summary: [232, 78], linear: [232, 102], table: [232, 126], slides: [314, 102] };
+// the forms hang from the model as a tree: a bus beside the core, a row for each form, and B carries on to B2
+const SPX = 214;
+const PATH = {};       // the line from each stage's parent to it
+Object.entries(PARENT).forEach(([b, a]) => { PATH[b] = b === 'summary' || b === 'table' ? [GP[a], [SPX, GP[a][1]], [SPX, GP[b][1]], GP[b]] : [GP[a], GP[b]]; });
+const plen = pts => pts.slice(1).reduce((t, q, i) => t + Math.hypot(q[0] - pts[i][0], q[1] - pts[i][1]), 0);
+function along(pts, u) {      // the point at fraction u of the way, and the line walked to it
+  let left = clamp(u, 0, 1) * plen(pts);
+  const out = [pts[0]];
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], d = Math.hypot(x1 - x0, y1 - y0);
+    if (left <= d) { const k = d ? left / d : 0, q = [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k]; out.push(q); return { p: q, pts: out }; }
+    left -= d; out.push(pts[i]);
+  }
+  return { p: pts[pts.length - 1], pts: out };
+}
+const ptsAttr = pts => pts.map(q => q.map(v => +v.toFixed(1)).join(',')).join(' ');
+const IDX = { text: '01', chunks: '02', model: '03', summary: 'A', linear: 'B', slides: 'B2', table: 'C' };
 const EN = { text: 'TEXT', chunks: 'CHUNKS', model: 'MODEL', summary: 'SUMMARY', linear: 'LINEAR', slides: 'SLIDES', table: 'TABLE' };
 const STAT = (() => {
   const pts = order.reduce((a, n) => a + n.points.length, 0), whens = new Set(order.flatMap(n => n.points.map(p => p.when).filter(Boolean)));
   const pages = order.length + 1 + (summary.length ? 1 : 0), phrases = summary.filter(p => p.refs.length).length;
-  return { text: `${textLen.toLocaleString('en')} CHARS`, chunks: `${roots.length} UNITS · ${order.length} CHUNKS`, model: `${order.length} CHUNKS · ${rels.length} LINKS`,
+  return { text: `${textLen.toLocaleString('en')} CHARS`, chunks: `${blocks.length} CHUNKS · TEXT ORDER`, model: `${order.length} NOTES · ${rels.length} LINKS`,
     summary: summary.length ? `1 SENTENCE · ${phrases} PHRASES` : 'NO SUMMARY', linear: `${order.length} NOTES · ${pts} POINTS`,
     slides: `${pages} PAGES · 16:9`, table: `${order.length} ROWS · ${whens.size + 2} COLS` };
 })();
@@ -3519,11 +3426,11 @@ function buildGauge() {
   pb.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); play(); } });
   GG.play = pb;
   // the lines: a hairline, a ruler on the trunk, and the way walked in the focus colour
-  SEGS.forEach(([a, b]) => g('line', { class: 'g-hit', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] }));
+  SEGS.forEach(([a, b]) => g('polyline', { class: 'g-hit', points: ptsAttr(PATH[b]) }));
   SEGS.forEach(([a, b]) => {
-    g('line', { class: 'g-track', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] });
-    if (IDX[b] && /^\d/.test(IDX[b])) g('line', { class: 'g-ruler', x1: GP[a][0] + 8, y1: GP[a][1], x2: GP[b][0] - 8, y2: GP[b][1] });
-    GG['f_' + b] = g('line', { class: 'g-fill', x1: GP[a][0], y1: GP[a][1], x2: GP[a][0], y2: GP[a][1] });
+    g('polyline', { class: 'g-track', points: ptsAttr(PATH[b]) });
+    if (/^\d/.test(IDX[b])) g('line', { class: 'g-ruler', x1: GP[a][0] + 8, y1: GP[a][1], x2: GP[b][0] - 8, y2: GP[b][1] });
+    GG['f_' + b] = g('polyline', { class: 'g-fill', points: ptsAttr([GP[a]]) });
   });
   // the stages
   Object.keys(STAGES).forEach(st => {
@@ -3533,22 +3440,18 @@ function buildGauge() {
       g('circle', { class: 'g-core-ring', cx: x, cy: y, r: 16 });
       GG.lock = g('path', { class: 'g-lock', d: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => `M${x + sx * 11},${y + sy * 6} V${y + sy * 11} H${x + sx * 6}`).join(' ') });
       GG['n_' + st] = g('polygon', { class: 'g-node', points: diaPts(x, y, 6) });
-      ty = y + 27;
-    } else if (st === 'summary') {     // the goal
-      g('polygon', { class: 'g-goal', points: diaPts(x, y, 10) });
-      GG['n_' + st] = g('polygon', { class: 'g-node', points: diaPts(x, y, 5) });
-      g('text', { class: 'g-goal-tag', x, y: y - 14, 'text-anchor': 'middle' }).textContent = 'GOAL';
-      tx = GW - 10; anchor = 'end';
+      ty = y + 38;
     } else if (st === 'text') GG['n_' + st] = g('rect', { class: 'g-node', x: x - 3.5, y: y - 3.5, width: 7, height: 7 });
     else if (st === 'chunks') GG['n_' + st] = g('polygon', { class: 'g-node', points: hexPts(x, y, 4.5) });
-    else {         // a form
+    else {         // a form: A, B (and on to B2), C
       GG['n_' + st] = g('rect', { class: 'g-node', x: x - 4, y: y - 4, width: 8, height: 8 });
-      if (st === 'table') { tx = x + 10; ty = y + 2.5; anchor = 'start'; } else { ty = y - 9; }
+      tx = x + 9; ty = y + 2.5; anchor = 'start';      // a row of the tree: the name beside its node
     }
     GG['t_' + st] = g('text', { x: tx, y: ty, 'text-anchor': anchor }, lab);
-    GG['t_' + st].textContent = EN[st];
-    const w = EN[st].length * 6.2 + 8;
-    g('rect', { x: anchor === 'middle' ? tx - w / 2 : anchor === 'end' ? tx - w : tx - 2, y: ty - 9, width: w, height: 12, fill: 'transparent' }, lab);
+    g('tspan', { class: 'g-idx' }, GG['t_' + st]).textContent = IDX[st] + ' ';
+    GG['t_' + st].append(EN[st]);
+    const w = (IDX[st].length + 1 + EN[st].length) * 6.2 + 8;
+    lab.prepend(svgEl('rect', { class: 'g-lab', x: anchor === 'middle' ? tx - w / 2 : anchor === 'end' ? tx - w : tx - 2, y: ty - 9, width: w, height: 12 }));   // behind the name
   });
   GG.halo = g('circle', { class: 'g-halo', r: 9 });
   GG.knob = g('polygon', { class: 'g-knob', points: diaPts(0, 0, 4.5) });
@@ -3573,8 +3476,7 @@ function setReadout(st) {
 }
 const stageLabel = st => ({ text: T.stopText, chunks: T.stopChunks, model: T.stopModel })[st] || formLabel(st);
 function knobPos() {
-  if (sess) { const u = clamp(sess.u, 0, 1), A = GP[sess.a], B = GP[sess.b]; return [A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u]; }
-  return GP[S.stage];
+  return sess ? along(PATH[sess.b], sess.u).p : GP[S.stage];
 }
 function drawGauge() {
   if (!GG.knob) return;
@@ -3582,10 +3484,8 @@ function drawGauge() {
   const walked = chain(sess ? sess.a : S.stage);       // the way from the text to here
   SEGS.forEach(([a, b]) => {
     const line = GG['f_' + b];
-    let end = GP[a];
-    if (walked.includes(b)) end = GP[b];
-    else if (sess && sess.a === a && sess.b === b) end = [kx, ky];
-    line.setAttribute('x2', end[0]); line.setAttribute('y2', end[1]);
+    const u = walked.includes(b) ? 1 : sess && sess.a === a && sess.b === b ? sess.u : 0;
+    line.setAttribute('points', ptsAttr(along(PATH[b], u).pts));
     line.style.opacity = walked.includes(a) || (sess && sess.a === a) ? '1' : '0';
   });
   Object.keys(STAGES).forEach(st => {
@@ -3608,14 +3508,22 @@ function drawGauge() {
 }
 function svgPoint(ev) { const r = gaugeSvg.getBoundingClientRect(); return [(ev.clientX - r.left) * GW / r.width, (ev.clientY - r.top) * GH / r.height]; }
 function project([x, y]) {   // the nearest point on any line of the gauge
-  let best = { d: Infinity };
+  const hits = [];
   SEGS.forEach(([a, b]) => {
-    const [x0, y0] = GP[a], [x1, y1] = GP[b], vx = x1 - x0, vy = y1 - y0;
-    const u = clamp(((x - x0) * vx + (y - y0) * vy) / (vx * vx + vy * vy), 0, 1);
-    const d = Math.hypot(x - (x0 + vx * u), y - (y0 + vy * u));
-    if (d < best.d - 0.5) best = { d, seg: [a, b], u };
+    const pts = PATH[b], L = plen(pts);
+    let acc = 0, best = null;
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], vx = x1 - x0, vy = y1 - y0, len = Math.hypot(vx, vy);
+      const k = len ? clamp(((x - x0) * vx + (y - y0) * vy) / (len * len), 0, 1) : 0;
+      const d = Math.hypot(x - (x0 + vx * k), y - (y0 + vy * k));
+      if (!best || d < best.d) best = { d, seg: [a, b], u: L ? (acc + k * len) / L : 0 };
+      acc += len;
+    }
+    hits.push(best);
   });
-  return best;
+  const min = Math.min(...hits.map(t => t.d)), near = hits.filter(t => t.d < min + 0.75);
+  // on the stub the forms share, keep to the form under way, else go straight on to B
+  return near.find(t => sess && t.seg[1] === sess.b) || near.find(t => t.seg[1] === 'linear') || near[0];
 }
 function moveKnob(t) {
   const [lo, hi] = t.seg;
@@ -3660,9 +3568,9 @@ function stepStage(dir) {   // → toward the summary (or on to the slides), ←
   const to = dir > 0 ? NEXT[S.stage] : PARENT[S.stage];
   if (to) goTo(to);
 }
-function cycleForm(dir) {   // ↑ ↓ between the model's forms, as they lie on the gauge: linear, summary, table
+function cycleForm(dir) {   // ↑ ↓ between the model's forms, as they lie on the gauge: A summary, B linear, C table
   if (S.stage !== 'model' && !FORMS.includes(S.stage)) return;
-  const col = ['linear', 'summary', 'table'], at = S.stage === 'slides' ? 'linear' : S.stage;
+  const col = ['summary', 'linear', 'table'], at = S.stage === 'slides' ? 'linear' : S.stage;
   const i = col.indexOf(at);
   playing = false;
   goTo(col[i < 0 ? (dir > 0 ? 2 : 0) : clamp(i + dir, 0, 2)]);
@@ -3719,14 +3627,14 @@ function followReading() {
   if (S.stop === 'text' || sess) return;
   const mid = textPane.scrollTop + textPane.clientHeight * 0.42;
   let best = null;
-  order.forEach(n => (n.boxes || []).forEach(b => { if (b.top <= mid && b.bottom >= mid && (!best || b.bottom - b.top < best.len)) best = { n, len: b.bottom - b.top }; }));
-  const id = best ? best.n.id : null;
+  order.forEach(n => (n.boxes || []).forEach(b => { if (b.top <= mid && b.bottom >= mid && (!best || b.bottom - b.top < best.len)) best = { n, k: b.k, len: b.bottom - b.top }; }));
+  const id = best ? best.n.id + ':' + best.k : null;
   if (id === readingId) return;
   readingId = id;
   $$('.reading').forEach(el => el.classList.remove('reading'));
   if (!best) return;
-  $$(`#marks .br[data-node="${id}"]`).forEach(el => el.classList.add('reading'));
-  const card = repEl.querySelector(`[data-key="card:${id}"]:not(.anchor)`);
+  $$(`#marks .br[data-node="${best.n.id}"]`).forEach(el => el.classList.add('reading'));
+  const card = repEl.querySelector(S.rep === 'chunks' ? `[data-key="blk:${best.n.id}:${best.k}"]` : `[data-key="card:${best.n.id}"]:not(.anchor)`);
   if (card) card.classList.add('reading');
   clearTimeout(followTO);
   if (S.follow && card && (S.rep === 'linear' || S.rep === 'chunks') && !S.pinned && !S.hover) {

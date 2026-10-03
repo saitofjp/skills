@@ -1,20 +1,20 @@
 ---
 name: semantic-model-viewer
-description: Shows a Semantic Model (notes made by semantic-model-builder) next to its text as one self-contained, animated HTML page, the Transform View. A single gauge draws the meta-structure and is the control. Drag it from the text, to the text wrapped into chunks (with the chunks listed beside it), to the model, and on to the goal, the summary in one sentence, and every piece moves continuously between the stages; ▶ plays the way to the summary. Chunks wrap one by one, the list grows into cards, and lines grow from the conclusion outward. From the model, straight branches lead to linear notes (and on to 16:9 slides) and a table; at a form, the text, the form and the model (as a minimap in the corner) are shown and lit together. Use it whenever the user wants to see, explore, present or visualize a semantic model or the notes of a text, read a text next to its notes, watch a text turn into a structure and a summary, or plan slides from it. Triggers include "show the semantic model", "show the notes next to the text", "visualize this model", "transform view", 「Semantic Modelを表示して」「原文とノートを並べて見せて」「構造になっていく様子を見せて」「トランスフォームビューで見せて」.
+description: Shows a Semantic Model (notes made by semantic-model-builder) next to its text as one self-contained, animated HTML page, the Transform View. A single gauge, a compact HUD with the model at its centre, draws the meta-structure and is the control. Drag it from the text, to the text wrapped into chunks passage by passage (listed beside it in the text's order), to the model, where the chunks merge and take their places, and every piece moves continuously between the stages; ▶ plays the same animation to the summary. From the model, straight branches lead to its forms, A the summary in one sentence, B linear notes (and on to B2, 16:9 slides) and C a table; at a form, the text, the form and the model (as a minimap in the corner) are shown and lit together. Use it whenever the user wants to see, explore, present or visualize a semantic model or the notes of a text, read a text next to its notes, watch a text turn into a structure and a summary, or plan slides from it. Triggers include "show the semantic model", "show the notes next to the text", "visualize this model", "transform view", 「Semantic Modelを表示して」「原文とノートを並べて見せて」「構造になっていく様子を見せて」「トランスフォームビューで見せて」.
 ---
 
 # Semantic Model Viewer
 
-One page shows one model and its text. One control moves it: a gauge that draws the meta-structure, with the model at its core. It is a compact HUD at the top right, in English.
+One page shows one model and its text. One control moves it: a gauge that draws the meta-structure, with the model at its centre. It is a compact HUD at the top right, in English.
 
-- **The trunk, text ━ chunks ━ model ━ summary (focus out / in):**
+- **The trunk, text ━ chunks ━ model (focus out / in):**
   - Dragging the knob right abstracts, and dragging it left returns to the words.
-  - The page can stand anywhere in between. Chunks wrap one by one, and their list on the right grows into cards. The cards take their places, and the lines grow from the conclusion outward (the Formation).
+  - The page can stand anywhere in between. At the chunk layer the text is wrapped passage by passage, and the list on the right follows the text's order: nothing is restructured yet. Moving on to the model, the rows of each chunk merge into its card, the cards nest and take their places, and the lines grow from the conclusion outward (the Formation).
   - At the chunk and model layers, the text and its notes sit side by side, with their pointers linked (the Two Pane view).
-  - The trunk ends at the goal, the summary in one sentence: the cards fly into the phrases that name them. **▶** plays the way there, from wherever the knob is, as a sequence: a title card for each stage, one beat per chunk with the text gliding to its passage, and the lines in waves from the conclusion.
-- **The branches, linear (→ slides) / table (transform):**
-  - These are representations of the model, so they branch from the model node, in straight lines, and are reached only through it.
-  - Moving the knob into a branch turns the model into that form: points come out of their cards into linear notes, or drop into table cells. From the linear notes, the slides: each card grows into a 16:9 page, a plan for a presentation.
+  - **▶** plays to the summary, from wherever the knob is: it moves the knob by itself, so it plays exactly the animation dragging shows.
+- **The forms, A summary / B linear (→ B2 slides) / C table (transform):**
+  - These are representations of the model, so they branch from the model, in straight lines, and are reached only through it.
+  - Moving the knob into a branch turns the model into that form: the cards fly into the phrases of the one sentence, points come out of their cards into linear notes, or drop into table cells. From the linear notes, the slides: each card grows into a 16:9 page, a plan for a presentation.
   - Meanwhile a copy of the structure recedes into the corner as a minimap, like the small map in a game. The text is on the left, the form in the centre and the model in the corner, and the focus lights all three.
 
 The page is a fixed template, [`assets/viewer.html`](assets/viewer.html). It works with any model that follows the contract ([`references/semantic-model.md`](references/semantic-model.md)) and needs no network. It never derives meaning from the text: everything it shows comes from the model.
