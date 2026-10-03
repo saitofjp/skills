@@ -62,7 +62,7 @@ def main(argv=None):
     parser.add_argument("--view", help="JSON file with view options")
     parser.add_argument("--stage", choices=STAGES, help="where the gauge starts (default text)")
     parser.add_argument("--focus", help="node id to pin when it opens")
-    parser.add_argument("--theme", choices=["dark", "light", "auto"], help="default light")
+    parser.add_argument("--theme", choices=["dark", "light", "auto"], help="default dark")
     parser.add_argument("--no-follow", action="store_true", help="do not move the notes with the text scroll")
     parser.add_argument("--template", default=str(TEMPLATE))
     args = parser.parse_args(argv)

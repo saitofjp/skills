@@ -5,7 +5,7 @@ description: Shows a Semantic Model (notes made by semantic-model-builder) next 
 
 # Semantic Model Viewer
 
-One page shows one model and its text. One control moves it: a gauge that draws the meta-structure.
+One page shows one model and its text. One control moves it: a gauge that draws the meta-structure, with the model at its core.
 
 - **The trunk, text ━ chunks ━ model ━ summary (focus out / in):**
   - Dragging the knob right abstracts, and dragging it left returns to the words.
@@ -32,7 +32,7 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
    - To show how the text becomes a structure, start at the text (the default). The reader drags from there.
    - To read and explore, start at the model (`--stage model`) or at a form (`--stage summary`, `linear`, `slides`, `table`).
 2. **Build.**
-   `python3 scripts/build_viewer.py model.json -o view.html [--stage text|chunks|model|summary|linear|slides|table] [--focus ID] [--theme light|dark|auto]`
+   `python3 scripts/build_viewer.py model.json -o view.html [--stage text|chunks|model|summary|linear|slides|table] [--focus ID] [--theme dark|light|auto]`
    - It validates the model with the builder's checker and writes nothing while the model has errors.
    - Save next to the model unless the user names another place: `.semantic/<YYYYMMDD>-<slug>/view.html`.
    - Commit only when the user asks.
@@ -55,7 +55,7 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
 Pass them as flags, or as a JSON file with `--view`. They live in their own block in the page, never in the model.
 
 ```json
-{ "stage": "text", "focus": "node-id", "theme": "light", "follow": true, "lang": "ja" }
+{ "stage": "text", "focus": "node-id", "theme": "dark", "follow": true, "lang": "ja" }
 ```
 
 ## What not to do

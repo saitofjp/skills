@@ -7,7 +7,7 @@ description: Semantic Model（semantic-model-builderが作るノート）を、�
 
 > 英語版 [SKILL.md](SKILL.md) と同じ内容の日本語版。
 
-1枚のページに、1つのモデルとその原文を表示する。操作部は、メタ構造を描いた1本のゲージだけである。
+1枚のページに、1つのモデルとその原文を表示する。操作部は、メタ構造を描いた1本のゲージだけで、その中心にはモデルがある。
 
 - **幹：原文 ━ 塊 ━ モデル ━ 要約（フォーカスアウト／イン）**
   - つまみを右へ動かすと抽象度が上がり、左へ戻すと言葉に戻る。
@@ -34,7 +34,7 @@ description: Semantic Model（semantic-model-builderが作るノート）を、�
    - 文章が構造になる様子を見せるなら、原文から始める（既定）。読み手はそこから動かす。
    - 読んで探るなら、モデル（`--stage model`）や表現（`--stage summary`・`linear`・`slides`・`table`）から始める。
 2. **ビルドする。**
-   `python3 scripts/build_viewer.py model.json -o view.html [--stage text|chunks|model|summary|linear|slides|table] [--focus ID] [--theme light|dark|auto]`
+   `python3 scripts/build_viewer.py model.json -o view.html [--stage text|chunks|model|summary|linear|slides|table] [--focus ID] [--theme dark|light|auto]`
    - builderと同じ検査器でモデルを検証し、エラーがある間は何も書き出さない。
    - 保存先はユーザーの指定があればそこ、無ければモデルと同じ場所の `.semantic/<YYYYMMDD>-<slug>/view.html`。
    - コミットはユーザーに求められたときだけ行う。
@@ -57,7 +57,7 @@ description: Semantic Model（semantic-model-builderが作るノート）を、�
 フラグで渡すか、JSONファイルにして `--view` で渡す。ページ内のモデルとは別のブロックに入り、モデルには入らない。
 
 ```json
-{ "stage": "text", "focus": "node-id", "theme": "light", "follow": true, "lang": "ja" }
+{ "stage": "text", "focus": "node-id", "theme": "dark", "follow": true, "lang": "ja" }
 ```
 
 ## しないこと

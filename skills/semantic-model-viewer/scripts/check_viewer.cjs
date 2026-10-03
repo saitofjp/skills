@@ -44,15 +44,15 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
 
   // drag the knob along the gauge: text -> chunks -> model, with stops in between
   const box = await page.locator('#gaugeSvg').boundingBox();
-  const at = (x, y) => [box.x + x * box.width / 560, box.y + y * box.height / 120];
-  await page.mouse.move(...at(44, 50));
+  const at = (x, y) => [box.x + x * box.width / 600, box.y + y * box.height / 150];
+  await page.mouse.move(...at(134, 82));
   await page.mouse.down();
-  for (const x of [80, 120, 150]) { await page.mouse.move(...at(x, 50), { steps: 3 }); }
+  for (const x of [150, 175, 200]) { await page.mouse.move(...at(x, 82), { steps: 3 }); }
   const mid = await state();
   if (!mid.moving || !(mid.u > 0.5 && mid.u < 1)) return fail('dragging the knob does not move the page between text and chunks: ' + JSON.stringify(mid));
   const ghosts = await V(() => document.querySelectorAll('#fly > *').length);
   ok(`dragging stands the page between text and chunks (u=${mid.u.toFixed(2)}, ${ghosts} pieces in flight)`);
-  for (const x of [200, 260, 300, 324]) { await page.mouse.move(...at(x, 50), { steps: 3 }); }
+  for (const x of [230, 260, 290, 298]) { await page.mouse.move(...at(x, 82), { steps: 3 }); }
   await page.mouse.up();
   await still();
   let st = await state();
@@ -74,7 +74,7 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   // ▶ plays the way to the goal, the summary
   await V(() => window.__semanticViewer.goTo('chunks', { ms: 1 }));
   await still();
-  await page.mouse.click(...at(22, 58));
+  await page.mouse.click(...at(52, 82));
   try {
     await page.waitForFunction(() => window.__semanticViewer.state.stage === 'summary' && !window.__semanticViewer.state.moving, null, { timeout: 30000 });
   } catch (e) { return fail('▶ did not play to the summary: ' + JSON.stringify(await state())); }
@@ -102,11 +102,11 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   ok('Escape releases the pin');
 
   // the light / dark switch
-  await page.click('#themeCtl button[data-theme-set="dark"]');
-  if ((await V(() => document.documentElement.dataset.theme)) !== 'dark') return fail('the theme switch did not change to dark');
   await page.click('#themeCtl button[data-theme-set="light"]');
-  if ((await V(() => document.documentElement.dataset.theme)) !== 'light') return fail('the theme switch did not change back to light');
-  ok('switches between light and dark');
+  if ((await V(() => document.documentElement.dataset.theme)) !== 'light') return fail('the theme switch did not change to light');
+  await page.click('#themeCtl button[data-theme-set="dark"]');
+  if ((await V(() => document.documentElement.dataset.theme)) !== 'dark') return fail('the theme switch did not change back to dark');
+  ok('switches between dark and light');
 
   // and back down
   await V(() => window.__semanticViewer.goTo('text', { ms: 60 }));

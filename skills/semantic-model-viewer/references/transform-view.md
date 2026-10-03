@@ -7,20 +7,22 @@ The page shows one Semantic Model together with its text. The model is the text 
 ```
                               Linear □━━━━━━━━ □ Slides
                                     ╱
-▶  L0 Text ●━━ L1 Chunks ●━━ L2 Model ●━━━━━━━━━━ ◇ L3 Summary (goal)
+▶  L0 Text ■━━ L1 Chunks ⬡━━ L2 Model ⬢━━━━━━━━━━ ◇ L3 Summary (goal)
                                     ╲
                                Table □
 ```
 
+It is drawn as a game HUD: a cut-cornered panel with bracketed corners, a slanted PLAY plate, and a readout of where the knob stands (`L2 · MODEL`). The model sits at its core, as a large hexagon in a turning ring with a reticle, because the model is what the page is about: the text side leads into it and every form grows out of it.
+
 - **The trunk** (focus out / in, meta-cognition): from the text, to the text wrapped into chunks, to the model, and on to the goal, the summary in one sentence. Moving right abstracts; moving left returns to the words.
 - **The branches** (transform, representation): the model's other forms, joined to the model node by straight lines: linear notes (which lead on to slides) and a table. The only way to a form is through the model, because a form is a representation of the model, not of the text.
-- **▶** plays the way to the goal: from where the knob is to the summary (from the text again when it is already there), with a short hold at each stage. Space does the same. Dragging the knob takes over at once.
+- **▶** plays the way to the goal: from where the knob is to the summary (from the text again when it is already there). It moves at a steady pace slow enough to read (about 0.7 s for each chunk as it wraps, and 0.4 s for each line as it grows) and holds for a moment at each stage. Space does the same. Dragging the knob takes over at once.
 
 ## Concept
 
 Rise through the layers of meaning. The text is the ground. Chunks lift off it as slabs, and are listed on the right. The model floats above, in a classical, unruly geometry composed from the model itself, which lies shattered near the text and comes together as you rise.
 
-The look is flat, as on a printed manga page, light by default (white paper, black ink) with a dark theme a click away: solid fills, crisp lines, screentone dots and square, panel-like cards. There is no glow, blur or soft shadow. Motion is staged but plain. Pieces move in order, settle with a slight overshoot when you let go, and then hold.
+The look is flat, as on a printed manga page, dark by default (black paper, white ink) with a light theme a click away: solid fills, crisp lines and square, panel-like cards. The dark theme uses screentone dots; the light theme leaves them out and stays plain. There is no glow, blur or soft shadow. Motion is staged but plain. Pieces move in order, settle with a slight overshoot when you let go, and then hold.
 
 ## The gauge is continuous
 
@@ -78,7 +80,7 @@ A caption band names what is happening: the chunk being wrapped, the line being 
 
 The composition behind the model is built from the model:
 
-- Top-level chunks are discs in screentone, parts are rings, and the conclusion is a heavy ring. They are placed by the golden angle.
+- Top-level chunks are discs (in screentone in the dark theme), parts are rings, and the conclusion is a heavy ring. They are placed by the golden angle.
 - Chunks that bear on each other are joined by bands, and the conclusion's bands are heaviest. Every relation is a hairline.
 - The summary is a hatched wedge from the conclusion toward the chunks it names.
 - Shapes are filled even-odd, so they invert where they cross. A thin double frame closes the model's space.
@@ -96,10 +98,10 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | ← / → | Toward the text / toward the summary (from Linear, on to Slides) |
 | ↑ / ↓ (at the model or a form) | Linear, summary, table: the branches as they lie on the gauge |
 | Hover text, a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread |
-| Click | Pin it. The details card lists its passages (click to go there), points, lines, parts and evidence. |
+| Click | Pin it. The details card (top left) lists its passages (click to go there), points, lines, parts and evidence. |
 | Click again, click the background, or Esc | Release |
 | Double click a card | Go down to its passage |
-| Light / Dark (header) | Switch the theme. Light is the default; the reader's choice is remembered in the browser. |
+| Light / Dark (header) | Switch the theme. Dark is the default; the reader's choice is remembered in the browser. |
 
 ## View options
 
@@ -107,6 +109,6 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 |---|---|
 | `stage` | Where the knob starts: `"text"` (default), `"chunks"`, `"model"`, `"summary"`, `"linear"`, `"slides"`, `"table"` |
 | `focus` | A node id to pin |
-| `theme` | The starting theme: `"light"` (default), `"dark"`, `"auto"`. The reader can still switch. |
+| `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`. The reader can still switch. |
 | `follow` | `false` stops the right side from following the text |
 | `lang` | `"ja"` / `"en"`. Defaults to `metadata.language`, then to the script of the text. |

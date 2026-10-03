@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -186,6 +186,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .card.concl .head, .card.concl .pt { color: var(--band-fg); }
 .card.concl .num, .card.concl .kicker { color: var(--band-fg); opacity: .6; }
 .card.concl .when { color: var(--band-fg); border-color: rgba(0, 0, 0, .2); background: rgba(0, 0, 0, .06); }
+:root[data-theme="light"] .rep.structure .card:has(> .kids):not(.concl), :root[data-theme="light"] .slide.section { background-image: none; }
 :root[data-theme="light"] .card.concl .when { border-color: rgba(255, 255, 255, .25); background: rgba(255, 255, 255, .08); }
 .card.concl .pts .pt::before { background: var(--band-fg); opacity: .5; }
 .card.prov-inferred, .card.prov-uncertain { border-style: dashed; border-left-style: solid; }
@@ -288,7 +289,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #pointer circle.end { fill: var(--focus); stroke: var(--space); stroke-width: 1.5; }
 
 /* details (pinned) */
-#details { position: absolute; right: 14px; top: 14px; width: min(360px, calc(100% - 28px)); max-height: 42%; overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 12px 14px; z-index: 9; font-size: 12.5px; }
+#details { position: absolute; left: 14px; top: 58px; width: min(360px, calc(100% - 28px)); max-height: 42%; overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 12px 14px; z-index: 9; font-size: 12.5px; }
 #details .x { position: absolute; top: 6px; right: 8px; border: 0; background: transparent; font-size: 16px; color: var(--muted); }
 #details h2 { font-size: 14px; margin: 0 24px 6px 0; line-height: 1.45; }
 #details h3 { font: 700 9.5px/1 var(--mono); letter-spacing: .18em; color: var(--muted); margin: 12px 0 5px; text-transform: uppercase; }
@@ -303,33 +304,49 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #details .row button { border: 1px solid var(--rule); background: transparent; border-radius: 7px; padding: 3px 9px; font-size: 12px; }
 
 /* the gauge: the meta-structure, text — chunks — model — its forms, is the control */
-#gauge { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 40; width: min(560px, calc(100% - 16px)); background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); touch-action: none; user-select: none; -webkit-user-select: none; }
-#gauge svg { display: block; width: 100%; height: auto; cursor: grab; }
+#gauge { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); z-index: 40; width: min(600px, calc(100% - 16px)); touch-action: none; user-select: none; -webkit-user-select: none; --hud-bg: #0a0e16; --hud-line: rgba(160, 182, 228, .32); --hud-ink: #e8ecf4; }
+:root[data-theme="light"] #gauge { --hud-bg: #ffffff; --hud-line: rgba(17, 22, 34, .3); --hud-ink: #111622; }
+#gauge svg { display: block; width: 100%; height: auto; cursor: grab; overflow: visible; }
 #gauge svg.dragging { cursor: grabbing; }
-#gauge .g-line { fill: none; stroke: var(--card-line); stroke-width: 3; }
-#gauge .g-fill { fill: none; stroke: var(--focus); stroke-width: 3; }
-#gauge .g-branch { fill: none; stroke: var(--card-line); stroke-width: 2; }
-#gauge .g-branch-fill { fill: none; stroke: var(--focus); stroke-width: 2.5; }
+#gauge .h-frame { fill: var(--hud-bg); stroke: var(--hud-line); stroke-width: 1.2; }
+#gauge .h-corner { fill: none; stroke: var(--focus); stroke-width: 2.4; }
+#gauge .h-cap { fill: var(--muted); font: 700 8.5px/1 var(--mono); letter-spacing: .28em; }
+#gauge .h-read { fill: var(--hud-ink); font: 800 11px/1 var(--mono); letter-spacing: .18em; }
+#gauge .h-read tspan.k { fill: var(--focus); }
+#gauge .g-line { fill: none; stroke: var(--hud-line); stroke-width: 2; stroke-dasharray: 6 4; }
+#gauge .g-tick { fill: none; stroke: var(--hud-line); stroke-width: 7; stroke-dasharray: 1 11; }
+#gauge .g-fill { fill: none; stroke: var(--focus); stroke-width: 3.2; }
 #gauge .g-hit { fill: none; stroke: transparent; stroke-width: 26; }
-#gauge .g-node { fill: var(--card); stroke: var(--ink-2); stroke-width: 2; }
-#gauge .g-node.on { fill: var(--ink); stroke: var(--ink); }
-#gauge .g-tip { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.6; }
-#gauge .g-tip.on { fill: var(--ink); }
-#gauge text { fill: var(--ink-2); font-size: 12px; font-weight: 700; }
-#gauge text.lv { fill: var(--muted); font: 700 9px/1 var(--mono); letter-spacing: .08em; }
-#gauge text.on { fill: var(--ink); }
+#gauge .g-node { fill: var(--hud-bg); stroke: var(--hud-line); stroke-width: 1.8; }
+#gauge .g-node.on { fill: var(--focus); stroke: var(--focus); }
+#gauge .g-glyph { fill: none; stroke: var(--hud-ink); stroke-width: 1.4; opacity: .7; pointer-events: none; }
+#gauge .on + .g-glyph, #gauge .g-glyph.on { stroke: var(--hud-bg); opacity: 1; }
+#gauge .g-core-in { fill: var(--hud-line); }
+#gauge .g-core-in.on { fill: var(--focus); }
+#gauge .g-orbit { fill: none; stroke: var(--focus); stroke-width: 1.2; stroke-dasharray: 3 5; opacity: .75; transform-box: fill-box; transform-origin: center; animation: orbit 18s linear infinite; pointer-events: none; }
+@keyframes orbit { to { transform: rotate(360deg); } }
+#gauge text { fill: var(--muted); font-size: 11.5px; font-weight: 800; letter-spacing: .04em; }
+#gauge text.lv { fill: var(--muted); font: 700 8.5px/1 var(--mono); letter-spacing: .2em; }
+#gauge text.on { fill: var(--hud-ink); }
+#gauge .g-core-label { font-size: 14px; letter-spacing: .06em; }
+#gauge .g-core-label tspan.tag { fill: var(--focus); font: 800 9px/1 var(--mono); letter-spacing: .2em; }
+#gauge .g-core { stroke-width: 2.4; }
+#gauge .g-reticle { fill: none; stroke: var(--focus); stroke-width: 2; opacity: .55; pointer-events: none; }
+#gauge .g-goal-tag { fill: var(--focus); font: 800 8.5px/1 var(--mono); letter-spacing: .26em; }
 #gauge .g-label { cursor: pointer; }
-#gauge .g-knob { fill: var(--focus); stroke: var(--space); stroke-width: 2.5; pointer-events: none; }
-#gauge .g-goal { stroke-width: 2.2; }
+#gauge .g-label:hover text { fill: var(--hud-ink); }
+#gauge .g-knob { fill: var(--focus); stroke: var(--hud-bg); stroke-width: 2.5; pointer-events: none; }
+#gauge .g-halo { fill: none; stroke: var(--focus); stroke-width: 1.3; opacity: .8; pointer-events: none; }
 #gauge .g-play { cursor: pointer; }
-#gauge .g-play circle { fill: var(--ui); }
-#gauge .g-play path { fill: var(--ui-fg); }
-#gauge .g-play:hover circle, #gauge .g-play:focus-visible circle { fill: var(--focus); }
-#gauge .g-halo { fill: rgba(var(--focus-rgb), .18); pointer-events: none; }
+#gauge .g-play polygon { fill: var(--hud-ink); }
+#gauge .g-play path { fill: var(--hud-bg); }
+#gauge .g-play text { fill: var(--hud-bg); font: 800 10px/1 var(--mono); letter-spacing: .2em; }
+#gauge .g-play:hover polygon, #gauge .g-play:focus-visible polygon, #gauge .g-play.on polygon { fill: var(--focus); }
+#gauge .g-play.on text, #gauge .g-play.on path, #gauge .g-play:hover text, #gauge .g-play:hover path { fill: var(--on-focus); }
 /* the minimap: the model, small, beside its form */
-#minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: 400px; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
+#minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: 380px; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
 #minimap[hidden] { display: none; }
-main.mm-top #minimap { bottom: auto; top: 14px; width: 340px; }
+main.mm-top #minimap { bottom: auto; top: 14px; width: 360px; }
 #minimap .mm-label { position: absolute; left: 8px; top: 5px; font: 700 9px/1 var(--mono); letter-spacing: .22em; color: var(--muted); }
 #mmSvg { display: block; width: 100%; height: auto; max-height: 300px; }
 #mmSvg .mm-box rect { fill: var(--card); stroke: var(--card-line); stroke-width: 1; cursor: pointer; }
@@ -348,7 +365,7 @@ main.mm-top #minimap { bottom: auto; top: 14px; width: 340px; }
 .focusing #mmSvg .mm-box.dim { opacity: .4; }
 .focusing #mmSvg .mm-link:not(.f0):not(.f1) { opacity: .15; }
 #mmSvg .mm-link.f0, #mmSvg .mm-link.f1 { opacity: 1; stroke-width: 1.6; } #mmSvg .mm-link.f0 { stroke: var(--focus); }
-#ticker { position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%); z-index: 39; pointer-events: none; display: flex; gap: 12px; align-items: baseline; max-width: calc(100% - 32px); padding: 8px 26px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-left: 4px solid var(--focus); opacity: 0; transition: opacity .25s; }
+#ticker { position: absolute; left: 50%; bottom: 166px; transform: translateX(-50%); z-index: 39; pointer-events: none; display: flex; gap: 12px; align-items: baseline; max-width: calc(100% - 32px); padding: 8px 26px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-left: 4px solid var(--focus); opacity: 0; transition: opacity .25s; }
 #ticker.on { opacity: 1; }
 #ticker .k { font: 800 10px/1 var(--mono); letter-spacing: .22em; opacity: .6; flex: none; }
 #ticker .n { font: 800 18px/1 var(--mono); flex: none; }
@@ -2032,12 +2049,12 @@ if (!model || typeof model.sourceText !== 'string') {
   document.body.textContent = 'No Semantic Model is embedded in this page.';
   return;
 }
-// light by default; "dark", or "auto" to follow the system. The reader can switch, and the choice is remembered here.
+// dark by default; "light", or "auto" to follow the system. The reader can switch, and the choice is remembered here.
 const THEME_KEY = 'semantic-model-viewer:theme';
 let savedTheme = null;
 try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) { /* storage unavailable */ }
 document.documentElement.dataset.theme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme
-  : viewOpt.theme === 'dark' || (viewOpt.theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  : viewOpt.theme === 'light' || (viewOpt.theme === 'auto' && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
 const meta = model.metadata && typeof model.metadata === 'object' ? model.metadata : {};
 const text = model.sourceText;
 const cps = Array.from(text);                 // offsets are Unicode code points
@@ -2255,7 +2272,7 @@ function applyLayout() {
   }
   const mm = $('#minimap');
   mm.hidden = !FORMS.includes(S.stage) || G.narrow;
-  main.classList.toggle('mm-top', G.mw < 1180);
+  main.classList.toggle('mm-top', G.mw / 2 + 300 + 16 + 380 + 14 > G.mw);   // keep clear of the gauge
   const hint = $('#hint');
   if (hint.textContent !== (hint.textContent = S.stop === 'model' ? T.hintModel : S.stop === 'chunks' ? T.hintChunks : T.hintText)) {
     hint.classList.remove('gone'); clearTimeout(hint._t); hint._t = setTimeout(() => hint.classList.add('gone'), 7000);
@@ -2811,25 +2828,29 @@ function route(a, b) {       // the stages passed through on the way from a to b
 }
 const segOf = (a, b) => SEGS.find(([x, y]) => (x === a && y === b) || (x === b && y === a));
 let goToken = 0;
-const segMs = (lo, story) => lo === 'text' ? (story ? 4200 : 1700) : lo === 'chunks' ? (story ? 4200 : 1900) : (story ? 1600 : 950);
+const segMs = (lo, story) => !story ? (lo === 'text' ? 1700 : lo === 'chunks' ? 1900 : 950)
+  : lo === 'text' ? Math.max(6000, 700 * order.length)               // each chunk is wrapped in its own moment
+  : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length)        // cards take their places, then the lines grow
+  : 3500;
+const linear = t => t;
 async function goTo(target, opts = {}) {
   if (!STAGES[target]) return false;
   const my = ++goToken;
   if (sess) {   // between two stages: carry on toward the target from where the knob is
     const s = sess, back = route(s.b, target).includes(s.a), to = back ? 0 : 1;
     const ms = reduceMotion ? 0 : (opts.ms || segMs(s.a, opts.story)) * Math.abs(to - s.u);
-    await tweenU(to, ms, easeInOut);
+    await tweenU(to, ms, opts.story ? linear : easeInOut);
     if (my !== goToken) return false;
     endSeg(to);
   }
   const path = route(S.stage, target);
   for (let i = 1; i < path.length; i++) {
     const a = path[i - 1], b = path[i], [lo, hi] = segOf(a, b), up = a === lo;
-    if (opts.story && i > 1 && !reduceMotion) { await sleep(700); if (my !== goToken) return false; }
+    if (opts.story && i > 1) { await sleep(reduceMotion ? 1600 : 1200); if (my !== goToken) return false; }
     beginSeg(lo, hi);
     frame(up ? 0 : 1);
     const ms = reduceMotion ? 0 : (opts.ms || segMs(lo, opts.story));
-    await tweenU(up ? 1 : 0, ms, i === path.length - 1 && up ? settle : easeInOut);
+    await tweenU(up ? 1 : 0, ms, opts.story ? linear : i === path.length - 1 && up ? settle : easeInOut);
     if (my !== goToken) return false;
     endSeg(up ? 1 : 0);
   }
@@ -2970,7 +2991,7 @@ function renderComposition() {
   const tc = tone.getContext('2d'); tc.fillStyle = `rgba(${col},${Math.min(1, base * BOOST * 2.2)})`;
   tc.beginPath(); tc.arc(tone.width / 2, tone.height / 2, 1.25 * dpr, 0, Math.PI * 2); tc.fill();
   const pat = c.createPattern(tone, 'repeat'); pat.setTransform && pat.setTransform(new DOMMatrix().scale(1 / dpr));
-  c.fillStyle = pat; c.fill(FIELD.comp.tone);
+  if (document.documentElement.dataset.theme !== 'light') { c.fillStyle = pat; c.fill(FIELD.comp.tone); }
   c.strokeStyle = `rgba(${col},${Math.min(1, base * BOOST * 1.4)})`; c.lineWidth = 1;
   c.stroke(FIELD.comp.thin);
 }
@@ -3268,46 +3289,76 @@ function focusIn(n) {
   const show = () => { scrollTextTo(n.home || n.spans[0], true); applyFocus(); };
   if (S.stage === 'chunks' || S.stage === 'text') show(); else goTo('chunks').then(show);
 }
-// where each stage sits on the gauge: the trunk on one line, the branches leaving the model straight
-const GP = { text: [64, 58], chunks: [168, 58], model: [272, 58], summary: [452, 58], linear: [334, 22], slides: [452, 22], table: [334, 96] };
-const LEVEL_TAG = { text: 'L0', chunks: 'L1', model: 'L2', summary: 'L3' };
+// where each stage sits on the gauge: the model at the core; the text side to its left, its forms to its right
+const GW = 600, GH = 150;
+const GP = { text: [134, 82], chunks: [216, 82], model: [300, 82], summary: [512, 82], linear: [392, 42], slides: [512, 42], table: [392, 122] };
+const LEVEL_TAG = { text: '01', chunks: '02', model: '03', summary: '04' };
+const EN = { text: 'TEXT', chunks: 'CHUNKS', model: 'MODEL', summary: 'SUMMARY', linear: 'LINEAR', slides: 'SLIDES', table: 'TABLE' };
 const GG = {};
 const stageLabel = st => ({ text: T.stopText, chunks: T.stopChunks, model: T.stopModel })[st] || formLabel(st);
+const hexPts = (x, y, r) => Array.from({ length: 6 }, (_, k) => { const a = Math.PI / 6 + k * Math.PI / 3; return `${(x + r * Math.cos(a)).toFixed(1)},${(y + r * Math.sin(a)).toFixed(1)}`; }).join(' ');
 function buildGauge() {
+  gaugeSvg.setAttribute('viewBox', `0 0 ${GW} ${GH}`);
   gaugeSvg.innerHTML = '';
   const g = (tag, attrs, parent = gaugeSvg) => svgEl(tag, attrs, parent);
+  // the frame: cut corners, bracketed
+  const c = 12;
+  g('polygon', { class: 'h-frame', points: `${c},0 ${GW - c},0 ${GW},${c} ${GW},${GH - c} ${GW - c},${GH} ${c},${GH} 0,${GH - c} 0,${c}` });
+  g('path', { class: 'h-corner', d: `M0,${c + 14} V${c} L${c},0 H${c + 22} M${GW},${GH - c - 14} V${GH - c} L${GW - c},${GH} H${GW - c - 22}` });
+  g('text', { class: 'h-cap', x: 22, y: 20 }).textContent = 'META // NAVIGATOR';
+  GG.read = g('text', { class: 'h-read', x: GW - 24, y: GH - 16, 'text-anchor': 'end' });
+  // lines: dashed until walked, then solid
   SEGS.forEach(([a, b]) => g('line', { class: 'g-hit', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] }));
   SEGS.forEach(([a, b]) => {
-    const trunk = !!LEVEL_TAG[b];
-    g('line', { class: trunk ? 'g-line' : 'g-branch', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] });
-    GG['f_' + b] = g('line', { class: trunk ? 'g-fill' : 'g-branch-fill', x1: GP[a][0], y1: GP[a][1], x2: GP[a][0], y2: GP[a][1] });
+    g('line', { class: 'g-line', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] });
+    if (LEVEL_TAG[b]) g('line', { class: 'g-tick', x1: GP[a][0], y1: GP[a][1], x2: GP[b][0], y2: GP[b][1] });
+    GG['f_' + b] = g('line', { class: 'g-fill', x1: GP[a][0], y1: GP[a][1], x2: GP[a][0], y2: GP[a][1] });
   });
+  // the stages
   Object.keys(STAGES).forEach(st => {
     const [x, y] = GP[st], lab = g('g', { class: 'g-label', 'data-stage': st });
-    if (st === 'summary') {
-      GG['n_' + st] = g('path', { class: 'g-node g-goal', d: `M${x},${y - 9} L${x + 9},${y} L${x},${y + 9} L${x - 9},${y} Z` });
-      g('rect', { x: x - 36, y: y + 10, width: 72, height: 42, fill: 'transparent' }, lab);
-      g('text', { class: 'lv', x, y: y + 25, 'text-anchor': 'middle' }, lab).textContent = `${LEVEL_TAG[st]} · ${T.goal}`;
-      (GG['t_' + st] = g('text', { x, y: y + 42, 'text-anchor': 'middle' }, lab)).textContent = stageLabel(st);
+    if (st === 'model') {     // the core
+      g('circle', { class: 'g-orbit', cx: x, cy: y, r: 31 });
+      g('path', { class: 'g-reticle', d: [0, 1, 2, 3, 4, 5].map(k => { const a = Math.PI / 6 + k * Math.PI / 3, c = Math.cos(a), s = Math.sin(a); return `M${(x + 34 * c).toFixed(1)},${(y + 34 * s).toFixed(1)} L${(x + 40 * c).toFixed(1)},${(y + 40 * s).toFixed(1)}`; }).join(' ') });
+      GG['n_' + st] = g('polygon', { class: 'g-node g-core', points: hexPts(x, y, 22) });
+      GG['in_' + st] = g('polygon', { class: 'g-core-in', points: hexPts(x, y, 10) });
+      g('rect', { x: x - 60, y: y + 30, width: 120, height: 26, fill: 'transparent' }, lab);
+      GG['t_' + st] = g('text', { class: 'g-core-label', x, y: y + 52, 'text-anchor': 'middle' }, lab);
+      g('tspan', { class: 'tag' }, GG['t_' + st]).textContent = LEVEL_TAG[st] + ' ';
+      GG['t_' + st].append(`${EN[st]} ${stageLabel(st)}`);
+    } else if (st === 'summary') {      // the goal
+      GG['n_' + st] = g('polygon', { class: 'g-node', points: `${x},${y - 13} ${x + 13},${y} ${x},${y + 13} ${x - 13},${y}` });
+      g('polygon', { class: 'g-glyph', points: `${x},${y - 6} ${x + 6},${y} ${x},${y + 6} ${x - 6},${y}` });
+      g('rect', { x: x + 16, y: y - 18, width: 70, height: 36, fill: 'transparent' }, lab);
+      g('text', { class: 'g-goal-tag', x: x + 20, y: y - 6 }, lab).textContent = `${LEVEL_TAG[st]} GOAL`;
+      (GG['t_' + st] = g('text', { x: x + 20, y: y + 10 }, lab)).textContent = stageLabel(st);
     } else if (LEVEL_TAG[st]) {
-      GG['n_' + st] = g('circle', { class: 'g-node', cx: x, cy: y, r: 6 });
-      g('rect', { x: x - 36, y: y + 10, width: 72, height: 42, fill: 'transparent' }, lab);
-      g('text', { class: 'lv', x, y: y + 25, 'text-anchor': 'middle' }, lab).textContent = LEVEL_TAG[st];
-      (GG['t_' + st] = g('text', { x, y: y + 42, 'text-anchor': 'middle' }, lab)).textContent = stageLabel(st);
-    } else {
-      GG['n_' + st] = g('rect', { class: 'g-tip', x: x - 5, y: y - 5, width: 10, height: 10 });
-      const left = st !== 'slides';   // labels sit clear of the lines
-      g('rect', { x: left ? x - 70 : x + 6, y: y - 13, width: 64, height: 26, fill: 'transparent' }, lab);
-      (GG['t_' + st] = g('text', { x: left ? x - 12 : x + 12, y: y + 4, 'text-anchor': left ? 'end' : 'start' }, lab)).textContent = formLabel(st);
+      GG['n_' + st] = st === 'text' ? g('rect', { class: 'g-node', x: x - 7, y: y - 7, width: 14, height: 14 }) : g('polygon', { class: 'g-node', points: hexPts(x, y, 9) });
+      g('rect', { x: x - 34, y: y + 12, width: 68, height: 40, fill: 'transparent' }, lab);
+      g('text', { class: 'lv', x, y: y + 27, 'text-anchor': 'middle' }, lab).textContent = `${LEVEL_TAG[st]} ${EN[st]}`;
+      (GG['t_' + st] = g('text', { x, y: y + 43, 'text-anchor': 'middle' }, lab)).textContent = stageLabel(st);
+    } else {      // a form: a small frame with what it looks like
+      GG['n_' + st] = g('rect', { class: 'g-node', x: x - 10, y: y - 10, width: 20, height: 20 });
+      const glyph = { linear: `M${x - 5},${y - 4} H${x + 5} M${x - 5},${y} H${x + 5} M${x - 5},${y + 4} H${x + 2}`,
+        table: `M${x - 5},${y - 5} H${x + 5} V${y + 5} H${x - 5} Z M${x},${y - 5} V${y + 5} M${x - 5},${y} H${x + 5}`,
+        slides: `M${x - 6},${y - 4} H${x + 6} V${y + 4} H${x - 6} Z M${x - 3},${y} H${x + 3}` }[st];
+      GG['gl_' + st] = g('path', { class: 'g-glyph', d: glyph });
+      const right = st === 'table';
+      g('rect', right ? { x: x + 12, y: y - 12, width: 80, height: 24, fill: 'transparent' } : { x: x - 44, y: y - 34, width: 88, height: 22, fill: 'transparent' }, lab);
+      (GG['t_' + st] = g('text', right ? { x: x + 17, y: y + 4 } : { x, y: y - 18, 'text-anchor': 'middle' }, lab)).textContent = `${EN[st]} ${stageLabel(st)}`;
     }
   });
+  // ▶: a slanted plate, as in a title sequence
   const pb = g('g', { class: 'g-play', role: 'button', tabindex: 0, 'aria-label': T.play });
-  g('circle', { cx: 22, cy: 58, r: 13 }, pb);
+  g('polygon', { points: '26,66 92,66 84,98 18,98' }, pb);
   GG.playIcon = g('path', { d: '' }, pb);
+  GG.playText = g('text', { x: 50, y: 86 }, pb);
   pb.addEventListener('click', ev => { ev.stopPropagation(); play(); });
   pb.addEventListener('pointerdown', ev => ev.stopPropagation());
-  GG.halo = g('circle', { class: 'g-halo', r: 15 });
-  GG.knob = g('circle', { class: 'g-knob', r: 8 });
+  pb.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); play(); } });
+  GG.play = pb;
+  GG.halo = g('circle', { class: 'g-halo', r: 13 });
+  GG.knob = g('polygon', { class: 'g-knob', points: '0,-8 8,0 0,8 -8,0' });
 }
 function knobPos() {
   if (sess) { const u = clamp(sess.u, 0, 1), A = GP[sess.a], B = GP[sess.b]; return [A[0] + (B[0] - A[0]) * u, A[1] + (B[1] - A[1]) * u]; }
@@ -3323,18 +3374,28 @@ function drawGauge() {
     if (walked.includes(b)) end = GP[b];
     else if (sess && sess.a === a && sess.b === b) end = [kx, ky];
     line.setAttribute('x2', end[0]); line.setAttribute('y2', end[1]);
+    line.style.opacity = walked.includes(a) || (sess && sess.a === a) ? '1' : '0';
   });
   Object.keys(STAGES).forEach(st => {
-    GG['n_' + st].classList.toggle('on', walked.includes(st) || (!!sess && sess.b === st && sess.u > 0.999));
+    const on = walked.includes(st) || (!!sess && sess.b === st && sess.u > 0.999);
+    GG['n_' + st].classList.toggle('on', on);
+    if (GG['gl_' + st]) GG['gl_' + st].classList.toggle('on', on);
     GG['t_' + st].classList.toggle('on', !sess && S.stage === st);
   });
-  GG.playIcon.setAttribute('d', playing ? 'M17,52 h4 v12 h-4 Z M24,52 h4 v12 h-4 Z' : 'M18,51 L29,58 L18,65 Z');
-  GG.playIcon.parentNode.setAttribute('aria-label', playing ? T.pause : T.play);
-  GG.knob.setAttribute('cx', kx); GG.knob.setAttribute('cy', ky);
+  if (GG.in_model) GG.in_model.classList.toggle('on', walked.includes('model'));
+  GG.play.classList.toggle('on', playing);
+  GG.playIcon.setAttribute('d', playing ? 'M36,76 h4 v12 h-4 Z M43,76 h4 v12 h-4 Z' : 'M36,75 L47,82 L36,89 Z');
+  GG.playText.textContent = playing ? 'STOP' : 'PLAY';
+  GG.play.setAttribute('aria-label', playing ? T.pause : T.play);
+  const here = sess ? (sess.u >= 0.5 ? sess.b : sess.a) : S.stage;
+  GG.read.innerHTML = '';
+  svgEl('tspan', { class: 'k' }, GG.read).textContent = LEVEL_TAG[here] ? `L${+LEVEL_TAG[here] - 1} ` : 'FORM ';
+  GG.read.append(`· ${EN[here]}`);
+  GG.knob.setAttribute('transform', `translate(${kx},${ky})`);
   GG.halo.setAttribute('cx', kx); GG.halo.setAttribute('cy', ky);
-  gaugeSvg.setAttribute('aria-valuetext', stageLabel(sess ? (sess.u >= 0.5 ? sess.b : sess.a) : S.stage));
+  gaugeSvg.setAttribute('aria-valuetext', stageLabel(here));
 }
-function svgPoint(ev) { const r = gaugeSvg.getBoundingClientRect(); return [(ev.clientX - r.left) * 560 / r.width, (ev.clientY - r.top) * 120 / r.height]; }
+function svgPoint(ev) { const r = gaugeSvg.getBoundingClientRect(); return [(ev.clientX - r.left) * GW / r.width, (ev.clientY - r.top) * GH / r.height]; }
 function project([x, y]) {   // the nearest point on any line of the gauge
   let best = { d: Infinity };
   SEGS.forEach(([a, b]) => {
