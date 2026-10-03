@@ -261,7 +261,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #pointer circle.end { fill: var(--focus); stroke: var(--space); stroke-width: 1.5; }
 
 /* details (pinned) */
-#details { position: absolute; right: 14px; bottom: 138px; width: min(360px, calc(100% - 28px)); max-height: 42%; overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 12px 14px; z-index: 9; font-size: 12.5px; }
+#details { position: absolute; right: 14px; top: 14px; width: min(360px, calc(100% - 28px)); max-height: 42%; overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 12px 14px; z-index: 9; font-size: 12.5px; }
 #details .x { position: absolute; top: 6px; right: 8px; border: 0; background: transparent; font-size: 16px; color: var(--muted); }
 #details h2 { font-size: 14px; margin: 0 24px 6px 0; line-height: 1.45; }
 #details h3 { font: 700 9.5px/1 var(--mono); letter-spacing: .18em; color: var(--muted); margin: 12px 0 5px; text-transform: uppercase; }
@@ -294,6 +294,30 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #gauge .g-label { cursor: pointer; }
 #gauge .g-knob { fill: var(--focus); stroke: var(--space); stroke-width: 2.5; }
 #gauge .g-halo { fill: rgba(var(--focus-rgb), .18); }
+/* the minimap: the model, small, beside its form */
+#minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: 320px; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
+#minimap[hidden] { display: none; }
+main.mm-top #minimap { bottom: auto; top: 14px; }
+#minimap .mm-label { position: absolute; left: 8px; top: 5px; font: 700 9px/1 var(--mono); letter-spacing: .22em; color: var(--muted); }
+#mmSvg { display: block; width: 100%; height: auto; max-height: 220px; }
+#mmSvg .mm-box rect { fill: var(--card); stroke: var(--card-line); stroke-width: 1; cursor: pointer; }
+#mmSvg .mm-box.unit > rect { fill: var(--frame); stroke: var(--ink-2); stroke-width: 1.2; }
+#mmSvg .mm-box.concl > rect { fill: var(--band); stroke: var(--focus); stroke-width: 1.6; }
+#mmSvg .mm-box text { font: 700 8px/1 var(--mono); fill: var(--muted); pointer-events: none; }
+#mmSvg .mm-box.concl text { fill: var(--band-fg); }
+#mmSvg .mm-box.inview > rect { stroke: var(--ink); }
+#mmSvg .mm-box.inview text { fill: var(--ink); }
+#mmSvg .mm-box.concl.inview text { fill: var(--band-fg); }
+#mmSvg .mm-view { fill: none; stroke: var(--focus); stroke-width: 1.2; stroke-dasharray: 3 2; }
+#mmSvg .mm-link { fill: none; stroke: var(--link); stroke-width: .9; opacity: .7; }
+#mmSvg .mm-link.pos { stroke: var(--pos); } #mmSvg .mm-link.neg { stroke: var(--neg); }
+#mmSvg .mm-box.f0 > rect { stroke: var(--focus); stroke-width: 2; fill: rgba(var(--focus-rgb), .35); }
+#mmSvg .mm-box.f1 > rect { stroke: var(--rel); stroke-width: 1.6; } #mmSvg .mm-box.f1.pos > rect { stroke: var(--pos); } #mmSvg .mm-box.f1.neg > rect { stroke: var(--neg); }
+.focusing #mmSvg .mm-box.dim { opacity: .4; }
+.focusing #mmSvg .mm-link:not(.f0):not(.f1) { opacity: .15; }
+#mmSvg .mm-link.f0, #mmSvg .mm-link.f1 { opacity: 1; stroke-width: 1.6; } #mmSvg .mm-link.f0 { stroke: var(--focus); }
+#pointer path.mm { stroke-dasharray: 4 3; opacity: .7; }
+#pointer rect.end { fill: var(--focus); stroke: var(--space); stroke-width: 1.5; }
 #ticker { position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%); z-index: 39; pointer-events: none; display: flex; gap: 12px; align-items: baseline; max-width: calc(100% - 32px); padding: 8px 26px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-left: 4px solid var(--focus); opacity: 0; transition: opacity .25s; }
 #ticker.on { opacity: 1; }
 #ticker .k { font: 800 10px/1 var(--mono); letter-spacing: .22em; opacity: .6; flex: none; }
@@ -318,7 +342,8 @@ main.narrow #textPane { width: 100% !important; margin-left: 0 !important; }
 main.narrow #modelPane { border-left: 0; border-top: 1px solid var(--rule); }
 main.narrow #hint { display: none; }
 main.narrow .rep.linear .stack { margin-right: 44px; }
-main.narrow #details { max-height: 34%; bottom: 120px; }
+main.narrow #details { max-height: 34%; top: auto; bottom: 120px; }
+main.narrow #minimap { display: none; }
 main.narrow #ticker .m { font-size: 12.5px; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
@@ -343,6 +368,7 @@ main.narrow #ticker .m { font-size: 12.5px; }
   <svg id="pointer" aria-hidden="true"></svg>
   <div id="hint"></div>
   <div id="ticker" aria-hidden="true"><span class="k"></span><span class="n"></span><span class="m"></span></div>
+  <div id="minimap" hidden><span class="mm-label">MODEL</span><svg id="mmSvg" aria-label="The model, small"></svg></div>
   <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 560 120" role="slider" aria-label="Text, chunks, model" tabindex="0"></svg></div>
   <div id="problems" hidden></div>
 </main>
@@ -619,7 +645,7 @@ const I18N = {
     capText: 'characters', conclusion: 'CONCLUSION', headline: 'Headline', points: 'Points', other: 'Other chunks', noSummary: 'This model has no summary.',
     inText: 'In the text', links: 'Relations', basis: 'Derived from', basisOf: 'Basis for', partOf: 'Part of', contains: 'Contains', note: 'Note',
     goText: 'Down to the text', release: 'Release', close: 'Hide (stays pinned)',
-    hintModel: 'The model. From it grow its forms: drag the knob into a branch. Hover the text or the model; a thread joins them.', hintChunks: 'The text wrapped into chunks; on the right, the chunks at a glance. Keep dragging to rise to the model.', hintText: 'Drag the knob on the gauge to the right: the text is wrapped into chunks, and the chunks become a model.',
+    hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks; on the right, the chunks at a glance. Keep dragging to rise to the model.', hintText: 'Drag the knob on the gauge to the right: the text is wrapped into chunks, and the chunks become a model.',
     kWrap: 'WRAP', kForm: 'MODEL', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS',
     explicit: 'explicit — stated in the text', inferred: 'inferred — follows from the text, not stated', abstracted: 'abstracted — a grouping made while modeling', uncertain: 'uncertain — more than one reading',
     problems: 'Some parts of the model could not be shown',
@@ -633,7 +659,7 @@ const I18N = {
     capText: '字', conclusion: '結論', headline: '見出し', points: '要点', other: 'ほかの塊', noSummary: 'このモデルには要約（summary）がありません。',
     inText: '原文', links: 'つながり', basis: '根拠（導出元）', basisOf: 'これを根拠とするもの', partOf: '含まれる先', contains: '含むもの', note: 'メモ',
     goText: '原文へ降りる', release: '解除', close: '閉じる（固定は維持）',
-    hintModel: 'モデルの層。モデルから伸びた枝へつまみを動かすと、線形・表・要約に変わる。本文かモデルにカーソルを重ねると糸でつながる。', hintChunks: '本文を塊に巻いた層。右はどんな塊があるかの一覧。さらに右へ動かすとモデルになる。', hintText: '下のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルになる。',
+    hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を塊に巻いた層。右はどんな塊があるかの一覧。さらに右へ動かすとモデルになる。', hintText: '下のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルになる。',
     kWrap: '塊を巻く', kForm: 'モデルにする', kLink: 'つなぐ', kRep: '表現', chunksN: 'CHUNKS · 塊',
     explicit: 'explicit — 原文に明示', inferred: 'inferred — 原文から推論（明示はない）', abstracted: 'abstracted — モデル化でまとめたもの', uncertain: 'uncertain — 複数の読みがありうる',
     problems: 'モデルの一部を表示できませんでした',
@@ -815,6 +841,9 @@ function applyLayout() {
     textPane.style.height = '100%'; textPane.style.width = w + 'px';
     textPane.style.marginLeft = S.stop === 'text' ? Math.max(0, (G.mw - w) / 2) + 'px' : '0';
   }
+  const mm = $('#minimap');
+  mm.hidden = !FORMS.includes(S.stage) || G.narrow;
+  main.classList.toggle('mm-top', G.mw < 1180);
   const hint = $('#hint');
   if (hint.textContent !== (hint.textContent = S.stop === 'model' ? T.hintModel : S.stop === 'chunks' ? T.hintChunks : T.hintText)) {
     hint.classList.remove('gone'); clearTimeout(hint._t); hint._t = setTimeout(() => hint.classList.add('gone'), 7000);
@@ -967,6 +996,69 @@ function renderRep() {
   if (S.stop === 'text') return;
   ({ chunks: renderChunks, structure: renderStructure, linear: renderLinear, table: renderTable, summary: renderSummary })[S.rep]();
   repEl.append(svgEl('svg', { id: 'links' }));
+}
+
+/* ---- the minimap: the structure, small, with straight lines ---- */
+const MM = { box: new Map() };
+function buildMinimap() {
+  const svg = $('#mmSvg');
+  svg.innerHTML = '';
+  const R = Math.min(Math.max(0, ...roots.map(u => unitRank.get(u.id))), 4);
+  const cols = Array.from({ length: R + 1 }, () => []);
+  roots.forEach(u => cols[R - Math.min(unitRank.get(u.id), R)].push(u));
+  const cw = 104, gap = 44, hh = 17, ph = 11, pg = 3, ug = 10;
+  const unitH = u => hh + (u.children.length ? descendants(u).length * (ph + pg) + 3 : 0);
+  const colH = list => list.reduce((m, u) => m + unitH(u), 0) + ug * Math.max(0, list.length - 1);
+  const H = Math.max(...cols.map(colH)), W = cols.length * cw + (cols.length - 1) * gap;
+  MM.box = new Map();
+  cols.forEach((list, i) => {
+    let y = (H - colH(list)) / 2;
+    const x = i * (cw + gap);
+    list.forEach(u => {
+      MM.box.set(u.id, { x, y, w: cw, h: unitH(u) });
+      let yy = y + hh;
+      descendants(u).forEach(d => { const ind = (d.depth - u.depth - 1) * 6; MM.box.set(d.id, { x: x + 4 + ind, y: yy, w: cw - 8 - ind, h: ph }); yy += ph + pg; });
+      y += unitH(u) + ug;
+    });
+  });
+  svg.setAttribute('viewBox', `-8 -8 ${W + 16} ${H + 16}`);
+  const lg = svgEl('g', {}, svg);
+  rels.forEach(r => {
+    const a = MM.box.get(r.source.id), b = MM.box.get(r.target.id);
+    if (!a || !b || r.source === r.target) return;
+    const ya = a.y + Math.min(a.h / 2, 8), yb = b.y + Math.min(b.h / 2, 8);
+    let d;
+    if (b.x > a.x + a.w - 1) d = `M${a.x + a.w},${ya} L${b.x},${yb}`;
+    else if (a.x > b.x + b.w - 1) d = `M${a.x},${ya} L${b.x + b.w},${yb}`;
+    else { const xr = Math.max(a.x + a.w, b.x + b.w) + 6; d = `M${a.x + a.w},${ya} H${xr} V${yb} H${b.x + b.w}`; }
+    svgEl('path', { class: `mm-link ${signOf(r)}`, 'data-rel': r.id, d }, lg);
+  });
+  order.forEach(n => {
+    const b = MM.box.get(n.id);
+    if (!b) return;
+    const g = svgEl('g', { class: `mm-box ${n.parent ? 'part' : 'unit'}${n.role === 'conclusion' ? ' concl' : ''}`, 'data-node': n.id }, svg);
+    svgEl('rect', { x: b.x, y: b.y, width: b.w, height: b.h }, g);
+    svgEl('text', { x: b.x + 4, y: b.y + (n.parent ? 8.5 : 12) }, g).textContent = n.num;
+  });
+  MM.view = svgEl('rect', { class: 'mm-view', x: 0, y: 0, width: 0, height: 0 }, svg);
+}
+// like a game's minimap: the chunks in view in the form are framed
+function updateInView() {
+  const mm = $('#minimap');
+  if (mm.hidden || !MM.view) return;
+  const c = stage.getBoundingClientRect();
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  order.forEach(n => {
+    const el = repEl.querySelector(`[data-key="card:${n.id}"]`);
+    const r = el && el.getBoundingClientRect();
+    const seen = !!r && r.height > 0 && r.bottom > c.top + 4 && r.top < c.bottom - 4;
+    const g = mm.querySelector(`.mm-box[data-node="${n.id}"]`);
+    if (g) g.classList.toggle('inview', seen);
+    const b = MM.box.get(n.id);
+    if (seen && b) { x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.w); y1 = Math.max(y1, b.y + b.h); }
+  });
+  if (x1 > x0) Object.entries({ x: x0 - 3, y: y0 - 3, width: x1 - x0 + 6, height: y1 - y0 + 6 }).forEach(([k, v]) => MM.view.setAttribute(k, v));
+  else MM.view.setAttribute('width', 0);
 }
 
 /* ---- relation lines ---- */
@@ -1135,10 +1227,24 @@ function contextGhost() {     // a form's own furniture (headers, lines, frames)
   wrap.append(c); fly.append(wrap);
   return wrap;
 }
+function modelGhost() {      // the whole structure, which recedes into the minimap
+  const cols = repEl.querySelector('.cols');
+  if (!cols) return null;
+  const r = repEl.getBoundingClientRect(), cr = cols.getBoundingClientRect(), st = stage.getBoundingClientRect();
+  const wrap = h('div');
+  Object.assign(wrap.style, { left: '0', top: '0', width: '100vw', height: '100vh', overflow: 'visible', zIndex: 0 });
+  const c = repEl.cloneNode(true);
+  Object.assign(c.style, { position: 'absolute', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', minHeight: '0', margin: '0', transformOrigin: `${cr.left - r.left}px ${cr.top - r.top}px` });
+  wrap.append(c); fly.append(wrap);
+  return { el: c, x: cr.left, y: cr.top, w: cr.width, h: cr.height, clip: st };
+}
 function beginSeg(a, b) {
   const kind = a + '-' + b;
   setStage(a);
-  const A = snapshot(), paneA = textPane.getBoundingClientRect().left, ctxA = contextGhost();
+  const A = snapshot(), paneA = textPane.getBoundingClientRect().left;
+  const toForm = a === 'model' && FORMS.includes(b);
+  const ctxA = toForm ? null : contextGhost();
+  const shrink = toForm ? modelGhost() : null;
   setStage(b);
   const B = snapshot(), paneB = textPane.getBoundingClientRect().left;
   const N = Math.max(1, order.length - 1);
@@ -1161,7 +1267,12 @@ function beginSeg(a, b) {
   // in the model: lines, from the conclusion outward
   const L = Math.max(1, rels.length - 1);
   const links = kind === 'chunks-model' ? $$('#links .link', repEl).map(g => ({ g, d: 0.5 + 0.38 * (linkOrder.get(g.dataset.rel) || 0) / L, r: elsById.get(g.dataset.rel) })) : [];
-  sess = { a, b, kind, pieces, ctxA, dx: paneA - paneB, wraps, links, u: 0 };
+  if (shrink) {   // where the model lands: the minimap, which is drawn in b
+    const m = $('#mmSvg').getBoundingClientRect(), { w, h: hh0, x, y } = shrink;
+    const sc = Math.min(m.width / w, m.height / hh0);
+    shrink.to = { s: sc, x: m.left + (m.width - w * sc) / 2, y: m.top + (m.height - hh0 * sc) / 2 };
+  }
+  sess = { a, b, kind, pieces, ctxA, shrink, dx: paneA - paneB, wraps, links, u: 0 };
   main.classList.add('scrubbing');
   cancelAnimationFrame(FIELD.raf); FIELD.raf = 0;
   frame(0);
@@ -1191,6 +1302,13 @@ function frame(u) {
   const tilt = s.kind === 'text-chunks' || s.kind === 'chunks-model' ? 8 * Math.sin(Math.PI * uc) : 0;
   textPane.style.transform = `translateX(${s.dx * (1 - eg)}px)` + (tilt && !reduceMotion ? ` perspective(1600px) rotateX(${tilt}deg)` : '');
   if (s.ctxA) s.ctxA.style.opacity = String(1 - smooth(0, 0.5, uc));
+  const mm = $('#minimap');
+  if (s.shrink && s.shrink.to) {
+    const k = easeInOut(clamp(u / 0.85, 0, 1)), t = s.shrink.to, sc = 1 + (t.s - 1) * k;
+    s.shrink.el.style.transform = `translate(${(t.x - s.shrink.x) * k}px, ${(t.y - s.shrink.y) * k}px) scale(${sc})`;
+    s.shrink.el.style.opacity = String((0.85 - 0.3 * Math.sin(Math.PI * k)) * (1 - smooth(0.8, 1, uc)));
+    mm.style.opacity = String(smooth(0.75, 1, uc));
+  } else mm.style.opacity = '';
   if (s.kind === 'text-chunks') modelPane.style.opacity = String(smooth(0.02, 0.4, uc));
   repEl.style.opacity = s.kind === 'chunks-model' || s.kind === 'text-chunks' ? '1' : String(smooth(0.4, 1, uc));
   s.wraps.forEach(w => {
@@ -1234,7 +1352,7 @@ function endSeg(final) {
   main.classList.remove('scrubbing');
   fly.querySelectorAll(':scope > :not(.slate)').forEach(el => el.remove());
   $$('.landing').forEach(el => el.classList.remove('landing'));
-  textPane.style.transform = ''; modelPane.style.opacity = ''; repEl.style.opacity = '';
+  textPane.style.transform = ''; modelPane.style.opacity = ''; repEl.style.opacity = ''; $('#minimap').style.opacity = '';
   tickerEl.classList.remove('on');
   setStage(final >= 0.5 ? s.b : s.a);
   FIELD.t = levelOf(S.stage); drawField();
@@ -1294,7 +1412,7 @@ async function release() {
   await tweenU(to, reduceMotion ? 0 : 420, to ? settle : easeInOut);
   if (sess === s) { endSeg(to); arrived(); }
 }
-function afterRender() { drawLinks(); applyFocus(); }
+function afterRender() { drawLinks(); applyFocus(); updateInView(); }
 
 /* =====================================================================
    6b. The field: a classical, unruly geometry composed from the model itself.
@@ -1469,11 +1587,11 @@ function drawField() {
 /* ---- a slate names the form on arrival ---- */
 async function slate(label, phase) {
   if (reduceMotion) return;
-  const host = main.getBoundingClientRect();
+  const host = (S.stop === 'text' ? main : modelPane).getBoundingClientRect();
   const el = h('div', { class: 'slate' }, h('b', {}, phase), label);
   el.style.top = (host.top + 14) + 'px';
+  el.style.left = (host.left + 16) + 'px';
   fly.append(el);
-  el.style.left = (host.right - el.offsetWidth - 18) + 'px';
   const sp = 1;
   await el.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 260 / sp, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'both' }).finished.catch(() => null);
   await sleep(760 / sp);
@@ -1528,13 +1646,17 @@ function applyFocus() {
     if (F.far.has(id)) return '';
     return 'dim';
   };
-  $$('#marks .br, #slabs .sl, #rep [data-node]').forEach(el => {
+  $$('#marks .br, #slabs .sl, #rep [data-node], #mmSvg .mm-box').forEach(el => {
     if (el.classList.contains('pt')) return;
     el.classList.remove('f0', 'f1', 'pos', 'neg', 'part', 'ev', 'dim', 'cur');
     if (focusing) { const c = cls(el.dataset.node); if (c) el.classList.add(...c.split(' ').filter(Boolean)); }
   });
   $$('#rep .pt').forEach(el => el.classList.toggle('fp', !!F.point && el.dataset.node === F.point.node.id && +el.dataset.pt === F.point.k));
   $$('#rep .phrase').forEach(el => { el.classList.remove('f0', 'f1', 'dim'); if (focusing) el.classList.add(F.phrases.has(+el.dataset.phrase) ? 'f0' : 'dim'); });
+  $$('#mmSvg .mm-link').forEach(el => {
+    const r = elsById.get(el.dataset.rel);
+    el.classList.toggle('f0', f === r); el.classList.toggle('f1', f !== r && F.rels.has(r));
+  });
   $$('#links .link').forEach(el => {
     el.classList.remove('f0', 'f1', 'ev');
     const r = elsById.get(el.dataset.rel);
@@ -1579,19 +1701,29 @@ function drawPointer() {
   pointerSvg.innerHTML = '';
   const f = S.hover || S.pinned;
   if (!f || S.stop === 'text' || G.narrow || sess) return;
-  const mel = modelSideEl(f), tr = textSideRect(f);
-  if (!mel || !tr) return;
-  const mr = mel.getBoundingClientRect(), host = main.getBoundingClientRect(), tp = textPane.getBoundingClientRect();
-  const pane = mel.closest('#stage, #textPane');
-  if (pane) { const c = pane.getBoundingClientRect(); if (mr.bottom < c.top || mr.top > c.bottom) return; }
-  const x0 = Math.min(tp.right - 6, tp.left + GUTTER + G.colW + 8) - host.left, y0 = tr.top + tr.height / 2 - host.top;
-  const x1 = mr.left - 6 - host.left, y1 = mr.top + Math.min(mr.height / 2, 12) - host.top;
-  if (x1 - x0 < 8) return;
-  const dx = (x1 - x0) * 0.5, d = `M${x0},${y0} C${x0 + dx},${y0} ${x1 - dx},${y1} ${x1},${y1}`;
-  svgEl('path', { class: 'glow', d }, pointerSvg);
-  svgEl('path', { d }, pointerSvg);
-  svgEl('circle', { cx: x0, cy: y0, r: 2.5 }, pointerSvg);
-  svgEl('circle', { class: 'end', cx: x1, cy: y1, r: 4 }, pointerSvg);
+  const host = main.getBoundingClientRect(), tp = textPane.getBoundingClientRect();
+  const inPane = (el, r) => { const pane = el.closest('#stage, #textPane'); if (!pane) return true; const c = pane.getBoundingClientRect(); return r.bottom > c.top && r.top < c.bottom; };
+  // the three corners: the words, the form, and (at a form) the model's minimap
+  const mel = modelSideEl(f), mr = mel && mel.getBoundingClientRect();
+  const center = mr && inPane(mel, mr) ? { x: mr.left - host.left, y: mr.top + Math.min(mr.height / 2, 12) - host.top, right: mr.right - host.left } : null;
+  const tr = textSideRect(f);
+  const words = tr ? { x: Math.min(tp.right - 6, tp.left + GUTTER + G.colW + 8) - host.left, y: tr.top + tr.height / 2 - host.top } : null;
+  const mm = $('#minimap');
+  const n = f.kind === 'node' ? f : f.kind === 'point' ? f.node : f.kind === 'rel' ? f.target : f.kind === 'phrase' ? f.refs[0] : null;
+  const boxEl = !mm.hidden && n && mm.querySelector(`.mm-box[data-node="${n.id}"] rect`);
+  const br = boxEl && boxEl.getBoundingClientRect();
+  const mini = br ? { x: br.left + br.width / 2 - host.left, y: br.top + br.height / 2 - host.top } : null;
+  if (words && center && center.x - words.x > 8) {
+    const dx = (center.x - 6 - words.x) * 0.5;
+    svgEl('path', { d: `M${words.x},${words.y} C${words.x + dx},${words.y} ${center.x - 6 - dx},${center.y} ${center.x - 6},${center.y}` }, pointerSvg);
+    svgEl('circle', { cx: words.x, cy: words.y, r: 2.5 }, pointerSvg);
+    svgEl('circle', { class: 'end', cx: center.x - 6, cy: center.y, r: 4 }, pointerSvg);
+  }
+  if (mini) {   // straight, as the minimap's own lines are
+    const from = center ? { x: Math.min(center.right, mini.x), y: center.y } : words;
+    if (from) svgEl('path', { class: 'mm', d: `M${from.x},${from.y} L${mini.x},${mini.y}` }, pointerSvg);
+    svgEl('rect', { class: 'end', x: mini.x - 3.5, y: mini.y - 3.5, width: 7, height: 7 }, pointerSvg);
+  }
 }
 
 /* ---- details of what is pinned ---- */
@@ -1636,11 +1768,11 @@ function titleOf(x) {
 }
 
 /* ---- hover and pin ---- */
-function setHover(f, seg = null) {
+function setHover(f, seg = null, mini = false) {
   if (sess || (S.hover === f && S.hoverSeg === seg)) return;
   S.hover = f; S.hoverSeg = seg;
   applyFocus();
-  if (f && !S.pinned) followCounterpart(f, seg != null);
+  if (f && !S.pinned) followCounterpart(f, seg != null, mini);
 }
 function setPinned(f, opts = {}) {
   S.pinned = f;
@@ -1649,9 +1781,9 @@ function setPinned(f, opts = {}) {
   if (f && opts.scroll) { revealInModel(f); if (!opts.fromText) revealInText(f); }
 }
 let followTimer = 0;
-function followCounterpart(f, fromText) {
+function followCounterpart(f, fromText, fromMini) {
   clearTimeout(followTimer);
-  followTimer = setTimeout(() => { if (S.hover !== f || S.pinned) return; if (fromText) revealInModel(f, true); else revealInText(f, true); }, 280);
+  followTimer = setTimeout(() => { if (S.hover !== f || S.pinned) return; if (fromText) revealInModel(f, true); else { revealInText(f, true); if (fromMini) revealInModel(f, true); } }, 280);
 }
 function revealInModel(f, onlyIfHidden) {
   if (S.stop === 'text') return;
@@ -1702,13 +1834,12 @@ function focusIn(n) {
   if (S.stage === 'chunks' || S.stage === 'text') show(); else goTo('chunks').then(show);
 }
 const GZ = { text: [44, 50], chunks: [184, 50], model: [324, 50] };
-const TIP = { linear: [446, 18], table: [470, 50], summary: [446, 82] };
+const TIP = { linear: [452, 16], table: [452, 50], summary: [452, 84] };
 const branchD = {}, branchPts = {};
 FORMS.forEach(f => {
-  const [x0, y0] = GZ.model, [x1, y1] = TIP[f], c1 = [x0 + 48, y0], c2 = [x1 - 52, y1];
-  branchD[f] = `M${x0},${y0} C${c1} ${c2} ${x1},${y1}`;
-  branchPts[f] = Array.from({ length: 33 }, (_, j) => { const t = j / 32, v = 1 - t;
-    return [0, 1].map(d => v * v * v * [x0, y0][d] + 3 * v * v * t * c1[d] + 3 * v * t * t * c2[d] + t * t * t * [x1, y1][d]); });
+  const [x0, y0] = GZ.model, [x1, y1] = TIP[f];
+  branchD[f] = `M${x0},${y0} L${x1},${y1}`;
+  branchPts[f] = Array.from({ length: 33 }, (_, j) => [x0 + (x1 - x0) * j / 32, y0 + (y1 - y0) * j / 32]);
 });
 const GG = {};
 const stageLabel = st => ({ text: T.stopText, chunks: T.stopChunks, model: T.stopModel })[st] || formLabel(st);
@@ -1736,7 +1867,7 @@ function buildGauge() {
     GG['n_' + f] = g('rect', { class: 'g-tip', x: x - 5, y: y - 5, width: 10, height: 10 });
     const lab = g('g', { class: 'g-label', 'data-stage': f });
     g('rect', { x: x - 8, y: y - 13, width: 96, height: 26, fill: 'transparent' }, lab);
-    (GG['t_' + f] = g('text', { x: x + 14, y: y + 4 }, lab)).textContent = formLabel(f);
+    (GG['t_' + f] = g('text', { x: x + 13, y: y + 4 }, lab)).textContent = formLabel(f);
     GG['g_' + f] = [GG['n_' + f], lab];
   });
   GG.halo = g('circle', { class: 'g-halo', r: 15 });
@@ -1752,11 +1883,7 @@ function knobPos() {
   }
   return FORMS.includes(S.stage) ? TIP[S.stage] : GZ[S.stage];
 }
-function growOf() {     // how far the model's forms have grown out of it
-  if (sess && sess.a === 'chunks') return smooth(0.55, 1, sess.u);
-  if (sess && sess.a === 'text') return 0;
-  return S.stage === 'text' || S.stage === 'chunks' ? 0 : 1;
-}
+const growOf = () => 1;   // the forms are on the gauge from the start
 function drawGauge() {
   if (!GG.knob) return;
   const [kx, ky] = knobPos(), gr = growOf();
@@ -1871,8 +1998,8 @@ const targetOfEl = el => {
   const nd = el.closest('[data-node]');
   return nd ? nodes.get(nd.dataset.node) : null;
 };
-[repEl, marks].forEach(host => {
-  host.addEventListener('mousemove', ev => setHover(targetOfEl(ev.target)));
+[repEl, marks, $('#mmSvg')].forEach(host => {
+  host.addEventListener('mousemove', ev => setHover(targetOfEl(ev.target), null, host.id === 'mmSvg'));
   host.addEventListener('mouseleave', () => setHover(null));
   host.addEventListener('click', ev => {
     if (sess) return;
@@ -1885,7 +2012,7 @@ const targetOfEl = el => {
 });
 let rafScroll = 0;
 textPane.addEventListener('scroll', () => { cancelAnimationFrame(rafScroll); rafScroll = requestAnimationFrame(() => { drawPointer(); followReading(); }); }, { passive: true });
-stage.addEventListener('scroll', () => requestAnimationFrame(drawPointer), { passive: true });
+stage.addEventListener('scroll', () => requestAnimationFrame(() => { drawPointer(); updateInView(); }), { passive: true });
 // the model follows the part of the text being read
 let readingId = null, followTO = 0;
 function followReading() {
@@ -1931,6 +2058,7 @@ if (problems.length) {
   p.append(h('b', {}, T.problems), h('ul', {}, ...problems.slice(0, 8).map(x => h('li', {}, x))));
 }
 buildGauge();
+buildMinimap();
 renderAll();
 afterRender();
 drawGauge();

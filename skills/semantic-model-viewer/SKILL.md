@@ -1,6 +1,6 @@
 ---
 name: semantic-model-viewer
-description: Shows a Semantic Model (notes made by semantic-model-builder) next to its text as one self-contained, animated HTML page, the Transform View. A single gauge draws the meta-structure and is the control. Drag it from the text, to the text wrapped into chunks (with the chunks listed beside it), to the model, and every piece moves continuously between the stages. Chunks wrap one by one, the list grows into cards, and lines grow from the conclusion outward. At the model, its forms (linear notes, a table, one sentence) grow out of it as branches of the gauge. The text and the notes are linked by a thread under the pointer. Use it whenever the user wants to see, explore, present or visualize a semantic model or the notes of a text, read a text next to its notes, or watch a text turn into a structure. Triggers include "show the semantic model", "show the notes next to the text", "visualize this model", "transform view", 「Semantic Modelを表示して」「原文とノートを並べて見せて」「構造になっていく様子を見せて」「トランスフォームビューで見せて」.
+description: Shows a Semantic Model (notes made by semantic-model-builder) next to its text as one self-contained, animated HTML page, the Transform View. A single gauge draws the meta-structure and is the control. Drag it from the text, to the text wrapped into chunks (with the chunks listed beside it), to the model, and every piece moves continuously between the stages. Chunks wrap one by one, the list grows into cards, and lines grow from the conclusion outward. From the model, straight branches lead to its forms (linear notes, a table, one sentence); at a form, the text, the form and the model (as a minimap in the corner) are shown and linked together. The text and the notes are linked by a thread under the pointer. Use it whenever the user wants to see, explore, present or visualize a semantic model or the notes of a text, read a text next to its notes, or watch a text turn into a structure. Triggers include "show the semantic model", "show the notes next to the text", "visualize this model", "transform view", 「Semantic Modelを表示して」「原文とノートを並べて見せて」「構造になっていく様子を見せて」「トランスフォームビューで見せて」.
 ---
 
 # Semantic Model Viewer
@@ -12,8 +12,9 @@ One page shows one model and its text. One control moves it: a gauge that draws 
   - The page can stand anywhere in between. Chunks wrap one by one, and their list on the right grows into cards. The cards take their places, and the lines grow from the conclusion outward (the Formation).
   - At the chunk and model layers, the text and its notes sit side by side, with their pointers linked (the Two Pane view).
 - **The branches, linear / table / summary (transform):**
-  - These are representations of the model, so they appear only once the knob reaches it, growing out of the model node.
+  - These are representations of the model, so they branch from the model node, in straight lines, and are reached only through it.
   - Moving the knob into a branch turns the model into that form: points come out of their cards, drop into table cells, or the cards fly into the phrases of the one sentence.
+  - Meanwhile a copy of the structure recedes into the corner as a minimap, like the small map in a game. The text is on the left, the form in the centre and the model in the corner, and the three point at each other.
 
 The page is a fixed template, [`assets/viewer.html`](assets/viewer.html). It works with any model that follows the contract ([`references/semantic-model.md`](references/semantic-model.md)) and needs no network. It never derives meaning from the text: everything it shows comes from the model.
 
@@ -37,7 +38,7 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
 3. **Check it in a browser** if Node and Playwright are available:
    `NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html`
    - It checks that the page loads with no errors and that dragging the knob moves the page between stages and settles when let go.
-   - It checks that the forms grow out of the model and each one renders, and that hovering a word focuses the model.
+   - It checks that each form renders, and that hovering a word focuses the model.
    - It checks that pinning opens the details card and Esc releases it, and that nothing overflows a phone-width screen.
 
    Then look at it yourself: drag slowly from the text to the model. Do the headlines read as a story, and does the summary land?

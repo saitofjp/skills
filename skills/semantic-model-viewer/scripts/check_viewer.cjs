@@ -5,8 +5,8 @@
     NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html
 
   Checks: no console errors and no model problems; dragging the gauge's knob moves the page
-  continuously from the text to the chunks to the model, and letting go settles it; the model's
-  forms grow out of the model and each one renders; hovering a mapped word focuses the model
+  continuously from the text to the chunks to the model, and letting go settles it; each of the model's
+  forms renders, with the model as a minimap; hovering a mapped word focuses the model
   and draws the thread; clicking pins it and opens the details card; Escape releases it;
   nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
@@ -58,9 +58,6 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   let st = await state();
   if (st.stage !== 'model') return fail('letting go near the model did not settle on the model: ' + JSON.stringify(st));
   ok('letting go settles on the model');
-  const grown = await V(() => getComputedStyle(document.querySelector('#gaugeSvg .g-label[data-stage="table"]')).opacity);
-  if (+grown < 0.9) return fail('the forms did not grow out of the model on the gauge');
-  ok('the forms have grown out of the model');
 
   // each form
   for (const f of ['linear', 'table', 'summary', 'model']) {
@@ -69,8 +66,10 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
     st = await state();
     const n = await V(() => document.querySelectorAll('#rep [data-key]').length);
     if (st.stage !== f || !n) return fail(`could not show the ${f} form`);
+    const mini = await V(() => !document.querySelector('#minimap').hidden && document.querySelectorAll('#mmSvg .mm-box').length);
+    if (f !== 'model' && !mini) return fail(`the minimap is missing at the ${f} form`);
   }
-  ok('turns into linear, table and summary, and back to the model');
+  ok('turns into linear, table and summary with the model as a minimap, and back to the model');
 
   // text -> model, with the thread between them
   const seg = page.locator('#text .seg.c').first();
