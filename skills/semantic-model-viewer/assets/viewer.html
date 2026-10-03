@@ -76,31 +76,21 @@ header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; pad
 .titles { min-width: 0; flex: 1 1 240px; }
 .titles h1 { font-size: 15px; line-height: 1.3; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .02em; }
 .titles .src { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.ctl { display: flex; align-items: center; gap: 8px; }
-.ctl-label { font: 700 10px/1 var(--mono); letter-spacing: .16em; color: var(--muted); text-transform: uppercase; }
-.seg-ctl { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
-.seg-ctl button { border: 0; background: transparent; padding: 5px 11px; font-size: 13px; transition: background .2s, color .2s; }
-.seg-ctl button + button { border-left: 1px solid var(--rule); }
-.seg-ctl button[aria-pressed="true"] { background: var(--ui); color: var(--ui-fg); }
-#stopCtl button::before { content: attr(data-level); font: 700 9px/1 var(--mono); opacity: .55; margin-right: 6px; letter-spacing: .06em; }
-.icon-btn { border: 1px solid var(--rule); background: transparent; border-radius: 7px; min-width: 30px; height: 28px; padding: 0 7px; font-size: 12px; }
-.icon-btn:hover, .seg-ctl button:hover:not([aria-pressed="true"]) { background: var(--chip); }
 
 /* ---------- main: the ground (text) and the space above it (model) ---------- */
 main { position: relative; display: flex; min-height: 0; overflow: hidden; }
 #field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 #textPane { flex: none; height: 100%; overflow: auto; position: relative; z-index: 1; background: var(--ground); scrollbar-width: thin; transform-origin: 50% 60%; }
-#page { position: relative; padding: 34px 0 170px var(--gutter, 48px); width: max-content; isolation: isolate; }
+#page { position: relative; padding: 34px 0 180px var(--gutter, 48px); width: max-content; isolation: isolate; }
 #slabs { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 0; }
 #text { position: relative; z-index: 1; width: var(--col, 520px); font-size: 15px; line-height: 2; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink-2); }
 #marks { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 2; }
 #tags { position: absolute; z-index: 3; top: 0; left: calc(var(--gutter, 48px) + var(--col, 520px) + 26px); width: calc(var(--tagw, 220px) - 34px); }
 #modelPane { flex: 1 1 0; min-width: 0; position: relative; z-index: 1; background: var(--sky); border-left: 1px solid var(--rule); }
 #stage { position: absolute; inset: 0; overflow: auto; scrollbar-width: thin; z-index: 1; }
-#rep { position: relative; min-height: 100%; padding: 28px 28px 160px; }
-body[data-stop="text"] #modelPane, body[data-stop="chunks"] #modelPane { display: none; }
-body[data-stop="text"] #marks, body[data-stop="text"] #tags, body[data-stop="text"] #slabs { visibility: hidden; }
-body:not([data-stop="chunks"]) #tags { display: none; }
+#rep { position: relative; min-height: 100%; padding: 28px 28px 170px; }
+body[data-stop="text"] #modelPane { display: none; }
+body[data-stop="text"] #marks, body[data-stop="text"] #slabs { visibility: hidden; }
 
 /* ---------- L0: text ---------- */
 .seg.c { cursor: pointer; border-radius: 2px; transition: background-color .25s, box-shadow .25s, color .25s; }
@@ -134,18 +124,21 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #marks .br.part path.line { stroke: var(--ink-2); stroke-width: 2; }
 #marks .br.ev path.line { stroke: var(--evidence); stroke-width: 2.4; }
 #marks .br.grow path.line { stroke: var(--ink); stroke-width: 3; stroke-dasharray: 1; animation: grow .7s var(--ease-settle) both; }
-#marks path.leader { fill: none; stroke: var(--rule); stroke-width: 1; }
 @keyframes grow { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes fadein { from { opacity: 0; } }
-.tag { position: absolute; left: 0; width: 100%; display: flex; gap: 8px; align-items: baseline; padding: 5px 9px 6px; border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); background: var(--card); border-radius: 0; box-shadow: var(--shadow); cursor: pointer; transition: background .2s, border-color .2s, opacity .2s; }
-.tag.d1 { border-left-width: 2px; }
-.tag .num { font: 700 11px/1.5 var(--mono); color: var(--muted); flex: none; }
-.tag .head { font-size: 12.5px; line-height: 1.45; font-weight: 700; color: var(--ink); }
-.tag.f0 { border-color: var(--focus); }
-.tag.f0 .head { background: linear-gradient(transparent 60%, rgba(var(--focus-rgb), .55) 60%); }
-.tag.f1 { border-left-color: var(--rel); } .tag.f1.pos { border-left-color: var(--pos); } .tag.f1.neg { border-left-color: var(--neg); }
-.tag.concl { background: var(--band); border-left-color: var(--focus); } .tag.concl .head { color: var(--band-fg); } .tag.concl .num { color: var(--band-fg); opacity: .6; }
-.focusing .tag:not(.f0):not(.f1):not(.part) { opacity: .4; }
+/* the chunks, listed: what chunks there are, at a glance */
+.rep .kick { font: 700 10.5px/1 var(--mono); letter-spacing: .3em; color: var(--muted); margin: 0 0 16px; }
+.rep.chunks .clist { display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; max-width: 560px; }
+.crow { display: flex; gap: 9px; align-items: baseline; padding: 6px 10px 7px; border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); background: var(--card); cursor: pointer; transition: border-color .2s, opacity .2s; min-width: 0; }
+.crow.d1 { border-left-width: 2px; padding: 4px 9px 5px; }
+.crow .num { font: 700 11px/1.5 var(--mono); color: var(--muted); flex: none; }
+.crow .head { font-size: 13.5px; line-height: 1.45; font-weight: 800; color: var(--ink); }
+.crow.d1 .head { font-size: 12.5px; font-weight: 700; }
+.crow.concl { background: var(--band); border-color: var(--band); border-left-color: var(--focus); } .crow.concl .head { color: var(--band-fg); } .crow.concl .num { color: var(--band-fg); opacity: .6; }
+.crow.reading { border-color: var(--ink-2); }
+.crow.f0 { border-color: var(--focus); } .crow.f0 .head { background: linear-gradient(transparent 60%, rgba(var(--focus-rgb), .55) 60%); }
+.crow.f1 { border-left-color: var(--rel); } .crow.f1.pos { border-left-color: var(--pos); } .crow.f1.neg { border-left-color: var(--neg); }
+.focusing .crow.dim { opacity: .35; }
 
 /* ---------- L2: the model ---------- */
 .card { position: relative; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); border-radius: 0; padding: 10px 14px 11px 12px; transition: border-color .2s, box-shadow .2s, background .2s; }
@@ -218,7 +211,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .focusing .rep.table tr.dim { opacity: .35; }
 /* summary: one sentence at the top */
 .rep.summary { display: flex; flex-direction: column; justify-content: center; }
-.rep.summary .kick { font: 700 10.5px/1 var(--mono); letter-spacing: .3em; color: var(--muted); margin: 0 auto 20px; max-width: 34em; width: 100%; }
+.rep.summary .kick { margin: 0 auto 20px; max-width: 34em; width: 100%; }
 .rep.summary .gist { font-size: clamp(20px, 2.3vw, 30px); line-height: 1.8; font-weight: 800; letter-spacing: .03em; max-width: 34em; margin: 0 auto; color: var(--ink); }
 .phrase { cursor: pointer; background-image: linear-gradient(var(--ink), var(--ink)); background-size: 100% 2px; background-repeat: no-repeat; background-position: 0 94%; transition: background-color .2s, opacity .2s; border-radius: 3px; }
 .phrase sup { font: 700 11px/1 var(--mono); color: var(--muted); margin-left: 3px; letter-spacing: 0; }
@@ -268,7 +261,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #pointer circle.end { fill: var(--focus); stroke: var(--space); stroke-width: 1.5; }
 
 /* details (pinned) */
-#details { position: absolute; right: 14px; bottom: 78px; width: min(360px, calc(100% - 28px)); max-height: 42%; overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 12px 14px; z-index: 9; font-size: 12.5px; }
+#details { position: absolute; right: 14px; bottom: 138px; width: min(360px, calc(100% - 28px)); max-height: 42%; overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 12px 14px; z-index: 9; font-size: 12.5px; }
 #details .x { position: absolute; top: 6px; right: 8px; border: 0; background: transparent; font-size: 16px; color: var(--muted); }
 #details h2 { font-size: 14px; margin: 0 24px 6px 0; line-height: 1.45; }
 #details h3 { font: 700 9.5px/1 var(--mono); letter-spacing: .18em; color: var(--muted); margin: 12px 0 5px; text-transform: uppercase; }
@@ -282,39 +275,40 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #details .row { display: flex; gap: 6px; margin-top: 10px; }
 #details .row button { border: 1px solid var(--rule); background: transparent; border-radius: 7px; padding: 3px 9px; font-size: 12px; }
 
-/* player */
-#player { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 40; display: flex; flex-direction: column; align-items: center; gap: 8px; width: min(780px, calc(100% - 24px)); pointer-events: none; }
-#caption { pointer-events: auto; display: flex; gap: 12px; align-items: baseline; max-width: 100%; padding: 8px 24px 8px 14px; background: var(--band); color: var(--band-fg); box-shadow: var(--shadow); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-left: 4px solid var(--focus); }
-#caption[hidden] { display: none; }
-#caption .phase { font: 800 10px/1 var(--mono); letter-spacing: .22em; flex: none; text-transform: uppercase; opacity: .65; }
-#caption .main { font-weight: 800; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-#controls { pointer-events: auto; display: flex; gap: 6px; align-items: center; padding: 6px 8px; background: var(--card); border: 1.5px solid var(--card-line); border-radius: 0; }
-#controls select { border: 1px solid var(--rule); background: transparent; border-radius: 7px; height: 28px; font-size: 12px; padding: 0 4px; }
-#controls option { background: var(--card); color: var(--ink); }
-#progress { font: 700 11px/1 var(--mono); color: var(--muted); min-width: 52px; text-align: center; }
-#playBtn { background: var(--ui); color: var(--ui-fg); border-color: var(--ui); min-width: 54px; }
+/* the gauge: the meta-structure, text — chunks — model — its forms, is the control */
+#gauge { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 40; width: min(560px, calc(100% - 16px)); background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); touch-action: none; user-select: none; -webkit-user-select: none; }
+#gauge svg { display: block; width: 100%; height: auto; cursor: grab; }
+#gauge svg.dragging { cursor: grabbing; }
+#gauge .g-line { fill: none; stroke: var(--card-line); stroke-width: 3; }
+#gauge .g-fill { fill: none; stroke: var(--focus); stroke-width: 3; }
+#gauge .g-branch { fill: none; stroke: var(--card-line); stroke-width: 2; }
+#gauge .g-branch-fill { fill: none; stroke: var(--focus); stroke-width: 2.5; }
+#gauge .g-hit { fill: none; stroke: transparent; stroke-width: 26; }
+#gauge .g-node { fill: var(--card); stroke: var(--ink-2); stroke-width: 2; }
+#gauge .g-node.on { fill: var(--ink); stroke: var(--ink); }
+#gauge .g-tip { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.6; }
+#gauge .g-tip.on { fill: var(--ink); }
+#gauge text { fill: var(--ink-2); font-size: 12px; font-weight: 700; }
+#gauge text.lv { fill: var(--muted); font: 700 9px/1 var(--mono); letter-spacing: .08em; }
+#gauge text.on { fill: var(--ink); }
+#gauge .g-label { cursor: pointer; }
+#gauge .g-knob { fill: var(--focus); stroke: var(--space); stroke-width: 2.5; }
+#gauge .g-halo { fill: rgba(var(--focus-rgb), .18); }
+#ticker { position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%); z-index: 39; pointer-events: none; display: flex; gap: 12px; align-items: baseline; max-width: calc(100% - 32px); padding: 8px 26px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-left: 4px solid var(--focus); opacity: 0; transition: opacity .25s; }
+#ticker.on { opacity: 1; }
+#ticker .k { font: 800 10px/1 var(--mono); letter-spacing: .22em; opacity: .6; flex: none; }
+#ticker .n { font: 800 18px/1 var(--mono); flex: none; }
+#ticker .m { font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #hint { position: absolute; right: 16px; bottom: 18px; z-index: 11; font-size: 11.5px; color: var(--muted); max-width: 260px; text-align: right; pointer-events: none; transition: opacity .6s; }
 #hint.gone { opacity: 0; }
 #problems { position: absolute; left: 14px; top: 12px; z-index: 13; background: var(--card); border: 1px solid var(--pos); border-radius: 8px; padding: 8px 10px; font-size: 12px; max-width: 420px; }
 #problems ul { margin: 4px 0 0; padding-left: 18px; }
 
-/* flights, cut-ins and slates */
+/* flights and slates */
 #fly { position: fixed; inset: 0; pointer-events: none; z-index: 30; overflow: hidden; }
 #fly > * { position: fixed; margin: 0; box-sizing: border-box; will-change: transform, opacity; }
 .landing { visibility: hidden !important; }
-.cutin { left: 0; right: 0; display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 26px; padding: 0 8vw; background: var(--band); color: var(--band-fg); clip-path: polygon(0 16%, 100% 0, 100% 84%, 0 100%); box-shadow: inset 6px 0 var(--focus); }
-.cutin::before { content: ""; position: absolute; inset: 0; pointer-events: none; background-image: radial-gradient(rgba(0, 0, 0, .22) 1.1px, transparent 1.4px); background-size: 7px 7px;
-  -webkit-mask-image: linear-gradient(100deg, transparent 55%, #000 85%); mask-image: linear-gradient(100deg, transparent 55%, #000 85%); }
-.cutin.major { height: 168px; }
-.cutin.minor { height: 96px; padding: 0 6vw; column-gap: 18px; }
-.cutin .ci-num { font: 800 92px/1 var(--mono); letter-spacing: -.04em; color: transparent; -webkit-text-stroke: 2px var(--band-fg); grid-row: span 2; opacity: .9; }
-.cutin.minor .ci-num { font-size: 52px; -webkit-text-stroke-width: 1.5px; }
-.cutin .ci-kick { font: 800 11px/1 var(--mono); letter-spacing: .32em; align-self: end; margin-bottom: 9px; opacity: .6; }
-.cutin .ci-head { font-size: 30px; line-height: 1.3; font-weight: 900; letter-spacing: .02em; align-self: start; position: relative; z-index: 1; }
-.cutin.minor .ci-head { font-size: 20px; }
-.cutin.minor .ci-kick { margin-bottom: 5px; }
-.cutin.concl { background: var(--focus); color: #111622; box-shadow: inset 6px 0 #111622; }
-.cutin.concl .ci-num { -webkit-text-stroke-color: #111622; }
+main.scrubbing *, main.scrubbing *::before { transition: none !important; }
 .slate { font: 800 12px/1 var(--mono); letter-spacing: .3em; padding: 9px 22px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); border-left: 4px solid var(--focus); }
 .slate b { margin-right: 10px; opacity: .6; }
 
@@ -322,31 +316,16 @@ body[data-stop="text"] .seg.c { cursor: text; }
 main.narrow { flex-direction: column; }
 main.narrow #textPane { width: 100% !important; margin-left: 0 !important; }
 main.narrow #modelPane { border-left: 0; border-top: 1px solid var(--rule); }
-main.narrow #orderSel, main.narrow #hint { display: none; }
+main.narrow #hint { display: none; }
 main.narrow .rep.linear .stack { margin-right: 44px; }
-main.narrow #details { max-height: 38%; bottom: 70px; }
-main.narrow .cutin .ci-num { font-size: 56px; } main.narrow .cutin .ci-head { font-size: 20px; }
+main.narrow #details { max-height: 34%; bottom: 120px; }
+main.narrow #ticker .m { font-size: 12.5px; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 </head>
-<body data-stop="model">
+<body data-stop="text">
 <header>
   <div class="titles"><h1 id="title">Semantic Model</h1><div class="src" id="sourceLine"></div></div>
-  <div class="ctl"><span class="ctl-label" data-i18n="focusAxis">Focus</span>
-    <div class="seg-ctl" id="stopCtl" role="group">
-      <button type="button" data-stop="text" data-level="L0" data-i18n="stopText">Text</button>
-      <button type="button" data-stop="chunks" data-level="L1" data-i18n="stopChunks">Chunks</button>
-      <button type="button" data-stop="model" data-level="L2" data-i18n="stopModel">Model</button>
-    </div>
-  </div>
-  <div class="ctl"><span class="ctl-label" data-i18n="formAxis">Form</span>
-    <div class="seg-ctl" id="repCtl" role="group">
-      <button type="button" data-rep="structure" data-i18n="repStructure">Structure</button>
-      <button type="button" data-rep="linear" data-i18n="repLinear">Linear</button>
-      <button type="button" data-rep="table" data-i18n="repTable">Table</button>
-      <button type="button" data-rep="summary" data-i18n="repSummary">Summary</button>
-    </div>
-  </div>
 </header>
 <main id="main">
   <canvas id="field" aria-hidden="true"></canvas>
@@ -355,7 +334,6 @@ main.narrow .cutin .ci-num { font-size: 56px; } main.narrow .cutin .ci-head { fo
       <svg id="slabs" aria-hidden="true"></svg>
       <div id="text"></div>
       <svg id="marks" aria-hidden="true"></svg>
-      <div id="tags"></div>
     </div>
   </section>
   <section id="modelPane" aria-label="Model">
@@ -364,23 +342,8 @@ main.narrow .cutin .ci-num { font-size: 56px; } main.narrow .cutin .ci-head { fo
   </section>
   <svg id="pointer" aria-hidden="true"></svg>
   <div id="hint"></div>
-  <div id="player">
-    <div id="caption" hidden aria-live="polite"><span class="phase"></span><span class="main"></span></div>
-    <div id="controls">
-      <button type="button" class="icon-btn" id="firstBtn" aria-label="Start">⏮</button>
-      <button type="button" class="icon-btn" id="prevBtn" aria-label="Previous step">◀</button>
-      <button type="button" class="icon-btn" id="playBtn" aria-label="Play">▶</button>
-      <button type="button" class="icon-btn" id="nextBtn" aria-label="Next step">▶|</button>
-      <span id="progress">–</span>
-      <select id="orderSel" aria-label="Order">
-        <option value="notes" data-i18n="byNotes">Notes order</option>
-        <option value="reading" data-i18n="byReading">Reading order</option>
-      </select>
-      <select id="speedSel" aria-label="Speed">
-        <option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option>
-      </select>
-    </div>
-  </div>
+  <div id="ticker" aria-hidden="true"><span class="k"></span><span class="n"></span><span class="m"></span></div>
+  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 560 120" role="slider" aria-label="Text, chunks, model" tabindex="0"></svg></div>
   <div id="problems" hidden></div>
 </main>
 <div id="fly" aria-hidden="true"></div>
@@ -581,7 +544,7 @@ main.narrow .cutin .ci-num { font-size: 56px; } main.narrow .cutin .ci-head { fo
 </script>
 <!-- View options (presentation only; never part of the model). build_viewer.py replaces this block. -->
 <script type="application/json" id="semantic-view">
-{"stop": "model", "rep": "linear"}
+{"stage": "text"}
 </script>
 
 <script>
@@ -656,7 +619,8 @@ const I18N = {
     capText: 'characters', conclusion: 'CONCLUSION', headline: 'Headline', points: 'Points', other: 'Other chunks', noSummary: 'This model has no summary.',
     inText: 'In the text', links: 'Relations', basis: 'Derived from', basisOf: 'Basis for', partOf: 'Part of', contains: 'Contains', note: 'Note',
     goText: 'Down to the text', release: 'Release', close: 'Hide (stays pinned)',
-    hintModel: 'Hover the text or the model; a thread joins them. Click to pin, Esc to release. ↑↓ rise and descend.', hintChunks: 'The text, wrapped into chunks.', hintText: 'The text as written.',
+    hintModel: 'The model. From it grow its forms: drag the knob into a branch. Hover the text or the model; a thread joins them.', hintChunks: 'The text wrapped into chunks; on the right, the chunks at a glance. Keep dragging to rise to the model.', hintText: 'Drag the knob on the gauge to the right: the text is wrapped into chunks, and the chunks become a model.',
+    kWrap: 'WRAP', kForm: 'MODEL', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS',
     explicit: 'explicit — stated in the text', inferred: 'inferred — follows from the text, not stated', abstracted: 'abstracted — a grouping made while modeling', uncertain: 'uncertain — more than one reading',
     problems: 'Some parts of the model could not be shown',
   },
@@ -669,7 +633,8 @@ const I18N = {
     capText: '字', conclusion: '結論', headline: '見出し', points: '要点', other: 'ほかの塊', noSummary: 'このモデルには要約（summary）がありません。',
     inText: '原文', links: 'つながり', basis: '根拠（導出元）', basisOf: 'これを根拠とするもの', partOf: '含まれる先', contains: '含むもの', note: 'メモ',
     goText: '原文へ降りる', release: '解除', close: '閉じる（固定は維持）',
-    hintModel: '本文かモデルにカーソルを重ねると、糸でつながる。クリックで固定、Escで解除。↑↓で昇り降り。', hintChunks: '本文を塊に巻いた層。', hintText: '書かれたままの本文。',
+    hintModel: 'モデルの層。モデルから伸びた枝へつまみを動かすと、線形・表・要約に変わる。本文かモデルにカーソルを重ねると糸でつながる。', hintChunks: '本文を塊に巻いた層。右はどんな塊があるかの一覧。さらに右へ動かすとモデルになる。', hintText: '下のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルになる。',
+    kWrap: '塊を巻く', kForm: 'モデルにする', kLink: 'つなぐ', kRep: '表現', chunksN: 'CHUNKS · 塊',
     explicit: 'explicit — 原文に明示', inferred: 'inferred — 原文から推論（明示はない）', abstracted: 'abstracted — モデル化でまとめたもの', uncertain: 'uncertain — 複数の読みがありうる',
     problems: 'モデルの一部を表示できませんでした',
   },
@@ -801,25 +766,28 @@ const sentenceNo = (() => {
 const sentenceLabel = sp => { const a = sentenceNo(sp.start), b = sentenceNo(Math.max(sp.start, sp.end - 1)); return a === b ? `S${a}` : `S${a}–${b}`; };
 
 /* =====================================================================
-   3. State
+   3. State: the stages, and how they connect
+   text — chunks — model, and from the model its forms. The gauge moves along this.
    ===================================================================== */
 const body = document.body, main = $('#main');
-const textPane = $('#textPane'), page = $('#page'), slabs = $('#slabs'), marks = $('#marks'), tagsEl = $('#tags');
+const textPane = $('#textPane'), page = $('#page'), slabs = $('#slabs'), marks = $('#marks');
 const modelPane = $('#modelPane'), stage = $('#stage'), repEl = $('#rep'), details = $('#details');
-const pointerSvg = $('#pointer'), fly = $('#fly');
-const STOPS = ['text', 'chunks', 'model'];
-const REPS = ['structure', 'linear', 'table', 'summary'];
-const S = {
-  stop: STOPS.includes(viewOpt.stop) ? viewOpt.stop : 'model',
-  rep: REPS.includes(viewOpt.rep) ? viewOpt.rep : 'linear',
-  wrapped: null,          // Set of node ids wrapped so far (null: all)
-  shown: null,            // Set of relation ids drawn so far (null: all)
-  current: new Set(),     // what the current story step adds
-  hover: null, pinned: null, hoverSeg: null,
-  follow: viewOpt.follow !== false,
+const pointerSvg = $('#pointer'), fly = $('#fly'), gaugeSvg = $('#gaugeSvg'), tickerEl = $('#ticker');
+const STAGES = {
+  text: { stop: 'text', rep: 'chunks' },
+  chunks: { stop: 'chunks', rep: 'chunks' },
+  model: { stop: 'model', rep: 'structure' },
+  linear: { stop: 'model', rep: 'linear' },
+  table: { stop: 'model', rep: 'table' },
+  summary: { stop: 'model', rep: 'summary' },
 };
-const isWrapped = n => !S.wrapped || S.wrapped.has(n.id);
-const isShownRel = r => !S.shown || S.shown.has(r.id);
+const TRUNK = ['text', 'chunks', 'model'];
+const FORMS = ['linear', 'table', 'summary'];
+const SEGS = [['text', 'chunks'], ['chunks', 'model'], ...FORMS.map(f => ['model', f])];
+const first = STAGES[viewOpt.stage] ? viewOpt.stage : 'text';
+const S = { stage: first, stop: STAGES[first].stop, rep: STAGES[first].rep, hover: null, pinned: null, hoverSeg: null, follow: viewOpt.follow !== false };
+const isWrapped = () => S.stop !== 'text';
+const isShownRel = () => true;
 let G = {};
 
 /* =====================================================================
@@ -830,32 +798,29 @@ function geometry() {
   const mw = main.clientWidth, mh = main.clientHeight;
   const narrow = mw < 760;
   const colW = narrow ? Math.max(240, mw - GUTTER - 22) : clamp(Math.round(mw * 0.355), 300, 560);
-  const tagW = narrow ? 0 : clamp(Math.round(mw * 0.22), 190, 290);
-  return { mw, mh, narrow, colW, tagW };
+  return { mw, mh, narrow, colW };
 }
 function applyLayout() {
   G = geometry();
   body.dataset.stop = S.stop;
   main.classList.toggle('narrow', G.narrow);
   const rs = document.documentElement.style;
-  rs.setProperty('--gutter', GUTTER + 'px'); rs.setProperty('--col', G.colW + 'px'); rs.setProperty('--tagw', G.tagW + 'px');
+  rs.setProperty('--gutter', GUTTER + 'px'); rs.setProperty('--col', G.colW + 'px');
   if (G.narrow) {
     textPane.style.width = '100%'; textPane.style.marginLeft = '0';
-    textPane.style.height = S.stop === 'model' ? '44%' : '100%';
+    textPane.style.height = S.stop === 'text' ? '100%' : '46%';
   } else {
-    textPane.style.height = '100%';
-    const full = GUTTER + G.colW + G.tagW + 24;
-    if (S.stop === 'model') { textPane.style.width = (GUTTER + G.colW + 30) + 'px'; textPane.style.marginLeft = '0'; }
-    else { textPane.style.width = Math.min(G.mw, full) + 'px'; textPane.style.marginLeft = Math.max(0, (G.mw - full) / 2) + 'px'; }
+    // the text keeps its width on every layer, so it never reflows; on the ground it is centred
+    const w = GUTTER + G.colW + 30;
+    textPane.style.height = '100%'; textPane.style.width = w + 'px';
+    textPane.style.marginLeft = S.stop === 'text' ? Math.max(0, (G.mw - w) / 2) + 'px' : '0';
   }
-  $$('#stopCtl button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.stop === S.stop)));
-  $$('#repCtl button').forEach(b => b.setAttribute('aria-pressed', String(S.stop === 'model' && b.dataset.rep === S.rep)));
   const hint = $('#hint');
   if (hint.textContent !== (hint.textContent = S.stop === 'model' ? T.hintModel : S.stop === 'chunks' ? T.hintChunks : T.hintText)) {
     hint.classList.remove('gone'); clearTimeout(hint._t); hint._t = setTimeout(() => hint.classList.add('gone'), 7000);
   }
 }
-/* ---- L1: brackets, slabs and margin headlines ---- */
+/* ---- L1: brackets and slabs ---- */
 function spanBox(sp) {
   const [a, b] = spanSegs(sp);
   if (a == null || b == null || a > b) return null;
@@ -903,25 +868,7 @@ function drawMarks(lift = new Set()) {
     const t = svgEl('text', { x: bracketX(0) - 4, y }, l.g); t.textContent = l.n.num;
   });
 }
-function placeTags() {
-  tagsEl.innerHTML = '';
-  if (S.stop !== 'chunks' || G.narrow) return;
-  const list = order.filter(n => isWrapped(n) && n.homeBox).sort((a, b) => a.homeBox.top - b.homeBox.top || a.ord - b.ord);
-  let last = -99;
-  const leaders = [];
-  list.forEach(n => {
-    const el = h('div', { class: `tag d${Math.min(n.depth, 1)}${n.role === 'conclusion' ? ' concl' : ''}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
-      h('b', { class: 'num', 'data-key': `num:${n.id}` }, n.num), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label));
-    tagsEl.append(el);
-    const y = Math.max(n.homeBox.top, last + 6);
-    el.style.top = y + 'px';
-    last = y + el.offsetHeight;
-    if (y - n.homeBox.top > 6) leaders.push([n.homeBox.top + 10, y + 10]);
-  });
-  const x0 = GUTTER + G.colW + 6, x1 = GUTTER + G.colW + 24;
-  leaders.forEach(([a, b]) => svgEl('path', { class: 'leader', d: `M${x0},${a} C${x0 + 10},${a} ${x1 - 10},${b} ${x1},${b}` }, marks));
-}
-function layoutText(lift) { measureBoxes(); drawMarks(lift); placeTags(); }
+function layoutText() { measureBoxes(); drawMarks(); }
 
 /* =====================================================================
    5. L2: the model's forms — structure, linear, table, summary
@@ -1007,11 +954,18 @@ function renderSummary() {
       style: `left:${r.left - rr.left}px;top:${r.top - rr.top}px;width:${r.width}px;height:${r.height}px` }));
   }));
 }
+function renderChunks() {
+  repEl.append(h('div', { class: 'kick' }, `${T.chunksN}  ${order.length}`));
+  repEl.append(h('div', { class: 'clist' }, ...order.map(n => h('div', {
+    class: `crow box d${Math.min(n.depth, 1)}${n.role === 'conclusion' ? ' concl' : ''}`, 'data-key': `card:${n.id}`, 'data-node': n.id,
+    style: n.depth ? `margin-left:${Math.min(n.depth, 3) * 18}px` : null },
+    h('b', { class: 'num', 'data-key': `num:${n.id}` }, n.num), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)))));
+}
 function renderRep() {
   repEl.innerHTML = '';
   repEl.className = 'rep ' + S.rep;
-  if (S.stop !== 'model') return;
-  ({ structure: renderStructure, linear: renderLinear, table: renderTable, summary: renderSummary })[S.rep]();
+  if (S.stop === 'text') return;
+  ({ chunks: renderChunks, structure: renderStructure, linear: renderLinear, table: renderTable, summary: renderSummary })[S.rep]();
   repEl.append(svgEl('svg', { id: 'links' }));
 }
 
@@ -1080,7 +1034,11 @@ function drawLinks(grow = new Set()) {
 }
 
 /* =====================================================================
-   6. Transitions: every keyed piece flies from where it was to where it goes
+   6. The gauge's engine. Between two neighbouring stages the page can stand at any
+   point u in [0, 1]: every keyed piece (a chunk's card, number, headline, each point)
+   is shown by ghosts placed between where it is in one stage and where it is in the
+   other. Chunks wrap, and lines grow, in order as u advances. Letting go settles to
+   the nearer stage.
    ===================================================================== */
 const GHOST_PROPS = ['color', 'backgroundColor', 'fontSize', 'fontWeight', 'fontFamily', 'lineHeight', 'letterSpacing', 'textAlign', 'whiteSpace',
   'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth',
@@ -1121,7 +1079,8 @@ function ghost(rec) {
   else {
     g = rec.el.cloneNode(true);
     g.removeAttribute('data-key'); g.removeAttribute('id'); g.classList.remove('landing');
-    g.querySelectorAll('[data-key]').forEach(d => { d.style.visibility = 'hidden'; });
+    // a box flies as a bare frame (its contents fly on their own); text keeps its contents
+    g.querySelectorAll(rec.box ? '*' : '[data-key]').forEach(d => { d.style.visibility = 'hidden'; });
     g.querySelectorAll('[id]').forEach(d => d.removeAttribute('id'));
     Object.assign(g.style, rec.style);
   }
@@ -1137,91 +1096,205 @@ function fallbacks(key) {
   return [...(kind !== 'card' ? ['card:' + id] : []), ...ancestors(n).map(a => 'card:' + a.id), 'passage:' + id];
 }
 const firstOf = (keys, map) => { for (const k of keys) if (map.has(k)) return map.get(k); return null; };
-let flight = null;
-function endFlight() {
-  if (!flight) return;
-  const f = flight; flight = null;
-  f.anims.forEach(a => { try { a.cancel(); } catch (e) { /* already gone */ } });
-  fly.querySelectorAll(':scope > :not(.cutin):not(.slate)').forEach(el => el.remove());
-  $$('.landing').forEach(el => el.classList.remove('landing'));
-  f.done();
+const shrinkInto = (src, size) => ({ left: src.left + 4, top: src.top + 4, width: Math.max(8, Math.min(src.width - 8, size.width)), height: Math.max(6, Math.min(src.height - 8, size.height)) });
+const lerpRect = (a, b, e) => ({ left: a.left + (b.left - a.left) * e, top: a.top + (b.top - a.top) * e, width: a.width + (b.width - a.width) * e, height: a.height + (b.height - a.height) * e });
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const settle = t => { const c = 1.25; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };   // overshoots a little, then rests
+const levelOf = st => st === 'text' ? 0 : st === 'chunks' ? 0.42 : 1;
+const formLabel = st => T['rep' + st[0].toUpperCase() + st.slice(1)] || st;
+// the order in which lines grow: from the conclusion outward through its reasons
+const linkOrder = (() => {
+  const out = new Map(), seen = new Set(), queue = conclusions.slice();
+  let k = 0;
+  while (queue.length) {
+    const t = queue.shift();
+    if (seen.has(t.id)) continue;
+    seen.add(t.id);
+    rels.filter(r => r.target === t).sort((a, b) => a.source.ord - b.source.ord).forEach(r => { if (!out.has(r.id)) out.set(r.id, k++); queue.push(r.source); });
+    [t.parent, ...t.children].filter(Boolean).forEach(m => queue.push(m));
+  }
+  rels.forEach(r => { if (!out.has(r.id)) out.set(r.id, k++); });
+  return out;
+})();
+let sess = null;
+function setStage(name) {
+  const st = STAGES[name];
+  S.stage = name; S.stop = st.stop; S.rep = st.rep;
+  renderAll();
+  drawLinks();
 }
-const speed = () => +$('#speedSel').value || 1;
-async function transition(mutate, opts = {}) {
-  endFlight();
-  if (reduceMotion || opts.instant) { mutate(); fieldTo(0); afterRender(); return; }
-  const before = snapshot();
-  const paneBefore = textPane.getBoundingClientRect();
-  mutate();
-  const after = snapshot();
-  const paneAfter = textPane.getBoundingClientRect();
-  const D = (opts.ms || 640) / speed();
-  const dir = opts.dir || 0;                 // +1 rising to the model, −1 descending to the text
-  const anims = [];
-  const done = new Promise(r => { flight = { anims, done: r }; });
-  const ease = 'cubic-bezier(.22, 1.18, .42, 1)';
-  // the ground: slides (never reflows), and tilts away as we rise or comes back up as we descend
-  const dx = paneBefore.left - paneAfter.left;
-  if (dir > 0) anims.push(textPane.animate([
-    { transform: `translateX(${dx}px) perspective(1600px) rotateX(0deg)` },
-    { transform: `translateX(${dx * 0.35}px) perspective(1600px) rotateX(16deg) scale(.92)`, filter: 'brightness(.7)', offset: 0.42 },
-    { transform: 'perspective(1600px) rotateX(0deg)', filter: 'none' }], { duration: D * 1.35, easing: 'cubic-bezier(.3,.8,.3,1)' }));
-  else if (dir < 0) anims.push(textPane.animate([
-    { transform: `translateX(${dx}px) perspective(1600px) rotateX(14deg) scale(.9)`, filter: 'brightness(.6)' },
-    { transform: 'perspective(1600px) rotateX(0deg)', filter: 'none' }], { duration: D * 1.2, easing: 'cubic-bezier(.2,1,.3,1)' }));
-  else if (Math.abs(dx) > 1) anims.push(textPane.animate([{ transform: `translateX(${dx}px)` }, { transform: 'none' }], { duration: D, easing: 'cubic-bezier(.3,.9,.3,1)' }));
-  // the field: scattered on the ground, it settles into the model's figure as we rise
-  fieldTo(D * (dir ? 1.9 : 1.3));
-  if (S.stop === 'model' && dir > 0) anims.push(modelPane.animate([{ opacity: 0 }, { opacity: 1 }], { duration: D * 0.9, easing: 'ease-out' }));
-  if (S.stop === 'model') anims.push(repEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: D * 0.8, delay: D * 0.3, easing: 'ease-out', fill: 'backwards' }));
-  const keys = [...new Set([...before.keys(), ...after.keys()])].filter(k => !k.startsWith('passage:'));
-  const stagger = Math.min(26, 460 / Math.max(1, keys.length));
-  const arc = dir > 0 ? -34 : dir < 0 ? 22 : 0;
-  const tween = (r, base, t, lift, uniform) => {
-    const x = r.left - base.left, y = r.top - base.top + lift;
-    return uniform ? `translate(${x}px, ${y}px) scale(${clamp(r.width / base.width, 0.25, 4)})` : `translate(${x}px, ${y}px) scale(${r.width / base.width}, ${r.height / base.height})`;
-  };
-  const mid = (a, b) => ({ left: (a.left + b.left) / 2, top: (a.top + b.top) / 2, width: (a.width + b.width) / 2, height: (a.height + b.height) / 2 });
-  const move = (g, from, to, delay, fadeOut, uniform) => {
-    const base = fadeOut ? from : to;
-    const frames = arc ? [{ transform: tween(from, base, 0, 0, uniform) }, { transform: tween(mid(from, to), base, 0.5, arc, uniform), offset: 0.5 }, { transform: tween(to, base, 1, 0, uniform) }]
-      : [{ transform: tween(from, base, 0, 0, uniform) }, { transform: tween(to, base, 1, 0, uniform) }];
-    anims.push(g.animate(frames, { duration: D, delay, easing: ease, fill: 'both' }));
-    anims.push(g.animate(fadeOut ? [{ opacity: 1 }, { opacity: 1, offset: 0.3 }, { opacity: 0 }] : [{ opacity: 0 }, { opacity: 0, offset: 0.32 }, { opacity: 1 }], { duration: D, delay, easing: 'linear', fill: 'both' }));
-  };
-  keys.forEach((key, i) => {
-    const a = before.get(key), b = after.get(key);
-    const delay = i * stagger;
-    if (b) b.el.classList.add('landing');
-    const uniform = !(b || a).box;
-    if (a && b) {
-      move(ghost(a), a.r, b.r, delay, true, uniform);
-      move(ghost(b), a.r, b.r, delay, false, uniform);
-    } else if (b) {
-      const src = firstOf(fallbacks(key), before);
-      const g = ghost(b);
-      if (src) {
-        const from = { left: src.r.left + 4, top: src.r.top + 4, width: Math.max(8, Math.min(src.r.width - 8, b.r.width)), height: Math.max(6, Math.min(src.r.height - 8, b.r.height)) };
-        move(g, from, b.r, delay + D * 0.15, false, uniform);
-      } else {
-        anims.push(g.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: D * 0.8, delay: delay + D * 0.3, easing: ease, fill: 'both' }));
-      }
-    } else if (a) {
-      const dst = firstOf(fallbacks(key), after);
-      const g = ghost(a);
-      if (dst) {
-        const to = { left: dst.r.left + 4, top: dst.r.top + 4, width: Math.max(8, Math.min(dst.r.width - 8, a.r.width)), height: Math.max(6, Math.min(dst.r.height - 8, a.r.height)) };
-        move(g, a.r, to, delay * 0.5, true, uniform);
-      } else {
-        anims.push(g.animate([{ opacity: 1 }, { opacity: 0, transform: 'translateY(-6px)' }], { duration: D * 0.5, delay: delay * 0.5, easing: 'ease-in', fill: 'both' }));
-      }
-    }
+function contextGhost() {     // a form's own furniture (headers, lines, frames), faded as one piece
+  if (S.stop === 'text') return null;
+  const st = stage.getBoundingClientRect(), r = repEl.getBoundingClientRect();
+  const wrap = h('div');
+  Object.assign(wrap.style, { left: st.left + 'px', top: st.top + 'px', width: st.width + 'px', height: st.height + 'px', overflow: 'hidden', zIndex: 0 });
+  const c = repEl.cloneNode(true);
+  c.querySelectorAll('[data-key]').forEach(d => { d.style.visibility = 'hidden'; });
+  Object.assign(c.style, { position: 'absolute', left: (r.left - st.left) + 'px', top: (r.top - st.top) + 'px', width: r.width + 'px', minHeight: '0', margin: '0' });
+  wrap.append(c); fly.append(wrap);
+  return wrap;
+}
+function beginSeg(a, b) {
+  const kind = a + '-' + b;
+  setStage(a);
+  const A = snapshot(), paneA = textPane.getBoundingClientRect().left, ctxA = contextGhost();
+  setStage(b);
+  const B = snapshot(), paneB = textPane.getBoundingClientRect().left;
+  const N = Math.max(1, order.length - 1);
+  const ordOf = key => { const n = nodes.get(key.split(':')[1]); return n ? n.ord / N : 0.5; };
+  const [d0, spread, dur] = kind === 'text-chunks' ? [0.16, 0.62, 0.22] : kind === 'chunks-model' ? [0, 0.3, 0.42] : [0, 0.28, 0.55];
+  const pieces = [];
+  new Set([...A.keys(), ...B.keys()]).forEach(key => {
+    if (key.startsWith('passage:')) return;
+    const ra = A.get(key), rb = B.get(key);
+    const pc = { d: d0 + spread * ordOf(key) + (key.startsWith('pt:') ? 0.05 : 0), dur, uniform: !(rb || ra).box };
+    if (rb) rb.el.classList.add('landing');
+    if (ra && rb) Object.assign(pc, { from: ra.r, to: rb.r, gA: ghost(ra), gB: ghost(rb), baseA: ra.r, baseB: rb.r });
+    else if (rb) { const src = firstOf(fallbacks(key), A); Object.assign(pc, { from: src ? shrinkInto(src.r, rb.r) : null, to: rb.r, gB: ghost(rb), baseB: rb.r }); }
+    else { const dst = firstOf(fallbacks(key), B); Object.assign(pc, { from: ra.r, to: dst ? shrinkInto(dst.r, ra.r) : null, gA: ghost(ra), baseA: ra.r }); }
+    pieces.push(pc);
   });
-  Promise.all(anims.map(a => a.finished.catch(() => null))).then(() => { if (flight && flight.anims === anims) endFlight(); });
-  await done;
-  afterRender();
+  // in the text: brackets and slabs, one chunk after another
+  const wraps = kind === 'text-chunks' ? order.map(n => ({ n, d: 0.04 + 0.62 * n.ord / N,
+    brs: $$(`#marks .br[data-node="${n.id}"]`), sls: $$(`#slabs .sl[data-node="${n.id}"]`) })) : [];
+  // in the model: lines, from the conclusion outward
+  const L = Math.max(1, rels.length - 1);
+  const links = kind === 'chunks-model' ? $$('#links .link', repEl).map(g => ({ g, d: 0.5 + 0.38 * (linkOrder.get(g.dataset.rel) || 0) / L, r: elsById.get(g.dataset.rel) })) : [];
+  sess = { a, b, kind, pieces, ctxA, dx: paneA - paneB, wraps, links, u: 0 };
+  main.classList.add('scrubbing');
+  cancelAnimationFrame(FIELD.raf); FIELD.raf = 0;
+  frame(0);
 }
-function afterRender(grow) { drawLinks(grow); applyFocus(); }
+function place(g, base, r, uniform) {
+  const x = r.left - base.left, y = r.top - base.top;
+  g.style.transform = uniform ? `translate(${x}px, ${y}px)` : `translate(${x}px, ${y}px) scale(${r.width / base.width}, ${r.height / base.height})`;
+}
+function frame(u) {
+  const s = sess;
+  if (!s) return;
+  s.u = u;
+  const uc = clamp(u, 0, 1);
+  for (const p of s.pieces) {
+    const raw = (u - p.d) / p.dur, t = clamp(raw, 0, 1.15), o = clamp(raw, 0, 1);
+    const e = t <= 1 ? easeInOut(t) : t;             // past the end (a settling overshoot) it keeps going a little
+    const at = p.from && p.to ? lerpRect(p.from, p.to, e) : null;
+    const fadeA = p.uniform ? 1 - smooth(0.42, 0.56, o) : 1 - smooth(0.25, 0.7, o), fadeB = p.uniform ? smooth(0.46, 0.6, o) : smooth(0.3, 0.8, o);
+    if (p.gA) { place(p.gA, p.baseA, at || p.baseA, p.uniform); p.gA.style.opacity = String(p.gB ? fadeA : 1 - smooth(0.35, 0.95, o)); }
+    if (p.gB) {
+      if (at) place(p.gB, p.baseB, at, p.uniform); else p.gB.style.transform = `translateY(${(1 - e) * 10}px)`;
+      p.gB.style.opacity = String(p.gA ? fadeB : smooth(0.15, 0.7, o));
+    }
+  }
+  // the ground slides aside, and tilts back for a moment as we rise
+  const eg = easeInOut(clamp(u / 0.55, 0, 1));
+  const tilt = s.kind === 'text-chunks' || s.kind === 'chunks-model' ? 8 * Math.sin(Math.PI * uc) : 0;
+  textPane.style.transform = `translateX(${s.dx * (1 - eg)}px)` + (tilt && !reduceMotion ? ` perspective(1600px) rotateX(${tilt}deg)` : '');
+  if (s.ctxA) s.ctxA.style.opacity = String(1 - smooth(0, 0.5, uc));
+  if (s.kind === 'text-chunks') modelPane.style.opacity = String(smooth(0.02, 0.4, uc));
+  repEl.style.opacity = s.kind === 'chunks-model' || s.kind === 'text-chunks' ? '1' : String(smooth(0.4, 1, uc));
+  s.wraps.forEach(w => {
+    const k = clamp((u - w.d) / 0.2, 0, 1);
+    w.brs.forEach(g => { const line = g.querySelector('path.line'), tx = g.querySelector('text');
+      if (line) { line.style.strokeDasharray = '1'; line.style.strokeDashoffset = String(1 - k); }
+      if (tx) tx.style.opacity = String(k); });
+    w.sls.forEach(g => { g.style.opacity = String(k); g.style.transform = `translate(${(1 - k) * 5}px, ${(1 - k) * 5}px)`;
+      const slab = g.querySelector('rect.slab'); if (slab) slab.style.fill = k > 0 && k < 1 ? `rgba(var(--focus-rgb), ${(0.22 * Math.sin(Math.PI * k)).toFixed(3)})` : ''; });
+  });
+  s.links.forEach(l => {
+    const k = clamp((u - l.d) / 0.1, 0, 1), path = l.g.querySelector('path.l');
+    if (path) { if (l.r && l.r.prov === 'explicit') { path.style.strokeDasharray = '1'; path.style.strokeDashoffset = String(1 - k); } else path.style.opacity = String(k); }
+    const ar = l.g.querySelector('path.a'); if (ar) ar.style.opacity = String(smooth(0.7, 1, k));
+    if (l.g.classList.contains('show')) { const lb = l.g.querySelector('.lbl'); if (lb) lb.style.opacity = String(smooth(0.75, 1, k)); }
+  });
+  FIELD.t = levelOf(s.a) + (levelOf(s.b) - levelOf(s.a)) * uc;
+  drawField();
+  showTicker(s, u);
+  drawGauge();
+}
+function showTicker(s, u) {
+  let k = '', n = '', m = '';
+  if (u > 0.01 && u < 0.99) {
+    if (s.kind === 'text-chunks') {
+      const w = s.wraps.filter(w => u >= w.d + 0.1).pop();
+      if (w) { k = T.kWrap; n = titleNum(w.n); m = w.n.label; }
+    } else if (s.kind === 'chunks-model') {
+      const l = s.links.filter(l => u >= l.d).sort((a, b) => a.d - b.d).pop();
+      if (l && l.r) { k = T.kLink; n = l.r.target.num; m = `← ${l.r.source.num}  ${l.r.label}`; }
+      else { k = T.kForm; m = meta.title || ''; }
+    } else { k = T.kRep; m = formLabel(s.b); }
+  }
+  tickerEl.classList.toggle('on', !!(k || m));
+  $('.k', tickerEl).textContent = k; $('.n', tickerEl).textContent = n; $('.m', tickerEl).textContent = m;
+}
+function endSeg(final) {
+  const s = sess;
+  if (!s) return;
+  sess = null;
+  main.classList.remove('scrubbing');
+  fly.querySelectorAll(':scope > :not(.slate)').forEach(el => el.remove());
+  $$('.landing').forEach(el => el.classList.remove('landing'));
+  textPane.style.transform = ''; modelPane.style.opacity = ''; repEl.style.opacity = '';
+  tickerEl.classList.remove('on');
+  setStage(final >= 0.5 ? s.b : s.a);
+  FIELD.t = levelOf(S.stage); drawField();
+  afterRender();
+  drawGauge();
+}
+let tw = 0;
+function tweenU(to, ms, ease = easeInOut) {
+  return new Promise(res => {
+    const s = sess;
+    if (!s) return res();
+    const from = s.u, t0 = performance.now();
+    cancelAnimationFrame(tw);
+    const step = now => {
+      if (sess !== s) return res();
+      const k = ms > 0 ? clamp((now - t0) / ms, 0, 1) : 1;
+      frame(from + (to - from) * ease(k));
+      if (k < 1) tw = requestAnimationFrame(step); else res();
+    };
+    tw = requestAnimationFrame(step);
+  });
+}
+function route(a, b) {       // the stages passed through on the way from a to b
+  const head = FORMS.includes(a) ? [a, 'model'] : [a];
+  const tail = FORMS.includes(b) ? ['model', b] : [b];
+  const from = TRUNK.indexOf(head[head.length - 1]), to = TRUNK.indexOf(tail[0]), dir = Math.sign(to - from);
+  const path = head.slice();
+  for (let i = from; i !== to; i += dir) path.push(TRUNK[i + dir]);
+  return path.concat(tail.slice(1)).filter((x, i, arr) => i === 0 || x !== arr[i - 1]);
+}
+const segOf = (a, b) => SEGS.find(([x, y]) => (x === a && y === b) || (x === b && y === a));
+let goToken = 0;
+async function goTo(target, opts = {}) {
+  if (!STAGES[target]) return;
+  const my = ++goToken;
+  if (sess) endSeg(sess.u >= 0.5 ? 1 : 0);
+  const path = route(S.stage, target);
+  for (let i = 1; i < path.length; i++) {
+    const a = path[i - 1], b = path[i], [lo, hi] = segOf(a, b), up = a === lo;
+    beginSeg(lo, hi);
+    frame(up ? 0 : 1);
+    const ms = reduceMotion ? 0 : (opts.ms || (lo === 'text' ? 1700 : lo === 'chunks' ? 1900 : 950));
+    await tweenU(up ? 1 : 0, ms, i === path.length - 1 && up ? settle : easeInOut);
+    if (my !== goToken) return;
+    endSeg(up ? 1 : 0);
+  }
+  arrived();
+}
+function arrived() {
+  if (FORMS.includes(S.stage)) slate(formLabel(S.stage), T.kRep);
+  if (S.stage === 'summary') sweepSummary();
+}
+async function release() {
+  const s = sess;
+  if (!s) return;
+  const to = s.u >= 0.5 ? 1 : 0;
+  await tweenU(to, reduceMotion ? 0 : 420, to ? settle : easeInOut);
+  if (sess === s) { endSeg(to); arrived(); }
+}
+function afterRender() { drawLinks(); applyFocus(); }
 
 /* =====================================================================
    6b. The field: a classical, unruly geometry composed from the model itself.
@@ -1337,14 +1410,11 @@ function renderComposition() {
   c.fillStyle = pat; c.fill(FIELD.comp.tone);
   c.strokeStyle = `rgba(${col},${Math.min(1, base * BOOST * 1.4)})`; c.lineWidth = 1;
   c.stroke(FIELD.comp.thin);
-  // a strong print of the same composition, for the cut-in bands
-  const bw = 900, bh = 220, b = document.createElement('canvas'); b.width = bw; b.height = bh;
-  const bc = b.getContext('2d'); const { cx, cy, R } = fieldCentre(); const sc = Math.min(2.2, bw / (R * 2.6));
-  bc.setTransform(sc, 0, 0, sc, bw / 2 - cx * sc, bh / 2 - cy * sc);
-  bc.fillStyle = 'rgba(128,128,128,.22)'; bc.fill(FIELD.comp.fill, 'evenodd');
-  try { FIELD.band = b.toDataURL(); } catch (e) { FIELD.band = ''; }
 }
 function layoutField() {
+  const sig = [main.clientWidth, main.clientHeight, G.colW, G.narrow].join();
+  if (FIELD.sig === sig) { if (!sess) { FIELD.t = levelOf(S.stage); drawField(); } return; }
+  FIELD.sig = sig;
   FIELD.dpr = Math.min(2, devicePixelRatio || 1);
   FIELD.w = main.clientWidth; FIELD.h = main.clientHeight;
   fieldCanvas.width = Math.round(FIELD.w * FIELD.dpr); fieldCanvas.height = Math.round(FIELD.h * FIELD.dpr);
@@ -1360,7 +1430,8 @@ function layoutField() {
     tris.forEach(tri => FIELD.shards.push({ tri, c: [(tri[0][0] + tri[1][0] + tri[2][0]) / 3, (tri[0][1] + tri[1][1] + tri[2][1]) / 3],
       ox: (rand() - 0.5) * FIELD.w * 0.5, oy: (rand() - 0.5) * FIELD.h * 0.6, rot: (rand() - 0.5) * 2.2, sc: 0.55 + rand() * 0.7, d: rand() * 0.38 }));
   }
-  if (!FIELD.raf) { FIELD.t = LEVEL[S.stop]; FIELD.boost = 0; }
+  if (!sess) FIELD.t = levelOf(S.stage);
+  FIELD.boost = 0;
   drawField();
 }
 const easeIO = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -1395,47 +1466,7 @@ function drawField() {
     fctx.restore();
   }
 }
-function fieldTo(ms) {
-  const to = LEVEL[S.stop], from = FIELD.t;
-  cancelAnimationFrame(FIELD.raf);
-  if (reduceMotion || !ms) { FIELD.t = to; FIELD.boost = 0; FIELD.raf = 0; drawField(); return; }
-  const t0 = performance.now(), dip = from === to ? 0.16 : 0;      // a turn of form shakes it loose a little
-  const stepF = now => {
-    const k = clamp((now - t0) / ms, 0, 1);
-    FIELD.t = from + (to - from) * k - dip * Math.sin(Math.PI * k);
-    FIELD.boost = Math.sin(Math.PI * k) * (from === to ? 0.6 : 1);
-    drawField();
-    FIELD.raf = k < 1 ? requestAnimationFrame(stepF) : 0;
-    if (!FIELD.raf) { FIELD.t = to; FIELD.boost = 0; drawField(); }
-  };
-  FIELD.raf = requestAnimationFrame(stepF);
-}
-
-/* ---- cut-ins: a chunk announces itself, then settles into its place ---- */
-async function cutIn(n, size) {
-  if (reduceMotion) return;
-  const mr = main.getBoundingClientRect();
-  const concl = n.role === 'conclusion';
-  const el = h('div', { class: `cutin ${size}${concl ? ' concl' : ''}` },
-    h('div', { class: 'ci-num' }, titleNum(n)),
-    h('div', { class: 'ci-kick' }, [concl ? T.conclusion : '', n.type].filter(Boolean).join(' · ') || ' '),
-    h('div', { class: 'ci-head' }, n.label));
-  if (FIELD.band) { el.style.backgroundImage = `url(${FIELD.band})`; el.style.backgroundSize = 'cover'; el.style.backgroundPosition = `${(n.ord * 37) % 100}% 50%`; }
-  const hgt = size === 'major' ? 168 : 96;
-  el.style.top = (mr.top + mr.height * (size === 'major' ? 0.38 : 0.3) - hgt / 2) + 'px';
-  fly.append(el);
-  const sp = speed();
-  const hold = (size === 'major' ? (concl ? 1150 : 780) : 520) / sp, inMs = 270 / sp, outMs = 240 / sp;
-  const shut = 'polygon(0 16%, 0 0, 0 100%, 0 100%)', open = 'polygon(0 16%, 100% 0, 100% 84%, 0 100%)', gone = 'polygon(100% 16%, 100% 0, 100% 84%, 100% 100%)';
-  const a1 = el.animate([{ clipPath: shut }, { clipPath: open }], { duration: inMs, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'both' });
-  $('.ci-num', el).animate([{ transform: 'translateX(-70px)', opacity: 0 }, { transform: 'none', opacity: 0.9 }], { duration: inMs + 240 / sp, delay: 60 / sp, easing: 'cubic-bezier(.2,1.2,.4,1)', fill: 'both' });
-  $('.ci-head', el).animate([{ transform: 'translateX(90px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: inMs + 280 / sp, delay: 120 / sp, easing: 'cubic-bezier(.2,1.2,.4,1)', fill: 'both' });
-  $('.ci-kick', el).animate([{ letterSpacing: '1em', opacity: 0 }, { letterSpacing: '.32em', opacity: 0.6 }], { duration: inMs + 320 / sp, delay: 100 / sp, easing: 'ease-out', fill: 'both' });
-  await a1.finished.catch(() => null);
-  await sleep(hold);
-  await el.animate([{ clipPath: open }, { clipPath: gone }], { duration: outMs, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'both' }).finished.catch(() => null);
-  el.remove();
-}
+/* ---- a slate names the form on arrival ---- */
 async function slate(label, phase) {
   if (reduceMotion) return;
   const host = main.getBoundingClientRect();
@@ -1443,7 +1474,7 @@ async function slate(label, phase) {
   el.style.top = (host.top + 14) + 'px';
   fly.append(el);
   el.style.left = (host.right - el.offsetWidth - 18) + 'px';
-  const sp = speed();
+  const sp = 1;
   await el.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 260 / sp, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'both' }).finished.catch(() => null);
   await sleep(760 / sp);
   await el.animate([{ clipPath: 'inset(0 0 0 0)' }, { clipPath: 'inset(0 0 0 100%)' }], { duration: 220 / sp, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'both' }).finished.catch(() => null);
@@ -1497,11 +1528,10 @@ function applyFocus() {
     if (F.far.has(id)) return '';
     return 'dim';
   };
-  $$('#marks .br, #slabs .sl, #tags .tag, #rep [data-node]').forEach(el => {
+  $$('#marks .br, #slabs .sl, #rep [data-node]').forEach(el => {
     if (el.classList.contains('pt')) return;
     el.classList.remove('f0', 'f1', 'pos', 'neg', 'part', 'ev', 'dim', 'cur');
     if (focusing) { const c = cls(el.dataset.node); if (c) el.classList.add(...c.split(' ').filter(Boolean)); }
-    if (S.current.has(el.dataset.node)) el.classList.add('cur');
   });
   $$('#rep .pt').forEach(el => el.classList.toggle('fp', !!F.point && el.dataset.node === F.point.node.id && +el.dataset.pt === F.point.k));
   $$('#rep .phrase').forEach(el => { el.classList.remove('f0', 'f1', 'dim'); if (focusing) el.classList.add(F.phrases.has(+el.dataset.phrase) ? 'f0' : 'dim'); });
@@ -1520,7 +1550,7 @@ function applyFocus() {
 /* ---- the thread: from the words on the ground to the note above ---- */
 function modelSideEl(f) {
   if (!f) return null;
-  const scope = S.stop === 'chunks' ? tagsEl : repEl;
+  const scope = repEl;
   if (f.kind === 'point') return scope.querySelector(`.pt[data-node="${f.node.id}"][data-pt="${f.k}"]`) || modelSideEl(f.node);
   if (f.kind === 'node') {
     for (let a = f; a; a = a.parent) {
@@ -1548,7 +1578,7 @@ function textSideRect(f) {
 function drawPointer() {
   pointerSvg.innerHTML = '';
   const f = S.hover || S.pinned;
-  if (!f || S.stop === 'text' || G.narrow || flight) return;
+  if (!f || S.stop === 'text' || G.narrow || sess) return;
   const mel = modelSideEl(f), tr = textSideRect(f);
   if (!mel || !tr) return;
   const mr = mel.getBoundingClientRect(), host = main.getBoundingClientRect(), tp = textPane.getBoundingClientRect();
@@ -1569,7 +1599,7 @@ const keyOf = f => f ? (f.id || `${f.kind}:${f.node ? f.node.id + ':' + f.k : f.
 function renderDetails() {
   const f = S.pinned;
   details.innerHTML = '';
-  details.hidden = !f || S.stop !== 'model' || details.dataset.closed === keyOf(f);
+  details.hidden = !f || S.stop === 'text' || details.dataset.closed === keyOf(f);
   $('#hint').classList.toggle('gone', !details.hidden || $('#hint').classList.contains('gone'));
   if (details.hidden) return;
   const pin = el => h('button', { type: 'button', onclick: () => setPinned(el, { scroll: true }) }, titleOf(el));
@@ -1607,7 +1637,7 @@ function titleOf(x) {
 
 /* ---- hover and pin ---- */
 function setHover(f, seg = null) {
-  if (S.hover === f && S.hoverSeg === seg) return;
+  if (sess || (S.hover === f && S.hoverSeg === seg)) return;
   S.hover = f; S.hoverSeg = seg;
   applyFocus();
   if (f && !S.pinned) followCounterpart(f, seg != null);
@@ -1624,7 +1654,7 @@ function followCounterpart(f, fromText) {
   followTimer = setTimeout(() => { if (S.hover !== f || S.pinned) return; if (fromText) revealInModel(f, true); else revealInText(f, true); }, 280);
 }
 function revealInModel(f, onlyIfHidden) {
-  if (S.stop !== 'model') return;
+  if (S.stop === 'text') return;
   const el = modelSideEl(f);
   if (!el) return;
   const c = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
@@ -1657,155 +1687,162 @@ function scrollTextAndWait(sp) {
 }
 
 /* =====================================================================
-   8. Moves: rise and descend (focus out / in), and transform
+   8. The gauge: the meta-structure is the control.
+   text — chunks — model on the trunk; the model's forms branch from the model,
+   and only grow once the knob comes near it.
    ===================================================================== */
-function renderAll(lift) { applyLayout(); layoutText(lift); renderRep(); layoutField(); }
-const sameSet = (a, b) => (!a && !b) || (a && b && a.size === b.size && [...a].every(x => b.has(x)));
-async function go(next, opts = {}) {
-  const prev = { stop: S.stop, rep: S.rep, wrapped: S.wrapped };
-  Object.assign(S, next);
-  const changed = prev.stop !== S.stop || prev.rep !== S.rep || !sameSet(prev.wrapped, S.wrapped);
-  if (!changed) { afterRender(opts.grow); return; }
-  const dir = Math.sign(STOPS.indexOf(S.stop) - STOPS.indexOf(prev.stop));
-  await transition(() => renderAll(opts.lift), { ...opts, dir: S.stop === 'model' || prev.stop === 'model' ? dir : 0 });
-  if (opts.grow) { drawLinks(opts.grow); applyFocus(); }
-}
-function focusOut() { const i = STOPS.indexOf(S.stop); if (i < 2) explore({ stop: STOPS[i + 1] }); }
-function focusIn(n) {
-  const i = STOPS.indexOf(S.stop);
-  if (n) { S.pinned = n; scrollTextTo(n.home || n.spans[0], true); }
-  if (i > 0) explore({ stop: STOPS[i - 1] });
-}
-function explore(next) {
-  stopStory();
-  S.current = new Set(); S.shown = null;
-  if (next.rep && S.stop !== 'model') next.stop = 'model';
-  const turning = next.rep && next.rep !== S.rep && S.stop === 'model';
-  const rising = next.stop && STOPS.indexOf(next.stop) > STOPS.indexOf(S.stop);
-  if (turning) slate(T['rep' + next.rep[0].toUpperCase() + next.rep.slice(1)], T.formAxis);
-  else if (next.stop && next.stop !== S.stop) slate(T['stop' + next.stop[0].toUpperCase() + next.stop.slice(1)], rising ? '▲' : '▼');
-  go({ ...next, wrapped: null }, { ms: next.stop && next.stop !== S.stop ? 820 : 680 }).then(() => { if (S.rep === 'summary' && S.stop === 'model') sweepSummary(); });
-}
+function renderAll() { applyLayout(); layoutText(); renderRep(); layoutField(); }
 function sweepSummary() {
   if (!repEl.classList.contains('summary')) return;
   repEl.classList.remove('sweep'); void repEl.offsetWidth; repEl.classList.add('sweep');
 }
+function focusIn(n) {
+  S.pinned = n;
+  const show = () => { scrollTextTo(n.home || n.spans[0], true); applyFocus(); };
+  if (S.stage === 'chunks' || S.stage === 'text') show(); else goTo('chunks').then(show);
+}
+const GZ = { text: [44, 50], chunks: [184, 50], model: [324, 50] };
+const TIP = { linear: [446, 18], table: [470, 50], summary: [446, 82] };
+const branchD = {}, branchPts = {};
+FORMS.forEach(f => {
+  const [x0, y0] = GZ.model, [x1, y1] = TIP[f], c1 = [x0 + 48, y0], c2 = [x1 - 52, y1];
+  branchD[f] = `M${x0},${y0} C${c1} ${c2} ${x1},${y1}`;
+  branchPts[f] = Array.from({ length: 33 }, (_, j) => { const t = j / 32, v = 1 - t;
+    return [0, 1].map(d => v * v * v * [x0, y0][d] + 3 * v * v * t * c1[d] + 3 * v * t * t * c2[d] + t * t * t * [x1, y1][d]); });
+});
+const GG = {};
+const stageLabel = st => ({ text: T.stopText, chunks: T.stopChunks, model: T.stopModel })[st] || formLabel(st);
+function buildGauge() {
+  gaugeSvg.innerHTML = '';
+  const g = (tag, attrs, parent = gaugeSvg) => svgEl(tag, attrs, parent);
+  g('path', { class: 'g-hit', d: `M${GZ.text} L${GZ.model}` });
+  FORMS.forEach(f => g('path', { class: 'g-hit', d: branchD[f] }));
+  g('line', { class: 'g-line', x1: GZ.text[0], y1: GZ.text[1], x2: GZ.model[0], y2: GZ.model[1] });
+  GG.fill = g('line', { class: 'g-fill', x1: GZ.text[0], y1: GZ.text[1], x2: GZ.text[0], y2: GZ.text[1] });
+  FORMS.forEach(f => {
+    GG['b_' + f] = g('path', { class: 'g-branch', d: branchD[f], pathLength: 1, 'stroke-dasharray': 1, 'stroke-dashoffset': 1 });
+    GG['bf_' + f] = g('path', { class: 'g-branch-fill', d: branchD[f], pathLength: 1, 'stroke-dasharray': '0 1' });
+  });
+  TRUNK.forEach((st, i) => {
+    const [x, y] = GZ[st];
+    GG['n_' + st] = g('circle', { class: 'g-node', cx: x, cy: y, r: 6 });
+    const lab = g('g', { class: 'g-label', 'data-stage': st });
+    g('rect', { x: x - 36, y: y + 10, width: 72, height: 42, fill: 'transparent' }, lab);
+    g('text', { class: 'lv', x, y: y + 25, 'text-anchor': 'middle' }, lab).textContent = 'L' + i;
+    (GG['t_' + st] = g('text', { x, y: y + 42, 'text-anchor': 'middle' }, lab)).textContent = stageLabel(st);
+  });
+  FORMS.forEach(f => {
+    const [x, y] = TIP[f];
+    GG['n_' + f] = g('rect', { class: 'g-tip', x: x - 5, y: y - 5, width: 10, height: 10 });
+    const lab = g('g', { class: 'g-label', 'data-stage': f });
+    g('rect', { x: x - 8, y: y - 13, width: 96, height: 26, fill: 'transparent' }, lab);
+    (GG['t_' + f] = g('text', { x: x + 14, y: y + 4 }, lab)).textContent = formLabel(f);
+    GG['g_' + f] = [GG['n_' + f], lab];
+  });
+  GG.halo = g('circle', { class: 'g-halo', r: 15 });
+  GG.knob = g('circle', { class: 'g-knob', r: 8 });
+}
+function knobPos() {
+  if (sess) {
+    const u = clamp(sess.u, 0, 1);
+    if (FORMS.includes(sess.b)) { const pts = branchPts[sess.b], i = u * 32, i0 = Math.min(31, Math.floor(i)), f = i - i0, p0 = pts[i0], p1 = pts[i0 + 1];
+      return [p0[0] + (p1[0] - p0[0]) * f, p0[1] + (p1[1] - p0[1]) * f]; }
+    const A = GZ[sess.a], B = GZ[sess.b];
+    return [A[0] + (B[0] - A[0]) * u, A[1]];
+  }
+  return FORMS.includes(S.stage) ? TIP[S.stage] : GZ[S.stage];
+}
+function growOf() {     // how far the model's forms have grown out of it
+  if (sess && sess.a === 'chunks') return smooth(0.55, 1, sess.u);
+  if (sess && sess.a === 'text') return 0;
+  return S.stage === 'text' || S.stage === 'chunks' ? 0 : 1;
+}
+function drawGauge() {
+  if (!GG.knob) return;
+  const [kx, ky] = knobPos(), gr = growOf();
+  const onBranch = sess ? FORMS.includes(sess.b) : FORMS.includes(S.stage);
+  GG.fill.setAttribute('x2', onBranch ? GZ.model[0] : kx);
+  FORMS.forEach(f => {
+    GG['b_' + f].setAttribute('stroke-dashoffset', String(1 - gr));
+    const active = sess ? sess.b === f : S.stage === f;
+    const fu = active ? (sess ? clamp(sess.u, 0, 1) : 1) : 0;
+    GG['bf_' + f].setAttribute('stroke-dasharray', `${fu} 1`);
+    GG['g_' + f].forEach(el => { el.style.opacity = String(gr); });
+    GG['g_' + f][1].style.pointerEvents = gr > 0.5 ? 'auto' : 'none';
+    GG['n_' + f].classList.toggle('on', active && fu > 0.999);
+    GG['t_' + f].classList.toggle('on', !sess && S.stage === f);
+  });
+  TRUNK.forEach(st => {
+    GG['n_' + st].classList.toggle('on', onBranch || kx >= GZ[st][0] - 0.5);
+    GG['t_' + st].classList.toggle('on', !sess && S.stage === st);
+  });
+  GG.knob.setAttribute('cx', kx); GG.knob.setAttribute('cy', ky);
+  GG.halo.setAttribute('cx', kx); GG.halo.setAttribute('cy', ky);
+  gaugeSvg.setAttribute('aria-valuetext', stageLabel(sess ? (sess.u >= 0.5 ? sess.b : sess.a) : S.stage));
+}
+function svgPoint(ev) { const r = gaugeSvg.getBoundingClientRect(); return [(ev.clientX - r.left) * 560 / r.width, (ev.clientY - r.top) * 120 / r.height]; }
+function project([x, y]) {   // the nearest point on the trunk or, once grown, on a branch
+  const tx = clamp(x, GZ.text[0], GZ.model[0]), low = tx <= GZ.chunks[0];
+  let best = { d: Math.hypot(x - tx, y - GZ.text[1]), seg: low ? ['text', 'chunks'] : ['chunks', 'model'],
+    u: low ? (tx - GZ.text[0]) / (GZ.chunks[0] - GZ.text[0]) : (tx - GZ.chunks[0]) / (GZ.model[0] - GZ.chunks[0]) };
+  if (growOf() > 0.5) FORMS.forEach(f => branchPts[f].forEach((pt, j) => {
+    const d = Math.hypot(x - pt[0], y - pt[1]);
+    if (j > 0 && d < best.d) best = { d, seg: ['model', f], u: j / 32 };
+  }));
+  return best;
+}
+function moveKnob(t) {
+  const [lo, hi] = t.seg;
+  if (sess && sess.a === lo && sess.b === hi) { frame(t.u); return; }
+  if (sess) {   // leave the segment at the end nearer the target
+    const far = st => route(st, lo).length + route(st, hi).length;
+    endSeg(far(sess.b) <= far(sess.a) ? 1 : 0);
+  }
+  beginSeg(lo, hi);
+  frame(t.u);
+}
+let drag = null;
+gaugeSvg.addEventListener('pointerdown', ev => {
+  const lab = ev.target.closest && ev.target.closest('.g-label');
+  drag = { x: ev.clientX, y: ev.clientY, lab: lab ? lab.dataset.stage : null, moved: false };
+  gaugeSvg.setPointerCapture(ev.pointerId);
+  goToken++;
+  cancelAnimationFrame(tw);
+});
+gaugeSvg.addEventListener('pointermove', ev => {
+  if (!drag) return;
+  if (!drag.moved && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) < 4) return;
+  if (!drag.moved) { drag.moved = true; gaugeSvg.classList.add('dragging'); S.hover = null; applyFocus(); }
+  const t = project(svgPoint(ev));
+  if (t.d < 70) moveKnob(t);
+});
+const endDrag = ev => {
+  const d = drag;
+  drag = null;
+  gaugeSvg.classList.remove('dragging');
+  if (!d) return;
+  if (d.moved) { release(); return; }
+  const t = project(svgPoint(ev));
+  const target = d.lab || (t.d < 30 ? (t.u < 0.5 ? t.seg[0] : t.seg[1]) : null);
+  if (target && target !== S.stage) goTo(target); else if (sess) release();
+};
+gaugeSvg.addEventListener('pointerup', endDrag);
+gaugeSvg.addEventListener('pointercancel', endDrag);
+let lastForm = 'linear';
+function stepStage(dir) {
+  const st = S.stage;
+  if (FORMS.includes(st)) lastForm = st;
+  if (dir > 0) goTo(st === 'text' ? 'chunks' : st === 'chunks' ? 'model' : st === 'model' ? lastForm : st);
+  else goTo(FORMS.includes(st) ? 'model' : st === 'model' ? 'chunks' : 'text');
+}
+function cycleForm(dir) {
+  if (S.stage !== 'model' && !FORMS.includes(S.stage)) return;
+  const i = FORMS.indexOf(S.stage);
+  goTo(FORMS[i < 0 ? (dir > 0 ? 0 : FORMS.length - 1) : (i + dir + FORMS.length) % FORMS.length]);
+}
 
 /* =====================================================================
-   9. The story: text → chunks → notes → structure → links → one sentence
-   ===================================================================== */
-let story = [], at = -1, playing = false, token = 0, run = 0, autoplay = 0;
-function buildStory() {
-  const seq = $('#orderSel').value === 'reading' ? order.slice().sort((a, b) => a.pos - b.pos || a.ord - b.ord) : order.slice();
-  const steps = [{ phase: 'text', stop: 'text', wrapped: [], caption: `${meta.title || ''}  ·  ${textLen.toLocaleString()} ${T.capText}` }];
-  const acc = [];
-  const batch = seq.length > 36;      // long models wrap a top-level chunk with its parts at once
-  seq.forEach(n => {
-    if (batch && n.parent) return;
-    acc.push(...(batch ? [n, ...descendants(n)] : [n]).map(m => m.id));
-    steps.push({ phase: 'wrap', stop: 'chunks', wrapped: acc.slice(), current: [n.id], node: n, caption: `${n.num}  ${n.label}` });
-  });
-  steps.push({ phase: 'notes', stop: 'model', rep: 'linear', rels: [], caption: T.capNotes });
-  steps.push({ phase: 'structure', stop: 'model', rep: 'structure', rels: [], caption: T.capStructure });
-  // relations, grouped by what they lead to, from the conclusion outward
-  const targets = [], seen = new Set(), queue = conclusions.slice();
-  while (queue.length) {
-    const t = queue.shift();
-    if (seen.has(t.id)) continue;
-    seen.add(t.id); targets.push(t);
-    rels.filter(r => r.target === t).sort((a, b) => a.source.ord - b.source.ord).forEach(r => queue.push(r.source));
-    [t.parent, ...t.children].filter(Boolean).forEach(m => queue.push(m));
-  }
-  order.forEach(n => { if (!seen.has(n.id)) targets.push(n); });
-  const shown = [];
-  targets.forEach(t => {
-    const rs = rels.filter(r => r.target === t && !shown.includes(r.id));
-    if (!rs.length) return;
-    shown.push(...rs.map(r => r.id));
-    steps.push({ phase: 'link', stop: 'model', rep: 'structure', rels: shown.slice(), grow: rs.map(r => r.id), current: [t.id], node: t,
-      caption: `${t.num} ${t.label}  ←  ` + rs.map(r => `${r.source.num} ${r.label}`).join(' / ') });
-  });
-  if (summary.length) steps.push({ phase: 'summary', stop: 'model', rep: 'summary', rels: null, caption: summary.map(p => p.text).join('') });
-  return steps;
-}
-function stepDwell(st) {
-  const major = st.node && (!st.node.parent || st.node.role === 'conclusion');
-  const base = { text: 1500, wrap: major ? 700 : 450, notes: 2600, structure: 1500, link: 1000 + 260 * (st.grow || []).length, summary: 6000 }[st.phase] || 1200;
-  return base / speed();
-}
-async function showStep(k, opts = {}) {
-  if (!story.length) story = buildStory();
-  k = clamp(k, 0, story.length - 1);
-  const prev = at;
-  at = k;
-  const st = story[k];
-  const my = ++token;
-  const animate = opts.animate !== false && k - prev === 1 && !reduceMotion;
-  setProgress(); setCaption(st);
-  S.current = new Set(st.current || []);
-  S.hover = null; S.pinned = null;
-  S.shown = st.rels ? new Set(st.rels) : null;
-  const next = { stop: st.stop, rep: st.rep || S.rep, wrapped: new Set(st.wrapped || order.map(n => n.id)) };
-  if (st.phase === 'wrap' && animate) {
-    await scrollTextAndWait(st.node.home);
-    if (my !== token) return;
-    const major = !st.node.parent || st.node.role === 'conclusion';
-    const ci = cutIn(st.node, major ? 'major' : 'minor');
-    await sleep((major ? 560 : 300) / speed());
-    if (my !== token) return;
-    await go(next, { ms: 600, lift: new Set([st.node.id]) });
-    $$(`#marks .br[data-node="${st.node.id}"]`).forEach(b => b.classList.add('grow'));
-    if (st.node.home) { const [a, z] = spanSegs(st.node.home); for (let i = a; i <= z; i++) { segEls[i].classList.remove('flash'); void segEls[i].offsetWidth; segEls[i].classList.add('flash'); } }
-    await ci;
-  } else if (st.phase === 'link') {
-    await go(next, { instant: !animate, grow: animate ? new Set(st.grow) : new Set() });
-    if (animate && st.node && st.node.role === 'conclusion') {
-      await sleep(900 / speed());
-      const c = repEl.querySelector(`.card[data-key="card:${st.node.id}"]`);
-      if (c) { c.classList.remove('stamp'); void c.offsetWidth; c.classList.add('stamp'); }
-    }
-    if (st.node) revealInModel(st.node, true);
-  } else {
-    if (animate && st.phase !== 'text') slate(T['rep' + st.rep[0].toUpperCase() + st.rep.slice(1)], T['phase_' + st.phase]);
-    if (st.phase === 'wrap' && st.node) scrollTextTo(st.node.home);
-    await go(next, { instant: !animate, ms: st.phase === 'notes' ? 960 : st.phase === 'summary' ? 900 : 780 });
-    if (st.phase === 'summary') sweepSummary();
-  }
-  applyFocus();
-}
-async function play() {
-  if (!story.length) story = buildStory();
-  if (at >= story.length - 1) at = -1;
-  playing = true; setProgress();
-  const me = ++run;
-  while (playing && me === run) {
-    const k = at + 1;
-    if (k >= story.length) break;
-    await showStep(k);
-    if (!playing) break;
-    const t0 = token;
-    await sleep(stepDwell(story[k]));
-    if (token !== t0 || !playing) break;
-  }
-  if (me === run) { playing = false; setProgress(); }
-}
-function stopStory() { clearTimeout(autoplay); playing = false; token++; run++; at = -1; S.current = new Set(); setCaption(null); setProgress(); }
-function pause() { clearTimeout(autoplay); playing = false; token++; run++; setProgress(); }
-function setProgress() {
-  $('#progress').textContent = at >= 0 && story.length ? `${at + 1} / ${story.length}` : '–';
-  $('#playBtn').textContent = playing ? '❚❚' : '▶';
-  $('#playBtn').setAttribute('aria-label', playing ? 'Pause' : 'Play');
-}
-function setCaption(st) {
-  const c = $('#caption');
-  c.hidden = !st;
-  if (!st) return;
-  $('.phase', c).textContent = T['phase_' + st.phase] || '';
-  $('.main', c).textContent = st.caption || '';
-}
-
-/* =====================================================================
-   10. Events
+   9. Events
    ===================================================================== */
 const ownerNode = t => t.kind === 'point' ? t.node : t.kind === 'rel' ? t.source : t;
 textEl.addEventListener('mousemove', ev => {
@@ -1813,15 +1850,14 @@ textEl.addEventListener('mousemove', ev => {
   const seg = ev.target.closest('.seg');
   const k = seg ? +seg.dataset.k : null;
   const t = k != null ? targetOfSeg(k) : null;
-  if (t && !isWrapped(ownerNode(t))) { setHover(null); return; }
   setHover(t, t ? k : null);
 });
 textEl.addEventListener('mouseleave', () => setHover(null));
 textEl.addEventListener('click', ev => {
-  if (S.stop === 'text') return;
+  if (S.stop === 'text' || sess) return;
   const seg = ev.target.closest('.seg');
   const t = seg ? targetOfSeg(+seg.dataset.k) : null;
-  if (!t || !isWrapped(ownerNode(t))) { setPinned(null); return; }
+  if (!t) { setPinned(null); return; }
   setPinned(S.pinned === t ? null : t, { scroll: true, fromText: true });
 });
 const targetOfEl = el => {
@@ -1835,10 +1871,11 @@ const targetOfEl = el => {
   const nd = el.closest('[data-node]');
   return nd ? nodes.get(nd.dataset.node) : null;
 };
-[repEl, tagsEl, marks].forEach(host => {
+[repEl, marks].forEach(host => {
   host.addEventListener('mousemove', ev => setHover(targetOfEl(ev.target)));
   host.addEventListener('mouseleave', () => setHover(null));
   host.addEventListener('click', ev => {
+    if (sess) return;
     const t = targetOfEl(ev.target);
     if (!t) { if (host === repEl) setPinned(null); return; }
     ev.stopPropagation();
@@ -1852,48 +1889,39 @@ stage.addEventListener('scroll', () => requestAnimationFrame(drawPointer), { pas
 // the model follows the part of the text being read
 let readingId = null, followTO = 0;
 function followReading() {
-  if (S.stop === 'text') return;
+  if (S.stop === 'text' || sess) return;
   const mid = textPane.scrollTop + textPane.clientHeight * 0.42;
   let best = null;
-  order.forEach(n => (n.boxes || []).forEach(b => { if (b.top <= mid && b.bottom >= mid && isWrapped(n) && (!best || b.bottom - b.top < best.len)) best = { n, len: b.bottom - b.top }; }));
+  order.forEach(n => (n.boxes || []).forEach(b => { if (b.top <= mid && b.bottom >= mid && (!best || b.bottom - b.top < best.len)) best = { n, len: b.bottom - b.top }; }));
   const id = best ? best.n.id : null;
   if (id === readingId) return;
   readingId = id;
   $$('.reading').forEach(el => el.classList.remove('reading'));
   if (!best) return;
   $$(`#marks .br[data-node="${id}"]`).forEach(el => el.classList.add('reading'));
-  const card = repEl.querySelector(`.card[data-key="card:${id}"]`);
+  const card = repEl.querySelector(`[data-key="card:${id}"]:not(.anchor)`);
   if (card) card.classList.add('reading');
   clearTimeout(followTO);
-  if (S.follow && card && S.rep === 'linear' && !S.pinned && !playing && !S.hover) {
+  if (S.follow && card && (S.rep === 'linear' || S.rep === 'chunks') && !S.pinned && !S.hover) {
     followTO = setTimeout(() => {
       const c = stage.getBoundingClientRect(), r = card.getBoundingClientRect();
-      if (r.top < c.top + 10 || r.top > c.bottom - 130) stage.scrollTo({ top: stage.scrollTop + r.top - c.top - 30, behavior: reduceMotion ? 'auto' : 'smooth' });
+      if (r.top < c.top + 10 || r.top > c.bottom - 150) stage.scrollTo({ top: stage.scrollTop + r.top - c.top - 30, behavior: reduceMotion ? 'auto' : 'smooth' });
     }, 140);
   }
 }
-$('#stopCtl').addEventListener('click', ev => { const b = ev.target.closest('button'); if (b && b.dataset.stop !== S.stop) explore({ stop: b.dataset.stop }); });
-$('#repCtl').addEventListener('click', ev => { const b = ev.target.closest('button'); if (b && (b.dataset.rep !== S.rep || S.stop !== 'model')) explore({ rep: b.dataset.rep, stop: 'model' }); });
-$('#playBtn').addEventListener('click', () => playing ? pause() : play());
-$('#nextBtn').addEventListener('click', () => { pause(); showStep(at + 1); });
-$('#prevBtn').addEventListener('click', () => { pause(); showStep(Math.max(0, at - 1)); });
-$('#firstBtn').addEventListener('click', () => { pause(); showStep(0, { animate: false }); });
-$('#orderSel').addEventListener('change', () => { const was = playing; pause(); story = buildStory(); at = -1; if (was) play(); else showStep(0, { animate: false }); });
 document.addEventListener('keydown', ev => {
   if (ev.target.closest && ev.target.closest('select, input, textarea')) return;
+  const inPane = ev.target.closest && ev.target.closest('#textPane, #stage');
   if (ev.key === 'Escape') { if (S.pinned) setPinned(null); else setHover(null); }
-  else if (ev.key === ' ') { ev.preventDefault(); playing ? pause() : play(); }
-  else if (ev.key === 'ArrowRight') { ev.preventDefault(); pause(); showStep(at + 1); }
-  else if (ev.key === 'ArrowLeft') { ev.preventDefault(); pause(); showStep(Math.max(0, at - 1)); }
-  else if (ev.key === 'ArrowUp' || ev.key === 'PageUp' && ev.shiftKey) { ev.preventDefault(); focusOut(); }
-  else if (ev.key === 'ArrowDown') { ev.preventDefault(); focusIn(S.pinned && S.pinned.kind === 'node' ? S.pinned : null); }
-  else if (/^[1-4]$/.test(ev.key)) explore({ rep: REPS[+ev.key - 1], stop: 'model' });
+  else if (ev.key === 'ArrowRight') { ev.preventDefault(); stepStage(1); }
+  else if (ev.key === 'ArrowLeft') { ev.preventDefault(); stepStage(-1); }
+  else if ((ev.key === 'ArrowUp' || ev.key === 'ArrowDown') && !inPane) { ev.preventDefault(); cycleForm(ev.key === 'ArrowDown' ? 1 : -1); }
 });
 let resizeTO = 0;
-addEventListener('resize', () => { clearTimeout(resizeTO); resizeTO = setTimeout(() => { endFlight(); renderAll(); afterRender(); }, 120); });
+addEventListener('resize', () => { clearTimeout(resizeTO); resizeTO = setTimeout(() => { if (sess) endSeg(sess.u >= 0.5 ? 1 : 0); renderAll(); afterRender(); drawGauge(); }, 120); });
 
 /* =====================================================================
-   11. Start
+   10. Start
    ===================================================================== */
 $('#title').textContent = meta.title || (LANG === 'ja' ? '無題' : 'Untitled');
 document.title = (meta.title ? meta.title + ' — ' : '') + 'Semantic Model';
@@ -1902,17 +1930,19 @@ if (problems.length) {
   const p = $('#problems'); p.hidden = false;
   p.append(h('b', {}, T.problems), h('ul', {}, ...problems.slice(0, 8).map(x => h('li', {}, x))));
 }
+buildGauge();
 renderAll();
 afterRender();
+drawGauge();
 if (viewOpt.focus && nodes.get(viewOpt.focus)) setPinned(nodes.get(viewOpt.focus), { scroll: true });
-(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { layoutText(); afterRender(); });
-if (viewOpt.play) { story = buildStory(); autoplay = setTimeout(() => {}, 0); showStep(0, { animate: false }).then(() => { if (at === 0 && !playing) autoplay = setTimeout(play, 800); }); }
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { if (!sess) { layoutText(); afterRender(); } });
 
 window.__semanticViewer = {
-  get state() { return { stop: S.stop, rep: S.rep, step: at, steps: story.length, playing, pinned: S.pinned ? keyOf(S.pinned) : null, hover: S.hover ? keyOf(S.hover) : null, flying: !!flight }; },
+  get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, moving: !!sess, pinned: S.pinned ? keyOf(S.pinned) : null, hover: S.hover ? keyOf(S.hover) : null }; },
   problems, order: order.map(n => ({ id: n.id, num: n.num })),
-  explore, showStep: (k, o) => showStep(k, o), play, pause,
-  story: () => (story.length ? story : (story = buildStory())).map(s => ({ phase: s.phase, caption: s.caption })),
+  goTo: (st, o) => goTo(st, o),
+  scrub: (a, b, u) => { if (!sess || sess.a !== a || sess.b !== b) { if (sess) endSeg(0); beginSeg(a, b); } frame(u); },
+  release: () => release(),
   pin: id => setPinned(elsById.get(id) || null, { scroll: true }), hover: id => setHover(elsById.get(id) || null),
 };
 })();

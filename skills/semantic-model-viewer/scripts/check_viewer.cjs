@@ -4,11 +4,11 @@
 
     NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html
 
-  Checks: no console errors and no model problems; hovering a mapped word focuses the model
+  Checks: no console errors and no model problems; dragging the gauge's knob moves the page
+  continuously from the text to the chunks to the model, and letting go settles it; the model's
+  forms grow out of the model and each one renders; hovering a mapped word focuses the model
   and draws the thread; clicking pins it and opens the details card; Escape releases it;
-  every layer (text, chunks, model) and every form (structure, linear, table, summary)
-  renders and settles; the story plays to its last step in both orders; nothing overflows
-  a phone-width screen. Exits 1 on the first failure.
+  nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
 'use strict';
 const path = require('path');
@@ -30,17 +30,47 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   const fail = async msg => { console.error('FAIL ' + msg); await browser.close(); process.exit(1); };
   const ok = msg => console.log('ok   ' + msg);
   const V = fn => page.evaluate(fn);
-  const settle = () => page.waitForFunction(() => !window.__semanticViewer.state.flying, null, { timeout: 10000 });
+  const state = () => V(() => window.__semanticViewer.state);
+  const still = () => page.waitForFunction(() => !window.__semanticViewer.state.moving, null, { timeout: 15000 });
 
   await page.goto('file://' + path.resolve(file));
   await page.waitForFunction(() => window.__semanticViewer, null, { timeout: 15000 });
-  await V(() => window.__semanticViewer.pause());
-  await V(() => window.__semanticViewer.explore({ stop: 'model', rep: 'linear' }));
-  await settle();
   if (errors.length) return fail('console errors on load: ' + errors.join(' | '));
   const meta = await V(() => ({ problems: window.__semanticViewer.problems, chunks: window.__semanticViewer.order.length }));
   if (meta.problems.length) return fail('model problems: ' + meta.problems.join(' | '));
   ok(`loaded (${meta.chunks} chunks)`);
+  await V(() => window.__semanticViewer.goTo('text', { ms: 1 }));
+  await still();
+
+  // drag the knob along the gauge: text -> chunks -> model, with stops in between
+  const box = await page.locator('#gaugeSvg').boundingBox();
+  const at = (x, y) => [box.x + x * box.width / 560, box.y + y * box.height / 120];
+  await page.mouse.move(...at(44, 50));
+  await page.mouse.down();
+  for (const x of [80, 120, 150]) { await page.mouse.move(...at(x, 50), { steps: 3 }); }
+  const mid = await state();
+  if (!mid.moving || !(mid.u > 0.5 && mid.u < 1)) return fail('dragging the knob does not move the page between text and chunks: ' + JSON.stringify(mid));
+  const ghosts = await V(() => document.querySelectorAll('#fly > *').length);
+  ok(`dragging stands the page between text and chunks (u=${mid.u.toFixed(2)}, ${ghosts} pieces in flight)`);
+  for (const x of [200, 260, 300, 324]) { await page.mouse.move(...at(x, 50), { steps: 3 }); }
+  await page.mouse.up();
+  await still();
+  let st = await state();
+  if (st.stage !== 'model') return fail('letting go near the model did not settle on the model: ' + JSON.stringify(st));
+  ok('letting go settles on the model');
+  const grown = await V(() => getComputedStyle(document.querySelector('#gaugeSvg .g-label[data-stage="table"]')).opacity);
+  if (+grown < 0.9) return fail('the forms did not grow out of the model on the gauge');
+  ok('the forms have grown out of the model');
+
+  // each form
+  for (const f of ['linear', 'table', 'summary', 'model']) {
+    await page.evaluate(f => window.__semanticViewer.goTo(f, { ms: 60 }), f);
+    await still();
+    st = await state();
+    const n = await V(() => document.querySelectorAll('#rep [data-key]').length);
+    if (st.stage !== f || !n) return fail(`could not show the ${f} form`);
+  }
+  ok('turns into linear, table and summary, and back to the model');
 
   // text -> model, with the thread between them
   const seg = page.locator('#text .seg.c').first();
@@ -50,52 +80,23 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   const hov = await V(() => ({ f: document.querySelectorAll('#rep .f0, #rep .fp').length, thread: document.querySelectorAll('#pointer path').length }));
   if (!hov.f) return fail('hovering a mapped word did not focus anything in the model');
   ok(`hover on the text focuses the model${hov.thread ? ' and draws the thread' : ''}`);
-
-  // pin, release
   const first = await V(() => window.__semanticViewer.order[0].id);
   await page.evaluate(id => window.__semanticViewer.pin(id), first);
   await page.waitForTimeout(300);
-  const pinned = await V(() => ({ pinned: window.__semanticViewer.state.pinned, card: !document.querySelector('#details').hidden, lit: document.querySelectorAll('.seg.hn, .seg.hq, .seg.hp').length }));
+  const pinned = await V(() => ({ pinned: window.__semanticViewer.state.pinned, card: !document.querySelector('#details').hidden }));
   if (!pinned.pinned || !pinned.card) return fail('pinning a chunk did not open the details card');
-  ok(`pin opens the details card (${pinned.lit} text segments lit)`);
+  ok('pin opens the details card');
   await page.mouse.move(2, 2);
   await page.keyboard.press('Escape');
   if (await V(() => window.__semanticViewer.state.pinned)) return fail('Escape did not release the pin');
   ok('Escape releases the pin');
 
-  // every layer and every form
-  for (const stop of ['text', 'chunks', 'model']) {
-    await page.evaluate(stop => window.__semanticViewer.explore({ stop }), stop);
-    await settle();
-    const st = await V(() => window.__semanticViewer.state.stop);
-    if (st !== stop) return fail(`could not reach the ${stop} layer`);
-  }
-  ok('rises and descends through text, chunks and model');
-  for (const rep of ['structure', 'linear', 'table', 'summary']) {
-    await page.evaluate(rep => window.__semanticViewer.explore({ rep }), rep);
-    await settle();
-    const n = await V(() => document.querySelectorAll('#rep [data-key]').length);
-    if (!n) return fail(`the ${rep} form shows nothing`);
-  }
-  ok('transforms into structure, linear, table and summary');
+  // and back down
+  await V(() => window.__semanticViewer.goTo('text', { ms: 60 }));
+  await still();
+  if ((await state()).stage !== 'text') return fail('could not descend to the text');
+  ok('descends back to the text');
 
-  // the story, both orders
-  for (const order of ['notes', 'reading']) {
-    await page.selectOption('#orderSel', order);
-    await page.selectOption('#speedSel', '2');
-    const n = (await V(() => window.__semanticViewer.story())).length;
-    await V(() => { window.__semanticViewer.pause(); window.__semanticViewer.play(); });
-    try {
-      await page.waitForFunction(n => window.__semanticViewer.state.step === n - 1 && !window.__semanticViewer.state.flying, n, { timeout: Math.max(60000, n * 4000) });
-    } catch (e) {
-      const at = await V(() => window.__semanticViewer.state.step);
-      return fail(`the story (${order}) stopped at step ${at + 1} of ${n}`);
-    }
-    ok(`story in ${order} order plays ${n} steps to the end`);
-    await V(() => window.__semanticViewer.pause());
-  }
-
-  // phone width
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(400);
   if (await V(() => document.documentElement.scrollWidth > innerWidth + 1)) return fail('the page scrolls sideways at phone width');

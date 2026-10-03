@@ -2,9 +2,8 @@
 """Embed a Semantic Model (and optional view options) into the viewer template.
 
   build_viewer.py MODEL.json -o OUT.html [--view VIEW.json]
-                  [--stop text|chunks|model] [--rep structure|linear|table|summary]
-                  [--play] [--order notes|reading] [--focus NODE_ID]
-                  [--theme dark|light|auto] [--no-follow]
+                  [--stage text|chunks|model|linear|table|summary]
+                  [--focus NODE_ID] [--theme dark|light|auto] [--no-follow]
 
 The model is validated with semantic_model.py first; nothing is written while
 it has errors. View options are presentation only and never change the model.
@@ -39,22 +38,20 @@ def replace_block(page, block_id, value):
     return pattern.sub(lambda m: m.group(1) + "\n" + embed_json(value) + "\n" + m.group(3), page, count=1)
 
 
-STOPS = ("text", "chunks", "model")
-REPS = ("structure", "linear", "table", "summary")
+STAGES = ("text", "chunks", "model", "linear", "table", "summary")
 
 
 def check_view(view, model):
     """Return problems with the view options."""
     problems = []
     node_ids = {n["id"] for n in model["nodes"]}
-    for key, allowed in (("stop", STOPS), ("rep", REPS), ("order", ("notes", "reading")), ("theme", ("dark", "light", "auto"))):
+    for key, allowed in (("stage", STAGES), ("theme", ("dark", "light", "auto"))):
         if view.get(key) not in (None,) + allowed:
             problems.append(f"{key} must be one of {', '.join(allowed)}, not {view[key]!r}")
     if view.get("focus") is not None and view["focus"] not in node_ids:
         problems.append(f"focus {view['focus']!r} is not a node id")
-    for key in ("play", "follow"):
-        if key in view and not isinstance(view[key], bool):
-            problems.append(f"{key} must be true or false")
+    if "follow" in view and not isinstance(view["follow"], bool):
+        problems.append("follow must be true or false")
     return problems
 
 
@@ -63,10 +60,7 @@ def main(argv=None):
     parser.add_argument("model")
     parser.add_argument("-o", "--output", required=True)
     parser.add_argument("--view", help="JSON file with view options")
-    parser.add_argument("--stop", choices=STOPS, help="the layer it opens on (default model)")
-    parser.add_argument("--rep", choices=REPS, help="the form of the model it opens on (default linear)")
-    parser.add_argument("--play", action="store_true", help="play the story from the text up when it opens")
-    parser.add_argument("--order", choices=["notes", "reading"], help="order in which the story wraps the chunks")
+    parser.add_argument("--stage", choices=STAGES, help="where the gauge starts (default text)")
     parser.add_argument("--focus", help="node id to pin when it opens")
     parser.add_argument("--theme", choices=["dark", "light", "auto"], help="default dark")
     parser.add_argument("--no-follow", action="store_true", help="do not move the notes with the text scroll")
@@ -83,11 +77,9 @@ def main(argv=None):
         sys.exit(f"{len(errors)} error(s) in {args.model}; {args.output} not written")
 
     view = json.loads(Path(args.view).read_text(encoding="utf-8")) if args.view else {}
-    for key in ("stop", "rep", "order", "focus", "theme"):
+    for key in ("stage", "focus", "theme"):
         if getattr(args, key):
             view[key] = getattr(args, key)
-    if args.play:
-        view["play"] = True
     if args.no_follow:
         view["follow"] = False
     problems = check_view(view, model)
