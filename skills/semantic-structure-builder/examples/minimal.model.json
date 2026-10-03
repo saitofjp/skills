@@ -1,0 +1,75 @@
+{
+  "version": "semantic-structure/1",
+  "sourceText": "AはBを使ってCした。DはCに影響した。",
+  "nodes": [
+    {
+      "id": "a",
+      "label": "A",
+      "type": "actor",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 0, "end": 1, "text": "A"}]
+    },
+    {
+      "id": "b",
+      "label": "B",
+      "type": "tool",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 2, "end": 3, "text": "B"}]
+    },
+    {
+      "id": "c",
+      "label": "C",
+      "type": "action",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 7, "end": 8, "text": "C"}, {"start": 13, "end": 14, "text": "C"}]
+    },
+    {
+      "id": "d",
+      "label": "D",
+      "type": "actor",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 11, "end": 12, "text": "D"}]
+    }
+  ],
+  "relations": [
+    {
+      "id": "a-uses-b",
+      "source": "a",
+      "target": "b",
+      "type": "uses",
+      "label": "使って",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 4, "end": 7, "text": "使って"}]
+    },
+    {
+      "id": "a-does-c",
+      "source": "a",
+      "target": "c",
+      "type": "performs",
+      "label": "した",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 8, "end": 10, "text": "した"}]
+    },
+    {
+      "id": "d-affects-c",
+      "source": "d",
+      "target": "c",
+      "type": "affects",
+      "label": "影響した",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 15, "end": 19, "text": "影響した"}]
+    },
+    {
+      "id": "b-means-c",
+      "source": "b",
+      "target": "c",
+      "type": "means_of",
+      "label": "手段",
+      "provenance": "inferred",
+      "derivedFrom": ["a-uses-b", "a-does-c"],
+      "sourceSpans": [{"start": 4, "end": 7, "text": "使って"}],
+      "note": "「Bを使ってCした」のテ形を手段と読んだ。継起（Bを使い、その後Cした）とも読めるが、手段の読みが自然。"
+    }
+  ],
+  "metadata": {"title": "最小例（要求仕様 7.2）", "language": "ja"}
+}
