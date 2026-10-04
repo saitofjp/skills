@@ -64,9 +64,9 @@
   --shadow: none;
   color-scheme: light;
 }
-/* dopa / dopa/full: the same page in the dopagaki style (game × pachinko × anime OP × short video). Black stage, neon ink;
-   the conclusion is gold, the key hot pink. dopa/full also stages the play as a show, in #fxBack and #show (section 6c). */
-:root[data-theme^="dopa"] {
+/* dopa: the same page in the dopagaki style (game × pachinko × anime OP × short video). Black stage, neon ink;
+   the conclusion is gold, the key hot pink. While ▶ plays, the play is also staged as a show, in #fxBack and #show (section 6c). */
+:root[data-theme="dopa"] {
   --space: #06050a; --ground: rgba(9, 8, 18, .9); --sky: rgba(14, 6, 28, .26); --field: 255, 45, 111; --field-a: .07;
   --ink: #f5f7ff; --ink-2: #c6cbe4; --muted: #8f96b3; --rule: rgba(25, 232, 255, .2);
   --card: #0e0b1e; --card-hi: transparent; --card-line: rgba(25, 232, 255, .5); --accent: #19e8ff;
@@ -97,16 +97,12 @@ header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; pad
 .theme-ctl button { border: 0; background: transparent; white-space: nowrap; padding: 4px 10px; font: 700 11px/1.2 var(--mono); letter-spacing: .08em; color: var(--muted); }
 .theme-ctl button + button { border-left: 1.5px solid var(--card-line); }
 .theme-ctl button[aria-pressed="true"] { background: var(--ui); color: var(--ui-fg); }
-/* dopa/full: the slash in hot pink and FULL in italics; chosen, it burns pink to violet, FULL in gold, with light running across it */
-.theme-ctl button.full { position: relative; overflow: hidden; }
-.theme-ctl button.full i { font-style: normal; color: #ff2d6f; margin: 0 1px; }
-.theme-ctl button.full b { font-weight: 800; font-style: italic; letter-spacing: .14em; }
-.theme-ctl button.full[aria-pressed="true"] { background: linear-gradient(100deg, #ff2d6f, #8b5cff); color: #fff; }
-.theme-ctl button.full[aria-pressed="true"] i { color: #ffd23f; }
-.theme-ctl button.full[aria-pressed="true"] b { color: #fff4b8; text-shadow: 0 0 8px rgba(255, 210, 63, .9); }
-.theme-ctl button.full[aria-pressed="true"]::after { content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, .6) 50%, transparent 65%); transform: translateX(-100%); animation: full-shine 2.6s ease-in-out infinite; }
-@keyframes full-shine { 55%, 100% { transform: translateX(100%); } }
+/* dopa: chosen, it burns pink to violet in gold letters; while the show plays, light runs across it */
+.theme-ctl button.dopa { position: relative; overflow: hidden; font-style: italic; }
+.theme-ctl button.dopa[aria-pressed="true"] { background: linear-gradient(100deg, #ff2d6f, #8b5cff); color: #fff4b8; text-shadow: 0 0 8px rgba(255, 210, 63, .9); }
+:root[data-show] .theme-ctl button.dopa[aria-pressed="true"]::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, .6) 50%, transparent 65%); transform: translateX(-100%); animation: dopa-shine 2.6s ease-in-out infinite; }
+@keyframes dopa-shine { 55%, 100% { transform: translateX(100%); } }
 
 /* ---------- main: the ground (text) and the space above it (model) ---------- */
 main { position: relative; display: flex; min-height: 0; overflow: hidden; }
@@ -434,71 +430,69 @@ main.narrow #gauge { top: auto; bottom: 8px; left: 0; right: 0; margin: 0 auto; 
 main.narrow #ticker { bottom: 172px; }
 main.narrow #rep { padding-bottom: 190px; }
 
-/* ---------- the dopa themes: the same parts, in neon. :where() keeps each rule as specific as the one it restyles ---------- */
-:where(:root[data-theme^="dopa"]) header { background: linear-gradient(90deg, rgba(var(--hot-rgb), .2), transparent 46%), var(--space); border-bottom: 2px solid var(--hot); }
-:where(:root[data-theme^="dopa"]) .titles h1 { font-weight: 900; font-style: italic; letter-spacing: .03em; text-shadow: -1px 0 rgba(var(--hot-rgb), .9), 1px 0 rgba(var(--focus-rgb), .9); }
-:where(:root[data-theme^="dopa"]) .titles .src { color: var(--focus); opacity: .75; }
-:where(:root[data-theme^="dopa"]) .theme-ctl { border-color: var(--hot); }
-:where(:root[data-theme^="dopa"]) .theme-ctl button + button { border-left-color: var(--hot); }
-:where(:root[data-theme^="dopa"]) main::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 7;
+/* ---------- the dopa theme: the same parts, in neon. :where() keeps each rule as specific as the one it restyles ---------- */
+:where(:root[data-theme="dopa"]) header { background: linear-gradient(90deg, rgba(var(--hot-rgb), .2), transparent 46%), var(--space); border-bottom: 2px solid var(--hot); }
+:where(:root[data-theme="dopa"]) .titles h1 { font-weight: 900; font-style: italic; letter-spacing: .03em; text-shadow: -1px 0 rgba(var(--hot-rgb), .9), 1px 0 rgba(var(--focus-rgb), .9); }
+:where(:root[data-theme="dopa"]) .titles .src { color: var(--focus); opacity: .75; }
+:where(:root[data-theme="dopa"]) .theme-ctl { border-color: var(--hot); }
+:where(:root[data-theme="dopa"]) .theme-ctl button + button { border-left-color: var(--hot); }
+:where(:root[data-theme="dopa"]) main::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 7;
   background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .14) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, .5) 100%); }
-:where(:root[data-theme^="dopa"]) .seg.hp { text-shadow: 0 0 10px rgba(var(--focus-rgb), .6); }
-:where(:root[data-theme^="dopa"]) #marks .br text { fill: rgba(var(--gold-rgb), .85); }
-:where(:root[data-theme^="dopa"]) .card, :where(:root[data-theme^="dopa"]) .crow, :where(:root[data-theme^="dopa"]) .chip,
-:where(:root[data-theme^="dopa"]) .slide { box-shadow: 0 0 18px -8px rgba(var(--focus-rgb), .75); }
-:where(:root[data-theme^="dopa"]) .card .head, :where(:root[data-theme^="dopa"]) .crow .head { text-shadow: 0 0 12px rgba(var(--focus-rgb), .22); }
-:where(:root[data-theme^="dopa"]) .card .num, :where(:root[data-theme^="dopa"]) .crow .num, :where(:root[data-theme^="dopa"]) .chip .num { color: var(--gold); }
-:where(:root[data-theme^="dopa"]) .card .kicker { color: var(--focus); }
-:where(:root[data-theme^="dopa"]) .card.concl, :where(:root[data-theme^="dopa"]) .crow.concl, :where(:root[data-theme^="dopa"]) .slide.concl {
+:where(:root[data-theme="dopa"]) .seg.hp { text-shadow: 0 0 10px rgba(var(--focus-rgb), .6); }
+:where(:root[data-theme="dopa"]) #marks .br text { fill: rgba(var(--gold-rgb), .85); }
+:where(:root[data-theme="dopa"]) .card, :where(:root[data-theme="dopa"]) .crow, :where(:root[data-theme="dopa"]) .chip,
+:where(:root[data-theme="dopa"]) .slide { box-shadow: 0 0 18px -8px rgba(var(--focus-rgb), .75); }
+:where(:root[data-theme="dopa"]) .card .head, :where(:root[data-theme="dopa"]) .crow .head { text-shadow: 0 0 12px rgba(var(--focus-rgb), .22); }
+:where(:root[data-theme="dopa"]) .card .num, :where(:root[data-theme="dopa"]) .crow .num, :where(:root[data-theme="dopa"]) .chip .num { color: var(--gold); }
+:where(:root[data-theme="dopa"]) .card .kicker { color: var(--focus); }
+:where(:root[data-theme="dopa"]) .card.concl, :where(:root[data-theme="dopa"]) .crow.concl, :where(:root[data-theme="dopa"]) .slide.concl {
   background: linear-gradient(135deg, #fff3b0, #ffd23f 45%, #ff9f1a); }
-:where(:root[data-theme^="dopa"]) .card.concl .head, :where(:root[data-theme^="dopa"]) .crow.concl .head { text-shadow: none; }
-:where(:root[data-theme^="dopa"]) .card.concl .num, :where(:root[data-theme^="dopa"]) .crow.concl .num { color: var(--band-fg); }
+:where(:root[data-theme="dopa"]) .card.concl .head, :where(:root[data-theme="dopa"]) .crow.concl .head { text-shadow: none; }
+:where(:root[data-theme="dopa"]) .card.concl .num, :where(:root[data-theme="dopa"]) .crow.concl .num { color: var(--band-fg); }
 /* the conclusion glows gold and the key hot pink, unless the focus or a line lights them */
-:where(:root[data-theme^="dopa"]) .card.concl:not(.f0, .f1, .ev, .cur), :where(:root[data-theme^="dopa"]) .crow.concl:not(.f0, .f1),
-:where(:root[data-theme^="dopa"]) .slide.concl:not(.f0, .f1) { border-color: var(--gold); box-shadow: 0 0 30px -4px rgba(var(--gold-rgb), .7); }
-:where(:root[data-theme^="dopa"]) .card.key > .kicker, :where(:root[data-theme^="dopa"]) .slide.key > .kicker { color: var(--hot); }
-:where(:root[data-theme^="dopa"]) .card.key:not(.f0, .f1, .ev, .cur), :where(:root[data-theme^="dopa"]) .slide.key:not(.f0, .f1) { border-color: var(--hot); box-shadow: 0 0 0 1px var(--hot), 0 0 28px -4px rgba(var(--hot-rgb), .75); }
-:where(:root[data-theme^="dopa"]) .rep.table tr.key th.rowh { border-left-color: var(--hot); }
-:where(:root[data-theme^="dopa"]) .rep.table thead th { color: var(--focus); }
-:where(:root[data-theme^="dopa"]) #mmSvg .mm-box.key > rect { stroke: var(--hot); }
-:where(:root[data-theme^="dopa"]) .card.f0, :where(:root[data-theme^="dopa"]) .crow.f0, :where(:root[data-theme^="dopa"]) .slide.f0 { box-shadow: 0 0 0 3px var(--focus), 0 0 30px rgba(var(--focus-rgb), .55); }
-:where(:root[data-theme^="dopa"]) #details, :where(:root[data-theme^="dopa"]) #minimap { background: linear-gradient(180deg, rgba(20, 14, 44, .97), rgba(8, 7, 18, .97)); box-shadow: 0 0 24px -8px rgba(var(--focus-rgb), .6); }
-:where(:root[data-theme^="dopa"]) #minimap .mm-label, :where(:root[data-theme^="dopa"]) #details .dk { color: var(--gold); }
-:where(:root[data-theme^="dopa"]) #ticker { background: linear-gradient(90deg, var(--hot), #8b5cff); color: #fff; border-left: 6px solid var(--gold); padding: 10px 34px 12px 18px; transform: translateX(-50%) skewX(-10deg); }
-:where(:root[data-theme^="dopa"]) #ticker .k { color: #fff4b8; opacity: .9; }
-:where(:root[data-theme^="dopa"]) #ticker .n { font: 900 30px/1 var(--font-disp); color: #fff4b8; text-shadow: 0 2px 0 #b86400, 0 0 12px rgba(var(--gold-rgb), .8); }
-:where(:root[data-theme^="dopa"]) #ticker .m { font-size: 17px; font-weight: 900; text-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
-:where(:root[data-theme^="dopa"]) .slate { font: 900 15px/1 var(--mono); background: var(--hot); color: #fff; border-left: 5px solid var(--gold); padding: 11px 26px 11px 16px; }
-:where(:root[data-theme^="dopa"]) #gauge { --hud-bg: #0b0718; --hud-line: rgba(var(--hot-rgb), .42); --hud-dim: rgba(205, 212, 255, .62); --hud-ink: #ffffff; }
-:where(:root[data-theme^="dopa"]) #gauge svg { filter: drop-shadow(0 0 12px rgba(var(--hot-rgb), .35)); }
-:where(:root[data-theme^="dopa"]) #gauge .h-chamfer { stroke: var(--hot); }
-:where(:root[data-theme^="dopa"]) #gauge .h-acc { fill: var(--hot); }
-:where(:root[data-theme^="dopa"]) #gauge .g-knob { fill: var(--gold); }
-:where(:root[data-theme^="dopa"]) .rep.summary .gist { text-shadow: 0 0 22px rgba(var(--focus-rgb), .28); }
-:where(:root[data-theme^="dopa"]) .phrase { background-image: linear-gradient(var(--gold), var(--gold)); }
-:where(:root[data-theme^="dopa"]) .phrase sup { color: var(--gold); }
-:where(:root[data-theme^="dopa"]) .rep.summary.sweep .phrase { animation: dopa-sweep 1.1s var(--ease-settle) both; }
+:where(:root[data-theme="dopa"]) .card.concl:not(.f0, .f1, .ev, .cur), :where(:root[data-theme="dopa"]) .crow.concl:not(.f0, .f1),
+:where(:root[data-theme="dopa"]) .slide.concl:not(.f0, .f1) { border-color: var(--gold); box-shadow: 0 0 30px -4px rgba(var(--gold-rgb), .7); }
+:where(:root[data-theme="dopa"]) .card.key > .kicker, :where(:root[data-theme="dopa"]) .slide.key > .kicker { color: var(--hot); }
+:where(:root[data-theme="dopa"]) .card.key:not(.f0, .f1, .ev, .cur), :where(:root[data-theme="dopa"]) .slide.key:not(.f0, .f1) { border-color: var(--hot); box-shadow: 0 0 0 1px var(--hot), 0 0 28px -4px rgba(var(--hot-rgb), .75); }
+:where(:root[data-theme="dopa"]) .rep.table tr.key th.rowh { border-left-color: var(--hot); }
+:where(:root[data-theme="dopa"]) .rep.table thead th { color: var(--focus); }
+:where(:root[data-theme="dopa"]) #mmSvg .mm-box.key > rect { stroke: var(--hot); }
+:where(:root[data-theme="dopa"]) .card.f0, :where(:root[data-theme="dopa"]) .crow.f0, :where(:root[data-theme="dopa"]) .slide.f0 { box-shadow: 0 0 0 3px var(--focus), 0 0 30px rgba(var(--focus-rgb), .55); }
+:where(:root[data-theme="dopa"]) #details, :where(:root[data-theme="dopa"]) #minimap { background: linear-gradient(180deg, rgba(20, 14, 44, .97), rgba(8, 7, 18, .97)); box-shadow: 0 0 24px -8px rgba(var(--focus-rgb), .6); }
+:where(:root[data-theme="dopa"]) #minimap .mm-label, :where(:root[data-theme="dopa"]) #details .dk { color: var(--gold); }
+:where(:root[data-theme="dopa"]) #ticker { background: linear-gradient(90deg, var(--hot), #8b5cff); color: #fff; border-left: 6px solid var(--gold); padding: 10px 34px 12px 18px; transform: translateX(-50%) skewX(-10deg); }
+:where(:root[data-theme="dopa"]) #ticker .k { color: #fff4b8; opacity: .9; }
+:where(:root[data-theme="dopa"]) #ticker .n { font: 900 30px/1 var(--font-disp); color: #fff4b8; text-shadow: 0 2px 0 #b86400, 0 0 12px rgba(var(--gold-rgb), .8); }
+:where(:root[data-theme="dopa"]) #ticker .m { font-size: 17px; font-weight: 900; text-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
+:where(:root[data-theme="dopa"]) .slate { font: 900 15px/1 var(--mono); background: var(--hot); color: #fff; border-left: 5px solid var(--gold); padding: 11px 26px 11px 16px; }
+:where(:root[data-theme="dopa"]) #gauge { --hud-bg: #0b0718; --hud-line: rgba(var(--hot-rgb), .42); --hud-dim: rgba(205, 212, 255, .62); --hud-ink: #ffffff; }
+:where(:root[data-theme="dopa"]) #gauge svg { filter: drop-shadow(0 0 12px rgba(var(--hot-rgb), .35)); }
+:where(:root[data-theme="dopa"]) #gauge .h-chamfer { stroke: var(--hot); }
+:where(:root[data-theme="dopa"]) #gauge .h-acc { fill: var(--hot); }
+:where(:root[data-theme="dopa"]) #gauge .g-knob { fill: var(--gold); }
+:where(:root[data-theme="dopa"]) .rep.summary .gist { text-shadow: 0 0 22px rgba(var(--focus-rgb), .28); }
+:where(:root[data-theme="dopa"]) .phrase { background-image: linear-gradient(var(--gold), var(--gold)); }
+:where(:root[data-theme="dopa"]) .phrase sup { color: var(--gold); }
+:where(:root[data-theme="dopa"]) .rep.summary.sweep .phrase { animation: dopa-sweep 1.1s var(--ease-settle) both; }
 @keyframes dopa-sweep { 0% { background-size: 0 2px; opacity: 0; text-shadow: 0 0 40px #fff, 0 0 80px var(--gold); } 40% { opacity: 1; } 100% { background-size: 100% 2px; opacity: 1; text-shadow: 0 0 22px rgba(var(--focus-rgb), .28); } }
-:where(:root[data-theme^="dopa"]) .slide { background: repeating-linear-gradient(-55deg, rgba(var(--hot-rgb), .07) 0 12px, transparent 12px 26px), linear-gradient(160deg, #17113a, #08070f); }
-:where(:root[data-theme^="dopa"]) .slide .num { color: var(--gold); font-size: clamp(26px, 3.4vw, 48px); text-shadow: 0 2px 0 #b86400, 0 0 16px rgba(var(--gold-rgb), .5); }
-:where(:root[data-theme^="dopa"]) .slide.concl .num { color: var(--band-fg); text-shadow: none; }
-:where(:root[data-theme^="dopa"]) .slide.cover h2 { text-shadow: -1px 0 rgba(var(--hot-rgb), .9), 1px 0 rgba(var(--focus-rgb), .9); }
+:where(:root[data-theme="dopa"]) .slide { background: repeating-linear-gradient(-55deg, rgba(var(--hot-rgb), .07) 0 12px, transparent 12px 26px), linear-gradient(160deg, #17113a, #08070f); }
+:where(:root[data-theme="dopa"]) .slide .num { color: var(--gold); font-size: clamp(26px, 3.4vw, 48px); text-shadow: 0 2px 0 #b86400, 0 0 16px rgba(var(--gold-rgb), .5); }
+:where(:root[data-theme="dopa"]) .slide.concl .num { color: var(--band-fg); text-shadow: none; }
+:where(:root[data-theme="dopa"]) .slide.cover h2 { text-shadow: -1px 0 rgba(var(--hot-rgb), .9), 1px 0 rgba(var(--focus-rgb), .9); }
 
-/* ---------- the show (dopa/full only): a stage that keeps moving behind the page, and cut-ins, counters,
+/* ---------- the show (dopa, while ▶ plays): a stage that keeps moving behind the page, and cut-ins, counters,
    flashes and sparks over it (6c). It never takes the pointer, and the HUD stays above it. ---------- */
 #fxBack { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: none; }
 #show { position: fixed; inset: 0; z-index: 39; pointer-events: none; overflow: hidden; display: none; color: #fff; font-family: var(--font); }
-:root[data-theme="dopa-full"] #fxBack, :root[data-theme="dopa-full"] #show { display: block; }
+:root[data-theme="dopa"] #fxBack, :root[data-theme="dopa"] #show { display: block; }
 #fxFront { position: absolute; inset: 0; width: 100%; height: 100%; }
 #show .dp-flash { position: absolute; inset: 0; opacity: 0; }
 #show .dp-vig { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at 50% 50%, transparent 22%, rgba(6, 5, 10, .92) 100%); }
 #show .dp-band { position: absolute; left: 50%; top: 50%; width: 180vw; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0 18px; text-align: center;
   background: #07060d; border-block: 6px solid var(--hot); transform: translate(-50%, -50%) rotate(-6deg) translateX(100vw); }
 #show .dp-band.gold { border-color: var(--gold); background: linear-gradient(90deg, #07060d 25%, #2a1d00 50%, #07060d 75%); }
-#show .dp-band.cyan { border-color: var(--focus); }
 #show .dp-k { font: 800 12px/1 var(--mono); letter-spacing: .4em; color: var(--hot); }
 #show .gold .dp-k { color: var(--gold); }
-#show .cyan .dp-k { color: var(--focus); }
 #show .dp-m, #show .dp-tease { text-wrap: balance; word-break: auto-phrase; }
 #show .dp-band .dp-m { max-width: min(86vw, 1100px); font: 900 clamp(26px, 4.6vw, 58px)/1.18 var(--font-disp); letter-spacing: .02em;
   text-shadow: -.03em 0 rgba(255, 30, 100, .95), .03em 0 rgba(20, 230, 255, .95), 0 0 .2em rgba(255, 255, 255, .3); }
@@ -514,15 +508,15 @@ main.narrow #rep { padding-bottom: 190px; }
 #show .dp-combo .dp-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--focus), var(--gold)); transform-origin: 0 50%; transform: scaleX(0); transition: transform .2s; }
 body.narrow #show .dp-combo { top: calc(var(--main-top, 90px) + 8px); bottom: auto; left: auto; right: 14px; min-width: 120px; }
 body.narrow #show .dp-combo .dp-n { font-size: 34px; }
-/* less motion, when the system asks for it; dopa/full is the show the reader chose, so it keeps its motion */
-@media (prefers-reduced-motion: reduce) { :root:not([data-theme="dopa-full"]) * { animation: none !important; transition: none !important; } }
+/* less motion, when the system asks for it; the dopa show (data-show, while ▶ plays) keeps its motion */
+@media (prefers-reduced-motion: reduce) { :root:not([data-show]) * { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body data-stop="text">
 <header>
   <div class="titles"><h1 id="title">Semantic Structure</h1><div class="src" id="sourceLine"></div></div>
   <div class="theme-ctl" id="themeCtl" role="group" aria-label="Theme">
-    <button type="button" data-theme-set="light">light</button><button type="button" data-theme-set="dark">dark</button><button type="button" data-theme-set="dopa">dopa</button><button type="button" class="full" data-theme-set="dopa-full" aria-label="dopa/full">dopa<i>/</i><b>full</b></button>
+    <button type="button" data-theme-set="light">light</button><button type="button" data-theme-set="dark">dark</button><button type="button" class="dopa" data-theme-set="dopa">dopa</button>
   </div>
 </header>
 <main id="main">
@@ -1672,10 +1666,11 @@ const h = (tag, attrs = {}, ...kids) => {
 };
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-// dopa/full stages the play as a show (6c), and keeps all its motion even when the system asks for less: dopa is the same look without it.
-// In the other themes, that setting stops the decoration (calm).
-const isFull = () => document.documentElement.dataset.theme === 'dopa-full';
-const calm = () => reduceMotion && !isFull();
+// dopa: while ▶ plays (the play on opening too), the play is staged as a show (6c), with all its motion even when the system asks
+// for less; dragging, clicking and keys stay plain. Otherwise that setting stops the decoration (calm).
+const isDopa = () => document.documentElement.dataset.theme === 'dopa';
+const fxLive = () => isDopa() && playing;
+const calm = () => reduceMotion && !fxLive();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 function readJSON(id) {
   const el = document.getElementById(id);
@@ -1701,11 +1696,11 @@ if (!model || typeof model.sourceText !== 'string') {
   return;
 }
 // dark by default; "light", or "auto" to follow the system. The reader can switch, and a choice of light or dark is remembered here.
-// "dopa" and "dopa-full" are how the page is shown, not a reading preference: a page built with one always opens in it, and they are never remembered.
+// "dopa" is how the page is shown, not a reading preference: a page built with it always opens in it, and it is never remembered.
 const THEME_KEY = 'semantic-structure-viewer:theme';
 let savedTheme = null;
 try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) { /* storage unavailable */ }
-document.documentElement.dataset.theme = viewOpt.theme === 'dopa' || viewOpt.theme === 'dopa-full' ? viewOpt.theme
+document.documentElement.dataset.theme = viewOpt.theme === 'dopa' ? 'dopa'
   : savedTheme === 'light' || savedTheme === 'dark' ? savedTheme
   : viewOpt.theme === 'light' || (viewOpt.theme === 'auto' && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
 const meta = model.metadata && typeof model.metadata === 'object' ? model.metadata : {};
@@ -2345,12 +2340,12 @@ const linkOrder = (() => {
 const linear = t => t;
 // ▶ moves the knob as a steady hand would, through the same frames as dragging, at a pace to read by
 const PLAY_SPEED = 1.5;
-// the dopa/full show takes a little longer: the build-up before the summary, a beat at each stage for its cut-ins, and the sentence lit up
-const playMs = lo => (lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500 * (fxLive() ? 1.5 : 1)) / PLAY_SPEED;
+// the dopa show takes a little longer: the build-up before the summary, a beat at each stage for its cut-ins, and the sentence lit up
+const playMs = lo => (lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500 * (isDopa() ? 1.5 : 1)) / PLAY_SPEED;
 const PLAY_HOLD = 800;
 const PLAY_LINGER = 2600;   // at the summary, a moment to read it before the play goes back to the model
-const holdMs = () => fxLive() ? 1100 : PLAY_HOLD;
-const lingerMs = () => fxLive() ? 4000 : PLAY_LINGER;
+const holdMs = () => isDopa() ? 1100 : PLAY_HOLD;
+const lingerMs = () => isDopa() ? 4000 : PLAY_LINGER;
 let sess = null;
 function setStage(name) {
   const st = STAGES[name];
@@ -2419,7 +2414,7 @@ function beginSeg(a, b) {
     const sc = Math.min(m.width / w, m.height / hh0);
     shrink.to = { s: sc, x: m.left + (m.width - w * sc) / 2, y: m.top + (m.height - hh0 * sc) / 2 };
   }
-  // landAt: where a chunk's card lands, whether or not it is in view (the dopa/full show marks the conclusion and the key landing)
+  // landAt: where a chunk's card lands, whether or not it is in view (the dopa show marks the conclusion and the key landing)
   sess = { a, b, kind, pieces, ctxA, shrink, dx: paneA - paneB, scroll0, wraps, links, u: 0, landAt: id => d0 + spread * ordOf('card:' + id) + dur, fxSkip: true };
   main.classList.add('scrubbing');
   cancelAnimationFrame(FIELD.raf); FIELD.raf = 0;
@@ -2546,7 +2541,7 @@ function goTo(target, opts = {}) {
   if (opts.play) return playTo(target);
   goToken++;
   if (sess) endSeg(sess.u >= 0.5 ? 1 : 0);
-  if (S.stage !== target) { setStage(target); FIELD.t = levelOf(S.stage); drawField(); afterRender(); fxLand(target, 'jump'); }
+  if (S.stage !== target) { setStage(target); FIELD.t = levelOf(S.stage); drawField(); afterRender(); }
   drawGauge();
   arrived();
   return Promise.resolve(true);
@@ -2592,6 +2587,7 @@ async function play() {
   if (playing) { playing = false; goToken++; clearInterval(CLOCK.iv); drawGauge(); return; }
   goTo('text');      // ▶ always plays from the start, wherever the knob is
   playing = true;
+  fxWake();
   CLOCK.total = planMs(); CLOCK.t0 = performance.now();
   clearInterval(CLOCK.iv); CLOCK.iv = setInterval(drawClock, 250);
   drawGauge();
@@ -2790,55 +2786,65 @@ function drawField() {
   }
 }
 /* =====================================================================
-   6c. The dopa/full theme: the same play, staged as a show, after dopagaki-generator
+   6c. The dopa theme: while ▶ plays, the play staged as a show, after dopagaki-generator
    (game × pachinko × anime OP × short video). It adds nothing to what the page shows:
    every event is a moment the drag or the play already passes through (a passage wrapped,
    a line drawn, the conclusion or the key landing, the model complete, the summary arriving),
    and every number it shows is counted from the model. Behind the page the stage keeps moving;
    over it come cut-ins, flashes (never more than about three a second), shakes and sparks,
-   and the stronger the moment, the bigger the show. Only dopa/full has it, and it always does, whatever the system says
-   about motion: on some machines that setting is on without the reader knowing. dopa is the same look without the show.
+   and the stronger the moment, the bigger the show. It runs only while ▶ plays (the play on opening too): dragging the
+   knob, clicking and keys stay plain. And it always runs then, whatever the system says about motion: on some machines
+   that setting is on without the reader knowing.
    ===================================================================== */
 const fxBack = $('#fxBack'), fxFront = $('#fxFront'), showEl = $('#show');
 const bctx = fxBack.getContext('2d'), sctx = fxFront.getContext('2d');
-const FX = { raf: 0, dpr: 1, bw: 0, bh: 0, fw: 0, fh: 0, t0: performance.now(), last: 0, parts: [], rings: [], motes: [], speed: 0, rush: 0, flashAt: -1e9, busy: 0,
+const FX = { raf: 0, on: false, amb: 0, dpr: 1, bw: 0, bh: 0, fw: 0, fh: 0, t0: performance.now(), last: 0, parts: [], rings: [], motes: [], speed: 0, rush: 0, flashAt: -1e9, busy: 0,
   combo: null, vig: null, count: { wrap: 0, link: 0, land: 0, model: 0, aori: 0, summary: 0 } };
-const fxLive = isFull;
 const DP = LANG === 'ja'
   ? { tease: '一言でいうと……？', concl: 'CONCLUSION · 結論', key: '◆ KEY · 注目' }
   : { tease: 'IN ONE SENTENCE…?', concl: 'CONCLUSION', key: '◆ KEY' };
 const COL = { cyan: '25,232,255', gold: '255,210,63', hot: '255,45,111', white: '255,255,255', pos: '255,59,59', neg: '74,125,255' };
 function sizeFx() {
-  if (!isFull()) return;
+  if (!isDopa()) return;
   FX.dpr = Math.min(1.5, devicePixelRatio || 1);
   FX.bw = main.clientWidth; FX.bh = main.clientHeight; FX.fw = innerWidth; FX.fh = innerHeight;
   fxBack.width = Math.round(FX.bw * FX.dpr); fxBack.height = Math.round(FX.bh * FX.dpr);
   fxFront.width = Math.round(FX.fw * FX.dpr); fxFront.height = Math.round(FX.fh * FX.dpr);
   bctx.setTransform(FX.dpr, 0, 0, FX.dpr, 0, 0); sctx.setTransform(FX.dpr, 0, 0, FX.dpr, 0, 0);
   if (!FX.motes.length) { const r = rng(hashText() ^ 0x51ed27); FX.motes = Array.from({ length: 56 }, () => ({ x: r(), y: r(), v: 0.012 + r() * 0.05, s: 0.8 + r() * 1.8, f: 1 + r() * 3, p: r() * 6.3, c: r() })); }
-  if (!FX.raf) drawBack(performance.now(), 0);
 }
-function fxTheme() {         // start or stop the show with the theme
+function fxTheme() {         // the show's canvases follow the theme; the show itself follows the play
   cancelAnimationFrame(FX.raf); FX.raf = 0;
   $$('.dp', showEl).forEach(el => el.remove());
-  FX.parts = []; FX.rings = []; FX.combo = FX.vig = null;
-  if (!isFull()) return;
+  FX.parts = []; FX.rings = []; FX.combo = FX.vig = null; FX.amb = 0; FX.on = false;
+  document.documentElement.removeAttribute('data-show');
+  if (!isDopa()) return;
   sizeFx();
+  fxWake();
+}
+function fxWake() {          // the loop runs while ▶ plays, and until the stage and the sparks have faded
+  if (!isDopa() || FX.raf) return;
   FX.last = performance.now();
   FX.raf = requestAnimationFrame(fxLoop);
 }
 function fxLoop(now) {
-  const dt = Math.min(64, now - FX.last);
+  const dt = Math.min(64, now - FX.last), on = fxLive();
   FX.last = now;
+  if (on !== FX.on) {        // the show starts with the play and stops with it: PAUSE, the knob taken, a click or a key
+    FX.on = on;
+    document.documentElement.toggleAttribute('data-show', on);
+    if (!on) { comboHide(0); if (FX.vig) FX.vig.style.opacity = '0'; }
+  }
+  FX.amb = clamp(FX.amb + (on ? 1 : -1) * dt / 700, 0, 1);
   drawBack(now, dt); drawFront(dt);
   FX.speed *= Math.pow(0.88, dt / 16.7); FX.rush *= Math.pow(0.93, dt / 16.7);
-  FX.raf = isFull() ? requestAnimationFrame(fxLoop) : 0;
+  FX.raf = isDopa() && (on || FX.amb > 0 || FX.parts.length || FX.rings.length) ? requestAnimationFrame(fxLoop) : 0;
 }
-function drawBack(now, dt) {     // behind the page: rays turning from the model's centre, and sparks rising
+function drawBack(now, dt) {     // behind the page, while the show plays: rays turning from the model's centre, and sparks rising
   const c = bctx, w = FX.bw, hh = FX.bh, t = (now - FX.t0) / 1000;
   c.clearRect(0, 0, w, hh);
-  if (!w || !hh || !G.colW) return;
-  const lvl = 0.4 + 0.6 * clamp(FIELD.t, 0, 1), { cx, cy } = fieldCentre(), R = Math.hypot(w, hh);
+  if (!w || !hh || !G.colW || FX.amb <= 0) return;
+  const lvl = (0.4 + 0.6 * clamp(FIELD.t, 0, 1)) * FX.amb, { cx, cy } = fieldCentre(), R = Math.hypot(w, hh);
   c.save();
   c.translate(cx, cy); c.rotate(t * 0.05);
   c.fillStyle = `rgba(${COL.hot},${(0.035 * lvl).toFixed(3)})`;
@@ -2858,7 +2864,7 @@ function drawFront(dt) {         // over the page: speed lines while the knob ru
   const c = sctx, w = FX.fw, hh = FX.fh, f = dt / 16.7;
   c.clearRect(0, 0, w, hh);
   const sp = clamp(Math.max(FX.speed / 0.6, FX.rush), 0, 1);
-  if (sp > 0.12) {
+  if (sp > 0.12 && FX.on) {
     const [ox, oy] = stageCentre(), R = Math.hypot(w, hh) * 0.6, n = Math.round(10 + 34 * sp);
     c.strokeStyle = `rgba(${COL.white},${(0.06 + 0.2 * sp).toFixed(3)})`; c.lineWidth = 1.5;
     c.beginPath();
@@ -2990,12 +2996,12 @@ function fxFrame(s, u) {
     if (s.links.length && !s.fx.down) comboShow('LINK', n, s.links.length);
   } else if (s.kind === 'model-summary') {
     if (!s.fx.down) aori(u, crossed);
-  } else if (FORMS.includes(s.b) && crossed(0.3, 'form')) band('FORM CHANGE', `${IDX[s.b]} · ${EN[s.b]}`, 'cyan', 900);
+  }
 }
 function fxEnd(s, final) {
   if (FX.vig) FX.vig.style.opacity = '0';
   comboHide();
-  if (final >= 0.5 && s.u >= 0.98) fxLand(s.b, 'up');
+  if (final >= 0.5 && s.u >= 0.98) fxLand(s.b);
 }
 function onWrap(w, i, total) {       // a passage is wrapped: sparks off its bracket, a ring on its slab, the combo goes up
   FX.count.wrap++;
@@ -3043,14 +3049,13 @@ function aori(u, crossed) {       // before the summary: the stage darkens, and 
   }
   if (crossed(0.9, 'hit')) FX.rush = 1;
 }
-function fxLand(st, how) {       // how the knob got here: 'up' (risen to it), or 'jump' (a click or a key)
+function fxLand(st) {       // the play has risen to a stage
   if (!fxLive()) return;
   const [x, y] = stageCentre();
-  if (st === 'model' && how === 'up') {      // the structure is complete
+  if (st === 'model') {      // the structure is complete
     FX.count.model++;
     cue(700, () => { flash('#19e8ff', 0.3, 240); burst(x, y, 50, ['cyan', 'white', 'gold'], 1.2); ring(x, y, 'cyan', 300, 650, 5); });
   } else if (st === 'summary') { FX.busy = 0; reveal(); }      // the summary never waits
-  else if (FORMS.includes(st)) ring(x, y, 'cyan', 300, 600, 4);
 }
 function reveal() {     // the summary arrives: the biggest burst of the play, as the one sentence lights up phrase by phrase
   FX.count.summary++;
@@ -3415,7 +3420,7 @@ function setReadout(st) {
   const step = now => {
     const k = (now - t0) / 340, n = Math.floor(k * (word.length + 1)), kr = roll ? (now - t0) / 650 : 1;
     GG.name.textContent = k >= 1 ? word : word.split('').map((ch, i) => i < n ? ch : A[(Math.random() * A.length) | 0]).join('');
-    // in the dopa/full show the figures count up
+    // in the dopa show the figures count up
     if (roll) GG.stat.textContent = kr >= 1 ? stat : stat.replace(/\d[\d,]*/g, m => Math.round(+m.replace(/,/g, '') * Math.max(0, kr)).toLocaleString('en'));
     if (k < 1 || kr < 1) readRaf = requestAnimationFrame(step);
   };
