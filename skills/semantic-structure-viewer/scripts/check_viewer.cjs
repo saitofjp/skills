@@ -5,10 +5,11 @@
     NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html
 
   Checks: no console errors and no model problems; dragging the gauge's knob moves the page
-  continuously from the text to the chunks to the model, and letting go settles it; each of the model's
-  forms (summary, linear, slides, table) renders, with the model as a minimap; ▶ plays to the summary; hovering a mapped word focuses the model
-  and draws the thread, with a peek of its details along the bottom; clicking pins it and holds the details
-  card; Escape releases it; at a form the details card and the minimap sit side by side without overlapping;
+  continuously from the text to the chunks to the model, and letting go settles it; the page plays by itself
+  when it opens (unless built with --no-autoplay); each of the model's forms (summary, linear, slides, table)
+  renders, with the model as a minimap; ▶ plays to the summary and back to the model; hovering a mapped word focuses the model
+  and draws the thread, with its details along the bottom; Escape clears the focus; at a form the details
+  card and the minimap sit side by side without overlapping;
   nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
 'use strict';
@@ -40,6 +41,11 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   const meta = await V(() => ({ problems: window.__semanticViewer.problems, chunks: window.__semanticViewer.order.length }));
   if (meta.problems.length) return fail('model problems: ' + meta.problems.join(' | '));
   ok(`loaded (${meta.chunks} chunks)`);
+  if (await V(() => window.__semanticViewer.autoplay)) {
+    try { await page.waitForFunction(() => window.__semanticViewer.state.playing, null, { timeout: 8000 }); }
+    catch (e) { return fail('the page did not play by itself when it opened'); }
+    ok('plays by itself when it opens');
+  }
   await V(() => window.__semanticViewer.goTo('text', { ms: 1 }));
   await still();
 
@@ -81,7 +87,10 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   try {
     await page.waitForFunction(() => window.__semanticViewer.state.stage === 'summary' && !window.__semanticViewer.state.moving, null, { timeout: 60000 });
   } catch (e) { return fail('▶ did not play to the summary: ' + JSON.stringify(await state())); }
-  ok('▶ plays from where the knob is to the summary');
+  try {
+    await page.waitForFunction(() => { const s = window.__semanticViewer.state; return s.stage === 'model' && !s.moving && !s.playing; }, null, { timeout: 20000 });
+  } catch (e) { return fail('▶ did not go back to the model after the summary: ' + JSON.stringify(await state())); }
+  ok('▶ plays from where the knob is to the summary and, after a moment there, back to the model');
   await V(() => window.__semanticViewer.goTo('model', { ms: 1 }));
   await still();
 
@@ -90,19 +99,17 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   await seg.scrollIntoViewIfNeeded();
   await seg.hover();
   await page.waitForTimeout(300);
-  const hov = await V(() => ({ f: document.querySelectorAll('#rep .f0, #rep .fp').length, thread: document.querySelectorAll('#pointer path').length, peek: !document.querySelector('#details').hidden && document.querySelector('#details').classList.contains('peek') }));
+  const hov = await V(() => ({ f: document.querySelectorAll('#rep .f0, #rep .fp').length, thread: document.querySelectorAll('#pointer path').length, card: !document.querySelector('#details').hidden }));
   if (!hov.f) return fail('hovering a mapped word did not focus anything in the model');
-  if (!hov.peek) return fail('hovering a mapped word did not show a peek of its details');
-  ok(`hover on the text focuses the model${hov.thread ? ', draws the thread' : ''} and peeks its details`);
-  const first = await V(() => window.__semanticViewer.order[0].id);
-  await page.evaluate(id => window.__semanticViewer.pin(id), first);
-  await page.waitForTimeout(300);
-  const pinned = await V(() => ({ pinned: window.__semanticViewer.state.pinned, card: !document.querySelector('#details').hidden && !document.querySelector('#details').classList.contains('peek') }));
-  if (!pinned.pinned || !pinned.card) return fail('pinning a chunk did not open the details card');
-  ok('pin opens the details card');
+  if (!hov.card) return fail('hovering a mapped word did not show its details');
+  ok(`hover on the text focuses the model${hov.thread ? ', draws the thread' : ''} and shows its details`);
   // at a form, the details card and the minimap line up along the bottom
+  await page.mouse.move(2, 2);
   await V(() => window.__semanticViewer.goTo('linear'));
   await page.waitForTimeout(300);
+  const first = await V(() => window.__semanticViewer.order[0].id);
+  await page.evaluate(id => window.__semanticViewer.hover(id), first);
+  await page.waitForTimeout(200);
   const dock = await V(() => {
     const d = document.querySelector('#details'), m = document.querySelector('#minimap');
     if (d.hidden || m.hidden) return { shown: false };
@@ -113,12 +120,11 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   if (dock.overlap) return fail('at a form, the details card overlaps the minimap');
   if (!dock.low) return fail('the details card is not along the bottom');
   ok('at a form, the details card and the minimap sit along the bottom');
-  await V(() => window.__semanticViewer.goTo('model'));
-  await page.mouse.move(2, 2);
   await page.keyboard.press('Escape');
-  if (await V(() => window.__semanticViewer.state.pinned)) return fail('Escape did not release the pin');
-  if (await V(() => !document.querySelector('#details').hidden)) return fail('the details card stayed open after the release');
-  ok('Escape releases the pin');
+  if (await V(() => window.__semanticViewer.state.hover)) return fail('Escape did not clear the focus');
+  if (await V(() => !document.querySelector('#details').hidden)) return fail('the details card stayed open after the focus was cleared');
+  ok('Escape clears the focus and its details');
+  await V(() => window.__semanticViewer.goTo('model'));
 
   // the light / dark switch
   await page.click('#themeCtl button[data-theme-set="light"]');
