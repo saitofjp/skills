@@ -3243,11 +3243,18 @@ afterRender();
 drawGauge();
 if (viewOpt.focus && nodes.get(viewOpt.focus)) { const n = nodes.get(viewOpt.focus); setHover(n); bringIntoView(n, false, true); }
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { if (!sess) { layoutText(); afterRender(); } });
-// the page plays by itself when it opens, unless the reader asks for less motion or has already taken the knob
-const AUTOPLAY = viewOpt.autoplay !== false && !reduceMotion;
+// the page plays by itself when it opens: once the fonts are in (or after a moment) and the page is in view,
+// unless the reader has already taken the knob. Like ▶, it plays even with prefers-reduced-motion.
+const AUTOPLAY = viewOpt.autoplay !== false;
 if (AUTOPLAY) {
   const tok = goToken;
-  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => setTimeout(() => { if (goToken === tok && !sess && !playing) play(); }, 700));
+  const inView = () => new Promise(res => {
+    if (!document.hidden) return res();
+    const on = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', on); res(); } };
+    document.addEventListener('visibilitychange', on);
+  });
+  Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), sleep(1500)]).then(inView)
+    .then(() => setTimeout(() => { if (goToken === tok && !sess && !playing) play(); }, 700));
 }
 
 window.__semanticViewer = {

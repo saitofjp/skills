@@ -45,9 +45,9 @@ A caption band names what is happening: the chunk being wrapped, the line being 
 
 ▶ is the drag, played: the knob travels along the gauge by itself, through the same frames, as a steady hand would move it. It moves at a constant pace (about 0.47 s for each chunk, and 0.27 s for each line as it grows, with at least 4 s per segment) and stops for a moment at each stage. At the summary it holds for 2.6 s, so the sentence can be read, then plays back down to the model and stops there, with the text and the notes side by side to explore. For the ruling example, the play takes about 22 seconds; the timecode in the HUD shows where it is.
 
-The page starts the play by itself when it opens (after the fonts are in, and unless the reader has already taken the knob). `autoplay: false` (`--no-autoplay`) turns that off.
+The page starts the play by itself when it opens: once the fonts are in (or after 1.5 s) and the page is in view, unless the reader has already taken the knob. `autoplay: false` (`--no-autoplay`) turns that off.
 
-Dragging and ▶ always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops the decoration (the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps), and the page does not start the play by itself.
+Dragging, ▶ and the play on opening always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps.
 
 ## Layers
 
@@ -133,5 +133,5 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | `focus` | A node id to focus when the page opens, until the pointer moves onto something else |
 | `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`. The reader can still switch. |
 | `follow` | `false` stops the right side from following the text |
-| `autoplay` | `false` stops the page from playing by itself when it opens (default `true`; never with `prefers-reduced-motion`) |
+| `autoplay` | `false` stops the page from playing by itself when it opens (default `true`) |
 | `lang` | `"ja"` / `"en"`. Defaults to `metadata.language`, then to the script of the text. |
