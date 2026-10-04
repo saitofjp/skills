@@ -29,6 +29,8 @@ Rise through the layers of meaning. The text is the ground. Chunks lift off it a
 
 The look is flat, as on a printed manga page, dark by default (black paper, white ink) with a light theme a click away: solid fills, crisp lines and square, panel-like cards. The dark theme uses screentone dots; the light theme leaves them out and stays plain. There is no glow, blur or soft shadow. Motion is staged but plain. Pieces move in order, settle with a slight overshoot when you let go, and then hold.
 
+The dopa theme is the one exception: the same page and the same play, staged as a show (see [The dopa theme](#the-dopa-theme)).
+
 ## The gauge is continuous
 
 Drag the knob, and the page stands at any point between two neighbouring stages. Every keyed piece (a chunk's card, its number, its headline, each point) is drawn between where it is in one stage and where it is in the other. Pieces start one after another: passages in the text's order, notes in the notes' order. Letting go settles to the nearer stage. Only dragging and ▶ move through the frames: clicking a label, or pressing an arrow key, switches to that stage at once.
@@ -48,6 +50,32 @@ A caption band names what is happening: the chunk being wrapped, the line being 
 The page starts the play by itself when it opens: once the fonts are in (or after 1.5 s) and the page is in view, unless the reader has already taken the knob. `autoplay: false` (`--no-autoplay`) turns that off.
 
 Dragging, ▶ and the play on opening always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps.
+
+## The dopa theme
+
+`theme: "dopa"` (`--theme dopa`) stages the same play as a show in the dopagaki style of [`dopagaki-generator`](../../dopagaki-generator/SKILL.md): game × pachinko × anime OP × short video. Built with it, the page plays the show when it opens, and a screen recording of the play is a short video.
+
+It adds nothing to what the page shows. Every event is a moment the drag or the play already passes through, fired as the knob passes it going forward (once a segment; going back only runs the counters down), and every number on screen is counted from the model. The stronger the moment, the bigger the show: the conclusion and the result get the most.
+
+| Moment | Show |
+|---|---|
+| ▶ from the text | A hook first (2.7 s): the text's length counting up (`4,987字`), what it becomes (`→ 1文に。`), the title on a slanted band, `GO!!`. Taking the knob or PAUSE cuts it short. |
+| A passage wraps | Sparks off its bracket and a ring on its slab; a COMBO counter (`×07`, with a bar to the last passage). The last one is a `FULL COMBO!!`, with a flash and a shake. |
+| Text → chunks → model begins | Speed lines and a light flash. |
+| The key lands | A hot pink band across the screen with `◆ KEY` and its headline, a flash, a shake, sparks where its card lands (at the edge of the view when the card is out of it). |
+| The conclusion lands | The same in gold, with `CONCLUSION`: the biggest moment before the result. The big moments take turns, so two never cover each other. |
+| A line is drawn | Sparks at its arrow, in the colour of its sign; the counter turns to `LINK ×n`. |
+| The model is reached | `STAGE CLEAR · MODEL COMPLETE!!`, with its notes and links counting up. |
+| Model → summary | The build-up: the stage darkens around the middle, a bubble asks (`一言でいうと……？`), and `3`, `2`, `1` punch in, following the knob. |
+| The summary arrives | `MISSION COMPLETE`: a burst, a gold flash and a shake; the text's length counted down to the sentence's (`4,987 → 120字`), its notes and links, and how much smaller it is (`圧縮 1/42`). Then the panel leaves and the sentence lights up, phrase by phrase. |
+| A form is reached | `FORM CHANGE` and the form's name. |
+
+- **The stage behind the page** keeps moving: rays turning slowly from the model's centre and sparks rising, stronger as the knob rises. Over the page lie scanlines and a vignette. The HUD's figures count up as the knob reaches a stage.
+- **The look.** A black stage in neon: cyan is the focus, gold the conclusion, hot pink the key, and cards and lines glow. The text keeps its plain type, so it can still be read.
+- **Timing.** The show takes a little longer than the plain play: the hook, 1.1 s at each stage, 3.5 s for the build-up from the model to a form, and 5.6 s at the summary before going back to the model. The timecode counts it all.
+- **Limits.** Flashes come at most about three a second. The show never takes the pointer, and the HUD stays above it. On a phone, it centres above the HUD and the counter moves to the top right.
+- **`prefers-reduced-motion`** keeps the colours and drops the show: no hook, cut-ins, flashes, shakes, sparks or moving stage. The play itself still runs, as in the other themes.
+- **Not remembered.** dopa is a show the page is built for, not a reading preference: a page built with it always opens in it, and choosing it in the header is never remembered. Light or dark, chosen there, is.
 
 ## Layers
 
@@ -98,6 +126,8 @@ The details of what is in focus are docked along the bottom of the model's side,
 | Heavy frame, ◆ KEY (注目) | `role: "key"`: what matters most to a reader when that is not the conclusion |
 | Dashed border or line | `inferred` / `uncertain`. Dotted means `abstracted`. |
 
+In the dopa theme the meanings stay and the colours change: cyan is the focus, red `+`, blue `−`, violet the basis; the conclusion is a gold card and the key has a hot pink frame.
+
 ## The field
 
 The composition behind the model is built from the model:
@@ -123,7 +153,7 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | Click | Bring the other side to it at once: a word scrolls the model to its note, a note scrolls the text to its words. Nothing is pinned. |
 | Move off, or Esc | Clear the focus |
 | Double click a card | Go down to its passage |
-| Light / Dark (header) | Switch the theme. Dark is the default; the reader's choice is remembered in the browser. |
+| light / dark / dopa (header) | Switch the theme. Dark is the default; a choice of light or dark is remembered in the browser. dopa turns the show on and off, and is not remembered. |
 
 ## View options
 
@@ -131,7 +161,7 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 |---|---|
 | `stage` | Where the knob starts: `"text"` (default), `"chunks"`, `"model"`, `"summary"`, `"linear"`, `"slides"`, `"table"` |
 | `focus` | A node id to focus when the page opens, until the pointer moves onto something else |
-| `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`. The reader can still switch. |
+| `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`, `"dopa"`. The reader can still switch. A page built with `"dopa"` always opens in it. |
 | `follow` | `false` stops the right side from following the text |
 | `autoplay` | `false` stops the page from playing by itself when it opens (default `true`) |
 | `lang` | `"ja"` / `"en"`. Defaults to `metadata.language`, then to the script of the text. |
