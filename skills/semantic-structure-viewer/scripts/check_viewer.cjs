@@ -8,7 +8,7 @@
   continuously from the text to the chunks to the model, and letting go settles it; the page plays by itself
   when it opens (unless built with --no-autoplay); each of the model's forms (summary, linear, slides, table)
   renders, with the model as a minimap; ▶ plays from the text to the summary and back to the model, wherever the knob was; hovering a mapped word focuses the model
-  and draws the thread, with its details along the bottom; Escape clears the focus; at a form the details
+  and draws the thread, with its details along the bottom, and so does hovering anywhere inside a chunk's frame; Escape clears the focus; at a form the details
   card and the minimap sit side by side without overlapping; the theme switches between dark, light, dopa and dopa/full:
   dopa has no show, in dopa/full ▶ stages the build-up and the summary's arrival once, neither is remembered, the show stops
   with the theme, and dopa/full keeps its show when the system asks for less motion;
@@ -106,6 +106,22 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   if (!hov.f) return fail('hovering a mapped word did not focus anything in the model');
   if (!hov.card) return fail('hovering a mapped word did not show its details');
   ok(`hover on the text focuses the model${hov.thread ? ', draws the thread' : ''} and shows its details`);
+  // between the words, anywhere in a chunk's frame, focuses that chunk
+  await page.mouse.move(2, 2);
+  const spot = await V(() => {
+    const slabs = [...document.querySelectorAll('#slabs .sl rect.slab')].map(r => ({ id: r.parentNode.dataset.node, b: r.getBoundingClientRect() }))
+      .filter(x => x.b.top > 120 && x.b.bottom < innerHeight - 60 && x.b.height > 30);
+    const pane = document.querySelector('#textPane').getBoundingClientRect();
+    const s = slabs.find(x => x.b.right < pane.right);
+    return s && { id: s.id, x: s.b.right - 3, y: s.b.top + s.b.height / 2 };
+  });
+  if (spot) {
+    await page.mouse.move(spot.x, spot.y);
+    await page.waitForTimeout(200);
+    const on = await V(() => window.__semanticViewer.state.hover);
+    if (!on) return fail('hovering inside a chunk\'s frame, off the words, did not focus it');
+    ok('hovering anywhere inside a chunk\'s frame focuses it');
+  }
   // at a form, the details card and the minimap line up along the bottom
   await page.mouse.move(2, 2);
   await V(() => window.__semanticViewer.goTo('linear'));

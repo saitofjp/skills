@@ -45,7 +45,7 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
 3. **Check it in a browser** if Node and Playwright are available:
    `NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html`
    - It checks that the page loads with no errors and that dragging the knob moves the page between stages and settles when let go.
-   - It checks that the page plays by itself when it opens, that each form renders, that ▶ plays from the text to the summary and back to the model, and that hovering a word focuses the model.
+   - It checks that the page plays by itself when it opens, that each form renders, that ▶ plays from the text to the summary and back to the model, and that hovering a word, or anywhere inside a chunk's frame, focuses the model.
    - It checks that hovering shows the details along the bottom and Esc clears them, that at a form the card and the minimap sit side by side, and that nothing overflows a phone-width screen.
    - It checks that the theme switches between light, dark, dopa and dopa/full: dopa has no show, in dopa/full ▶ stages the build-up and the summary's arrival once, the show stops when the theme changes, and dopa/full keeps its show when the system asks for less motion.
 

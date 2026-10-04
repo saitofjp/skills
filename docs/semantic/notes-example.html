@@ -2632,19 +2632,36 @@ function cycleForm(dir) {   // ↑ ↓ between the model's forms, as they lie on
    9. Events
    ===================================================================== */
 const ownerNode = t => t.kind === 'point' ? t.node : t.kind === 'rel' ? t.source : t;
-textEl.addEventListener('mousemove', ev => {
-  if (S.stop === 'text') return;
-  const seg = ev.target.closest('.seg');
-  const k = seg ? +seg.dataset.k : null;
-  const t = k != null ? targetOfSeg(k) : null;
-  setHover(t, t ? k : null);
+// on the text: the words under the pointer, or, between them, the chunk whose frame holds it
+function chunkAt(ev) {     // the smallest frame (slab) under the pointer, as drawMarks draws it
+  const pr = page.getBoundingClientRect(), x = ev.clientX - pr.left, y = ev.clientY - pr.top;
+  let best = null;
+  order.forEach(n => (n.boxes || []).forEach(b => {
+    const inset = (S.stop === 'chunks' ? 0 : n.depth) * 5;
+    if (x < GUTTER - 6 + inset || x > GUTTER + G.colW + 6 - inset || y < b.top - 2 || y > b.bottom + 2) return;
+    if (!best || b.bottom - b.top < best.h) best = { n, k: segIndex.get(b.sp.start), h: b.bottom - b.top };
+  }));
+  return best;
+}
+function textTarget(ev) {
+  if (S.stop === 'text' || (ev.target.closest && ev.target.closest('#marks'))) return null;
+  const seg = ev.target.closest && ev.target.closest('.seg');
+  const k = seg ? +seg.dataset.k : null, t = k != null ? targetOfSeg(k) : null;
+  if (t) return { t, k };
+  const c = chunkAt(ev);
+  return c ? { t: c.n, k: c.k } : null;
+}
+textPane.addEventListener('mousemove', ev => {
+  if (S.stop === 'text' || (ev.target.closest && ev.target.closest('#marks'))) return;
+  const hit = textTarget(ev);
+  textPane.style.cursor = hit ? 'pointer' : '';
+  setHover(hit ? hit.t : null, hit ? hit.k : null);
 });
-textEl.addEventListener('mouseleave', () => setHover(null));
-textEl.addEventListener('click', ev => {
-  if (S.stop === 'text' || sess) return;
-  const seg = ev.target.closest('.seg');
-  const t = seg ? targetOfSeg(+seg.dataset.k) : null;
-  if (t) bringIntoView(t, true);
+textPane.addEventListener('mouseleave', () => { textPane.style.cursor = ''; setHover(null); });
+textPane.addEventListener('click', ev => {
+  if (sess) return;
+  const hit = textTarget(ev);
+  if (hit) bringIntoView(hit.t, true);
 });
 const targetOfEl = el => {
   if (!el || !el.closest) return null;

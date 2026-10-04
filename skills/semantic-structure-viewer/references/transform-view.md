@@ -108,7 +108,7 @@ The details of what is in focus are docked along the bottom of the model's side,
 ## Source ↔ model mapping
 
 - **Segments.** The text is cut at every span boundary. A segment knows every chunk, point and relation whose spans cover it.
-- **Text → model.** Hovering a segment picks the element with the smallest span over it: a point or a relation comes before the chunk that contains it.
+- **Text → model.** Hovering a segment picks the element with the smallest span over it: a point or a relation comes before the chunk that contains it. Between the words, anywhere inside a chunk's frame (its slab, at the chunk and model layers), the pointer picks the smallest chunk whose frame holds it.
 - **Model → text.** Focusing a chunk washes its passages and marks its points' words. Focusing a point marks its words strongly. Focusing a relation underlines its words in the color of its sign.
 - **The thread.** A line joins the hovered words to their note, or the note to the first of its words in view. At a form, the focus also lights the chunk on the minimap, so text, form and model point at each other. The other sides scroll to keep the counterparts in view.
 - **Following.** The chunk at the middle of the text view is marked. In the chunk list and in Linear, the right side scrolls with the text.
@@ -150,7 +150,7 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | ▶ PLAY or Space | Play from the text to the summary and back to the model, wherever the knob is: the knob moves by itself, as in dragging; again (PAUSE) to stop where it is, and ▶ after that starts over |
 | ← / → | Switch toward the text / toward the summary (from Linear, on to Slides) |
 | ↑ / ↓ (at the model or a form) | Switch between A summary, B linear and C table, as they lie on the gauge |
-| Hover text, a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread, and show its details along the bottom |
+| Hover text (or anywhere inside a chunk's frame), a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread, and show its details along the bottom |
 | Click | Bring the other side to it at once: a word scrolls the model to its note, a note scrolls the text to its words. Nothing is pinned. |
 | Move off, or Esc | Clear the focus |
 | Double click a card | Go down to its passage |
