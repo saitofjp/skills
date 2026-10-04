@@ -14,20 +14,22 @@ The gauge is a compact game HUD at the top right (at the bottom on a phone), in 
 
 - **The plate.** A flat panel with corner marks, one cut corner and hairline rules. The type is small, monospaced and widely spaced, and the focus colour is used sparingly.
 - **The readout.** A large index (`01`–`03` for the levels; `A`, `B`, `B2`, `C` for the forms), the stage's name, and figures taken from the model (`13 NOTES · 11 LINKS`). The name decodes, letter by letter, when the knob reaches a new stage.
-- **The play control.** `PLAY` / `PAUSE`, with a timecode: how long the play takes from here (`T-00:24`), and while it runs, the time elapsed (`00:07 / 00:24`).
+- **The play control.** `PLAY` / `PAUSE`, with a timecode: how long the play takes (`T-00:24`), and while it runs, the time elapsed (`00:07 / 00:24`).
 - **The graph.** It is the control, and the model sits at its centre: a diamond in a ring, framed by turning lock brackets. The levels below it (text, chunks) run into it from the left along a ruled track; its forms leave it to the right as a tree, a series: A, the summary, straight on; B linear (and along its row on to B2 slides) and C table hanging from that line. The knob is a small diamond with a pulse.
 
 The page's content starts below the HUD, and the text, centred at L0, keeps clear of it. The HUD takes no keyboard focus, so a stray Enter or a click cannot leave it ready to start or stop the play; Space and the arrow keys work from anywhere on the page.
 
 - **The trunk** (focus out / in, meta-cognition): the levels, from the text, to the text wrapped into chunks, to the model. Moving right abstracts; moving left returns to the words.
 - **The forms** (transform, representation): the model's forms, joined to the model by straight lines: A the summary in one sentence, B linear notes (which lead on to B2 slides), C a table. The only way to a form is through the model, because a form is a representation of the model, not of the text.
-- **▶** plays the way to the summary from where the knob is, holds there for a moment, and goes back to the model. It starts from the text again when the knob is at the summary, or still at the model where the last play left it. It moves the knob for you, so what plays is exactly what dragging shows. Space does the same; PAUSE stops the knob where it is, and dragging takes over at once. The page plays by itself when it opens.
+- **▶** always plays from the start: wherever the knob is, it goes back to the text and plays the way to the summary, holds there for a moment, and goes back to the model. It moves the knob for you, so what plays is exactly what dragging shows. Space does the same; PAUSE stops the knob where it is, and dragging takes over at once. The page plays by itself when it opens.
 
 ## Concept
 
 Rise through the layers of meaning. The text is the ground. Chunks lift off it as slabs, and are listed on the right. The model floats above, in a classical, unruly geometry composed from the model itself, which lies shattered near the text and comes together as you rise.
 
 The look is flat, as on a printed manga page, dark by default (black paper, white ink) with a light theme a click away: solid fills, crisp lines and square, panel-like cards. The dark theme uses screentone dots; the light theme leaves them out and stays plain. There is no glow, blur or soft shadow. Motion is staged but plain. Pieces move in order, settle with a slight overshoot when you let go, and then hold.
+
+The dopa theme is the exception: the same page in the dopagaki style, and while ▶ plays, the same play staged as a show (see [The dopa theme](#the-dopa-theme)).
 
 ## The gauge is continuous
 
@@ -47,7 +49,32 @@ A caption band names what is happening: the chunk being wrapped, the line being 
 
 The page starts the play by itself when it opens: once the fonts are in (or after 1.5 s) and the page is in view, unless the reader has already taken the knob. `autoplay: false` (`--no-autoplay`) turns that off.
 
-Dragging, ▶ and the play on opening always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps.
+Dragging, ▶ and the play on opening always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps. It never stops the dopa show (see below).
+
+## The dopa theme
+
+`theme: "dopa"` (`--theme dopa`) dresses the page in the dopagaki style of [`dopagaki-generator`](../../dopagaki-generator/SKILL.md): game × pachinko × anime OP × short video. The look: a black stage in neon, the conclusion gold and the key hot pink, glowing cards and lines, scanlines and a vignette. The text keeps its plain type, so it can still be read.
+
+While ▶ plays (and in the play on opening), the play is staged as a show; a screen recording of it is a short video. Moving the knob by hand, clicking a label or pressing a key stages nothing: the show belongs to the play, starts with it and stops when it does (PAUSE, the knob taken, a click or a key). The `dopa` button in the header turns pink to violet when chosen, and light runs across it while the show plays.
+
+The show adds nothing to what the page shows. Every event is a moment the play already passes through, fired as the knob passes it going forward (once a segment; on the way back nothing fires), and every number on screen is counted from the model. The stronger the moment, the bigger the show: the conclusion and the summary get the most.
+
+| Moment | Show |
+|---|---|
+| A passage wraps | Sparks off its bracket and a ring on its slab; a COMBO counter (`×07`, with a bar to the last passage). The last one is a `FULL COMBO!!`, with a flash and a shake. |
+| Chunks → model begins | Speed lines and a light flash. |
+| The key lands | A hot pink band across the screen with `◆ KEY` and its headline, a flash, a shake, sparks where its card lands (at the edge of the view when the card is out of it). |
+| The conclusion lands | The same in gold, with `CONCLUSION`. The big moments take turns, so two never cover each other. |
+| A line is drawn | Sparks at its arrow, in the colour of its sign; the counter turns to `LINK ×n`. |
+| The model is reached | A cyan flash and a burst. |
+| Model → summary | The build-up: the stage darkens around the middle and a bubble asks `一言でいうと……？`, following the knob. |
+| The summary arrives | The biggest burst of the play, a gold flash and a shake, as the sentence lights up phrase by phrase. |
+
+- **The stage behind the page**, while the show plays: rays turning slowly from the model's centre and sparks rising, stronger as the knob rises. It fades in when ▶ starts and out when the play stops. The HUD's figures count up as the knob reaches a stage.
+- **Timing.** The show takes a little longer than the plain play: 1.1 s at each stage, 3.5 s for the build-up from the model to the summary, and 4 s at the summary before going back to the model. The timecode counts it all.
+- **Limits.** Flashes come at most about three a second. The show never takes the pointer, and the HUD stays above it. On a phone, it centres above the HUD and the counter moves to the top right.
+- **Motion.** The show keeps all of its motion even when the system asks for less (`prefers-reduced-motion`): on some machines that setting is on without the reader knowing, and the show would quietly vanish. Outside the show, that setting still stops the decoration, as in the other themes.
+- **Not remembered.** dopa is how a page is shown, not a reading preference: a page built with it always opens in it, and choosing it in the header is never remembered. Light or dark, chosen there, is.
 
 ## Layers
 
@@ -79,7 +106,7 @@ The details of what is in focus are docked along the bottom of the model's side,
 ## Source ↔ model mapping
 
 - **Segments.** The text is cut at every span boundary. A segment knows every chunk, point and relation whose spans cover it.
-- **Text → model.** Hovering a segment picks the element with the smallest span over it: a point or a relation comes before the chunk that contains it.
+- **Text → model.** Hovering a segment picks the element with the smallest span over it: a point or a relation comes before the chunk that contains it. Between the words, anywhere inside a chunk's frame (its slab, at the chunk and model layers), the pointer picks the smallest chunk whose frame holds it.
 - **Model → text.** Focusing a chunk washes its passages and marks its points' words. Focusing a point marks its words strongly. Focusing a relation underlines its words in the color of its sign.
 - **The thread.** A line joins the hovered words to their note, or the note to the first of its words in view. At a form, the focus also lights the chunk on the minimap, so text, form and model point at each other. The other sides scroll to keep the counterparts in view.
 - **Following.** The chunk at the middle of the text view is marked. In the chunk list and in Linear, the right side scrolls with the text.
@@ -97,6 +124,8 @@ The details of what is in focus are docked along the bottom of the model's side,
 | Inverted card | `role: "conclusion"` |
 | Heavy frame, ◆ KEY (注目) | `role: "key"`: what matters most to a reader when that is not the conclusion |
 | Dashed border or line | `inferred` / `uncertain`. Dotted means `abstracted`. |
+
+In the dopa theme the meanings stay and the colours change: cyan is the focus, red `+`, blue `−`, violet the basis; the conclusion is a gold card and the key has a hot pink frame.
 
 ## The field
 
@@ -116,14 +145,14 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | Drag the gauge's knob | Move continuously between stages; let go to settle |
 | Hover or click a box on the minimap | Focus that chunk; the form and the text scroll to it |
 | Click a label on the gauge | Switch to that stage at once |
-| ▶ PLAY or Space | Play to the summary and back to the model: the knob moves by itself, as in dragging; again (PAUSE) to stop where it is |
+| ▶ PLAY or Space | Play from the text to the summary and back to the model, wherever the knob is: the knob moves by itself, as in dragging; again (PAUSE) to stop where it is, and ▶ after that starts over |
 | ← / → | Switch toward the text / toward the summary (from Linear, on to Slides) |
 | ↑ / ↓ (at the model or a form) | Switch between A summary, B linear and C table, as they lie on the gauge |
-| Hover text, a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread, and show its details along the bottom |
+| Hover text (or anywhere inside a chunk's frame), a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread, and show its details along the bottom |
 | Click | Bring the other side to it at once: a word scrolls the model to its note, a note scrolls the text to its words. Nothing is pinned. |
 | Move off, or Esc | Clear the focus |
 | Double click a card | Go down to its passage |
-| Light / Dark (header) | Switch the theme. Dark is the default; the reader's choice is remembered in the browser. |
+| light / dark / dopa (header) | Switch the theme. Dark is the default; a choice of light or dark is remembered in the browser. dopa is not remembered; its show plays with ▶. |
 
 ## View options
 
@@ -131,7 +160,7 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 |---|---|
 | `stage` | Where the knob starts: `"text"` (default), `"chunks"`, `"model"`, `"summary"`, `"linear"`, `"slides"`, `"table"` |
 | `focus` | A node id to focus when the page opens, until the pointer moves onto something else |
-| `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`. The reader can still switch. |
+| `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`, `"dopa"`. The reader can still switch. A page built with `"dopa"` always opens in it. |
 | `follow` | `false` stops the right side from following the text |
 | `autoplay` | `false` stops the page from playing by itself when it opens (default `true`) |
 | `lang` | `"ja"` / `"en"`. Defaults to `metadata.language`, then to the script of the text. |

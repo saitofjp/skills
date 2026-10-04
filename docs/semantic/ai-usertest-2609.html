@@ -64,6 +64,22 @@
   --shadow: none;
   color-scheme: light;
 }
+/* dopa: the same page in the dopagaki style (game × pachinko × anime OP × short video). Black stage, neon ink;
+   the conclusion is gold, the key hot pink. While ▶ plays, the play is also staged as a show, in #fxBack and #show (section 6c). */
+:root[data-theme="dopa"] {
+  --space: #06050a; --ground: rgba(9, 8, 18, .9); --sky: rgba(14, 6, 28, .26); --field: 255, 45, 111; --field-a: .07;
+  --ink: #f5f7ff; --ink-2: #c6cbe4; --muted: #8f96b3; --rule: rgba(25, 232, 255, .2);
+  --card: #0e0b1e; --card-hi: transparent; --card-line: rgba(25, 232, 255, .5); --accent: #19e8ff;
+  --frame: rgba(255, 45, 111, .08); --slab: rgba(25, 232, 255, .07); --slab-line: rgba(25, 232, 255, .32); --bracket: rgba(25, 232, 255, .55);
+  --thread: #19e8ff; --link: rgba(205, 212, 255, .5); --band: #ffd23f; --band-fg: #06050a;
+  --focus: #19e8ff; --focus-rgb: 25, 232, 255; --focus-ink: #19e8ff; --on-focus: #03161b;
+  --rel: #a9b0cf; --rel-rgb: 169, 176, 207; --pos: #ff3b3b; --pos-rgb: 255, 59, 59; --neg: #4a7dff; --neg-rgb: 74, 125, 255;
+  --evidence: #b47cff; --evidence-rgb: 180, 124, 255; --ui: #ff2d6f; --ui-fg: #ffffff; --chip: rgba(25, 232, 255, .12); --tone: rgba(255, 45, 111, .2);
+  --hot: #ff2d6f; --hot-rgb: 255, 45, 111; --gold: #ffd23f; --gold-rgb: 255, 210, 63;
+  --font-disp: "Dela Gothic One", Impact, "Arial Black", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+  --shadow: none;
+  color-scheme: dark;
+}
 * { box-sizing: border-box; }
 html, body { height: 100%; }
 body { margin: 0; background: var(--space); color: var(--ink); font: 14px/1.6 var(--font); display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); overflow: hidden; }
@@ -78,9 +94,15 @@ header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; pad
 .titles .src { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .theme-ctl { display: inline-flex; border: 1.5px solid var(--card-line); flex: none; }
-.theme-ctl button { border: 0; background: transparent; padding: 4px 10px; font: 700 11px/1.2 var(--mono); letter-spacing: .08em; color: var(--muted); }
+.theme-ctl button { border: 0; background: transparent; white-space: nowrap; padding: 4px 10px; font: 700 11px/1.2 var(--mono); letter-spacing: .08em; color: var(--muted); }
 .theme-ctl button + button { border-left: 1.5px solid var(--card-line); }
 .theme-ctl button[aria-pressed="true"] { background: var(--ui); color: var(--ui-fg); }
+/* dopa: chosen, it burns pink to violet in gold letters; while the show plays, light runs across it */
+.theme-ctl button.dopa { position: relative; overflow: hidden; font-style: italic; }
+.theme-ctl button.dopa[aria-pressed="true"] { background: linear-gradient(100deg, #ff2d6f, #8b5cff); color: #fff4b8; text-shadow: 0 0 8px rgba(255, 210, 63, .9); }
+:root[data-show] .theme-ctl button.dopa[aria-pressed="true"]::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, .6) 50%, transparent 65%); transform: translateX(-100%); animation: dopa-shine 2.6s ease-in-out infinite; }
+@keyframes dopa-shine { 55%, 100% { transform: translateX(100%); } }
 
 /* ---------- main: the ground (text) and the space above it (model) ---------- */
 main { position: relative; display: flex; min-height: 0; overflow: hidden; }
@@ -407,18 +429,99 @@ main.narrow #ticker .m { font-size: 12.5px; }
 main.narrow #gauge { top: auto; bottom: 8px; left: 0; right: 0; margin: 0 auto; width: min(420px, calc(100% - 16px)); }
 main.narrow #ticker { bottom: 172px; }
 main.narrow #rep { padding-bottom: 190px; }
-@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ---------- the dopa theme: the same parts, in neon. :where() keeps each rule as specific as the one it restyles ---------- */
+:where(:root[data-theme="dopa"]) header { background: linear-gradient(90deg, rgba(var(--hot-rgb), .2), transparent 46%), var(--space); border-bottom: 2px solid var(--hot); }
+:where(:root[data-theme="dopa"]) .titles h1 { font-weight: 900; font-style: italic; letter-spacing: .03em; text-shadow: -1px 0 rgba(var(--hot-rgb), .9), 1px 0 rgba(var(--focus-rgb), .9); }
+:where(:root[data-theme="dopa"]) .titles .src { color: var(--focus); opacity: .75; }
+:where(:root[data-theme="dopa"]) .theme-ctl { border-color: var(--hot); }
+:where(:root[data-theme="dopa"]) .theme-ctl button + button { border-left-color: var(--hot); }
+:where(:root[data-theme="dopa"]) main::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 7;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .14) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, .5) 100%); }
+:where(:root[data-theme="dopa"]) .seg.hp { text-shadow: 0 0 10px rgba(var(--focus-rgb), .6); }
+:where(:root[data-theme="dopa"]) #marks .br text { fill: rgba(var(--gold-rgb), .85); }
+:where(:root[data-theme="dopa"]) .card, :where(:root[data-theme="dopa"]) .crow, :where(:root[data-theme="dopa"]) .chip,
+:where(:root[data-theme="dopa"]) .slide { box-shadow: 0 0 18px -8px rgba(var(--focus-rgb), .75); }
+:where(:root[data-theme="dopa"]) .card .head, :where(:root[data-theme="dopa"]) .crow .head { text-shadow: 0 0 12px rgba(var(--focus-rgb), .22); }
+:where(:root[data-theme="dopa"]) .card .num, :where(:root[data-theme="dopa"]) .crow .num, :where(:root[data-theme="dopa"]) .chip .num { color: var(--gold); }
+:where(:root[data-theme="dopa"]) .card .kicker { color: var(--focus); }
+:where(:root[data-theme="dopa"]) .card.concl, :where(:root[data-theme="dopa"]) .crow.concl, :where(:root[data-theme="dopa"]) .slide.concl {
+  background: linear-gradient(135deg, #fff3b0, #ffd23f 45%, #ff9f1a); }
+:where(:root[data-theme="dopa"]) .card.concl .head, :where(:root[data-theme="dopa"]) .crow.concl .head { text-shadow: none; }
+:where(:root[data-theme="dopa"]) .card.concl .num, :where(:root[data-theme="dopa"]) .crow.concl .num { color: var(--band-fg); }
+/* the conclusion glows gold and the key hot pink, unless the focus or a line lights them */
+:where(:root[data-theme="dopa"]) .card.concl:not(.f0, .f1, .ev, .cur), :where(:root[data-theme="dopa"]) .crow.concl:not(.f0, .f1),
+:where(:root[data-theme="dopa"]) .slide.concl:not(.f0, .f1) { border-color: var(--gold); box-shadow: 0 0 30px -4px rgba(var(--gold-rgb), .7); }
+:where(:root[data-theme="dopa"]) .card.key > .kicker, :where(:root[data-theme="dopa"]) .slide.key > .kicker { color: var(--hot); }
+:where(:root[data-theme="dopa"]) .card.key:not(.f0, .f1, .ev, .cur), :where(:root[data-theme="dopa"]) .slide.key:not(.f0, .f1) { border-color: var(--hot); box-shadow: 0 0 0 1px var(--hot), 0 0 28px -4px rgba(var(--hot-rgb), .75); }
+:where(:root[data-theme="dopa"]) .rep.table tr.key th.rowh { border-left-color: var(--hot); }
+:where(:root[data-theme="dopa"]) .rep.table thead th { color: var(--focus); }
+:where(:root[data-theme="dopa"]) #mmSvg .mm-box.key > rect { stroke: var(--hot); }
+:where(:root[data-theme="dopa"]) .card.f0, :where(:root[data-theme="dopa"]) .crow.f0, :where(:root[data-theme="dopa"]) .slide.f0 { box-shadow: 0 0 0 3px var(--focus), 0 0 30px rgba(var(--focus-rgb), .55); }
+:where(:root[data-theme="dopa"]) #details, :where(:root[data-theme="dopa"]) #minimap { background: linear-gradient(180deg, rgba(20, 14, 44, .97), rgba(8, 7, 18, .97)); box-shadow: 0 0 24px -8px rgba(var(--focus-rgb), .6); }
+:where(:root[data-theme="dopa"]) #minimap .mm-label, :where(:root[data-theme="dopa"]) #details .dk { color: var(--gold); }
+:where(:root[data-theme="dopa"]) #ticker { background: linear-gradient(90deg, var(--hot), #8b5cff); color: #fff; border-left: 6px solid var(--gold); padding: 10px 34px 12px 18px; transform: translateX(-50%) skewX(-10deg); }
+:where(:root[data-theme="dopa"]) #ticker .k { color: #fff4b8; opacity: .9; }
+:where(:root[data-theme="dopa"]) #ticker .n { font: 900 30px/1 var(--font-disp); color: #fff4b8; text-shadow: 0 2px 0 #b86400, 0 0 12px rgba(var(--gold-rgb), .8); }
+:where(:root[data-theme="dopa"]) #ticker .m { font-size: 17px; font-weight: 900; text-shadow: 0 2px 0 rgba(0, 0, 0, .35); }
+:where(:root[data-theme="dopa"]) .slate { font: 900 15px/1 var(--mono); background: var(--hot); color: #fff; border-left: 5px solid var(--gold); padding: 11px 26px 11px 16px; }
+:where(:root[data-theme="dopa"]) #gauge { --hud-bg: #0b0718; --hud-line: rgba(var(--hot-rgb), .42); --hud-dim: rgba(205, 212, 255, .62); --hud-ink: #ffffff; }
+:where(:root[data-theme="dopa"]) #gauge svg { filter: drop-shadow(0 0 12px rgba(var(--hot-rgb), .35)); }
+:where(:root[data-theme="dopa"]) #gauge .h-chamfer { stroke: var(--hot); }
+:where(:root[data-theme="dopa"]) #gauge .h-acc { fill: var(--hot); }
+:where(:root[data-theme="dopa"]) #gauge .g-knob { fill: var(--gold); }
+:where(:root[data-theme="dopa"]) .rep.summary .gist { text-shadow: 0 0 22px rgba(var(--focus-rgb), .28); }
+:where(:root[data-theme="dopa"]) .phrase { background-image: linear-gradient(var(--gold), var(--gold)); }
+:where(:root[data-theme="dopa"]) .phrase sup { color: var(--gold); }
+:where(:root[data-theme="dopa"]) .rep.summary.sweep .phrase { animation: dopa-sweep 1.1s var(--ease-settle) both; }
+@keyframes dopa-sweep { 0% { background-size: 0 2px; opacity: 0; text-shadow: 0 0 40px #fff, 0 0 80px var(--gold); } 40% { opacity: 1; } 100% { background-size: 100% 2px; opacity: 1; text-shadow: 0 0 22px rgba(var(--focus-rgb), .28); } }
+:where(:root[data-theme="dopa"]) .slide { background: repeating-linear-gradient(-55deg, rgba(var(--hot-rgb), .07) 0 12px, transparent 12px 26px), linear-gradient(160deg, #17113a, #08070f); }
+:where(:root[data-theme="dopa"]) .slide .num { color: var(--gold); font-size: clamp(26px, 3.4vw, 48px); text-shadow: 0 2px 0 #b86400, 0 0 16px rgba(var(--gold-rgb), .5); }
+:where(:root[data-theme="dopa"]) .slide.concl .num { color: var(--band-fg); text-shadow: none; }
+:where(:root[data-theme="dopa"]) .slide.cover h2 { text-shadow: -1px 0 rgba(var(--hot-rgb), .9), 1px 0 rgba(var(--focus-rgb), .9); }
+
+/* ---------- the show (dopa, while ▶ plays): a stage that keeps moving behind the page, and cut-ins, counters,
+   flashes and sparks over it (6c). It never takes the pointer, and the HUD stays above it. ---------- */
+#fxBack { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: none; }
+#show { position: fixed; inset: 0; z-index: 39; pointer-events: none; overflow: hidden; display: none; color: #fff; font-family: var(--font); }
+:root[data-theme="dopa"] #fxBack, :root[data-theme="dopa"] #show { display: block; }
+#fxFront { position: absolute; inset: 0; width: 100%; height: 100%; }
+#show .dp-flash { position: absolute; inset: 0; opacity: 0; }
+#show .dp-vig { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at 50% 50%, transparent 22%, rgba(6, 5, 10, .92) 100%); }
+#show .dp-band { position: absolute; left: 50%; top: 50%; width: 180vw; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 0 18px; text-align: center;
+  background: #07060d; border-block: 6px solid var(--hot); transform: translate(-50%, -50%) rotate(-6deg) translateX(100vw); }
+#show .dp-band.gold { border-color: var(--gold); background: linear-gradient(90deg, #07060d 25%, #2a1d00 50%, #07060d 75%); }
+#show .dp-k { font: 800 12px/1 var(--mono); letter-spacing: .4em; color: var(--hot); }
+#show .gold .dp-k { color: var(--gold); }
+#show .dp-m, #show .dp-tease { text-wrap: balance; word-break: auto-phrase; }
+#show .dp-band .dp-m { max-width: min(86vw, 1100px); font: 900 clamp(26px, 4.6vw, 58px)/1.18 var(--font-disp); letter-spacing: .02em;
+  text-shadow: -.03em 0 rgba(255, 30, 100, .95), .03em 0 rgba(20, 230, 255, .95), 0 0 .2em rgba(255, 255, 255, .3); }
+#show .dp-band.gold .dp-m { color: #fff4b8; text-shadow: 0 .03em 0 #e08a00, 0 .06em 0 #7a3f00, 0 0 .25em rgba(255, 190, 40, .8); }
+#show .dp-tease { position: absolute; white-space: nowrap; font: 900 clamp(20px, 3vw, 38px)/1.2 var(--font-disp); color: #07060d; background: #fff; padding: 10px 22px 12px; border-radius: 40px;
+  box-shadow: 0 0 0 5px #07060d, 0 0 34px rgba(var(--focus-rgb), .6); }
+#show .dp-pop { position: absolute; white-space: nowrap; font: 900 22px/1 var(--font-disp); color: #fff4b8; text-shadow: 0 2px 0 #b86400, 0 0 14px rgba(var(--gold-rgb), .8); }
+#show .dp-combo { position: absolute; left: 18px; bottom: 22px; min-width: 150px; padding: 8px 18px 10px 14px; background: rgba(7, 6, 13, .88); border-left: 5px solid var(--gold); transform: skewX(-10deg); opacity: 0; transition: opacity .25s; }
+#show .dp-combo.on { opacity: 1; }
+#show .dp-combo .dp-l { display: block; font: 800 11px/1 var(--mono); letter-spacing: .34em; color: var(--gold); }
+#show .dp-combo .dp-n { display: block; margin: 4px 0 6px; font: 900 44px/1 var(--font-disp); color: #fff4b8; font-variant-numeric: tabular-nums; text-shadow: 0 2px 0 #b86400, 0 0 16px rgba(var(--gold-rgb), .7); transform-origin: 0 60%; }
+#show .dp-combo .dp-bar { display: block; height: 5px; background: rgba(255, 255, 255, .14); }
+#show .dp-combo .dp-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--focus), var(--gold)); transform-origin: 0 50%; transform: scaleX(0); transition: transform .2s; }
+body.narrow #show .dp-combo { top: calc(var(--main-top, 90px) + 8px); bottom: auto; left: auto; right: 14px; min-width: 120px; }
+body.narrow #show .dp-combo .dp-n { font-size: 34px; }
+/* less motion, when the system asks for it; the dopa show (data-show, while ▶ plays) keeps its motion */
+@media (prefers-reduced-motion: reduce) { :root:not([data-show]) * { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body data-stop="text">
 <header>
   <div class="titles"><h1 id="title">Semantic Structure</h1><div class="src" id="sourceLine"></div></div>
   <div class="theme-ctl" id="themeCtl" role="group" aria-label="Theme">
-    <button type="button" data-theme-set="light" data-i18n="light">Light</button><button type="button" data-theme-set="dark" data-i18n="dark">Dark</button>
+    <button type="button" data-theme-set="light">light</button><button type="button" data-theme-set="dark">dark</button><button type="button" class="dopa" data-theme-set="dopa">dopa</button>
   </div>
 </header>
 <main id="main">
   <canvas id="field" aria-hidden="true"></canvas>
+  <canvas id="fxBack" aria-hidden="true"></canvas>
   <section id="textPane" tabindex="0" aria-label="Source text">
     <div id="page">
       <svg id="slabs" aria-hidden="true"></svg>
@@ -438,6 +541,7 @@ main.narrow #rep { padding-bottom: 190px; }
   <div id="problems" hidden></div>
 </main>
 <div id="fly" aria-hidden="true"></div>
+<div id="show" aria-hidden="true"><canvas id="fxFront"></canvas></div>
 
 <!-- The Semantic Structure (semantic-structure/1). build_viewer.py replaces this block. -->
 <script type="application/json" id="semantic-structure">
@@ -2093,6 +2197,11 @@ const h = (tag, attrs = {}, ...kids) => {
 };
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// dopa: while ▶ plays (the play on opening too), the play is staged as a show (6c), with all its motion even when the system asks
+// for less; dragging, clicking and keys stay plain. Otherwise that setting stops the decoration (calm).
+const isDopa = () => document.documentElement.dataset.theme === 'dopa';
+const fxLive = () => isDopa() && playing;
+const calm = () => reduceMotion && !fxLive();
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 function readJSON(id) {
   const el = document.getElementById(id);
@@ -2117,11 +2226,13 @@ if (!model || typeof model.sourceText !== 'string') {
   document.body.textContent = 'No Semantic Structure is embedded in this page.';
   return;
 }
-// dark by default; "light", or "auto" to follow the system. The reader can switch, and the choice is remembered here.
+// dark by default; "light", or "auto" to follow the system. The reader can switch, and a choice of light or dark is remembered here.
+// "dopa" is how the page is shown, not a reading preference: a page built with it always opens in it, and it is never remembered.
 const THEME_KEY = 'semantic-structure-viewer:theme';
 let savedTheme = null;
 try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) { /* storage unavailable */ }
-document.documentElement.dataset.theme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme
+document.documentElement.dataset.theme = viewOpt.theme === 'dopa' ? 'dopa'
+  : savedTheme === 'light' || savedTheme === 'dark' ? savedTheme
   : viewOpt.theme === 'light' || (viewOpt.theme === 'auto' && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
 const meta = model.metadata && typeof model.metadata === 'object' ? model.metadata : {};
 const text = model.sourceText;
@@ -2133,7 +2244,7 @@ const LANG = viewOpt.lang || meta.language || (/[぀-ヿ一-鿿]/.test(text) ? '
 const I18N = {
   en: {
     focusAxis: 'Focus', formAxis: 'Form', stopText: 'Text', stopChunks: 'Chunks', stopModel: 'Model',
-    repStructure: 'Structure', repLinear: 'Linear', repTable: 'Table', repSummary: 'Summary', repSlides: 'Slides', light: 'Light', dark: 'Dark', play: 'Play to the summary', pause: 'Pause',
+    repStructure: 'Structure', repLinear: 'Linear', repTable: 'Table', repSummary: 'Summary', repSlides: 'Slides', play: 'Play from the text to the summary', pause: 'Pause',
     byNotes: 'Notes order', byReading: 'Reading order',
     phase_text: 'Text', phase_wrap: 'Chunk', phase_notes: 'Notes', phase_structure: 'Structure', phase_link: 'Link', phase_summary: 'One sentence',
     capNotes: 'Each chunk becomes a note: its message, and what matters in it', capStructure: 'The notes take their places: what leads to what',
@@ -2146,7 +2257,7 @@ const I18N = {
   },
   ja: {
     focusAxis: 'フォーカス', formAxis: '表現', stopText: '原文', stopChunks: '塊', stopModel: 'モデル',
-    repStructure: '構造', repLinear: '線形', repTable: '表', repSummary: '要約', repSlides: 'スライド', light: 'ライト', dark: 'ダーク', play: '要約まで再生', pause: '一時停止',
+    repStructure: '構造', repLinear: '線形', repTable: '表', repSummary: '要約', repSlides: 'スライド', play: '原文から要約まで再生', pause: '一時停止',
     byNotes: 'ノート順', byReading: '読む順',
     phase_text: '原文', phase_wrap: '塊を巻く', phase_notes: 'ノートにする', phase_structure: '構造にする', phase_link: 'つなぐ', phase_summary: '一言にする',
     capNotes: '塊がノートになる：その塊のメッセージと、落とせない要点', capStructure: 'ノートが持ち場につく：何が何につながるか',
@@ -2160,7 +2271,6 @@ const I18N = {
 };
 const T = I18N[LANG] || I18N.en;
 document.documentElement.lang = LANG;
-$$('[data-i18n]').forEach(el => { el.textContent = T[el.dataset.i18n] || el.textContent; });
 
 function readSpans(raw, owner) {
   const out = [];
@@ -2359,6 +2469,7 @@ function applyLayout() {
   rs.setProperty('--ticker-x', overNotes ? Math.round(textPane.offsetWidth + (G.mw - textPane.offsetWidth) / 2) + 'px' : '50%');
   rs.setProperty('--ticker-w', overNotes ? Math.round(G.mw - textPane.offsetWidth - 40) + 'px' : 'calc(100% - 32px)');
   rs.setProperty('--hud-clear', (G.narrow ? 28 : Math.max(28, Math.round(hud.bottom - top + 16))) + 'px');
+  rs.setProperty('--main-top', Math.round(top) + 'px');
   rs.setProperty('--gauge-clear', (G.narrow ? Math.round(main.getBoundingClientRect().bottom - hud.top + 8) : 176) + 'px');
   const hint = $('#hint');
   if (hint.textContent !== (hint.textContent = S.stop === 'model' ? T.hintModel : S.stop === 'chunks' ? T.hintChunks : T.hintText)) {
@@ -2671,7 +2782,7 @@ function drawLinks(grow = new Set()) {
 const GHOST_PROPS = ['color', 'backgroundColor', 'fontSize', 'fontWeight', 'fontFamily', 'lineHeight', 'letterSpacing', 'textAlign', 'whiteSpace',
   'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth',
   'borderTopStyle', 'borderRightStyle', 'borderBottomStyle', 'borderLeftStyle', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor',
-  'borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius', 'boxShadow', 'opacity', 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat'];
+  'borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius', 'boxShadow', 'textShadow', 'opacity', 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat'];
 function visibleIn(el, r) {
   const pane = el.closest('#textPane, #stage');
   if (!pane) return true;
@@ -2760,9 +2871,12 @@ const linkOrder = (() => {
 const linear = t => t;
 // ▶ moves the knob as a steady hand would, through the same frames as dragging, at a pace to read by
 const PLAY_SPEED = 1.5;
-const playMs = lo => (lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500) / PLAY_SPEED;
+// the dopa show takes a little longer: the build-up before the summary, a beat at each stage for its cut-ins, and the sentence lit up
+const playMs = lo => (lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500 * (isDopa() ? 1.5 : 1)) / PLAY_SPEED;
 const PLAY_HOLD = 800;
 const PLAY_LINGER = 2600;   // at the summary, a moment to read it before the play goes back to the model
+const holdMs = () => isDopa() ? 1100 : PLAY_HOLD;
+const lingerMs = () => isDopa() ? 4000 : PLAY_LINGER;
 let sess = null;
 function setStage(name) {
   const st = STAGES[name];
@@ -2813,7 +2927,7 @@ function beginSeg(a, b) {
   new Set([...A.keys(), ...B.keys()]).forEach(key => {
     if (key.startsWith('passage:') || key.startsWith('pass:')) return;
     const ra = A.get(key), rb = B.get(key);
-    const pc = { d: d0 + spread * ordOf(key) + (key.startsWith('pt:') ? 0.05 : 0), dur, uniform: !(rb || ra).box };
+    const pc = { key, d: d0 + spread * ordOf(key) + (key.startsWith('pt:') ? 0.05 : 0), dur, uniform: !(rb || ra).box };
     if (rb) rb.el.classList.add('landing');
     if (ra && rb) Object.assign(pc, { from: ra.r, to: rb.r, gA: ghost(ra), gB: ghost(rb), baseA: ra.r, baseB: rb.r });
     else if (rb) { const src = firstOf(fallbacks(key), A); Object.assign(pc, { from: src ? shrinkInto(src.r, rb.r) : null, to: rb.r, gB: ghost(rb), baseB: rb.r, fromText: kind === 'text-chunks' }); }
@@ -2831,10 +2945,12 @@ function beginSeg(a, b) {
     const sc = Math.min(m.width / w, m.height / hh0);
     shrink.to = { s: sc, x: m.left + (m.width - w * sc) / 2, y: m.top + (m.height - hh0 * sc) / 2 };
   }
-  sess = { a, b, kind, pieces, ctxA, shrink, dx: paneA - paneB, scroll0, wraps, links, u: 0 };
+  // landAt: where a chunk's card lands, whether or not it is in view (the dopa show marks the conclusion and the key landing)
+  sess = { a, b, kind, pieces, ctxA, shrink, dx: paneA - paneB, scroll0, wraps, links, u: 0, landAt: id => d0 + spread * ordOf('card:' + id) + dur, fxSkip: true };
   main.classList.add('scrubbing');
   cancelAnimationFrame(FIELD.raf); FIELD.raf = 0;
   frame(0);
+  sess.fxSkip = false;     // the show starts from the first frame the caller asks for
 }
 function place(g, base, r, uniform) {
   const x = r.left - base.left, y = r.top - base.top;
@@ -2861,7 +2977,7 @@ function frame(u) {
   }
   // the ground slides aside, and tilts back for a moment as we rise
   const tilt = s.kind === 'text-chunks' || s.kind === 'chunks-model' ? 8 * Math.sin(Math.PI * uc) : 0;
-  textPane.style.transform = `translateX(${s.dx * (1 - eg)}px)` + (tilt && !reduceMotion ? ` perspective(1600px) rotateX(${tilt}deg)` : '');
+  textPane.style.transform = `translateX(${s.dx * (1 - eg)}px)` + (tilt && !calm() ? ` perspective(1600px) rotateX(${tilt}deg)` : '');
   if (s.ctxA) s.ctxA.style.opacity = String(1 - smooth(0, 0.5, uc));
   const mm = $('#minimap');
   if (s.shrink && s.shrink.to) {
@@ -2890,6 +3006,7 @@ function frame(u) {
   drawField();
   showTicker(s, u);
   drawGauge();
+  fxFrame(s, u);
 }
 function showTicker(s, u) {
   let k = '', n = '', m = '';
@@ -2924,6 +3041,7 @@ function endSeg(final) {
   FIELD.t = levelOf(S.stage); drawField();
   afterRender();
   drawGauge();
+  fxEnd(s, final);
 }
 let tw = 0;
 function tweenU(to, ms, ease = easeInOut) {
@@ -2972,7 +3090,7 @@ async function playTo(target) {     // the drag, played: along the gauge at a st
   const path = route(S.stage, target);
   for (let i = 1; i < path.length; i++) {
     const a = path[i - 1], b = path[i], [lo, hi] = segOf(a, b), up = a === lo;
-    if (i > 1 || carried) { await sleep(PLAY_HOLD); if (my !== goToken) return false; }
+    if (i > 1 || carried) { await sleep(holdMs()); if (my !== goToken) return false; }
     beginSeg(lo, hi);
     frame(up ? 0 : 1);
     await tweenU(up ? 1 : 0, playMs(lo), linear);
@@ -2982,19 +3100,12 @@ async function playTo(target) {     // the drag, played: along the gauge at a st
   arrived();
   return true;
 }
-let playing = false, playEnd = -1;
+let playing = false;
 const CLOCK = { t0: 0, total: 0, iv: 0 };
-// ▶ starts again from the text when the knob is at the summary, or still where the last play left it
-const replay = () => !sess && (S.stage === 'summary' || (S.stage === 'model' && goToken === playEnd));
-function planMs() {    // how long ▶ takes from here: to the summary, a moment there, and back to the model
-  let ms = PLAY_LINGER + playMs('model'), st = replay() ? 'text' : S.stage;
-  if (sess) {
-    const s = sess, back = route(s.b, 'summary').includes(s.a);
-    ms += playMs(s.a) * (back ? s.u : 1 - s.u);
-    st = back ? s.a : s.b;
-  }
-  const path = route(st, 'summary');
-  for (let i = 1; i < path.length; i++) ms += playMs(segOf(path[i - 1], path[i])[0]) + (i > 1 || sess ? PLAY_HOLD : 0);
+function planMs() {    // how long ▶ takes: from the text to the summary, a moment there, and back to the model
+  const path = route('text', 'summary');
+  let ms = lingerMs() + playMs('model');
+  for (let i = 1; i < path.length; i++) ms += playMs(segOf(path[i - 1], path[i])[0]) + (i > 1 ? holdMs() : 0);
   return ms;
 }
 const clockText = ms => { const t = Math.max(0, Math.round(ms / 1000)); return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; };
@@ -3005,17 +3116,17 @@ function drawClock() {
 }
 async function play() {
   if (playing) { playing = false; goToken++; clearInterval(CLOCK.iv); drawGauge(); return; }
-  if (replay()) goTo('text');
+  goTo('text');      // ▶ always plays from the start, wherever the knob is
   playing = true;
+  fxWake();
   CLOCK.total = planMs(); CLOCK.t0 = performance.now();
   clearInterval(CLOCK.iv); CLOCK.iv = setInterval(drawClock, 250);
   drawGauge();
   let done = await goTo('summary', { play: true });
   if (done) {     // the summary lands, holds for a moment, and the play goes back to the model
     const my = goToken;
-    await sleep(PLAY_LINGER);
+    await sleep(lingerMs());
     done = my === goToken && playing && await goTo('model', { play: true });
-    if (done) playEnd = goToken;
   }
   if (done || !sess) playing = false;
   if (!playing) clearInterval(CLOCK.iv);
@@ -3153,6 +3264,7 @@ function layoutField() {
   const sig = [main.clientWidth, main.clientHeight, G.colW, G.narrow].join();
   if (FIELD.sig === sig) { if (!sess) { FIELD.t = levelOf(S.stage); drawField(); } return; }
   FIELD.sig = sig;
+  sizeFx();
   FIELD.dpr = Math.min(2, devicePixelRatio || 1);
   FIELD.w = main.clientWidth; FIELD.h = main.clientHeight;
   fieldCanvas.width = Math.round(FIELD.w * FIELD.dpr); fieldCanvas.height = Math.round(FIELD.h * FIELD.dpr);
@@ -3204,9 +3316,290 @@ function drawField() {
     fctx.restore();
   }
 }
+/* =====================================================================
+   6c. The dopa theme: while ▶ plays, the play staged as a show, after dopagaki-generator
+   (game × pachinko × anime OP × short video). It adds nothing to what the page shows:
+   every event is a moment the drag or the play already passes through (a passage wrapped,
+   a line drawn, the conclusion or the key landing, the model complete, the summary arriving),
+   and every number it shows is counted from the model. Behind the page the stage keeps moving;
+   over it come cut-ins, flashes (never more than about three a second), shakes and sparks,
+   and the stronger the moment, the bigger the show. It runs only while ▶ plays (the play on opening too): dragging the
+   knob, clicking and keys stay plain. And it always runs then, whatever the system says about motion: on some machines
+   that setting is on without the reader knowing.
+   ===================================================================== */
+const fxBack = $('#fxBack'), fxFront = $('#fxFront'), showEl = $('#show');
+const bctx = fxBack.getContext('2d'), sctx = fxFront.getContext('2d');
+const FX = { raf: 0, on: false, amb: 0, dpr: 1, bw: 0, bh: 0, fw: 0, fh: 0, t0: performance.now(), last: 0, parts: [], rings: [], motes: [], speed: 0, rush: 0, flashAt: -1e9, busy: 0,
+  combo: null, vig: null, count: { wrap: 0, link: 0, land: 0, model: 0, aori: 0, summary: 0 } };
+const DP = LANG === 'ja'
+  ? { tease: '一言でいうと……？', concl: 'CONCLUSION · 結論', key: '◆ KEY · 注目' }
+  : { tease: 'IN ONE SENTENCE…?', concl: 'CONCLUSION', key: '◆ KEY' };
+const COL = { cyan: '25,232,255', gold: '255,210,63', hot: '255,45,111', white: '255,255,255', pos: '255,59,59', neg: '74,125,255' };
+function sizeFx() {
+  if (!isDopa()) return;
+  FX.dpr = Math.min(1.5, devicePixelRatio || 1);
+  FX.bw = main.clientWidth; FX.bh = main.clientHeight; FX.fw = innerWidth; FX.fh = innerHeight;
+  fxBack.width = Math.round(FX.bw * FX.dpr); fxBack.height = Math.round(FX.bh * FX.dpr);
+  fxFront.width = Math.round(FX.fw * FX.dpr); fxFront.height = Math.round(FX.fh * FX.dpr);
+  bctx.setTransform(FX.dpr, 0, 0, FX.dpr, 0, 0); sctx.setTransform(FX.dpr, 0, 0, FX.dpr, 0, 0);
+  if (!FX.motes.length) { const r = rng(hashText() ^ 0x51ed27); FX.motes = Array.from({ length: 56 }, () => ({ x: r(), y: r(), v: 0.012 + r() * 0.05, s: 0.8 + r() * 1.8, f: 1 + r() * 3, p: r() * 6.3, c: r() })); }
+}
+function fxTheme() {         // the show's canvases follow the theme; the show itself follows the play
+  cancelAnimationFrame(FX.raf); FX.raf = 0;
+  $$('.dp', showEl).forEach(el => el.remove());
+  FX.parts = []; FX.rings = []; FX.combo = FX.vig = null; FX.amb = 0; FX.on = false;
+  document.documentElement.removeAttribute('data-show');
+  if (!isDopa()) return;
+  sizeFx();
+  fxWake();
+}
+function fxWake() {          // the loop runs while ▶ plays, and until the stage and the sparks have faded
+  if (!isDopa() || FX.raf) return;
+  FX.last = performance.now();
+  FX.raf = requestAnimationFrame(fxLoop);
+}
+function fxLoop(now) {
+  const dt = Math.min(64, now - FX.last), on = fxLive();
+  FX.last = now;
+  if (on !== FX.on) {        // the show starts with the play and stops with it: PAUSE, the knob taken, a click or a key
+    FX.on = on;
+    document.documentElement.toggleAttribute('data-show', on);
+    if (!on) { comboHide(0); if (FX.vig) FX.vig.style.opacity = '0'; }
+  }
+  FX.amb = clamp(FX.amb + (on ? 1 : -1) * dt / 700, 0, 1);
+  drawBack(now, dt); drawFront(dt);
+  FX.speed *= Math.pow(0.88, dt / 16.7); FX.rush *= Math.pow(0.93, dt / 16.7);
+  FX.raf = isDopa() && (on || FX.amb > 0 || FX.parts.length || FX.rings.length) ? requestAnimationFrame(fxLoop) : 0;
+}
+function drawBack(now, dt) {     // behind the page, while the show plays: rays turning from the model's centre, and sparks rising
+  const c = bctx, w = FX.bw, hh = FX.bh, t = (now - FX.t0) / 1000;
+  c.clearRect(0, 0, w, hh);
+  if (!w || !hh || !G.colW || FX.amb <= 0) return;
+  const lvl = (0.4 + 0.6 * clamp(FIELD.t, 0, 1)) * FX.amb, { cx, cy } = fieldCentre(), R = Math.hypot(w, hh);
+  c.save();
+  c.translate(cx, cy); c.rotate(t * 0.05);
+  c.fillStyle = `rgba(${COL.hot},${(0.035 * lvl).toFixed(3)})`;
+  c.beginPath();
+  for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; c.moveTo(0, 0); c.arc(0, 0, R, a, a + Math.PI / 14); c.closePath(); }
+  c.fill();
+  c.restore();
+  FX.motes.forEach(m => {
+    m.y -= m.v * dt / 1000;
+    if (m.y < -0.02) m.y = 1.02;
+    const a = Math.max(0, (0.25 + 0.3 * Math.sin(t * m.f + m.p)) * lvl);
+    c.fillStyle = `rgba(${m.c < 0.5 ? COL.cyan : m.c < 0.8 ? COL.gold : COL.hot},${a.toFixed(3)})`;
+    c.fillRect(m.x * w, m.y * hh, m.s, m.s * 2.2);
+  });
+}
+function drawFront(dt) {         // over the page: speed lines while the knob runs, shock rings, sparks
+  const c = sctx, w = FX.fw, hh = FX.fh, f = dt / 16.7;
+  c.clearRect(0, 0, w, hh);
+  const sp = clamp(Math.max(FX.speed / 0.6, FX.rush), 0, 1);
+  if (sp > 0.12 && FX.on) {
+    const [ox, oy] = stageCentre(), R = Math.hypot(w, hh) * 0.6, n = Math.round(10 + 34 * sp);
+    c.strokeStyle = `rgba(${COL.white},${(0.06 + 0.2 * sp).toFixed(3)})`; c.lineWidth = 1.5;
+    c.beginPath();
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2, r0 = R * (0.35 + Math.random() * 0.3), r1 = r0 + 60 + Math.random() * R * 0.5 * sp;
+      c.moveTo(ox + Math.cos(a) * r0, oy + Math.sin(a) * r0); c.lineTo(ox + Math.cos(a) * r1, oy + Math.sin(a) * r1);
+    }
+    c.stroke();
+  }
+  if (!FX.parts.length && !FX.rings.length) return;
+  c.save();
+  c.globalCompositeOperation = 'lighter';
+  FX.rings = FX.rings.filter(r => {
+    r.life += dt;
+    const k = r.life / r.max;
+    if (k >= 1) return false;
+    c.strokeStyle = `rgba(${r.col},${(1 - k).toFixed(3)})`; c.lineWidth = r.wd * (1 - k) + 0.5;
+    c.beginPath(); c.arc(r.x, r.y, r.r * (1 - Math.pow(1 - k, 3)), 0, Math.PI * 2); c.stroke();
+    return true;
+  });
+  FX.parts = FX.parts.filter(p => {
+    p.life += dt;
+    const k = p.life / p.max;
+    if (k >= 1) return false;
+    p.vx *= Math.pow(0.95, f); p.vy = p.vy * Math.pow(0.95, f) + 0.12 * f; p.x += p.vx * f; p.y += p.vy * f;
+    c.strokeStyle = `rgba(${p.col},${(1 - k).toFixed(3)})`; c.lineWidth = p.s;
+    c.beginPath(); c.moveTo(p.x, p.y); c.lineTo(p.x - p.vx * 2.2, p.y - p.vy * 2.2); c.stroke();
+    return true;
+  });
+  c.restore();
+}
+function stageCentre() {     // where the show centres: the model's side; on a phone, the screen above the HUD
+  if (G.narrow) { const m = main.getBoundingClientRect(), hud = $('#gauge').getBoundingClientRect(); return [m.left + m.width / 2, (m.top + Math.min(m.bottom, hud.top)) / 2]; }
+  const r = (S.stop === 'text' ? main : modelPane).getBoundingClientRect();
+  return [r.left + r.width / 2, r.top + r.height / 2];
+}
+function burst(x, y, n, cols, power = 1) {
+  if (!fxLive()) return;
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = (2 + Math.random() * 7) * power;
+    FX.parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 1.5 * power, life: 0, max: 380 + Math.random() * 520, s: 1 + Math.random() * 2.2, col: COL[cols[i % cols.length]] });
+  }
+  if (FX.parts.length > 700) FX.parts.splice(0, FX.parts.length - 700);
+}
+function ring(x, y, col, r = 140, max = 560, wd = 5) { if (fxLive()) FX.rings.push({ x, y, r, max, wd, life: 0, col: COL[col] }); }
+function flash(col = '#ffffff', peak = 0.6, ms = 240) {
+  if (!fxLive()) return;
+  const now = performance.now();
+  if (now - FX.flashAt < 340) return;      // never more than about three flashes a second
+  FX.flashAt = now;
+  const el = cutEl('dp-flash');
+  el.style.background = col;
+  gone(el, el.animate([{ opacity: peak }, { opacity: 0 }], { duration: ms, easing: 'cubic-bezier(.2,.7,.3,1)' }));
+}
+function shake(px = 8, ms = 320) {   // the whole screen, HUD and all
+  if (!fxLive()) return;
+  const k = 7;
+  document.body.animate(Array.from({ length: k + 1 }, (_, i) => {
+    const a = px * (1 - i / k);
+    return { translate: i === k ? '0px 0px' : `${((Math.random() * 2 - 1) * a).toFixed(1)}px ${((Math.random() * 2 - 1) * a).toFixed(1)}px` };
+  }), { duration: ms });
+}
+function cue(ms, fn) {      // the big moments take turns: each holds the screen for ms; one that would wait too long is dropped
+  const now = performance.now(), wait = Math.max(0, FX.busy - now);
+  if (wait > 1500) return;
+  FX.busy = now + wait + ms;
+  if (wait) setTimeout(() => { if (fxLive()) fn(); }, wait); else fn();
+}
+function cutEl(cls, ...kids) { const el = h('div', { class: 'dp ' + cls }, ...kids); showEl.append(el); return el; }
+function gone(el, anim) { anim.finished.catch(() => null).then(() => el.remove()); }
+function at(el, x, y) { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; }
+function band(kicker, text, tone = '', ms = 1150) {      // a slanted band slams across the screen, holds, and leaves
+  if (!fxLive()) return;
+  const el = cutEl('dp-band ' + tone, h('span', { class: 'dp-k' }, kicker), h('span', { class: 'dp-m' }, text));
+  const tf = x => `translate(-50%, -50%) rotate(-6deg) translateX(${x})`;
+  gone(el, el.animate([
+    { transform: tf('100vw'), offset: 0, easing: 'cubic-bezier(.1,.8,.2,1)' },
+    { transform: tf('0vw'), offset: 0.16, easing: 'linear' },
+    { transform: tf('-3vw'), offset: 0.84, easing: 'cubic-bezier(.7,0,.9,.4)' },
+    { transform: tf('-130vw'), offset: 1 },
+  ], { duration: ms }));
+  FX.rush = Math.max(FX.rush, 0.8);
+}
+function pop(text, x, y) {
+  if (!fxLive()) return;
+  const el = at(cutEl('dp-pop', text), x, y);
+  gone(el, el.animate([
+    { transform: 'translate(-50%, -50%) scale(.6)', opacity: 0 },
+    { transform: 'translate(-50%, -90%) scale(1.15)', opacity: 1, offset: 0.25 },
+    { transform: 'translate(-50%, -170%) scale(1)', opacity: 0 },
+  ], { duration: 900, easing: 'ease-out' }));
+}
+function comboShow(label, n, total) {    // a game counter: passages wrapped, then lines drawn
+  let el = FX.combo;
+  if (!el || !el.isConnected) el = FX.combo = cutEl('dp-combo', h('span', { class: 'dp-l' }), h('b', { class: 'dp-n' }), h('span', { class: 'dp-bar' }, h('i')));
+  clearTimeout(el._t);
+  el.classList.add('on');
+  el.querySelector('.dp-l').textContent = label;
+  const num = el.querySelector('.dp-n'), txt = '×' + String(n).padStart(2, '0');
+  if (num.textContent !== txt) {
+    num.textContent = txt;
+    if (n) num.animate([{ transform: 'scale(1.7)' }, { transform: 'scale(1)' }], { duration: 260, easing: 'cubic-bezier(.2,.9,.3,1.3)' });
+  }
+  el.querySelector('.dp-bar i').style.transform = `scaleX(${total ? n / total : 0})`;
+}
+function comboHide(ms = 900) { const el = FX.combo; if (el) { clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('on'), ms); } }
+
+/* ---- the moments: what the gauge passes through, as it passes ---- */
+function fxFrame(s, u) {
+  if (!fxLive() || s.fxSkip) return;
+  const now = performance.now();
+  if (!s.fx) s.fx = { u, t: now, fired: new Set(), down: u > 0.5 };     // down: the segment is taken back toward the text
+  const prev = s.fx.u;
+  FX.speed = Math.max(FX.speed, Math.abs(u - prev) / Math.max(1, now - s.fx.t) * 1000);
+  s.fx.u = u; s.fx.t = now;
+  // each moment fires once a segment, and only going forward; going back just runs the counters down
+  const crossed = (t, id) => u > prev && prev < t && u >= t && !s.fx.fired.has(id) && !!s.fx.fired.add(id);
+  if (s.kind === 'text-chunks') {
+    let n = 0;
+    s.wraps.forEach((w, i) => { const t = w.d + w.len; if (u >= t) n++; if (crossed(t, 'w' + i)) onWrap(w, i, s.wraps.length); });
+    if (!s.fx.down) comboShow('COMBO', n, s.wraps.length);
+  } else if (s.kind === 'chunks-model') {
+    if (crossed(0.02, 'go')) { FX.rush = 1; flash('#19e8ff', 0.22, 200); }
+    order.forEach(n => {
+      if ((n.role === 'conclusion' || n.role === 'key') && crossed(s.landAt(n.id), 'land:' + n.id)) onLand(n, s.pieces.find(p => p.key === 'card:' + n.id));
+    });
+    let n = 0;
+    s.links.forEach((l, i) => { const t = l.d + l.len; if (u >= t) n++; if (crossed(t, 'l' + i)) onLink(l); });
+    if (s.links.length && !s.fx.down) comboShow('LINK', n, s.links.length);
+  } else if (s.kind === 'model-summary') {
+    if (!s.fx.down) aori(u, crossed);
+  }
+}
+function fxEnd(s, final) {
+  if (FX.vig) FX.vig.style.opacity = '0';
+  comboHide();
+  if (final >= 0.5 && s.u >= 0.98) fxLand(s.b);
+}
+function onWrap(w, i, total) {       // a passage is wrapped: sparks off its bracket, a ring on its slab, the combo goes up
+  FX.count.wrap++;
+  const line = w.brs[0] && w.brs[0].querySelector('path.line'), r = line && line.getBoundingClientRect();
+  if (r && r.height && r.bottom > 0 && r.top < innerHeight) burst(r.left, r.top + r.height / 2, 10 + Math.min(i, 12), ['cyan', 'white', 'gold']);
+  const slab = w.sls[0] && w.sls[0].querySelector('rect.slab'), q = slab && slab.getBoundingClientRect();
+  if (q && q.height && q.bottom > 0 && q.top < innerHeight) ring(q.left + q.width / 2, q.top + q.height / 2, 'cyan', Math.max(q.width, q.height) * 0.6, 520, 3);
+  if (i + 1 === total && total > 1) {     // the last one: FULL COMBO
+    flash('#ffd23f', 0.32, 260); shake(7);
+    const c = FX.combo && FX.combo.getBoundingClientRect();
+    if (c) { burst(c.left + c.width / 2, c.top + c.height / 2, 40, ['gold', 'hot', 'white'], 1.3); pop('FULL COMBO!!', c.left + c.width / 2 + 40, c.top - 14); }
+  }
+}
+function onLink(l) {        // a line is drawn: sparks at its arrow, in the colour of its sign
+  FX.count.link++;
+  const el = l.g.querySelector('path.a') || l.g.querySelector('path.l'), r = el && el.getBoundingClientRect();
+  if (!r || !r.width) return;
+  const sg = l.r ? signOf(l.r) : '', x = r.left + r.width / 2, y = r.top + r.height / 2;
+  burst(x, y, 14, [sg || 'cyan', 'white']);
+  ring(x, y, sg || 'cyan', 46, 420, 3);
+}
+function onLand(n, piece) {     // the conclusion (gold) or the key (hot pink) takes its place: the screen breaks
+  FX.count.land++;
+  // where its card lands; one out of view still gets its cut-in, with the sparks at the edge of the view
+  const el = piece ? null : repEl.querySelector(`[data-key="card:${n.id}"]:not(.anchor)`), r = piece && piece.to ? piece.to : el ? el.getBoundingClientRect() : null;
+  const v = (S.stop === 'text' ? main : modelPane).getBoundingClientRect(), [cx, cy] = stageCentre();
+  const x = r ? clamp(r.left + r.width / 2, v.left + 20, v.right - 20) : cx, y = r ? clamp(r.top + r.height / 2, v.top + 20, v.bottom - 20) : cy;
+  const concl = n.role === 'conclusion';
+  cue(1050, () => {
+    band(concl ? DP.concl : DP.key, n.label, concl ? 'gold' : '', 1250);
+    flash(concl ? '#ffd23f' : '#ff2d6f', concl ? 0.5 : 0.35, 300);
+    shake(concl ? 12 : 8);
+    burst(x, y, concl ? 70 : 44, concl ? ['gold', 'white', 'hot'] : ['hot', 'white', 'cyan'], 1.4);
+    ring(x, y, concl ? 'gold' : 'hot', 220, 700, 6);
+  });
+}
+function aori(u, crossed) {       // before the summary: the stage darkens, and a question
+  const vig = FX.vig && FX.vig.isConnected ? FX.vig : (FX.vig = cutEl('dp-vig'));
+  vig.style.opacity = String(0.85 * smooth(0.05, 0.5, u) * (1 - smooth(0.9, 1, u)));
+  if (crossed(0.1, 'tease')) {
+    FX.count.aori++;
+    const [x, y] = stageCentre(), el = at(cutEl('dp-tease', DP.tease), x, y - Math.min(140, innerHeight * 0.18));
+    const tf = (s, r) => `translate(-50%, -50%) scale(${s}) rotate(${r}deg)`;
+    gone(el, el.animate([{ transform: tf(0.3, -8), opacity: 0 }, { transform: tf(1.08, -3), opacity: 1, offset: 0.12 }, { transform: tf(1, -3), opacity: 1, offset: 0.85 }, { transform: tf(1, -3), opacity: 0 }], { duration: 1700 }));
+  }
+  if (crossed(0.9, 'hit')) FX.rush = 1;
+}
+function fxLand(st) {       // the play has risen to a stage
+  if (!fxLive()) return;
+  const [x, y] = stageCentre();
+  if (st === 'model') {      // the structure is complete
+    FX.count.model++;
+    cue(700, () => { flash('#19e8ff', 0.3, 240); burst(x, y, 50, ['cyan', 'white', 'gold'], 1.2); ring(x, y, 'cyan', 300, 650, 5); });
+  } else if (st === 'summary') { FX.busy = 0; reveal(); }      // the summary never waits
+}
+function reveal() {     // the summary arrives: the biggest burst of the play, as the one sentence lights up phrase by phrase
+  FX.count.summary++;
+  const g = repEl.querySelector('.gist'), r = g && g.getBoundingClientRect(), [cx, cy] = stageCentre();
+  const x = r && r.width ? r.left + r.width / 2 : cx, y = r && r.width ? r.top + r.height / 2 : cy;
+  flash('#ffd23f', 0.6, 320); shake(14, 380);
+  burst(x, y, 90, ['gold', 'hot', 'cyan', 'white'], 1.7);
+  ring(x, y, 'gold', 360, 800, 8); ring(x, y, 'white', 220, 600, 4);
+}
+
 /* ---- a slate names the form on arrival ---- */
 async function slate(label, phase) {
-  if (reduceMotion) return;
+  if (calm()) return;
   const host = (S.stop === 'text' ? main : modelPane).getBoundingClientRect();
   const el = h('div', { class: 'slate' }, h('b', {}, phase), label);
   el.style.top = (host.top + 14) + 'px';
@@ -3416,7 +3809,7 @@ function revealInModel(f, onlyIfHidden) {
   if (!el) return;
   const c = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
   if (onlyIfHidden && r.top > c.top + 20 && r.bottom < c.bottom - 90) return;
-  stage.scrollTo({ top: stage.scrollTop + r.top - c.top - c.height * 0.3, behavior: reduceMotion ? 'auto' : 'smooth' });
+  stage.scrollTo({ top: stage.scrollTop + r.top - c.top - c.height * 0.3, behavior: calm() ? 'auto' : 'smooth' });
 }
 function revealInText(f, onlyIfHidden) {
   const sp = f.kind === 'node' ? f.home : f.kind === 'phrase' ? (f.refs[0] && f.refs[0].home) : (f.spans || [])[0];
@@ -3428,7 +3821,7 @@ function scrollTextTo(sp, flash, onlyIfHidden) {
   const c = textPane.getBoundingClientRect();
   if (onlyIfHidden && b.top > c.top + 20 && b.top < c.bottom - 110) return;
   const target = textPane.scrollTop + b.top - c.top - Math.max(40, (c.height - Math.min(b.bottom - b.top, c.height * 0.6)) / 2.4);
-  textPane.scrollTo({ top: target, behavior: reduceMotion ? 'auto' : 'smooth' });
+  textPane.scrollTo({ top: target, behavior: calm() ? 'auto' : 'smooth' });
   if (flash) { const [a, z] = spanSegs(sp); for (let k = a; k <= z; k++) { segEls[k].classList.remove('flash'); void segEls[k].offsetWidth; segEls[k].classList.add('flash'); } }
 }
 function scrollTextAndWait(sp) {
@@ -3551,14 +3944,16 @@ function setReadout(st) {
   if (GG.here === st) return;
   GG.here = st;
   GG.idx.textContent = IDX[st]; GG.stat.textContent = STAT[st];
-  const word = EN[st], A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/';
+  const word = EN[st], A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/', stat = STAT[st], roll = fxLive();
   cancelAnimationFrame(readRaf);
-  if (reduceMotion) { GG.name.textContent = word; return; }
+  if (calm()) { GG.name.textContent = word; return; }
   const t0 = performance.now();
   const step = now => {
-    const k = (now - t0) / 340, n = Math.floor(k * (word.length + 1));
+    const k = (now - t0) / 340, n = Math.floor(k * (word.length + 1)), kr = roll ? (now - t0) / 650 : 1;
     GG.name.textContent = k >= 1 ? word : word.split('').map((ch, i) => i < n ? ch : A[(Math.random() * A.length) | 0]).join('');
-    if (k < 1) readRaf = requestAnimationFrame(step);
+    // in the dopa show the figures count up
+    if (roll) GG.stat.textContent = kr >= 1 ? stat : stat.replace(/\d[\d,]*/g, m => Math.round(+m.replace(/,/g, '') * Math.max(0, kr)).toLocaleString('en'));
+    if (k < 1 || kr < 1) readRaf = requestAnimationFrame(step);
   };
   readRaf = requestAnimationFrame(step);
 }
@@ -3668,19 +4063,36 @@ function cycleForm(dir) {   // ↑ ↓ between the model's forms, as they lie on
    9. Events
    ===================================================================== */
 const ownerNode = t => t.kind === 'point' ? t.node : t.kind === 'rel' ? t.source : t;
-textEl.addEventListener('mousemove', ev => {
-  if (S.stop === 'text') return;
-  const seg = ev.target.closest('.seg');
-  const k = seg ? +seg.dataset.k : null;
-  const t = k != null ? targetOfSeg(k) : null;
-  setHover(t, t ? k : null);
+// on the text: the words under the pointer, or, between them, the chunk whose frame holds it
+function chunkAt(ev) {     // the smallest frame (slab) under the pointer, as drawMarks draws it
+  const pr = page.getBoundingClientRect(), x = ev.clientX - pr.left, y = ev.clientY - pr.top;
+  let best = null;
+  order.forEach(n => (n.boxes || []).forEach(b => {
+    const inset = (S.stop === 'chunks' ? 0 : n.depth) * 5;
+    if (x < GUTTER - 6 + inset || x > GUTTER + G.colW + 6 - inset || y < b.top - 2 || y > b.bottom + 2) return;
+    if (!best || b.bottom - b.top < best.h) best = { n, k: segIndex.get(b.sp.start), h: b.bottom - b.top };
+  }));
+  return best;
+}
+function textTarget(ev) {
+  if (S.stop === 'text' || (ev.target.closest && ev.target.closest('#marks'))) return null;
+  const seg = ev.target.closest && ev.target.closest('.seg');
+  const k = seg ? +seg.dataset.k : null, t = k != null ? targetOfSeg(k) : null;
+  if (t) return { t, k };
+  const c = chunkAt(ev);
+  return c ? { t: c.n, k: c.k } : null;
+}
+textPane.addEventListener('mousemove', ev => {
+  if (S.stop === 'text' || (ev.target.closest && ev.target.closest('#marks'))) return;
+  const hit = textTarget(ev);
+  textPane.style.cursor = hit ? 'pointer' : '';
+  setHover(hit ? hit.t : null, hit ? hit.k : null);
 });
-textEl.addEventListener('mouseleave', () => setHover(null));
-textEl.addEventListener('click', ev => {
-  if (S.stop === 'text' || sess) return;
-  const seg = ev.target.closest('.seg');
-  const t = seg ? targetOfSeg(+seg.dataset.k) : null;
-  if (t) bringIntoView(t, true);
+textPane.addEventListener('mouseleave', () => { textPane.style.cursor = ''; setHover(null); });
+textPane.addEventListener('click', ev => {
+  if (sess) return;
+  const hit = textTarget(ev);
+  if (hit) bringIntoView(hit.t, true);
 });
 const targetOfEl = el => {
   if (!el || !el.closest) return null;
@@ -3727,7 +4139,7 @@ function followReading() {
   if (S.follow && card && (S.rep === 'linear' || S.rep === 'chunks') && !S.hover) {
     followTO = setTimeout(() => {
       const c = stage.getBoundingClientRect(), r = card.getBoundingClientRect();
-      if (r.top < c.top + 10 || r.top > c.bottom - 150) stage.scrollTo({ top: stage.scrollTop + r.top - c.top - 30, behavior: reduceMotion ? 'auto' : 'smooth' });
+      if (r.top < c.top + 10 || r.top > c.bottom - 150) stage.scrollTo({ top: stage.scrollTop + r.top - c.top - 30, behavior: calm() ? 'auto' : 'smooth' });
     }, 140);
   }
 }
@@ -3747,10 +4159,12 @@ $('#themeCtl').addEventListener('click', ev => {
   const b = ev.target.closest('button');
   if (!b || b.dataset.themeSet === document.documentElement.dataset.theme) return;
   document.documentElement.dataset.theme = b.dataset.themeSet;
-  try { localStorage.setItem(THEME_KEY, b.dataset.themeSet); } catch (e) { /* storage unavailable */ }
+  if (!b.dataset.themeSet.startsWith('dopa')) try { localStorage.setItem(THEME_KEY, b.dataset.themeSet); } catch (e) { /* storage unavailable */ }
   showTheme();
   FIELD.sig = null;      // the composition takes its colours from the theme
   layoutField();
+  fxTheme();
+  drawGauge();           // the timecode: the show plays a little longer
   drawPointer();
 });
 let resizeTO = 0;
@@ -3772,6 +4186,7 @@ buildMinimap();
 renderAll();
 afterRender();
 drawGauge();
+fxTheme();
 if (viewOpt.focus && nodes.get(viewOpt.focus)) { const n = nodes.get(viewOpt.focus); setHover(n); bringIntoView(n, false, true); }
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { if (!sess) { layoutText(); afterRender(); } });
 // the page plays by itself when it opens: once the fonts are in (or after a moment) and the page is in view,
@@ -3789,13 +4204,14 @@ if (AUTOPLAY) {
 }
 
 window.__semanticViewer = {
-  get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, moving: !!sess, playing, hover: S.hover ? keyOf(S.hover) : null }; },
+  get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, seg: sess ? sess.a + '-' + sess.b : null, moving: !!sess, playing, hover: S.hover ? keyOf(S.hover) : null }; },
   problems, order: order.map(n => ({ id: n.id, num: n.num })), autoplay: AUTOPLAY,
   goTo: (st, o) => goTo(st, o),
   scrub: (a, b, u) => { if (!sess || sess.a !== a || sess.b !== b) { if (sess) endSeg(0); beginSeg(a, b); } frame(u); },
   release: () => release(),
   gauge: { w: GW, h: GH, at: GP },
   hover: id => setHover(elsById.get(id) || null),
+  fx: { get live() { return fxLive(); }, get count() { return { ...FX.count }; } },
 };
 })();
 </script>

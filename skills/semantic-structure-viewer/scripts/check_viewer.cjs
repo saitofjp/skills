@@ -7,9 +7,11 @@
   Checks: no console errors and no model problems; dragging the gauge's knob moves the page
   continuously from the text to the chunks to the model, and letting go settles it; the page plays by itself
   when it opens (unless built with --no-autoplay); each of the model's forms (summary, linear, slides, table)
-  renders, with the model as a minimap; ▶ plays to the summary and back to the model; hovering a mapped word focuses the model
-  and draws the thread, with its details along the bottom; Escape clears the focus; at a form the details
-  card and the minimap sit side by side without overlapping;
+  renders, with the model as a minimap; ▶ plays from the text to the summary and back to the model, wherever the knob was; hovering a mapped word focuses the model
+  and draws the thread, with its details along the bottom, and so does hovering anywhere inside a chunk's frame; Escape clears the focus; at a form the details
+  card and the minimap sit side by side without overlapping; the theme switches between dark, light and dopa: in dopa,
+  dragging the knob stages nothing, ▶ stages the play as a show (the build-up and the summary's arrival once), even when
+  the system asks for less motion, dopa is not remembered, and the show stops with the theme;
   nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
 'use strict';
@@ -80,17 +82,18 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   }
   ok('turns into the summary, linear notes, slides and a table, with the model as a minimap, and back');
 
-  // ▶ plays the way to the goal, the summary
+  // ▶ always plays from the start, the text, to the goal, the summary, wherever the knob is
   await V(() => window.__semanticViewer.goTo('chunks', { ms: 1 }));
   await still();
   await page.click('#gauge .g-play');
+  if ((await state()).seg !== 'text-chunks') return fail('▶ did not start from the text: ' + JSON.stringify(await state()));
   try {
     await page.waitForFunction(() => window.__semanticViewer.state.stage === 'summary' && !window.__semanticViewer.state.moving, null, { timeout: 60000 });
   } catch (e) { return fail('▶ did not play to the summary: ' + JSON.stringify(await state())); }
   try {
     await page.waitForFunction(() => { const s = window.__semanticViewer.state; return s.stage === 'model' && !s.moving && !s.playing; }, null, { timeout: 20000 });
   } catch (e) { return fail('▶ did not go back to the model after the summary: ' + JSON.stringify(await state())); }
-  ok('▶ plays from where the knob is to the summary and, after a moment there, back to the model');
+  ok('▶ plays from the text to the summary and, after a moment there, back to the model');
   await V(() => window.__semanticViewer.goTo('model', { ms: 1 }));
   await still();
 
@@ -103,6 +106,22 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   if (!hov.f) return fail('hovering a mapped word did not focus anything in the model');
   if (!hov.card) return fail('hovering a mapped word did not show its details');
   ok(`hover on the text focuses the model${hov.thread ? ', draws the thread' : ''} and shows its details`);
+  // between the words, anywhere in a chunk's frame, focuses that chunk
+  await page.mouse.move(2, 2);
+  const spot = await V(() => {
+    const slabs = [...document.querySelectorAll('#slabs .sl rect.slab')].map(r => ({ id: r.parentNode.dataset.node, b: r.getBoundingClientRect() }))
+      .filter(x => x.b.top > 120 && x.b.bottom < innerHeight - 60 && x.b.height > 30);
+    const pane = document.querySelector('#textPane').getBoundingClientRect();
+    const s = slabs.find(x => x.b.right < pane.right);
+    return s && { id: s.id, x: s.b.right - 3, y: s.b.top + s.b.height / 2 };
+  });
+  if (spot) {
+    await page.mouse.move(spot.x, spot.y);
+    await page.waitForTimeout(200);
+    const on = await V(() => window.__semanticViewer.state.hover);
+    if (!on) return fail('hovering inside a chunk\'s frame, off the words, did not focus it');
+    ok('hovering anywhere inside a chunk\'s frame focuses it');
+  }
   // at a form, the details card and the minimap line up along the bottom
   await page.mouse.move(2, 2);
   await V(() => window.__semanticViewer.goTo('linear'));
@@ -132,6 +151,49 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   await page.click('#themeCtl button[data-theme-set="dark"]');
   if ((await V(() => document.documentElement.dataset.theme)) !== 'dark') return fail('the theme switch did not change back to dark');
   ok('switches between dark and light');
+
+  // dopa: the knob, moved by hand, stages nothing; ▶ stages the play as a show
+  await page.click('#themeCtl button[data-theme-set="dopa"]');
+  if (!(await V(() => document.documentElement.dataset.theme === 'dopa' && getComputedStyle(document.querySelector('#show')).display !== 'none')))
+    return fail('the theme switch did not turn on dopa');
+  const quiet = await V(() => window.__semanticViewer.fx.count);
+  await V(() => { const v = window.__semanticViewer; v.goTo('text', { ms: 1 }); v.scrub('text', 'chunks', 1); v.release(); });
+  await still();
+  await V(() => { const v = window.__semanticViewer; v.scrub('chunks', 'model', 1); v.release(); });
+  await still();
+  if (JSON.stringify(await V(() => window.__semanticViewer.fx.count)) !== JSON.stringify(quiet) || await V(() => document.querySelectorAll('#show .dp-band, #show .dp-pop').length))
+    return fail('in dopa, moving the knob by hand staged the show');
+  ok('in dopa, moving the knob by hand stages nothing');
+  await page.click('#gauge .g-play');
+  try {
+    await page.waitForFunction(() => { const s = window.__semanticViewer.state; return s.stage === 'model' && !s.moving && !s.playing; }, null, { timeout: 60000 });
+  } catch (e) { return fail('in dopa, ▶ did not play to the summary and back: ' + JSON.stringify(await state())); }
+  const after = await V(() => window.__semanticViewer.fx.count);
+  if (!(after.wrap > quiet.wrap && after.aori > quiet.aori && after.summary > quiet.summary)) return fail('in dopa, ▶ did not stage the show: ' + JSON.stringify(after));
+  if (after.aori - quiet.aori !== 1) return fail('the build-up before the summary played again on the way back to the model');
+  if (await V(() => document.documentElement.hasAttribute('data-show'))) return fail('the dopa show did not stop when the play did');
+  ok('in dopa, ▶ stages the play as a show, the build-up and the summary\'s arrival once, and stops with it');
+  const kept = await V(() => { try { return localStorage.getItem('semantic-structure-viewer:theme'); } catch (e) { return null; } });
+  if (kept === 'dopa') return fail('dopa was remembered as a reading preference');
+  await page.click('#themeCtl button[data-theme-set="dark"]');
+  if (await V(() => getComputedStyle(document.querySelector('#show')).display !== 'none' || document.querySelectorAll('#show .dp').length))
+    return fail('switching back to dark left the dopa show on screen');
+  ok('switches to dopa and back, without remembering it');
+  // the dopa show plays even when the system asks for less motion
+  const calm = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
+  calm.on('pageerror', e => errors.push(e.message));
+  await calm.goto('file://' + path.resolve(file));
+  await calm.waitForFunction(() => window.__semanticViewer, null, { timeout: 15000 });
+  let shown = true;
+  try {
+    if (await calm.evaluate(() => window.__semanticViewer.autoplay)) await calm.waitForFunction(() => window.__semanticViewer.state.playing, null, { timeout: 8000 });
+    await calm.click('#themeCtl button[data-theme-set="dopa"]');
+    if (!(await calm.evaluate(() => window.__semanticViewer.state.playing))) await calm.click('#gauge .g-play');
+    await calm.waitForFunction(() => Object.values(window.__semanticViewer.fx.count).some(v => v > 0) && document.documentElement.hasAttribute('data-show'), null, { timeout: 15000 });
+  } catch (e) { shown = false; }
+  await calm.close();
+  if (!shown) return fail('with reduced motion, the dopa show did not play');
+  ok('the dopa show plays even when the system asks for less motion');
 
   // and back down
   await V(() => window.__semanticViewer.goTo('text', { ms: 60 }));
