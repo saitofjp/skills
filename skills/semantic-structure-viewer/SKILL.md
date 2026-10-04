@@ -41,13 +41,13 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
    `NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html`
    - It checks that the page loads with no errors and that dragging the knob moves the page between stages and settles when let go.
    - It checks that each form renders, that ▶ plays to the summary, and that hovering a word focuses the model.
-   - It checks that pinning opens the details card and Esc releases it, and that nothing overflows a phone-width screen.
+   - It checks that hovering peeks the details along the bottom, pinning holds the card and Esc releases it, that at a form the card and the minimap sit side by side, and that nothing overflows a phone-width screen.
 
    Then look at it yourself: drag slowly from the text to the model. Do the headlines read as a story, and does the summary land?
 4. **Deliver.** Give the path and how to use it:
    - ▶ (or Space) plays to the summary. Drag the gauge's knob to watch every piece move; click its labels (or press ← →) to switch at once.
    - At the model, drag into a branch for linear notes, slides or a table (↑ ↓ switch between the branches).
-   - Hover to link the text and the notes, click to pin, Esc to release. Light / Dark in the header switches the theme.
+   - Hover to link the text and the notes and peek the details along the bottom; click to pin, Esc to release. Light / Dark in the header switches the theme.
 
    If the user cannot open local files (for example in a remote session), publish the page as an Artifact. Load the `artifact-design` skill first.
 

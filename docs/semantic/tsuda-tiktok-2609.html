@@ -93,7 +93,7 @@ main { position: relative; display: flex; min-height: 0; overflow: hidden; }
 #tags { position: absolute; z-index: 3; top: 0; left: calc(var(--gutter, 48px) + var(--col, 520px) + 26px); width: calc(var(--tagw, 220px) - 34px); }
 #modelPane { flex: 1 1 0; min-width: 0; position: relative; z-index: 1; background: var(--sky); border-left: 1px solid var(--rule); }
 #stage { position: absolute; inset: 0; overflow: auto; scrollbar-width: thin; z-index: 1; }
-#rep { position: relative; min-height: 100%; padding: var(--hud-clear, 28px) 28px 120px; }
+#rep { position: relative; min-height: 100%; padding: var(--hud-clear, 28px) 28px 240px; }
 body[data-stop="text"] #modelPane { display: none; }
 body[data-stop="text"] #marks, body[data-stop="text"] #slabs { visibility: hidden; }
 
@@ -292,10 +292,18 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #pointer circle.end { fill: var(--focus); stroke: var(--space); stroke-width: 1.5; }
 
 /* details (pinned) */
-#details { position: absolute; left: 14px; top: 14px; width: min(360px, calc(100% - 28px)); max-height: 42%; overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 12px 14px; z-index: 9; font-size: 12.5px; }
+/* the details dock along the bottom: what is in focus, or pinned; at a form, beside the model */
+#details { position: absolute; left: 14px; right: 14px; bottom: 14px; min-height: var(--mm-h, 0px); max-height: min(32%, 260px); overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 20px 14px 10px; z-index: 9; font-size: 12.5px; transition: opacity .18s; }
+main.forms #details { right: calc(var(--mm-w, 380px) + 24px); }
+main.forms.stacked #details { right: 14px; bottom: calc(var(--mm-h, 0px) + 24px); min-height: 0; }
+#details .dk { position: absolute; left: 14px; top: 6px; font: 700 9px/1 var(--mono); letter-spacing: .22em; color: var(--muted); }
+#details.peek { pointer-events: none; border-left-color: var(--accent); }
+#details.peek.under { opacity: 0; }
+main.scrubbing #details { visibility: hidden; }
+#details .cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0 18px; align-items: start; }
 #details .x { position: absolute; top: 6px; right: 8px; border: 0; background: transparent; font-size: 16px; color: var(--muted); }
-#details h2 { font-size: 14px; margin: 0 24px 6px 0; line-height: 1.45; }
-#details h3 { font: 700 9.5px/1 var(--mono); letter-spacing: .18em; color: var(--muted); margin: 12px 0 5px; text-transform: uppercase; }
+#details h2 { font-size: 14px; margin: 0 24px 4px 0; line-height: 1.45; }
+#details h3 { font: 700 9.5px/1 var(--mono); letter-spacing: .18em; color: var(--muted); margin: 10px 0 5px; text-transform: uppercase; }
 #details ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
 #details li button { border: 0; background: transparent; text-align: left; padding: 2px 4px; border-radius: 4px; width: 100%; color: var(--ink-2); }
 #details li button:hover { background: var(--chip); color: var(--ink); }
@@ -303,7 +311,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #details .note { color: var(--ink-2); margin: 6px 0 0; }
 #details .q { color: var(--muted); font-family: var(--mono); font-size: 11px; }
 #details ul.ev button { color: var(--evidence); }
-#details .row { display: flex; gap: 6px; margin-top: 10px; }
+#details .row { display: flex; gap: 6px; margin-top: 8px; }
 #details .row button { border: 1px solid var(--rule); background: transparent; border-radius: 7px; padding: 3px 9px; font-size: 12px; }
 
 /* the HUD: the meta-structure, text — chunks — model — its forms, is the control. It hangs at the top right. */
@@ -344,11 +352,11 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #gauge .g-play polygon { fill: transparent; stroke: var(--hud-ink); stroke-width: 1; }
 #gauge .g-play path { fill: var(--hud-ink); }
 #gauge .g-play text { fill: var(--hud-ink); font-size: 7.5px; letter-spacing: .3em; }
-#gauge .g-play:hover polygon, #gauge .g-play:focus-visible polygon, #gauge .g-play.on polygon { fill: var(--focus); stroke: var(--focus); }
-#gauge .g-play:hover path, #gauge .g-play:hover text, #gauge .g-play.on path, #gauge .g-play.on text, #gauge .g-play:focus-visible path, #gauge .g-play:focus-visible text { fill: var(--on-focus); }
+#gauge .g-play:hover polygon, #gauge .g-play.on polygon { fill: var(--focus); stroke: var(--focus); }
+#gauge .g-play:hover path, #gauge .g-play:hover text, #gauge .g-play.on path, #gauge .g-play.on text { fill: var(--on-focus); }
 body:not(.narrow) header { padding-right: 436px; }
 /* the minimap: the model, small, beside its form */
-#minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: 380px; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
+#minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: var(--mm-w, 380px); background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
 #minimap[hidden] { display: none; }
 #minimap .mm-label { position: absolute; left: 8px; top: 5px; font: 700 9px/1 var(--mono); letter-spacing: .22em; color: var(--muted); }
 #mmSvg { display: block; width: 100%; height: auto; max-height: 300px; }
@@ -398,7 +406,7 @@ main.narrow #textPane { width: 100% !important; margin-left: 0 !important; }
 main.narrow #modelPane { border-left: 0; border-top: 1px solid var(--rule); }
 main.narrow #hint { display: none; }
 main.narrow .rep.linear .stack { margin-right: 44px; }
-main.narrow #details { max-height: 34%; top: auto; bottom: 120px; }
+main.narrow #details { max-height: 32%; min-height: 0; bottom: var(--gauge-clear, 176px); }
 main.narrow #minimap { display: none; }
 main.narrow #ticker .m { font-size: 12.5px; }
 main.narrow #gauge { top: auto; bottom: 8px; left: 0; right: 0; margin: 0 auto; width: min(420px, calc(100% - 16px)); }
@@ -431,7 +439,7 @@ main.narrow #rep { padding-bottom: 190px; }
   <div id="hint"></div>
   <div id="ticker" aria-hidden="true"><span class="k"></span><span class="n"></span><span class="m"></span></div>
   <div id="minimap" hidden><span class="mm-label">MODEL</span><svg id="mmSvg" aria-label="The model, small"></svg></div>
-  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 392 150" role="slider" aria-label="Text, chunks, model" tabindex="0"></svg></div>
+  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 392 150" role="group" aria-label="Text, chunks, model"></svg></div>
   <div id="problems" hidden></div>
 </main>
 <div id="fly" aria-hidden="true"></div>
@@ -1814,6 +1822,12 @@ function applyLayout() {
   }
   const mm = $('#minimap');
   mm.hidden = !FORMS.includes(S.stage) || G.narrow;
+  main.classList.toggle('forms', !mm.hidden);
+  // at a form the details dock sits beside the small model; the model gives way first, then the dock goes on top of it
+  const paneW = G.narrow ? G.mw : G.mw - textPane.offsetWidth, room = paneW - 28 - 10 - 320;
+  rs.setProperty('--mm-w', clamp(room, 260, 380) + 'px');
+  main.classList.toggle('stacked', room < 260);
+  rs.setProperty('--mm-h', mm.offsetHeight + 'px');
   // the model's side starts below the HUD
   body.classList.toggle('narrow', G.narrow);
   const hud = $('#gauge').getBoundingClientRect(), top = main.getBoundingClientRect().top;
@@ -1821,6 +1835,7 @@ function applyLayout() {
   rs.setProperty('--ticker-x', overNotes ? Math.round(textPane.offsetWidth + (G.mw - textPane.offsetWidth) / 2) + 'px' : '50%');
   rs.setProperty('--ticker-w', overNotes ? Math.round(G.mw - textPane.offsetWidth - 40) + 'px' : 'calc(100% - 32px)');
   rs.setProperty('--hud-clear', (G.narrow ? 28 : Math.max(28, Math.round(hud.bottom - top + 16))) + 'px');
+  rs.setProperty('--gauge-clear', (G.narrow ? Math.round(main.getBoundingClientRect().bottom - hud.top + 8) : 176) + 'px');
   const hint = $('#hint');
   if (hint.textContent !== (hint.textContent = S.stop === 'model' ? T.hintModel : S.stop === 'chunks' ? T.hintChunks : T.hintText)) {
     hint.classList.remove('gone'); clearTimeout(hint._t); hint._t = setTimeout(() => hint.classList.add('gone'), 7000);
@@ -2800,18 +2815,22 @@ function drawPointer() {
   }
 }
 
-/* ---- details of what is pinned ---- */
+/* ---- details of what is in focus: a peek while hovering, held when pinned ---- */
 const keyOf = f => f ? (f.id || `${f.kind}:${f.node ? f.node.id + ':' + f.k : f.i}`) : '';
 function renderDetails() {
-  const f = S.pinned;
+  const f = S.pinned || S.hover, peek = !S.pinned;
   details.innerHTML = '';
-  details.hidden = !f || S.stop === 'text' || details.dataset.closed === keyOf(f);
+  details.hidden = !f || S.stop === 'text' || (!peek && details.dataset.closed === keyOf(f));
+  details.classList.toggle('peek', peek);
+  details.setAttribute('aria-live', peek ? 'off' : 'polite');
   $('#hint').classList.toggle('gone', !details.hidden || $('#hint').classList.contains('gone'));
-  if (details.hidden) return;
+  if (details.hidden) { details.classList.remove('under'); return; }
   const pin = el => h('button', { type: 'button', onclick: () => setPinned(el, { scroll: true }) }, titleOf(el));
   const q = sp => h('button', { type: 'button', onclick: () => scrollTextTo(sp, true) }, h('span', { class: 'q' }, sentenceLabel(sp) + '  '), quote(sp));
-  const list = (title, items, render, cls) => { if (items.length) details.append(h('h3', {}, title), h('ul', { class: cls || '' }, ...items.map(x => h('li', {}, render(x))))); };
-  details.append(h('button', { type: 'button', class: 'x', 'aria-label': T.close, title: T.close, onclick: () => { details.dataset.closed = keyOf(f); renderDetails(); } }, '×'));
+  const cols = h('div', { class: 'cols' });
+  const list = (title, items, render, cls) => { if (items.length) cols.append(h('section', {}, h('h3', {}, title), h('ul', { class: cls || '' }, ...items.map(x => h('li', {}, render(x)))))); };
+  details.append(h('span', { class: 'dk' }, peek ? 'FOCUS · CLICK TO PIN' : 'PINNED'));
+  if (!peek) details.append(h('button', { type: 'button', class: 'x', 'aria-label': T.close, title: T.close, onclick: () => { details.dataset.closed = keyOf(f); renderDetails(); } }, '×'));
   const node = f.kind === 'node' ? f : f.kind === 'point' ? f.node : null;
   details.append(h('h2', {}, titleOf(f)));
   const p = f.prov;
@@ -2828,10 +2847,17 @@ function renderDetails() {
   if (f.kind === 'rel') list(T.links, [f.source, f.target], pin);
   list(T.basis, (f.derivedFrom || []).map(id => elsById.get(id)).filter(Boolean), pin, 'ev');
   if (f.id) list(T.basisOf, [...nodes.values(), ...rels].filter(e => e.derivedFrom.includes(f.id)), pin);
-  details.append(h('div', { class: 'row' },
+  details.append(cols);
+  if (!peek) details.append(h('div', { class: 'row' },
     node ? h('button', { type: 'button', onclick: () => focusIn(node) }, T.goText) : null,
     h('button', { type: 'button', onclick: () => setPinned(null) }, T.release)));
 }
+// a peek lets the pointer through; it fades while the pointer is under it, so what it covers can still be read
+main.addEventListener('mousemove', ev => {
+  if (details.hidden || !details.classList.contains('peek')) return;
+  const r = details.getBoundingClientRect();
+  details.classList.toggle('under', ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom);
+});
 function quote(sp) { const s = slice(sp.start, sp.end).replace(/\s+/g, ' '); return Array.from(s).length > 54 ? Array.from(s).slice(0, 52).join('') + '…' : s; }
 function titleOf(x) {
   if (x.kind === 'node') return `${x.num}  ${x.label}`;
@@ -2954,14 +2980,13 @@ function buildGauge() {
   GG.idx = g('text', { class: 'h-idx', x: 12, y: 57 });
   GG.name = g('text', { class: 'h-name', x: 62, y: 43 });
   GG.stat = g('text', { class: 'h-stat', x: 62, y: 55 });
-  // ▶
-  const pb = g('g', { class: 'g-play', role: 'button', tabindex: 0, 'aria-label': T.play });
+  // ▶ — the panel takes no keyboard focus, so a stray Enter cannot start or stop the play; Space and the arrows work from anywhere
+  const pb = g('g', { class: 'g-play', role: 'button', 'aria-label': T.play });
   g('polygon', { points: `${GW - 78},35 ${GW - 14},35 ${GW - 18},53 ${GW - 82},53` }, pb);
   GG.playIcon = g('path', { d: '' }, pb);
   GG.playText = g('text', { x: GW - 58, y: 47 }, pb);
   pb.addEventListener('click', ev => { ev.stopPropagation(); play(); });
   pb.addEventListener('pointerdown', ev => ev.stopPropagation());
-  pb.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); play(); } });
   GG.play = pb;
   // the lines: a hairline, a ruler on the trunk, and the way walked in the focus colour
   SEGS.forEach(([a, b]) => g('polyline', { class: 'g-hit', points: ptsAttr(PATH[b]) }));
