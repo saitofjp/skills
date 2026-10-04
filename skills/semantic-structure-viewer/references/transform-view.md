@@ -17,7 +17,7 @@ The gauge is a compact game HUD at the top right (at the bottom on a phone), in 
 - **The play control.** `PLAY` / `PAUSE`, with a timecode: how long the play takes from here (`T-00:24`), and while it runs, the time elapsed (`00:07 / 00:24`).
 - **The graph.** It is the control, and the model sits at its centre: a diamond in a ring, framed by turning lock brackets. The levels below it (text, chunks) run into it from the left along a ruled track; its forms leave it to the right as a tree, a series: A, the summary, straight on; B linear (and along its row on to B2 slides) and C table hanging from that line. The knob is a small diamond with a pulse.
 
-The page's content starts below the HUD, and the text, centred at L0, keeps clear of it.
+The page's content starts below the HUD, and the text, centred at L0, keeps clear of it. The HUD takes no keyboard focus, so a stray Enter or a click cannot leave it ready to start or stop the play; Space and the arrow keys work from anywhere on the page.
 
 - **The trunk** (focus out / in, meta-cognition): the levels, from the text, to the text wrapped into chunks, to the model. Moving right abstracts; moving left returns to the words.
 - **The forms** (transform, representation): the model's forms, joined to the model by straight lines: A the summary in one sentence, B linear notes (which lead on to B2 slides), C a table. The only way to a form is through the model, because a form is a representation of the model, not of the text.
@@ -54,7 +54,16 @@ Dragging and ▶ always animate, even with `prefers-reduced-motion`, because the
 | L0 Text | `sourceText` as written, centred. The field behind it is shattered. |
 | L1 Chunks | The text on the left, wrapped passage by passage: a bracket in the left margin and a slab behind each passage, numbered in the text's order. On the right, a row for each passage, in the same order, with its chunk's headline. Nothing is merged, nested or moved yet: a chunk the text comes back to has a row each time. |
 | L2 Model | The text on the left and the model (its structure) on the right. This is the Two Pane view: the text and its notes side by side, with their pointers linked. |
-| A form | Three at once: the text on the left, the form in the centre, and the model as a minimap in the bottom-right corner, like the small map in a game. The chunks in view in the form are framed on the minimap, and the focus lights it as it lights the other two. |
+| A form | Three at once: the text on the left, the form in the centre, and the model as a minimap in the bottom-right corner, like the small map in a game. The chunks in view in the form are framed on the minimap, and the focus lights it as it lights the other two. The details card sits beside the minimap, so the two line up along the bottom. |
+
+## The details card
+
+The details of what is in focus are docked along the bottom of the model's side, never over the top of it:
+
+- **Peek.** Hovering anything that can be focused shows its details at once (`FOCUS · CLICK TO PIN`). A peek lets the pointer through, and it fades away while the pointer is under it, so what it covers can still be hovered and read.
+- **Pinned.** A click holds the card (`PINNED`), and its entries become links: a passage scrolls the text to it, a point, line, part or piece of evidence pins that instead. `×` hides the card and keeps the pin.
+- **Where.** At the chunks and the model, it spans the bottom of the model's side. At a form, it sits to the left of the minimap, at least as tall as it. Where the side is too narrow for both, the minimap shrinks first, then the card goes above it. On a phone it sits just above the HUD. It hides while the knob moves.
+- **Inside.** The headline, then its provenance and note, then its passages, points, lines, parts and evidence in columns that fill the card's width.
 
 ## Forms
 
@@ -109,8 +118,8 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | ▶ PLAY or Space | Play to the summary: the knob moves by itself, as in dragging; again (PAUSE) to stop where it is |
 | ← / → | Switch toward the text / toward the summary (from Linear, on to Slides) |
 | ↑ / ↓ (at the model or a form) | Switch between A summary, B linear and C table, as they lie on the gauge |
-| Hover text, a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread |
-| Click | Pin it. The details card (top left) lists its passages (click to go there), points, lines, parts and evidence. |
+| Hover text, a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread, and peek its details along the bottom |
+| Click | Pin it. The details card along the bottom holds, and lists its passages (click to go there), points, lines, parts and evidence. |
 | Click again, click the background, or Esc | Release |
 | Double click a card | Go down to its passage |
 | Light / Dark (header) | Switch the theme. Dark is the default; the reader's choice is remembered in the browser. |
