@@ -1,0 +1,3744 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>経済・物価情勢の展望（2026年7月）基本的見解 — Semantic Structure Viewer</title>
+<meta name="description" content="A text and its model side by side. Rise from the text to its chunks to the model, and turn the model into structure, linear notes, a table or one sentence.">
+<style>
+/*
+  Semantic Structure Viewer — the Transform View of one Semantic Structure (semantic-structure/1).
+  Concept: rise through the layers of meaning. The text is the ground; chunks lift off it;
+  the model floats above, in a classical, unruly geometry composed from the model itself,
+  which lies shattered near the text and comes together as you rise.
+  Two moves: focus out / in (text ⇄ chunks ⇄ model) and transform (structure ⇄ linear ⇄ table ⇄ summary).
+  The page never derives meaning from the text; everything it shows comes from the embedded model.
+  See references/transform-view.md.
+*/
+:root {
+  /* dark (default): luminous layers in a deep space */
+  --space: #0a0d14;
+  --ground: rgba(15, 19, 27, .9);    /* L0: the text */
+  --sky: rgba(12, 16, 25, .28);       /* L2: the model's space, the figure shows through */
+  --field: 165, 188, 240;             /* the field: shards on the ground, a composition above */
+  --field-a: .048;
+  --ink: #e8ecf4;
+  --ink-2: #b4bdcd;
+  --muted: #7d889d;
+  --rule: rgba(160, 180, 225, .17);
+  --card: #151a26;
+  --card-hi: transparent;
+  --card-line: #4a5570;
+  --accent: #dfe6f5;          /* the bar on a card's left */
+  --frame: rgba(120, 145, 200, .07);
+  --slab: rgba(150, 175, 235, .07);
+  --slab-line: rgba(160, 185, 240, .22);
+  --bracket: rgba(165, 185, 230, .38);
+  --thread: #c6dcff;
+  --link: rgba(190, 205, 235, .5);
+  --band: #e8ecf4; --band-fg: #0a0d14;
+  /* data colors: one meaning each */
+  --focus: #2dd4bf; --focus-rgb: 45, 212, 191; --focus-ink: #2dd4bf; --on-focus: #06201d;
+  --rel: #9aa6bd; --rel-rgb: 154, 166, 189;
+  --pos: #ff6b3d; --pos-rgb: 255, 107, 61;     /* + : moves with, raises */
+  --neg: #4f9dff; --neg-rgb: 79, 157, 255;     /* − : moves against, lowers */
+  --evidence: #a98bff; --evidence-rgb: 169, 139, 255;
+  --ui: #e8ecf4; --ui-fg: #0a0d14;
+  --chip: rgba(165, 185, 230, .12);
+  --tone: rgba(165, 188, 240, .16);   /* screentone dots */
+  --shadow: none;
+  --font: system-ui, -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Yu Gothic", Meiryo, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --ease-settle: cubic-bezier(.22, 1.18, .42, 1);
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --space: #e9edf3; --ground: rgba(246, 248, 251, .9); --sky: rgba(240, 244, 249, .3); --field: 30, 45, 85; --field-a: .038;
+  --ink: #111622; --ink-2: #39414f; --muted: #687286; --rule: rgba(30, 50, 90, .14);
+  --card: #ffffff; --card-hi: transparent; --card-line: #111622; --accent: #111622;
+  --frame: rgba(30, 50, 90, .04); --slab: rgba(40, 70, 130, .05); --slab-line: rgba(40, 70, 130, .2); --bracket: rgba(30, 50, 90, .3);
+  --thread: #1b2a47; --link: rgba(40, 55, 85, .45); --band: #111622; --band-fg: #f5f7fa;
+  --focus: #0d9488; --focus-rgb: 13, 148, 136; --focus-ink: #0b7a70; --on-focus: #ffffff;
+  --rel: #6d7689; --rel-rgb: 109, 118, 137; --pos: #d0451b; --pos-rgb: 208, 69, 27; --neg: #1f5fbf; --neg-rgb: 31, 95, 191;
+  --evidence: #6f45e0; --evidence-rgb: 111, 69, 224; --ui: #111622; --ui-fg: #ffffff; --chip: rgba(30, 50, 90, .07); --tone: rgba(17, 22, 34, .16);
+  --shadow: none;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--space); color: var(--ink); font: 14px/1.6 var(--font); display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); overflow: hidden; }
+button, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* ---------- header ---------- */
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; padding: 10px 16px; border-bottom: 1px solid var(--rule); background: var(--space); position: relative; z-index: 20; }
+.titles { min-width: 0; flex: 1 1 240px; }
+.titles h1 { font-size: 15px; line-height: 1.3; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .02em; }
+.titles .src { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.theme-ctl { display: inline-flex; border: 1.5px solid var(--card-line); flex: none; }
+.theme-ctl button { border: 0; background: transparent; padding: 4px 10px; font: 700 11px/1.2 var(--mono); letter-spacing: .08em; color: var(--muted); }
+.theme-ctl button + button { border-left: 1.5px solid var(--card-line); }
+.theme-ctl button[aria-pressed="true"] { background: var(--ui); color: var(--ui-fg); }
+
+/* ---------- main: the ground (text) and the space above it (model) ---------- */
+main { position: relative; display: flex; min-height: 0; overflow: hidden; }
+#field { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+#textPane { flex: none; height: 100%; overflow: auto; position: relative; z-index: 1; background: var(--ground); scrollbar-width: thin; transform-origin: 50% 60%; }
+#page { position: relative; padding: 34px 0 120px var(--gutter, 48px); width: max-content; isolation: isolate; }
+#slabs { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 0; }
+#text { position: relative; z-index: 1; width: var(--col, 520px); font-size: 15px; line-height: 2; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink-2); }
+#marks { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; z-index: 2; }
+#tags { position: absolute; z-index: 3; top: 0; left: calc(var(--gutter, 48px) + var(--col, 520px) + 26px); width: calc(var(--tagw, 220px) - 34px); }
+#modelPane { flex: 1 1 0; min-width: 0; position: relative; z-index: 1; background: var(--sky); border-left: 1px solid var(--rule); }
+#stage { position: absolute; inset: 0; overflow: auto; scrollbar-width: thin; z-index: 1; }
+#rep { position: relative; min-height: 100%; padding: var(--hud-clear, 28px) 28px 240px; }
+body[data-stop="text"] #modelPane { display: none; }
+body[data-stop="text"] #marks, body[data-stop="text"] #slabs { visibility: hidden; }
+
+/* ---------- L0: text ---------- */
+.seg.c { cursor: pointer; border-radius: 2px; transition: background-color .25s, box-shadow .25s, color .25s; }
+body[data-stop="text"] .seg.c { cursor: text; }
+.seg.hn { background: rgba(var(--focus-rgb), .08); color: var(--ink); }
+.seg.hq { background: rgba(var(--focus-rgb), .16); color: var(--ink); box-shadow: inset 0 -1.5px rgba(var(--focus-rgb), .7); }
+.seg.hp { background: rgba(var(--focus-rgb), .26); color: var(--ink); box-shadow: inset 0 -3px var(--focus); }
+.seg.hr { box-shadow: inset 0 -2px var(--rel); color: var(--ink); }
+.seg.hr.pos { box-shadow: inset 0 -2px var(--pos); background: rgba(var(--pos-rgb), .14); }
+.seg.hr.neg { box-shadow: inset 0 -2px var(--neg); background: rgba(var(--neg-rgb), .14); }
+.seg.hx { box-shadow: inset 0 -2px var(--focus); }
+.seg.he { background: rgba(var(--evidence-rgb), .24); }
+.seg.flash { animation: wash 1.5s ease-out; }
+@keyframes wash { 0% { background: rgba(var(--focus-rgb), .3); color: var(--ink); } 100% { background: transparent; } }
+
+/* ---------- L1: chunks lifted off the text ---------- */
+#slabs rect.slab { fill: var(--slab); stroke: var(--slab-line); stroke-width: 1; }
+#slabs rect.shadow { fill: none; stroke: var(--slab-line); stroke-width: 1; stroke-dasharray: 2 3; opacity: .7; }
+#slabs g.f0 rect.slab { fill: rgba(var(--focus-rgb), .07); stroke: var(--focus); }
+#slabs g.lift rect.slab { animation: lift .8s var(--ease-settle) both; }
+#slabs g.lift rect.shadow { animation: fadein .8s ease-out both; }
+@keyframes lift { from { transform: translate(5px, 5px); opacity: 0; } to { transform: none; opacity: 1; } }
+#marks .br path.line { fill: none; stroke: var(--bracket); stroke-width: 1.6; transition: stroke .2s, stroke-width .2s; }
+#marks .br path.hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; cursor: pointer; }
+#marks .br text { font: 700 10.5px/1 var(--mono); fill: var(--muted); text-anchor: end; dominant-baseline: hanging; pointer-events: auto; cursor: pointer; }
+#marks .br.reading path.line { stroke: var(--ink-2); }
+#marks .br.f0 path.line { stroke: var(--focus); stroke-width: 3.5; }
+#marks .br.f0 text { fill: var(--focus); }
+#marks .br.f1 path.line { stroke: var(--rel); stroke-width: 2.4; }
+#marks .br.f1.pos path.line { stroke: var(--pos); } #marks .br.f1.neg path.line { stroke: var(--neg); }
+#marks .br.part path.line { stroke: var(--ink-2); stroke-width: 2; }
+#marks .br.ev path.line { stroke: var(--evidence); stroke-width: 2.4; }
+#marks .br.grow path.line { stroke: var(--ink); stroke-width: 3; stroke-dasharray: 1; animation: grow .7s var(--ease-settle) both; }
+@keyframes grow { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes fadein { from { opacity: 0; } }
+/* slides: each note on a 16:9 page */
+.rep.slides .deck { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; max-width: 760px; }
+.slide { position: relative; aspect-ratio: 16 / 9; background: var(--card); border: 1.5px solid var(--card-line); border-left: 6px solid var(--accent); padding: 4% 6% 5%; display: flex; flex-direction: column; justify-content: center; overflow: hidden; min-width: 0; }
+.slide .sno { position: absolute; right: 14px; bottom: 10px; font: 700 10px/1 var(--mono); letter-spacing: .12em; color: var(--muted); }
+.slide .kicker { display: block; font: 700 10px/1.2 var(--mono); letter-spacing: .26em; color: var(--muted); margin-bottom: 12px; }
+.slide .sh { display: flex; gap: 16px; align-items: baseline; }
+.slide .num { font: 800 clamp(20px, 2.6vw, 36px)/1 var(--mono); color: var(--muted); letter-spacing: -.02em; flex: none; }
+.slide .head { font-size: clamp(17px, 2vw, 27px); font-weight: 900; line-height: 1.35; color: var(--ink); letter-spacing: .01em; }
+.slide .pts { margin: 16px 0 0; padding: 0 0 0 22px; list-style: none; display: grid; gap: 4px; }
+.slide .pt { font-size: clamp(12px, 1.2vw, 15px); }
+.slide.section { background-image: radial-gradient(var(--tone) 1px, transparent 1.3px); background-size: 7px 7px; }
+.slide.section .head { font-size: clamp(20px, 2.5vw, 33px); }
+.slide.concl { background: var(--band); border-color: var(--band); }
+.slide.key { border: 3px solid var(--ink); border-left: 12px solid var(--ink); }
+.slide.concl .head, .slide.concl .pt { color: var(--band-fg); } .slide.concl .num, .slide.concl .kicker, .slide.concl .sno { color: var(--band-fg); opacity: .6; }
+.slide.cover h2 { font-size: clamp(20px, 2.4vw, 32px); line-height: 1.4; margin: 0; }
+.slide.cover .lede { margin: 18px 0 0; font-size: clamp(13px, 1.3vw, 16px); line-height: 1.8; color: var(--ink-2); border-left: 3px solid var(--focus); padding-left: 12px; }
+.slide.closing { border-left-color: var(--focus); }
+.slide.closing .gist { margin: 0; font-size: clamp(16px, 1.9vw, 25px); line-height: 1.75; font-weight: 800; }
+.slide.f0 { border-color: var(--focus); box-shadow: 0 0 0 2px var(--focus); }
+.slide.f1 { border-left-color: var(--rel); } .slide.f1.pos { border-left-color: var(--pos); } .slide.f1.neg { border-left-color: var(--neg); }
+.focusing .slide.dim > :not(.sno) { opacity: .35; }
+
+/* the chunks, listed: what chunks there are, at a glance */
+.rep .kick { font: 700 10.5px/1 var(--mono); letter-spacing: .3em; color: var(--muted); margin: 0 0 16px; }
+.rep.chunks .clist { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; max-width: 560px; }
+.crow { display: flex; gap: 9px; align-items: baseline; padding: 6px 10px 7px; border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); background: var(--card); cursor: pointer; transition: border-color .2s, opacity .2s; min-width: 0; }
+.crow .num { font: 700 11px/1.5 var(--mono); color: var(--muted); flex: none; }
+.crow .head { font-size: 13.5px; line-height: 1.45; font-weight: 800; color: var(--ink); }
+.crow.again .head { font-weight: 700; color: var(--ink-2); }
+.crow.concl { background: var(--band); border-color: var(--band); } .crow.concl .head { color: var(--band-fg); } .crow.concl .num { color: var(--band-fg); opacity: .6; }
+.crow.reading { border-color: var(--ink-2); }
+.crow.f0 { border-color: var(--focus); box-shadow: 0 0 0 2px var(--focus); } .crow.f0 .head { background: linear-gradient(transparent 62%, rgba(var(--focus-rgb), .28) 62%); }
+.crow.f1 { border-left-color: var(--rel); } .crow.f1.pos { border-left-color: var(--pos); } .crow.f1.neg { border-left-color: var(--neg); }
+.focusing .crow.dim { opacity: .35; }
+
+/* ---------- L2: the model ---------- */
+.card { position: relative; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); border-radius: 0; padding: 10px 14px 11px 12px; transition: border-color .2s, box-shadow .2s, background .2s; }
+.card .ch { display: flex; gap: 9px; align-items: baseline; }
+.card .num { font: 700 12px/1.4 var(--mono); color: var(--muted); flex: none; letter-spacing: .02em; }
+.card .kicker { display: block; font: 700 9.5px/1.2 var(--mono); letter-spacing: .2em; color: var(--muted); margin: 0 0 4px; }
+.card .head { font-size: 15.5px; line-height: 1.45; font-weight: 800; color: var(--ink); letter-spacing: .01em; }
+.card.d1 { border-left-width: 2px; }
+.card.d1 .head { font-size: 14.5px; }
+.card .pts { margin: 8px 0 0; padding: 0 0 0 18px; list-style: none; }
+.pt { position: relative; font-size: 13.5px; line-height: 1.6; color: var(--ink-2); padding: 1px 4px; margin-left: -4px; border-radius: 4px; cursor: pointer; transition: background .2s, color .2s; }
+.pts .pt::before { content: ""; position: absolute; left: -13px; top: .8em; width: 7px; height: 1.5px; background: var(--bracket); }
+.pt + .pt { margin-top: 2px; }
+.when { display: inline-block; font: 700 11px/1.5 var(--mono); color: var(--ink); background: var(--chip); border: 1px solid var(--rule); border-radius: 4px; padding: 0 5px; margin-right: 6px; }
+.card .kids { margin-top: 12px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.card { min-width: 0; }
+.card.concl { background: var(--band); border-color: var(--band); border-left: 4px solid var(--band); }
+.card.concl .head, .card.concl .pt { color: var(--band-fg); }
+.card.concl .num, .card.concl .kicker { color: var(--band-fg); opacity: .6; }
+.card.concl .when { color: var(--band-fg); border-color: rgba(0, 0, 0, .2); background: rgba(0, 0, 0, .06); }
+:root[data-theme="light"] .rep.structure .card:has(> .kids):not(.concl), :root[data-theme="light"] .slide.section { background-image: none; }
+:root[data-theme="light"] .card.concl .when { border-color: rgba(255, 255, 255, .25); background: rgba(255, 255, 255, .08); }
+.card.concl .pts .pt::before { background: var(--band-fg); opacity: .5; }
+.card.key { border: 2.5px solid var(--ink); border-left: 7px solid var(--ink); }
+.card.key > .kicker, .slide.key > .kicker { color: var(--ink); opacity: 1; }
+.card.prov-inferred, .card.prov-uncertain { border-style: dashed; border-left-style: solid; }
+.card.prov-abstracted { border-style: dotted; border-left-style: solid; }
+.card.reading { border-color: var(--ink-2); }
+.card.f0 { border-color: var(--focus); box-shadow: 0 0 0 3px var(--focus); }
+.card.f0 > .ch .head { background: linear-gradient(transparent 62%, rgba(var(--focus-rgb), .28) 62%); }
+.card.f1 { border-color: var(--rel); box-shadow: 0 0 0 1px var(--rel); }
+.card.f1.pos { border-color: var(--pos); box-shadow: 0 0 0 1px var(--pos); }
+.card.f1.neg { border-color: var(--neg); box-shadow: 0 0 0 1px var(--neg); }
+.card.ev { border-color: var(--evidence); box-shadow: 0 0 0 1px var(--evidence); }
+.card.cur { border-color: var(--ink); box-shadow: 0 0 0 2px var(--ink); }
+.pt.fp { background: rgba(var(--focus-rgb), .18); color: var(--ink); box-shadow: inset 3px 0 var(--focus); }
+.focusing .card.dim > .ch, .focusing .card.dim > .pts, .focusing .card.dim > .kicker { opacity: .28; }
+.focusing .card.dim { border-color: var(--rule); box-shadow: none; }
+.card.stamp { animation: stamp .7s var(--ease-settle); }
+@keyframes stamp { 0% { transform: scale(1.05); } 35% { box-shadow: 0 0 0 6px var(--focus); } 100% { transform: none; } }
+
+/* linear: the notes in reading order */
+.rep.linear .stack { max-width: 720px; display: grid; gap: 14px; margin-right: 130px; }
+/* structure: columns that flow toward the conclusion */
+.rep.structure .cols { display: flex; align-items: center; gap: 88px; min-height: calc(100% - 20px); }
+.rep.structure .col { flex: 1 1 0; min-width: 0; max-width: 320px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.rep.structure .card { padding: 8px 12px 9px 10px; }
+.rep.structure .card .head { font-size: 14px; }
+.rep.structure .card.d1 .head { font-size: 13px; }
+.rep.structure .card .kids { margin-top: 9px; gap: 6px; }
+.rep.structure .card.d1 { padding: 5px 10px 6px 9px; }
+.rep.structure .card.d1 .kicker { display: none; }
+.rep.structure .card.d1 .head { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rep.structure .card.d1 .ch { min-width: 0; }
+.rep.structure .card:has(> .kids):not(.concl) { background: var(--card); background-image: radial-gradient(var(--tone) 1px, transparent 1.3px); background-size: 6px 6px; }
+.rep.structure .card.d1 { background: var(--card); }
+/* table */
+.rep.table table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 640px; font-size: 13px; }
+.rep.table th, .rep.table td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--rule); }
+.rep.table thead th { font: 700 10.5px/1.3 var(--mono); letter-spacing: .1em; color: var(--muted); border-bottom: 1px solid var(--ink-2); position: sticky; top: -28px; background: var(--space); z-index: 3; }
+.rep.table tbody tr { background: var(--card); transition: opacity .2s; }
+.rep.table tbody tr.d1 th.rowh { padding-left: 24px; }
+.rep.table th.rowh { width: 26%; border-left: 3px solid var(--accent); }
+.rep.table tr.d1 th.rowh { border-left-width: 2px; }
+.rep.table th.rowh .num { font: 700 11px/1.5 var(--mono); color: var(--muted); display: block; }
+.rep.table th.rowh .head { font-weight: 800; color: var(--ink); line-height: 1.45; }
+.rep.table tr.key th.rowh { border-left: 7px solid var(--ink); } .rep.table tr.key th.rowh .head::before { content: '◆ '; }
+.rep.table tr.concl th.rowh { background: var(--band); border-left-color: var(--band); } .rep.table tr.concl th.rowh .head { color: var(--band-fg); } .rep.table tr.concl th.rowh .num { color: var(--band-fg); opacity: .6; }
+.rep.table ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.rep.table .pt { font-size: 12.5px; }
+.rep.table tr.f0 th.rowh .head { background: linear-gradient(transparent 62%, rgba(var(--focus-rgb), .28) 62%); }
+.rep.table tr.f0 th.rowh { border-left-color: var(--focus); }
+.rep.table tr.f1 th.rowh { border-left-color: var(--rel); } .rep.table tr.f1.pos th.rowh { border-left-color: var(--pos); } .rep.table tr.f1.neg th.rowh { border-left-color: var(--neg); }
+.focusing .rep.table tr.dim { opacity: .35; }
+/* summary: one sentence at the top */
+.rep.summary { display: flex; flex-direction: column; justify-content: center; }
+.rep.summary .kick { margin: 0 auto 20px; max-width: 34em; width: 100%; }
+.rep.summary .gist { font-size: clamp(20px, 2.3vw, 30px); line-height: 1.8; font-weight: 800; letter-spacing: .03em; max-width: 34em; margin: 0 auto; color: var(--ink); }
+.phrase { cursor: pointer; background-image: linear-gradient(var(--ink), var(--ink)); background-size: 100% 2px; background-repeat: no-repeat; background-position: 0 94%; transition: background-color .2s, opacity .2s; border-radius: 3px; }
+.phrase sup { font: 700 11px/1 var(--mono); color: var(--muted); margin-left: 3px; letter-spacing: 0; }
+.phrase.f0 { background-color: rgba(var(--focus-rgb), .2); background-image: linear-gradient(var(--focus), var(--focus)); background-size: 100% 4px; }
+.phrase.f0 sup { color: var(--focus-ink); }
+.focusing .gist .phrase.dim { opacity: .35; }
+.rep.summary.sweep .phrase { animation: sweep .8s var(--ease-settle) both; }
+@keyframes sweep { from { background-size: 0 2px; opacity: .15; } to { background-size: 100% 2px; opacity: 1; } }
+.rep.summary .rest { max-width: 34em; width: 100%; margin: 36px auto 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.rep.summary .rest .rest-label { font: 700 10px/1 var(--mono); letter-spacing: .2em; color: var(--muted); margin-right: 4px; }
+.chip { display: inline-flex; gap: 6px; align-items: baseline; padding: 4px 9px; border: 1.5px solid var(--card-line); border-left: 3px solid var(--accent); background: var(--card); border-radius: 0; font-size: 12px; cursor: pointer; color: var(--ink-2); }
+.chip .num { font: 700 11px/1 var(--mono); color: var(--muted); }
+.chip.f0 { border-color: var(--focus); color: var(--ink); }
+.focusing .chip.dim { opacity: .4; }
+.anchor { position: absolute; pointer-events: none; opacity: 0; }
+.rep .empty { color: var(--muted); }
+
+/* relation lines: thin lines of light */
+#links { position: absolute; left: 0; top: 0; pointer-events: none; overflow: visible; z-index: 2; }
+#links .link path.l { fill: none; stroke: var(--link); stroke-width: 1.4; transition: opacity .2s, stroke-width .2s; }
+#links .link path.a { fill: var(--link); stroke: none; }
+#links .link.pos path.l { stroke: var(--pos); opacity: .75; } #links .link.pos path.a { fill: var(--pos); }
+#links .link.neg path.l { stroke: var(--neg); opacity: .75; } #links .link.neg path.a { fill: var(--neg); }
+#links .link.prov-inferred path.l, #links .link.prov-uncertain path.l { stroke-dasharray: 5 4; }
+#links .link.prov-abstracted path.l { stroke-dasharray: 1.5 3.5; }
+#links .link path.hit { fill: none; stroke: transparent; stroke-width: 12; pointer-events: stroke; cursor: pointer; }
+#links .link .lbl { opacity: 0; transition: opacity .2s; pointer-events: auto; cursor: pointer; }
+#links .link.show .lbl, #links .link.f0 .lbl, #links .link.f1 .lbl { opacity: 1; }
+#links .lbl rect { fill: var(--space); stroke: var(--rule); }
+#links .lbl text { font-size: 11.5px; font-weight: 700; fill: var(--ink-2); dominant-baseline: middle; text-anchor: middle; }
+#links .link.pos .lbl rect { stroke: rgba(var(--pos-rgb), .7); } #links .link.neg .lbl rect { stroke: rgba(var(--neg-rgb), .7); }
+.focusing #links .link:not(.f0):not(.f1):not(.ev) { opacity: .14; }
+#links .link.f0 path.l, #links .link.f1 path.l { opacity: 1; stroke-width: 2.2; }
+#links .link.f0 path.l { stroke: var(--focus); } #links .link.f0 path.a { fill: var(--focus); }
+#links .link.f0 .lbl rect { fill: var(--focus); stroke: var(--focus); }
+#links .link.f0 .lbl text { fill: var(--on-focus); }
+#links .link.ev path.l { stroke: var(--evidence); opacity: 1; stroke-width: 2.2; }
+#links .link.grow path.l { stroke-dasharray: 1; animation: grow .8s var(--ease-settle) both; }
+#links .link.grow.prov-inferred path.l, #links .link.grow.prov-uncertain path.l, #links .link.grow.prov-abstracted path.l { stroke-dasharray: 5 4; animation: fadein .6s ease-out both; }
+#links .link.grow path.a, #links .link.grow .lbl { animation: fadein .35s ease-out both; }
+
+/* the thread between a word on the ground and its note above */
+#pointer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 8; overflow: visible; }
+#pointer path { fill: none; stroke: var(--thread); stroke-width: 1.3; opacity: .8; }
+#pointer path.glow { display: none; }
+#pointer circle { fill: var(--thread); }
+#pointer circle.end { fill: var(--focus); stroke: var(--space); stroke-width: 1.5; }
+
+/* details (pinned) */
+/* the details dock along the bottom: what is in focus, or pinned; at a form, beside the model */
+#details { position: absolute; left: 14px; right: 14px; bottom: 14px; min-height: var(--mm-h, 0px); max-height: min(32%, 260px); overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 20px 14px 10px; z-index: 9; font-size: 12.5px; transition: opacity .18s; }
+main.forms #details { right: calc(var(--mm-w, 380px) + 24px); }
+main.forms.stacked #details { right: 14px; bottom: calc(var(--mm-h, 0px) + 24px); min-height: 0; }
+#details .dk { position: absolute; left: 14px; top: 6px; font: 700 9px/1 var(--mono); letter-spacing: .22em; color: var(--muted); }
+#details.peek { pointer-events: none; border-left-color: var(--accent); }
+#details.peek.under { opacity: 0; }
+main.scrubbing #details { visibility: hidden; }
+#details .cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0 18px; align-items: start; }
+#details .x { position: absolute; top: 6px; right: 8px; border: 0; background: transparent; font-size: 16px; color: var(--muted); }
+#details h2 { font-size: 14px; margin: 0 24px 4px 0; line-height: 1.45; }
+#details h3 { font: 700 9.5px/1 var(--mono); letter-spacing: .18em; color: var(--muted); margin: 10px 0 5px; text-transform: uppercase; }
+#details ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
+#details li button { border: 0; background: transparent; text-align: left; padding: 2px 4px; border-radius: 4px; width: 100%; color: var(--ink-2); }
+#details li button:hover { background: var(--chip); color: var(--ink); }
+#details .badge { display: inline-block; font: 700 10px/1.6 var(--mono); padding: 0 6px; border-radius: 4px; background: var(--chip); margin-right: 4px; }
+#details .note { color: var(--ink-2); margin: 6px 0 0; }
+#details .q { color: var(--muted); font-family: var(--mono); font-size: 11px; }
+#details ul.ev button { color: var(--evidence); }
+#details .row { display: flex; gap: 6px; margin-top: 8px; }
+#details .row button { border: 1px solid var(--rule); background: transparent; border-radius: 7px; padding: 3px 9px; font-size: 12px; }
+
+/* the HUD: the meta-structure, text — chunks — model — its forms, is the control. It hangs at the top right. */
+#gauge { position: fixed; right: 14px; top: 10px; z-index: 40; width: 404px; touch-action: none; user-select: none; -webkit-user-select: none;
+  --hud-bg: #070a11; --hud-line: rgba(170, 190, 232, .2); --hud-dim: rgba(178, 194, 228, .56); --hud-ink: #eef2f8; }
+:root[data-theme="light"] #gauge { --hud-bg: #ffffff; --hud-line: rgba(13, 18, 32, .16); --hud-dim: rgba(13, 18, 32, .52); --hud-ink: #0d1220; }
+#gauge svg { display: block; width: 100%; height: auto; cursor: grab; overflow: visible; }
+#gauge svg.dragging { cursor: grabbing; }
+#gauge text { font-family: var(--mono); font-size: 7px; font-weight: 700; letter-spacing: .24em; fill: var(--hud-dim); }
+#gauge .h-plate { fill: var(--hud-bg); stroke: var(--hud-line); stroke-width: 1; }
+#gauge .h-mark { fill: none; stroke: var(--hud-ink); stroke-width: 1.2; }
+#gauge .h-chamfer { fill: none; stroke: var(--focus); stroke-width: 2; }
+#gauge .h-acc { fill: var(--focus); }
+#gauge .h-rule { stroke: var(--hud-line); stroke-width: 1; }
+#gauge .h-idx { font-size: 30px; font-weight: 300; letter-spacing: -.02em; fill: var(--hud-ink); }
+#gauge .h-name { font-size: 12.5px; font-weight: 800; letter-spacing: .3em; fill: var(--hud-ink); }
+#gauge .h-time { letter-spacing: .16em; }
+#gauge .h-time.on { fill: var(--focus); }
+#gauge .g-track { stroke: var(--hud-line); stroke-width: 1; }
+#gauge .g-ruler { stroke: var(--hud-dim); stroke-width: 5; stroke-dasharray: 1 5; opacity: .45; }
+#gauge .g-fill { stroke: var(--focus); stroke-width: 2; }
+#gauge .g-hit { stroke: transparent; stroke-width: 18; }
+#gauge .g-node { fill: var(--hud-bg); stroke: var(--hud-dim); stroke-width: 1.2; }
+#gauge .g-node.on { fill: var(--focus); stroke: var(--focus); }
+#gauge .g-core-ring { fill: none; stroke: var(--hud-line); stroke-width: 1; }
+#gauge .g-lock { fill: none; stroke: var(--hud-dim); stroke-width: 1.4; transform-box: fill-box; transform-origin: center; animation: lock 12s linear infinite; }
+#gauge .g-lock.on { stroke: var(--focus); }
+@keyframes lock { to { transform: rotate(360deg); } }
+#gauge .g-idx { fill: var(--focus); }
+#gauge .g-label { cursor: pointer; }
+#gauge .g-lab { fill: var(--hud-bg); }
+#gauge polyline { fill: none; }
+#gauge .g-label text.on, #gauge .g-label:hover text { fill: var(--hud-ink); }
+#gauge .g-knob { fill: var(--focus); stroke: var(--hud-bg); stroke-width: 1.5; pointer-events: none; }
+#gauge .g-halo { fill: none; stroke: var(--focus); stroke-width: 1; pointer-events: none; transform-box: fill-box; transform-origin: center; animation: halo 1.8s cubic-bezier(.2, .7, .3, 1) infinite; }
+@keyframes halo { from { transform: scale(.5); opacity: .9; } to { transform: scale(1.7); opacity: 0; } }
+#gauge .g-play { cursor: pointer; }
+#gauge .g-play polygon { fill: transparent; stroke: var(--hud-ink); stroke-width: 1; }
+#gauge .g-play path { fill: var(--hud-ink); }
+#gauge .g-play text { fill: var(--hud-ink); font-size: 7.5px; letter-spacing: .3em; }
+#gauge .g-play:hover polygon, #gauge .g-play.on polygon { fill: var(--focus); stroke: var(--focus); }
+#gauge .g-play:hover path, #gauge .g-play:hover text, #gauge .g-play.on path, #gauge .g-play.on text { fill: var(--on-focus); }
+body:not(.narrow) header { padding-right: 436px; }
+/* the minimap: the model, small, beside its form */
+#minimap { position: absolute; right: 14px; bottom: 14px; z-index: 38; width: var(--mm-w, 380px); background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--accent); padding: 18px 8px 8px; }
+#minimap[hidden] { display: none; }
+#minimap .mm-label { position: absolute; left: 8px; top: 5px; font: 700 9px/1 var(--mono); letter-spacing: .22em; color: var(--muted); }
+#mmSvg { display: block; width: 100%; height: auto; max-height: 300px; }
+#mmSvg .mm-box rect { fill: var(--card); stroke: var(--card-line); stroke-width: 1; cursor: pointer; }
+#mmSvg .mm-box.unit > rect { fill: var(--frame); stroke: var(--ink-2); stroke-width: 1.2; }
+#mmSvg .mm-box.concl > rect { fill: var(--band); stroke: var(--band); stroke-width: 1.6; }
+#mmSvg .mm-box.key > rect { stroke: var(--ink); stroke-width: 2.4; }
+#mmSvg .mm-box text { font: 700 8px/1 var(--mono); fill: var(--muted); pointer-events: none; }
+#mmSvg .mm-box.concl text { fill: var(--band-fg); }
+#mmSvg .mm-box.inview > rect { stroke: var(--ink); }
+#mmSvg .mm-box.inview text { fill: var(--ink); }
+#mmSvg .mm-box.concl.inview text { fill: var(--band-fg); }
+#mmSvg .mm-view { fill: none; stroke: var(--focus); stroke-width: 1.2; stroke-dasharray: 3 2; }
+#mmSvg .mm-link { fill: none; stroke: var(--link); stroke-width: .9; opacity: .7; }
+#mmSvg .mm-link.pos { stroke: var(--pos); } #mmSvg .mm-link.neg { stroke: var(--neg); }
+#mmSvg .mm-box.f0 > rect { stroke: var(--focus); stroke-width: 2.6; fill: rgba(var(--focus-rgb), .22); }
+#mmSvg .mm-box.f1 > rect { stroke: var(--rel); stroke-width: 1.6; } #mmSvg .mm-box.f1.pos > rect { stroke: var(--pos); } #mmSvg .mm-box.f1.neg > rect { stroke: var(--neg); }
+.focusing #mmSvg .mm-box.dim { opacity: .4; }
+.focusing #mmSvg .mm-link:not(.f0):not(.f1) { opacity: .15; }
+#mmSvg .mm-link.f0, #mmSvg .mm-link.f1 { opacity: 1; stroke-width: 1.6; } #mmSvg .mm-link.f0 { stroke: var(--focus); }
+#ticker { position: absolute; left: var(--ticker-x, 50%); bottom: 26px; transform: translateX(-50%); z-index: 39; pointer-events: none; display: flex; gap: 12px; align-items: baseline; max-width: var(--ticker-w, calc(100% - 32px)); padding: 8px 26px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); border-left: 4px solid var(--focus); opacity: 0; transition: opacity .25s; }
+#ticker.on { opacity: 1; }
+#ticker.cut { animation: cutin .46s cubic-bezier(.2, .9, .25, 1) both; }
+#ticker.cut .n, #ticker.cut .m { animation: slidein .52s cubic-bezier(.2, .9, .25, 1) both; }
+#ticker.cut .m { animation-delay: .05s; }
+@keyframes cutin { from { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); } to { clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); } }
+@keyframes slidein { from { transform: translateX(-16px); opacity: 0; } }
+#ticker .k { font: 800 10px/1 var(--mono); letter-spacing: .22em; opacity: .6; flex: none; }
+#ticker .n { font: 800 18px/1 var(--mono); flex: none; }
+#ticker .m { font-weight: 800; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#hint { position: absolute; right: 16px; bottom: 18px; z-index: 11; font-size: 11.5px; color: var(--muted); max-width: 260px; text-align: right; pointer-events: none; transition: opacity .6s; }
+#hint.gone { opacity: 0; }
+#problems { position: absolute; left: 14px; top: 12px; z-index: 13; background: var(--card); border: 1px solid var(--pos); border-radius: 8px; padding: 8px 10px; font-size: 12px; max-width: 420px; }
+#problems ul { margin: 4px 0 0; padding-left: 18px; }
+
+/* flights and slates */
+#fly { position: fixed; inset: 0; pointer-events: none; z-index: 30; overflow: hidden; }
+#fly > * { position: fixed; margin: 0; box-sizing: border-box; will-change: transform, opacity; }
+.landing { visibility: hidden !important; }
+main.scrubbing *, main.scrubbing *::before { transition: none !important; }
+.slate { font: 800 12px/1 var(--mono); letter-spacing: .3em; padding: 9px 22px 9px 14px; background: var(--band); color: var(--band-fg); clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%); border-left: 4px solid var(--focus); }
+.slate b { margin-right: 10px; opacity: .6; }
+
+/* narrow screens: text above, model below */
+main.narrow { flex-direction: column; }
+main.narrow #textPane { width: 100% !important; margin-left: 0 !important; }
+main.narrow #modelPane { border-left: 0; border-top: 1px solid var(--rule); }
+main.narrow #hint { display: none; }
+main.narrow .rep.linear .stack { margin-right: 44px; }
+main.narrow #details { max-height: 32%; min-height: 0; bottom: var(--gauge-clear, 176px); }
+main.narrow #minimap { display: none; }
+main.narrow #ticker .m { font-size: 12.5px; }
+main.narrow #gauge { top: auto; bottom: 8px; left: 0; right: 0; margin: 0 auto; width: min(420px, calc(100% - 16px)); }
+main.narrow #ticker { bottom: 172px; }
+main.narrow #rep { padding-bottom: 190px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body data-stop="text">
+<header>
+  <div class="titles"><h1 id="title">Semantic Structure</h1><div class="src" id="sourceLine"></div></div>
+  <div class="theme-ctl" id="themeCtl" role="group" aria-label="Theme">
+    <button type="button" data-theme-set="light" data-i18n="light">Light</button><button type="button" data-theme-set="dark" data-i18n="dark">Dark</button>
+  </div>
+</header>
+<main id="main">
+  <canvas id="field" aria-hidden="true"></canvas>
+  <section id="textPane" tabindex="0" aria-label="Source text">
+    <div id="page">
+      <svg id="slabs" aria-hidden="true"></svg>
+      <div id="text"></div>
+      <svg id="marks" aria-hidden="true"></svg>
+    </div>
+  </section>
+  <section id="modelPane" aria-label="Model">
+    <div id="stage"><div id="rep" class="rep"></div></div>
+    <aside id="details" hidden aria-live="polite"></aside>
+  </section>
+  <svg id="pointer" aria-hidden="true"></svg>
+  <div id="hint"></div>
+  <div id="ticker" aria-hidden="true"><span class="k"></span><span class="n"></span><span class="m"></span></div>
+  <div id="minimap" hidden><span class="mm-label">MODEL</span><svg id="mmSvg" aria-label="The model, small"></svg></div>
+  <div id="gauge"><svg id="gaugeSvg" viewBox="0 0 392 150" role="group" aria-label="Text, chunks, model"></svg></div>
+  <div id="problems" hidden></div>
+</main>
+<div id="fly" aria-hidden="true"></div>
+
+<!-- The Semantic Structure (semantic-structure/1). build_viewer.py replaces this block. -->
+<script type="application/json" id="semantic-structure">
+{
+ "version": "semantic-structure/1",
+ "sourceText": "＜概要＞\n先行きのわが国経済を展望すると、2026年度については、中東情勢の影響を受けた春先以降の原油価格上昇が下押し要因となるものの、グローバルなＡＩ関連需要の増加に加え、政府による各種施策や緩和的な金融環境等が経済を下支えすると考えられるため、わが国経済は、伸び率を縮小しつつも、緩やかな成長を続けるとみられる。2027年度以降は、原油高のマイナスの影響が減衰し、所得から支出への前向きな循環メカニズムが徐々に強まっていくことから、わが国経済は成長率を緩やかに高めていくと考えられる。\n物価の先行きを展望すると、消費者物価（除く生鮮食品）の前年比は、賃金上昇を販売価格に転嫁する動きが続くもとで、これまでの原油価格上昇が、エネルギーや財を中心に価格を押し上げるほか、グローバルなＡＩ関連需要の増加に伴う半導体価格等の上昇や最近の為替円安が耐久財等の価格上昇につながることから、2026年度後半以降、２％をはっきりと上回る水準まで伸び率を高めていくと予想される。その後、見通し期間後半には、原油高の影響が減衰していくもとで、２％程度に向けてプラス幅を縮小していくと考えられる。この間、人手不足感の強い状況が続くなかで、賃金と物価が相互に参照しながら緩やかに上昇していくメカニズムは維持され、中長期的な予想物価上昇率は上昇していくと見込まれる。こうしたもとで、消費者物価の基調的な上昇率は、徐々に高まっていくと予想され、2026年度後半から2027年度にかけて「物価安定の目標」と概ね整合的な水準となり、その後も同程度で推移すると考えられる。\n前回の見通しと比べると、成長率は概ね不変である。消費者物価（除く生鮮食品）の前年比は、政府による夏場のエネルギー負担緩和策（電気・ガス代）の効果等から、2026年度が下振れている。\nリスク要因としては様々なものがあるが、当面は、中東情勢が金融・為替市場やわが国の経済・物価に及ぼす影響をとくに注視する必要がある。このほか、グローバルなＡＩ関連需要の動向や今後の為替相場の変動が、わが国の経済・物価に及ぼす影響にも留意が必要である。\nリスクバランスをみると、経済の見通しについては、概ねバランスしている。消費者物価の見通しについては、上振れリスクの方が大きい。基調的な物価上昇率については、企業の賃金・価格設定行動が積極化していることや、中長期的な予想物価上昇率が引き続き上昇していることなどを踏まえると、２％の「物価安定の目標」を超えて上振れていくリスクがある。こうしたリスクが顕在化し、それがその後の経済に悪影響を及ぼすことがないよう、十分に留意する必要がある。\n１．わが国の経済・物価の現状\nわが国の景気は、中東情勢の影響もあって一部に弱めの動きもみられるが、緩やかに回復している。海外経済は、一部に弱めの動きもみられるが、総じてみれば緩やかに成長している。輸出や鉱工業生産は、基調としては横ばい圏内の動きを続けている。グローバルなＡＩ関連需要の堅調な増加などを背景に、企業収益は高水準で推移しており、業況感も良好な水準で推移している。こうしたもとで、設備投資は緩やかな増加傾向にある。個人消費は、家計マインドに弱さがみられるものの、雇用・所得環境の改善を背景に底堅く推移している。一方、住宅投資は減少傾向にある。公共投資は横ばい圏内の動きを続けている。この間、労働需給は、引き締まった状態が続いている。わが国の金融環境は、緩和した状態にある。物価面では、消費者物価（除く生鮮食品）の前年比をみると、賃金上昇の販売価格への転嫁の動きが続くなか、足もとでは、政府によるエネルギー負担緩和策の効果などから、１％台半ばとなっている。予想物価上昇率は、緩やかに上昇している。\n２．わが国の経済・物価の中心的な見通し\n（１）経済の中心的な見通し\n先行きのわが国経済を展望すると、2026年度については、中東情勢の影響を受けた春先以降の原油価格上昇が、交易条件の悪化などを通じて企業収益や家計の実質所得に対する下押し要因となるものの、グローバルなＡＩ関連需要の増加や春季労使交渉におけるしっかりとした賃上げの実現に加えて、政府による各種施策（エネルギー負担緩和策等）や緩和的な金融環境などが経済を下支えすると考えられる。こうしたもとで、わが国経済は、伸び率を縮小しつつも、緩やかな成長を続けるとみられる。\nすなわち、企業部門をみると、輸出や生産は、中東情勢の影響を受けつつも、グローバルなＡＩ関連需要の強さが押し上げ要因として作用することから、当面は横ばい圏内の動きになると見込まれる。企業収益は、原油価格上昇に伴う交易条件悪化の影響を受けつつも、ＡＩ関連需要の強さなどを背景に高水準が続くとみられる。そうしたもとで、設備投資は、既往案件の受注残を解消する動きに加え、政府の経済対策や緩和的な金融環境が下支え要因として作用し、緩やかな増加傾向が続くと考えられる。\n家計部門をみると、雇用面では、労働需給は引き締まった状態が続き、名目賃金は、本年の春季労使交渉の結果などを反映して現状程度の伸びが続くと見込まれる。個人消費は、賃金の増加や株価上昇による資産効果に加えて、政府による各種施策を通じた家計への所得移転が下支え要因となるものの、エネルギーを中心とした物価上昇の影響から、横ばい圏内の動きになるとみられる。住宅投資は、住宅価格の上昇や人口動態等を反映して、緩やかな減少傾向をたどるとみられる。この間、公共投資は横ばい圏内で推移し、政府消費は、医療・介護費の趨勢的な増加や防衛関連支出の増加などを反映し、緩やかに増加していくと想定している。\n2027年度以降については、原油高のマイナスの影響が減衰し、所得から支出への前向きな循環メカニズムが徐々に強まっていくことから、わが国経済は成長率を緩やかに高めていくと考えられる。輸出や生産は、中東情勢の影響が和らぎ、海外経済の緩やかな成長が続くなか、グローバルなＡＩ関連需要の強さなどにも支えられ、緩やかに増加していくと考えられる。企業収益は、原油価格の下落に伴う交易条件の改善や内外需要の増加に支えられて、改善していくとみられ、そうしたもとで、設備投資は、人手不足対応の省力化投資やＡＩ関連等の成長分野への能力増強投資に加え、貿易構造やサプライチェーンの変容に適合するための投資案件なども押し上げ要因となり、増加傾向を維持すると考えられる。雇用・所得環境をみると、労働需給は引き締まった状況が続き、名目賃金は着実な増加が続くとみられる。これに加え、物価の上昇ペースが徐々に落ち着いていくと見込まれるなか、個人消費は、緩やかな増加基調に復していくとみられる。\nこうした見通しを前回の展望レポートにおける見通しと比較すると、見通し期間を通じて概ね不変となっている。\nこの間、潜在成長率は、政府による各種の施策の後押しなどもあって、デジタル化や人的資本投資の進展による生産性の上昇、資本ストックの着実な増加などを背景に、小幅のプラスが続くとみられる。\n（２）物価の中心的な見通し\n消費者物価（除く生鮮食品）の前年比は、賃金上昇を販売価格に転嫁する動きが続くもとで、これまでの原油価格上昇が、エネルギーや財を中心に価格を押し上げるほか、グローバルなＡＩ関連需要の増加に伴う半導体価格等の上昇や最近の為替円安が耐久財等の価格上昇につながることから、2026年度後半以降、２％をはっきりと上回る水準まで伸び率を高めていくと予想される。その後、見通し期間後半には、原油高の影響が減衰していくもとで、２％程度に向けてプラス幅を縮小していくと考えられる。\nこの間、人手不足感の強い状況が続くなかで、賃金と物価が相互に参照しながら緩やかに上昇していくメカニズムは維持され、中長期的な予想物価上昇率は上昇していくと見込まれる。こうしたもとで、消費者物価の基調的な上昇率は、徐々に高まっていくと予想され、2026年度後半から2027年度にかけて「物価安定の目標」と概ね整合的な水準となり、その後も同程度で推移すると考えられる。基調的な物価上昇率が２％に近づいていることを踏まえると、今後は、「物価安定の目標」の持続的・安定的な実現という観点から、これが２％程度の水準で定着するかどうかを確認していくことが重要となってくる。\nなお、消費者物価（除く生鮮食品）の見通しは、原油価格の動向や政府による各種施策の影響も受ける。原油価格については、先物市場の動向などを参考に、見通し期間終盤にかけて緩やかに低下していく前提としているが、中東以外の地域からの代替調達に伴って輸送コストが増加していることを踏まえると、わが国の企業が直面する調達価格は、国際市況ほどには低下しないと考えられる。政府による施策については、燃料油補助金などのエネルギー負担緩和策や教育無償化政策等が行われており、2026年度の消費者物価の前年比を押し下げる方向に作用する。\nエネルギー価格の変動の直接的な影響を受けない消費者物価（除く生鮮食品・エネルギー）の前年比は、これまでの原油価格上昇が財を中心に価格を押し上げることに加え、半導体価格等の上昇や最近の為替円安が耐久財等の価格上昇につながることから、２％を超える水準で推移したあと、原油高の影響が減衰していくもとで、プラス幅を縮小すると見込まれる。\nこうした見通しを前回の展望レポートにおける見通しと比較すると、消費者物価（除く生鮮食品）は、政府による夏場のエネルギー負担緩和策（電気・ガス代）の効果等から、2026年度が下振れているが、消費者物価（除く生鮮食品・エネルギー）は、見通し期間を通じて概ね不変である。\n物価の基調を規定する主たる要因について点検すると、労働や設備の稼働状況を表すマクロ的な需給ギャップは、振れを伴いつつも、改善傾向をたどっており、足もとでは小幅のプラスとなっている。先行きの需給ギャップは、上記の経済の見通しのもとで、現状程度のプラスが続くと予想される。この間、女性や高齢者による労働参加の増加ペースの鈍化もあって、労働需給はマクロ的な需給ギャップ以上に引き締まっている。こうしたもと、労働集約的な業種を中心に企業が労働の供給制約に直面しつつある状況を踏まえると、マクロ的な需給ギャップが示唆する以上に、賃金や物価には上昇圧力がかかりやすくなっているとみられる。\n次に、中長期的な予想物価上昇率をみると、緩やかに上昇している。先行きについては、労働需給の引き締まりなどを背景に、企業の積極的な賃金・価格設定行動が続き、予想物価上昇率は緩やかな上昇が続くと予想される。その水準は、2026年度後半から2027年度にかけて２％程度となり、その後も同程度で推移すると考えられる。\n３．経済・物価のリスク要因\n上記の中心的な経済・物価の見通しに対する上振れないし下振れの可能性（リスク要因）としては、主に以下の点に注意が必要である。\n第１に、中東情勢がわが国経済・物価に及ぼす影響である。中東情勢については、なお不透明な状況が続いているが、原油価格は一頃に比べて下落しており、前回の展望レポートで指摘したような、経済の大幅な下振れリスクや物価の大幅な上振れリスクは低下している。とくに、サプライチェーンの大規模な混乱が生じ、わが国企業の生産活動に大きな影響をもたらすリスクは、中東依存度の高い原材料の代替調達が進展していることもあり、低下している。もっとも、これまでの原油価格上昇が経済・物価に及ぼす影響については、引き続き注意が必要である。実体経済面では、原油高に伴う原材料等の価格上昇が、企業収益や家計の実質所得を想定以上に下押しすることがないか、確認していく必要がある。物価面では、原油高を起点に企業間取引における価格転嫁がやや速いスピードで進んでおり、これが、今後、消費者段階における幅広い品目の価格上昇に波及していく可能性が高いと考えられる。これらに加え、中長期の予想物価上昇率が引き続き上昇していることも踏まえると、消費者物価の基調的な上昇率が２％の「物価安定の目標」を超えて上振れていくリスクがある。\nこの間、原油価格については、なお振れの大きい展開が続いている。今後の原油価格の変動がわが国の経済・物価に及ぼす影響については、引き続き留意が必要である。\n第２に、ＡＩ関連需要を含む内外の経済・物価動向である。ＡＩ関連については、その用途の急速な広がりとともに、グローバルな需要拡大が続いており、旺盛な設備投資が世界経済を一段と押し上げる可能性がある。一方、投資に見合った形で収益の拡大が実現しない場合には、資産価格の変動なども伴って、調整圧力が生じる可能性もある。物価面では、最近の半導体価格の上昇は、関連する耐久財の価格を押し上げるとみられるほか、企業間取引において、銅などの素材価格や機械類の価格が上昇していることも踏まえると、今後は、消費者段階においても、様々な品目の価格上昇につながる可能性がある。こうしたＡＩ関連の材料・部品などに対する内外の需要が想定以上に増加した場合には、価格面での上昇圧力が一段と高まるリスクもある。なお、ＡＩ関連需要拡大の好影響は、これまでのところ、ＩＴ関連セクターの収益拡大や株価上昇に伴う資産効果などを中心に現れている面があるが、今後、ＡＩの利活用による生産性向上などを通じて、その恩恵が幅広いセクターに広がるか、注意を払う必要がある。\nこのほか、米欧を含む各国の財政拡張的な動きなどが、世界経済・物価や金融市場に及ぼす影響にも留意が必要である。中国経済については、不動産市場や労働市場における調整圧力が続くなか、先行きの成長ペースを巡る不確実性は引き続き高いほか、一部の財における供給能力の過剰が世界経済・物価に及ぼす影響についても注意を払う必要がある。\n第３に、為替相場の変動がわが国の経済・物価に及ぼす影響である。これについては様々な経路が考えられるが、為替円安の進行は、グローバル企業の収益などにプラスの影響を及ぼす一方、輸入物価の上昇などを通じて、家計の実質所得を下押しするほか、中小企業などの収益にマイナスに作用する面がある。また、企業の賃金・価格設定行動が積極化するもとで、過去と比べると、為替の変動が物価に影響を及ぼしやすくなっている面があることや、そうした動きが、予想物価上昇率の変化を通じて基調的な物価上昇率に影響する可能性があることにも留意が必要である。この点、原油高等の市況要因に加え、為替円安の進行から、足もと輸入物価の前年比が大きく上昇していることは、先行き、耐久財をはじめとした幅広い品目の価格を押し上げる方向に作用すると考えられ、その影響を十分注視する必要がある。\nこれらのリスクに加え、やや長い目でみたリスク要因としては、わが国を巡る様々な環境変化が企業や家計の中長期的な成長期待や潜在成長率に与える影響がある。人口動態の構造的な変化等に伴う人手不足感の強まりは、デジタル化やＡＩの利活用などによる省力化投資の動きを加速させる可能性があり、政府が進めている成長分野への投資増加に向けた取り組みと相俟って、成長期待や潜在成長率を押し上げることも考えられる。この点、投資の制約要因として、人手不足とともに、資材価格の高騰等を指摘する声が多いことを踏まえると、適切な金融政策運営を通じて物価の安定を実現することは、わが国の成長投資の拡大を支える観点からも重要である。一方、人手不足下において、資本と労働の代替が十分に進展しない場合には、供給制約によって成長率が下押しされるリスクがあることには注意が必要である。この間、これまで打ち出された各国の通商政策はグローバル化の潮流に変化を及ぼしている面があり、今後の各国の政策の展開次第では、そうした変化が急速に進むことも考えられる。\n４．金融政策運営\n以上の経済・物価情勢について、「物価安定の目標」のもとで、２つの「柱」による点検を行い、先行きの金融政策運営の考え方を整理する。\nまず、第１の柱、すなわち中心的な見通しについて点検すると、消費者物価（除く生鮮食品）の前年比は、賃金上昇を販売価格に転嫁する動きが続くもとで、これまでの原油価格上昇が、エネルギーや財を中心に価格を押し上げるほか、グローバルなＡＩ関連需要の増加に伴う半導体価格等の上昇や最近の為替円安が耐久財等の価格上昇につながることから、2026年度後半以降、２％をはっきりと上回る水準まで伸び率を高めていくと予想される。その後、見通し期間後半には、原油高の影響が減衰していくもとで、２％程度に向けてプラス幅を縮小していくと考えられる。この間、人手不足感の強い状況が続くなかで、賃金と物価が相互に参照しながら緩やかに上昇していくメカニズムは維持され、中長期的な予想物価上昇率は上昇していくと見込まれる。こうしたもとで、消費者物価の基調的な上昇率は、徐々に高まっていくと予想され、2026年度後半から2027年度にかけて「物価安定の目標」と概ね整合的な水準となり、その後も同程度で推移すると考えられる。\n政策金利の水準が一頃に比べて上昇しているなかにあっては、金融環境がどのように変化していくかを点検していくことも重要である。この点、実質金利は短中期ゾーンを中心にマイナスとなっているほか、企業全体の収益性と比較した金利コストはなお十分に低い状況が続いている。こうしたなか、企業等の資金需要は増加しており、金融機関の貸出態度も引き続き積極的である。ＣＰ・社債市場でも良好な発行環境が続いている。これらの動きを踏まえると、わが国の金融環境は緩和した状態が維持されており、引き続き、経済活動をしっかりとサポートしていくと考えられる。\n次に、第２の柱、すなわち金融政策運営の観点から重視すべきリスクについて点検する。わが国経済・物価を巡るリスク要因としては様々なものがあるが、当面は、中東情勢が金融・為替市場やわが国の経済・物価に及ぼす影響をとくに注視する必要がある。このほか、グローバルなＡＩ関連需要の動向や今後の為替相場の変動が、わが国の経済・物価に及ぼす影響にも留意が必要である。リスクバランスは、経済の見通しについては、概ねバランスしている。消費者物価の見通しについては、上振れリスクの方が大きい。前述したとおり、基調的な物価上昇率が２％に近づいているなか、企業の賃金・価格設定行動が積極化していることや、中長期的な予想物価上昇率が引き続き上昇していることなどを踏まえると、基調的な物価上昇率が２％の「物価安定の目標」を超えて上振れていくリスクがある。こうしたリスクが顕在化し、それがその後の経済に悪影響を及ぼすことがないよう、十分に留意する必要がある。\n金融面のリスクについてみると、不動産価格や株価といった資産価格の動向には引き続き留意が必要であるものの、貸出などの金融仲介活動は円滑に行われており、現在の金融活動に大きな不均衡はみられていない。わが国の金融システムは、全体として安定性を維持している。内外の実体経済や国際金融市場が調整する状況を想定しても、わが国の金融機関が充実した資本基盤を備えていることなどを踏まえると、全体として相応の頑健性を有している。そのうえで、今後の中東情勢やＡＩ関連投資の収益性、海外ノンバンク部門の動向等が、様々な経路を通じて金融システムに及ぼす影響については丁寧にみていく必要がある。\n金融政策運営については、基調的な物価上昇率が２％に近づいているなか、現在の金融環境が緩和的であることを踏まえると、経済・物価・金融情勢に応じて、引き続き政策金利を引き上げ、金融緩和の度合いを調整していくことになると考えている。そのうえで、調整のタイミングやペースについては、中東情勢やＡＩ関連需要の拡大、為替相場の変動の影響を含め、経済・物価の中心的な見通しが実現する確度やリスクを点検しながら、検討していく方針である。とくに、基調的な物価上昇率が２％の「物価安定の目標」を超えて上振れていくリスクが顕在化し、それがその後の経済に悪影響を及ぼすことがないよう、基調的な物価上昇率を２％程度の水準で安定させていくという観点が重要になると考えている。日本銀行は、２％の「物価安定の目標」のもとで、その持続的・安定的な実現という観点から、適切に金融政策を運営していく。\n（注）\n注１　本基本的見解は、７月30、31日開催の政策委員会・金融政策決定会合で決定されたものである。\n注２　各政策委員は、既に決定した政策を前提として、また、先行きの政策運営については、市場の織り込みを参考にして、見通しを作成している。なお、原油価格（ドバイ原油）については、先物市場の動向などを参考に、１バレル80ドル程度を出発点に、見通し期間の終盤にかけて、70ドル程度まで下落していくと想定している。\n注３　わが国の潜在成長率を、一定の手法で推計すると、足もとでは「０％台半ばから後半」と計算される。ただし、潜在成長率は、推計手法や今後蓄積されていくデータに左右されるうえ、デジタル化の進展などに伴い生産性や労働供給のトレンドがどのように変化するかといった点を巡る不確実性も高いため、相当の幅をもってみる必要がある。\n注４　「物価安定の目標」のもとでの２つの「柱」による点検については、日本銀行「金融政策運営の枠組みのもとでの「物価安定の目標」について」（2013年１月22日）参照。",
+ "summary": [
+  {
+   "text": "日銀は、"
+  },
+  {
+   "text": "景気が減速しても成長を続け、",
+   "refs": [
+    "econ"
+   ]
+  },
+  {
+   "text": "物価の基調が２％に近づき、",
+   "refs": [
+    "underlying"
+   ]
+  },
+  {
+   "text": "金融環境もなお緩和的なので、",
+   "refs": [
+    "finance"
+   ]
+  },
+  {
+   "text": "中東・ＡＩ・為替と",
+   "refs": [
+    "mideast",
+    "ai",
+    "fx"
+   ]
+  },
+  {
+   "text": "物価の上振れのリスクを見極めながら、",
+   "refs": [
+    "overshoot"
+   ]
+  },
+  {
+   "text": "利上げを続ける。",
+   "refs": [
+    "policy"
+   ]
+  }
+ ],
+ "nodes": [
+  {
+   "id": "now",
+   "label": "いま：景気は緩やかに回復、物価は１％台半ば",
+   "type": "現状",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 1105,
+     "end": 1557,
+     "text": "１．わが国の経済・物価の現状\nわが国の景気は、中東情勢の影響もあって一部に弱めの動きもみられるが、緩やかに回復している。海外経済は、一部に弱めの動きもみられるが、総じてみれば緩やかに成長している。輸出や鉱工業生産は、基調としては横ばい圏内の動きを続けている。グローバルなＡＩ関連需要の堅調な増加などを背景に、企業収益は高水準で推移しており、業況感も良好な水準で推移している。こうしたもとで、設備投資は緩やかな増加傾向にある。個人消費は、家計マインドに弱さがみられるものの、雇用・所得環境の改善を背景に底堅く推移している。一方、住宅投資は減少傾向にある。公共投資は横ばい圏内の動きを続けている。この間、労働需給は、引き締まった状態が続いている。わが国の金融環境は、緩和した状態にある。物価面では、消費者物価（除く生鮮食品）の前年比をみると、賃金上昇の販売価格への転嫁の動きが続くなか、足もとでは、政府によるエネルギー負担緩和策の効果などから、１％台半ばとなっている。予想物価上昇率は、緩やかに上昇している。"
+    }
+   ],
+   "points": [
+    {
+     "label": "景気は一部に弱めの動きもあるが、緩やかに回復",
+     "when": "足もと",
+     "sourceSpans": [
+      {
+       "start": 1154,
+       "end": 1164,
+       "text": "緩やかに回復している"
+      }
+     ]
+    },
+    {
+     "label": "ＡＩ関連需要で企業収益は高水準、設備投資は緩やかに増加",
+     "sourceSpans": [
+      {
+       "start": 1259,
+       "end": 1270,
+       "text": "企業収益は高水準で推移"
+      },
+      {
+       "start": 1300,
+       "end": 1313,
+       "text": "設備投資は緩やかな増加傾向"
+      }
+     ]
+    },
+    {
+     "label": "個人消費は底堅い。住宅投資は減少",
+     "sourceSpans": [
+      {
+       "start": 1355,
+       "end": 1360,
+       "text": "底堅く推移"
+      },
+      {
+       "start": 1368,
+       "end": 1377,
+       "text": "住宅投資は減少傾向"
+      }
+     ]
+    },
+    {
+     "label": "労働需給は引き締まり、金融環境は緩和的",
+     "sourceSpans": [
+      {
+       "start": 1411,
+       "end": 1425,
+       "text": "引き締まった状態が続いている"
+      },
+      {
+       "start": 1436,
+       "end": 1445,
+       "text": "緩和した状態にある"
+      }
+     ]
+    },
+    {
+     "label": "消費者物価（除く生鮮）は１％台半ば（政府の負担緩和策で抑えられている）",
+     "when": "足もと",
+     "sourceSpans": [
+      {
+       "start": 1507,
+       "end": 1520,
+       "text": "エネルギー負担緩和策の効果"
+      },
+      {
+       "start": 1525,
+       "end": 1530,
+       "text": "１％台半ば"
+      }
+     ]
+    },
+    {
+     "label": "予想物価上昇率は緩やかに上昇",
+     "sourceSpans": [
+      {
+       "start": 1537,
+       "end": 1556,
+       "text": "予想物価上昇率は、緩やかに上昇している"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "econ",
+   "label": "景気の見通し：減速しても成長を続け、その後は加速",
+   "type": "見通し",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 1578,
+     "end": 1591,
+     "text": "（１）経済の中心的な見通し"
+    }
+   ],
+   "points": [
+    {
+     "label": "伸び率を縮小しつつも緩やかな成長",
+     "when": "2026年度",
+     "sourceSpans": [
+      {
+       "start": 1793,
+       "end": 1814,
+       "text": "伸び率を縮小しつつも、緩やかな成長を続ける"
+      }
+     ]
+    },
+    {
+     "label": "成長率を緩やかに高めていく",
+     "when": "2027年度以降",
+     "sourceSpans": [
+      {
+       "start": 2411,
+       "end": 2424,
+       "text": "成長率を緩やかに高めていく"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "econ-2026",
+   "label": "2026年度：原油高が重しでも、下支えがあって成長",
+   "type": "見通し",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 5,
+     "end": 158,
+     "text": "先行きのわが国経済を展望すると、2026年度については、中東情勢の影響を受けた春先以降の原油価格上昇が下押し要因となるものの、グローバルなＡＩ関連需要の増加に加え、政府による各種施策や緩和的な金融環境等が経済を下支えすると考えられるため、わが国経済は、伸び率を縮小しつつも、緩やかな成長を続けるとみられる。"
+    },
+    {
+     "start": 1592,
+     "end": 2340,
+     "text": "先行きのわが国経済を展望すると、2026年度については、中東情勢の影響を受けた春先以降の原油価格上昇が、交易条件の悪化などを通じて企業収益や家計の実質所得に対する下押し要因となるものの、グローバルなＡＩ関連需要の増加や春季労使交渉におけるしっかりとした賃上げの実現に加えて、政府による各種施策（エネルギー負担緩和策等）や緩和的な金融環境などが経済を下支えすると考えられる。こうしたもとで、わが国経済は、伸び率を縮小しつつも、緩やかな成長を続けるとみられる。\nすなわち、企業部門をみると、輸出や生産は、中東情勢の影響を受けつつも、グローバルなＡＩ関連需要の強さが押し上げ要因として作用することから、当面は横ばい圏内の動きになると見込まれる。企業収益は、原油価格上昇に伴う交易条件悪化の影響を受けつつも、ＡＩ関連需要の強さなどを背景に高水準が続くとみられる。そうしたもとで、設備投資は、既往案件の受注残を解消する動きに加え、政府の経済対策や緩和的な金融環境が下支え要因として作用し、緩やかな増加傾向が続くと考えられる。\n家計部門をみると、雇用面では、労働需給は引き締まった状態が続き、名目賃金は、本年の春季労使交渉の結果などを反映して現状程度の伸びが続くと見込まれる。個人消費は、賃金の増加や株価上昇による資産効果に加えて、政府による各種施策を通じた家計への所得移転が下支え要因となるものの、エネルギーを中心とした物価上昇の影響から、横ばい圏内の動きになるとみられる。住宅投資は、住宅価格の上昇や人口動態等を反映して、緩やかな減少傾向をたどるとみられる。この間、公共投資は横ばい圏内で推移し、政府消費は、医療・介護費の趨勢的な増加や防衛関連支出の増加などを反映し、緩やかに増加していくと想定している。"
+    }
+   ],
+   "parent": "econ",
+   "points": [
+    {
+     "label": "重し：原油高 → 交易条件の悪化 → 企業収益・家計の実質所得を下押し",
+     "sourceSpans": [
+      {
+       "start": 1644,
+       "end": 1678,
+       "text": "交易条件の悪化などを通じて企業収益や家計の実質所得に対する下押し要因"
+      }
+     ]
+    },
+    {
+     "label": "支え：ＡＩ関連需要、しっかりした賃上げ、政府の施策、緩和的な金融環境",
+     "sourceSpans": [
+      {
+       "start": 1685,
+       "end": 1700,
+       "text": "グローバルなＡＩ関連需要の増加"
+      },
+      {
+       "start": 1711,
+       "end": 1721,
+       "text": "しっかりとした賃上げ"
+      },
+      {
+       "start": 1729,
+       "end": 1738,
+       "text": "政府による各種施策"
+      }
+     ]
+    },
+    {
+     "label": "輸出・生産は横ばい圏、企業収益は高水準、設備投資は緩やかに増加",
+     "sourceSpans": [
+      {
+       "start": 1890,
+       "end": 1901,
+       "text": "当面は横ばい圏内の動き"
+      },
+      {
+       "start": 1957,
+       "end": 1963,
+       "text": "高水準が続く"
+      },
+      {
+       "start": 2031,
+       "end": 2042,
+       "text": "緩やかな増加傾向が続く"
+      }
+     ]
+    },
+    {
+     "label": "個人消費は物価上昇が重しで横ばい圏、住宅投資は緩やかに減少",
+     "sourceSpans": [
+      {
+       "start": 2207,
+       "end": 2223,
+       "text": "横ばい圏内の動きになるとみられる"
+      },
+      {
+       "start": 2249,
+       "end": 2257,
+       "text": "緩やかな減少傾向"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "econ-2027",
+   "label": "2027年度以降：原油高が薄れ、所得→支出の循環で成長率が高まる",
+   "type": "見通し",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 158,
+     "end": 244,
+     "text": "2027年度以降は、原油高のマイナスの影響が減衰し、所得から支出への前向きな循環メカニズムが徐々に強まっていくことから、わが国経済は成長率を緩やかに高めていくと考えられる。"
+    },
+    {
+     "start": 2341,
+     "end": 2771,
+     "text": "2027年度以降については、原油高のマイナスの影響が減衰し、所得から支出への前向きな循環メカニズムが徐々に強まっていくことから、わが国経済は成長率を緩やかに高めていくと考えられる。輸出や生産は、中東情勢の影響が和らぎ、海外経済の緩やかな成長が続くなか、グローバルなＡＩ関連需要の強さなどにも支えられ、緩やかに増加していくと考えられる。企業収益は、原油価格の下落に伴う交易条件の改善や内外需要の増加に支えられて、改善していくとみられ、そうしたもとで、設備投資は、人手不足対応の省力化投資やＡＩ関連等の成長分野への能力増強投資に加え、貿易構造やサプライチェーンの変容に適合するための投資案件なども押し上げ要因となり、増加傾向を維持すると考えられる。雇用・所得環境をみると、労働需給は引き締まった状況が続き、名目賃金は着実な増加が続くとみられる。これに加え、物価の上昇ペースが徐々に落ち着いていくと見込まれるなか、個人消費は、緩やかな増加基調に復していくとみられる。"
+    }
+   ],
+   "parent": "econ",
+   "points": [
+    {
+     "label": "輸出・生産は緩やかに増加（海外経済の成長、ＡＩ関連需要）",
+     "sourceSpans": [
+      {
+       "start": 2491,
+       "end": 2501,
+       "text": "緩やかに増加していく"
+      }
+     ]
+    },
+    {
+     "label": "設備投資は省力化・ＡＩ・サプライチェーン対応で増加傾向",
+     "sourceSpans": [
+      {
+       "start": 2571,
+       "end": 2583,
+       "text": "人手不足対応の省力化投資"
+      },
+      {
+       "start": 2647,
+       "end": 2654,
+       "text": "増加傾向を維持"
+      }
+     ]
+    },
+    {
+     "label": "名目賃金は着実に増え、物価が落ち着くなかで消費は増加基調へ",
+     "sourceSpans": [
+      {
+       "start": 2692,
+       "end": 2702,
+       "text": "名目賃金は着実な増加"
+      },
+      {
+       "start": 2751,
+       "end": 2765,
+       "text": "緩やかな増加基調に復していく"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "econ-base",
+   "label": "前回から概ね不変。潜在成長率は小幅のプラス",
+   "type": "見通し",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 672,
+     "end": 696,
+     "text": "前回の見通しと比べると、成長率は概ね不変である。"
+    },
+    {
+     "start": 2772,
+     "end": 2915,
+     "text": "こうした見通しを前回の展望レポートにおける見通しと比較すると、見通し期間を通じて概ね不変となっている。\nこの間、潜在成長率は、政府による各種の施策の後押しなどもあって、デジタル化や人的資本投資の進展による生産性の上昇、資本ストックの着実な増加などを背景に、小幅のプラスが続くとみられる。"
+    },
+    {
+     "start": 8598,
+     "end": 8755,
+     "text": "注３　わが国の潜在成長率を、一定の手法で推計すると、足もとでは「０％台半ばから後半」と計算される。ただし、潜在成長率は、推計手法や今後蓄積されていくデータに左右されるうえ、デジタル化の進展などに伴い生産性や労働供給のトレンドがどのように変化するかといった点を巡る不確実性も高いため、相当の幅をもってみる必要がある。"
+    }
+   ],
+   "parent": "econ",
+   "points": [
+    {
+     "label": "成長率の見通しは前回から概ね不変",
+     "sourceSpans": [
+      {
+       "start": 2803,
+       "end": 2816,
+       "text": "見通し期間を通じて概ね不変"
+      }
+     ]
+    },
+    {
+     "label": "潜在成長率は足もと「０％台半ばから後半」、ただし相当の幅をもってみる",
+     "sourceSpans": [
+      {
+       "start": 8629,
+       "end": 8640,
+       "text": "「０％台半ばから後半」"
+      },
+      {
+       "start": 8739,
+       "end": 8754,
+       "text": "相当の幅をもってみる必要がある"
+      }
+     ]
+    },
+    {
+     "label": "デジタル化・人的資本投資による生産性の上昇と資本ストックの増加が支える",
+     "sourceSpans": [
+      {
+       "start": 2874,
+       "end": 2880,
+       "text": "生産性の上昇"
+      },
+      {
+       "start": 2881,
+       "end": 2893,
+       "text": "資本ストックの着実な増加"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "prices",
+   "label": "物価の見通し：一時２％をはっきり上回り、その後２％程度へ",
+   "type": "見通し",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 2916,
+     "end": 2929,
+     "text": "（２）物価の中心的な見通し"
+    }
+   ],
+   "points": [
+    {
+     "label": "後半から、消費者物価は２％をはっきり上回る。基調も２％程度へ",
+     "when": "2026年度",
+     "sourceSpans": [
+      {
+       "start": 3062,
+       "end": 3088,
+       "text": "2026年度後半以降、２％をはっきりと上回る水準まで"
+      },
+      {
+       "start": 3283,
+       "end": 3324,
+       "text": "2026年度後半から2027年度にかけて「物価安定の目標」と概ね整合的な水準となり"
+      }
+     ]
+    },
+    {
+     "label": "消費者物価は２％程度へ縮小、基調は２％程度で推移",
+     "when": "2027年度以降",
+     "sourceSpans": [
+      {
+       "start": 3135,
+       "end": 3150,
+       "text": "２％程度に向けてプラス幅を縮小"
+      },
+      {
+       "start": 3325,
+       "end": 3337,
+       "text": "その後も同程度で推移する"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cpi",
+   "label": "消費者物価：原油高・半導体・円安で２％超へ、のち２％程度へ",
+   "type": "見通し",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 245,
+     "end": 489,
+     "text": "物価の先行きを展望すると、消費者物価（除く生鮮食品）の前年比は、賃金上昇を販売価格に転嫁する動きが続くもとで、これまでの原油価格上昇が、エネルギーや財を中心に価格を押し上げるほか、グローバルなＡＩ関連需要の増加に伴う半導体価格等の上昇や最近の為替円安が耐久財等の価格上昇につながることから、2026年度後半以降、２％をはっきりと上回る水準まで伸び率を高めていくと予想される。その後、見通し期間後半には、原油高の影響が減衰していくもとで、２％程度に向けてプラス幅を縮小していくと考えられる。"
+    },
+    {
+     "start": 696,
+     "end": 762,
+     "text": "消費者物価（除く生鮮食品）の前年比は、政府による夏場のエネルギー負担緩和策（電気・ガス代）の効果等から、2026年度が下振れている。"
+    },
+    {
+     "start": 2930,
+     "end": 3161,
+     "text": "消費者物価（除く生鮮食品）の前年比は、賃金上昇を販売価格に転嫁する動きが続くもとで、これまでの原油価格上昇が、エネルギーや財を中心に価格を押し上げるほか、グローバルなＡＩ関連需要の増加に伴う半導体価格等の上昇や最近の為替円安が耐久財等の価格上昇につながることから、2026年度後半以降、２％をはっきりと上回る水準まで伸び率を高めていくと予想される。その後、見通し期間後半には、原油高の影響が減衰していくもとで、２％程度に向けてプラス幅を縮小していくと考えられる。"
+    },
+    {
+     "start": 3700,
+     "end": 3997,
+     "text": "エネルギー価格の変動の直接的な影響を受けない消費者物価（除く生鮮食品・エネルギー）の前年比は、これまでの原油価格上昇が財を中心に価格を押し上げることに加え、半導体価格等の上昇や最近の為替円安が耐久財等の価格上昇につながることから、２％を超える水準で推移したあと、原油高の影響が減衰していくもとで、プラス幅を縮小すると見込まれる。\nこうした見通しを前回の展望レポートにおける見通しと比較すると、消費者物価（除く生鮮食品）は、政府による夏場のエネルギー負担緩和策（電気・ガス代）の効果等から、2026年度が下振れているが、消費者物価（除く生鮮食品・エネルギー）は、見通し期間を通じて概ね不変である。"
+    },
+    {
+     "start": 6605,
+     "end": 6865,
+     "text": "まず、第１の柱、すなわち中心的な見通しについて点検すると、消費者物価（除く生鮮食品）の前年比は、賃金上昇を販売価格に転嫁する動きが続くもとで、これまでの原油価格上昇が、エネルギーや財を中心に価格を押し上げるほか、グローバルなＡＩ関連需要の増加に伴う半導体価格等の上昇や最近の為替円安が耐久財等の価格上昇につながることから、2026年度後半以降、２％をはっきりと上回る水準まで伸び率を高めていくと予想される。その後、見通し期間後半には、原油高の影響が減衰していくもとで、２％程度に向けてプラス幅を縮小していくと考えられる。"
+    }
+   ],
+   "parent": "prices",
+   "points": [
+    {
+     "label": "押し上げ：原油高（エネルギー・財）、半導体価格、円安（耐久財）、賃上げの価格転嫁",
+     "sourceSpans": [
+      {
+       "start": 2949,
+       "end": 2965,
+       "text": "賃金上昇を販売価格に転嫁する動き"
+      },
+      {
+       "start": 2985,
+       "end": 3004,
+       "text": "エネルギーや財を中心に価格を押し上げる"
+      },
+      {
+       "start": 3025,
+       "end": 3034,
+       "text": "半導体価格等の上昇"
+      },
+      {
+       "start": 3035,
+       "end": 3042,
+       "text": "最近の為替円安"
+      }
+     ]
+    },
+    {
+     "label": "後半以降、２％をはっきり上回る水準へ",
+     "when": "2026年度",
+     "sourceSpans": [
+      {
+       "start": 3062,
+       "end": 3088,
+       "text": "2026年度後半以降、２％をはっきりと上回る水準まで"
+      }
+     ]
+    },
+    {
+     "label": "見通し期間後半に、原油高の影響が減って２％程度へ",
+     "when": "2027年度以降",
+     "sourceSpans": [
+      {
+       "start": 3135,
+       "end": 3154,
+       "text": "２％程度に向けてプラス幅を縮小していく"
+      }
+     ]
+    },
+    {
+     "label": "エネルギーを除いても２％超で推移したあと縮小",
+     "sourceSpans": [
+      {
+       "start": 3815,
+       "end": 3830,
+       "text": "２％を超える水準で推移したあと"
+      }
+     ]
+    },
+    {
+     "label": "前回比：2026年度は夏の電気・ガス代支援で下振れ、除くエネルギーは不変",
+     "sourceSpans": [
+      {
+       "start": 3944,
+       "end": 3957,
+       "text": "2026年度が下振れている"
+      },
+      {
+       "start": 3980,
+       "end": 3996,
+       "text": "見通し期間を通じて概ね不変である"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "premises",
+   "label": "前提：原油価格と政府の施策しだい",
+   "type": "前提",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 3443,
+     "end": 3699,
+     "text": "なお、消費者物価（除く生鮮食品）の見通しは、原油価格の動向や政府による各種施策の影響も受ける。原油価格については、先物市場の動向などを参考に、見通し期間終盤にかけて緩やかに低下していく前提としているが、中東以外の地域からの代替調達に伴って輸送コストが増加していることを踏まえると、わが国の企業が直面する調達価格は、国際市況ほどには低下しないと考えられる。政府による施策については、燃料油補助金などのエネルギー負担緩和策や教育無償化政策等が行われており、2026年度の消費者物価の前年比を押し下げる方向に作用する。"
+    },
+    {
+     "start": 8445,
+     "end": 8597,
+     "text": "注２　各政策委員は、既に決定した政策を前提として、また、先行きの政策運営については、市場の織り込みを参考にして、見通しを作成している。なお、原油価格（ドバイ原油）については、先物市場の動向などを参考に、１バレル80ドル程度を出発点に、見通し期間の終盤にかけて、70ドル程度まで下落していくと想定している。"
+    }
+   ],
+   "parent": "prices",
+   "points": [
+    {
+     "label": "原油（ドバイ）は１バレル80ドル程度から終盤に70ドル程度へ下落する前提",
+     "sourceSpans": [
+      {
+       "start": 8546,
+       "end": 8560,
+       "text": "１バレル80ドル程度を出発点"
+      },
+      {
+       "start": 8575,
+       "end": 8585,
+       "text": "70ドル程度まで下落"
+      }
+     ]
+    },
+    {
+     "label": "ただし代替調達で輸送コストが増え、企業の調達価格は市況ほど下がらない",
+     "sourceSpans": [
+      {
+       "start": 3600,
+       "end": 3613,
+       "text": "国際市況ほどには低下しない"
+      }
+     ]
+    },
+    {
+     "label": "燃料油補助金・教育無償化などが消費者物価を押し下げる",
+     "when": "2026年度",
+     "sourceSpans": [
+      {
+       "start": 3633,
+       "end": 3639,
+       "text": "燃料油補助金"
+      },
+      {
+       "start": 3686,
+       "end": 3698,
+       "text": "押し下げる方向に作用する"
+      }
+     ]
+    },
+    {
+     "label": "政策金利は市場の織り込みを前提に作成",
+     "sourceSpans": [
+      {
+       "start": 8487,
+       "end": 8500,
+       "text": "市場の織り込みを参考にして"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "underlying",
+   "label": "基調的な物価上昇率：2026年度後半〜27年度に２％程度、その後も同程度",
+   "type": "見通し",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 489,
+     "end": 671,
+     "text": "この間、人手不足感の強い状況が続くなかで、賃金と物価が相互に参照しながら緩やかに上昇していくメカニズムは維持され、中長期的な予想物価上昇率は上昇していくと見込まれる。こうしたもとで、消費者物価の基調的な上昇率は、徐々に高まっていくと予想され、2026年度後半から2027年度にかけて「物価安定の目標」と概ね整合的な水準となり、その後も同程度で推移すると考えられる。"
+    },
+    {
+     "start": 3162,
+     "end": 3442,
+     "text": "この間、人手不足感の強い状況が続くなかで、賃金と物価が相互に参照しながら緩やかに上昇していくメカニズムは維持され、中長期的な予想物価上昇率は上昇していくと見込まれる。こうしたもとで、消費者物価の基調的な上昇率は、徐々に高まっていくと予想され、2026年度後半から2027年度にかけて「物価安定の目標」と概ね整合的な水準となり、その後も同程度で推移すると考えられる。基調的な物価上昇率が２％に近づいていることを踏まえると、今後は、「物価安定の目標」の持続的・安定的な実現という観点から、これが２％程度の水準で定着するかどうかを確認していくことが重要となってくる。"
+    },
+    {
+     "start": 3998,
+     "end": 4441,
+     "text": "物価の基調を規定する主たる要因について点検すると、労働や設備の稼働状況を表すマクロ的な需給ギャップは、振れを伴いつつも、改善傾向をたどっており、足もとでは小幅のプラスとなっている。先行きの需給ギャップは、上記の経済の見通しのもとで、現状程度のプラスが続くと予想される。この間、女性や高齢者による労働参加の増加ペースの鈍化もあって、労働需給はマクロ的な需給ギャップ以上に引き締まっている。こうしたもと、労働集約的な業種を中心に企業が労働の供給制約に直面しつつある状況を踏まえると、マクロ的な需給ギャップが示唆する以上に、賃金や物価には上昇圧力がかかりやすくなっているとみられる。\n次に、中長期的な予想物価上昇率をみると、緩やかに上昇している。先行きについては、労働需給の引き締まりなどを背景に、企業の積極的な賃金・価格設定行動が続き、予想物価上昇率は緩やかな上昇が続くと予想される。その水準は、2026年度後半から2027年度にかけて２％程度となり、その後も同程度で推移すると考えられる。"
+    },
+    {
+     "start": 6865,
+     "end": 7047,
+     "text": "この間、人手不足感の強い状況が続くなかで、賃金と物価が相互に参照しながら緩やかに上昇していくメカニズムは維持され、中長期的な予想物価上昇率は上昇していくと見込まれる。こうしたもとで、消費者物価の基調的な上昇率は、徐々に高まっていくと予想され、2026年度後半から2027年度にかけて「物価安定の目標」と概ね整合的な水準となり、その後も同程度で推移すると考えられる。"
+    }
+   ],
+   "parent": "prices",
+   "points": [
+    {
+     "label": "需給ギャップは小幅のプラスが続く",
+     "sourceSpans": [
+      {
+       "start": 4075,
+       "end": 4081,
+       "text": "小幅のプラス"
+      },
+      {
+       "start": 4114,
+       "end": 4125,
+       "text": "現状程度のプラスが続く"
+      }
+     ]
+    },
+    {
+     "label": "人手不足で、賃金・物価に需給ギャップ以上の上昇圧力",
+     "sourceSpans": [
+      {
+       "start": 4257,
+       "end": 4280,
+       "text": "賃金や物価には上昇圧力がかかりやすくなっている"
+      }
+     ]
+    },
+    {
+     "label": "賃金と物価が互いに参照して上がるメカニズムが続き、予想物価上昇率も上昇",
+     "sourceSpans": [
+      {
+       "start": 3183,
+       "end": 3218,
+       "text": "賃金と物価が相互に参照しながら緩やかに上昇していくメカニズムは維持され"
+      },
+      {
+       "start": 4364,
+       "end": 4381,
+       "text": "予想物価上昇率は緩やかな上昇が続く"
+      }
+     ]
+    },
+    {
+     "label": "後半から２％程度に近づく",
+     "when": "2026年度",
+     "sourceSpans": [
+      {
+       "start": 3283,
+       "end": 3321,
+       "text": "2026年度後半から2027年度にかけて「物価安定の目標」と概ね整合的な水準"
+      },
+      {
+       "start": 4388,
+       "end": 4421,
+       "text": "その水準は、2026年度後半から2027年度にかけて２％程度となり"
+      }
+     ]
+    },
+    {
+     "label": "２％程度で、その後も同程度",
+     "when": "2027年度以降",
+     "sourceSpans": [
+      {
+       "start": 3325,
+       "end": 3343,
+       "text": "その後も同程度で推移すると考えられる"
+      }
+     ]
+    },
+    {
+     "label": "これからの焦点：２％程度で定着するかを確認すること",
+     "sourceSpans": [
+      {
+       "start": 3407,
+       "end": 3435,
+       "text": "２％程度の水準で定着するかどうかを確認していくことが重要"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "risks",
+   "label": "リスク：当面は中東、ほかにＡＩと為替",
+   "type": "リスク",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 763,
+     "end": 887,
+     "text": "リスク要因としては様々なものがあるが、当面は、中東情勢が金融・為替市場やわが国の経済・物価に及ぼす影響をとくに注視する必要がある。このほか、グローバルなＡＩ関連需要の動向や今後の為替相場の変動が、わが国の経済・物価に及ぼす影響にも留意が必要である。"
+    },
+    {
+     "start": 4442,
+     "end": 4517,
+     "text": "３．経済・物価のリスク要因\n上記の中心的な経済・物価の見通しに対する上振れないし下振れの可能性（リスク要因）としては、主に以下の点に注意が必要である。"
+    },
+    {
+     "start": 7311,
+     "end": 7486,
+     "text": "次に、第２の柱、すなわち金融政策運営の観点から重視すべきリスクについて点検する。わが国経済・物価を巡るリスク要因としては様々なものがあるが、当面は、中東情勢が金融・為替市場やわが国の経済・物価に及ぼす影響をとくに注視する必要がある。このほか、グローバルなＡＩ関連需要の動向や今後の為替相場の変動が、わが国の経済・物価に及ぼす影響にも留意が必要である。"
+    }
+   ],
+   "points": [
+    {
+     "label": "当面は中東情勢の影響をとくに注視",
+     "sourceSpans": [
+      {
+       "start": 786,
+       "end": 827,
+       "text": "中東情勢が金融・為替市場やわが国の経済・物価に及ぼす影響をとくに注視する必要がある"
+      }
+     ]
+    },
+    {
+     "label": "ＡＩ関連需要の動向と為替相場の変動にも留意",
+     "sourceSpans": [
+      {
+       "start": 833,
+       "end": 859,
+       "text": "グローバルなＡＩ関連需要の動向や今後の為替相場の変動"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "overshoot",
+   "label": "最大のリスク：基調的な物価上昇率が２％を超えて上振れる",
+   "type": "リスク",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 888,
+     "end": 1104,
+     "text": "リスクバランスをみると、経済の見通しについては、概ねバランスしている。消費者物価の見通しについては、上振れリスクの方が大きい。基調的な物価上昇率については、企業の賃金・価格設定行動が積極化していることや、中長期的な予想物価上昇率が引き続き上昇していることなどを踏まえると、２％の「物価安定の目標」を超えて上振れていくリスクがある。こうしたリスクが顕在化し、それがその後の経済に悪影響を及ぼすことがないよう、十分に留意する必要がある。"
+    },
+    {
+     "start": 4839,
+     "end": 5008,
+     "text": "物価面では、原油高を起点に企業間取引における価格転嫁がやや速いスピードで進んでおり、これが、今後、消費者段階における幅広い品目の価格上昇に波及していく可能性が高いと考えられる。これらに加え、中長期の予想物価上昇率が引き続き上昇していることも踏まえると、消費者物価の基調的な上昇率が２％の「物価安定の目標」を超えて上振れていくリスクがある。"
+    },
+    {
+     "start": 7486,
+     "end": 7724,
+     "text": "リスクバランスは、経済の見通しについては、概ねバランスしている。消費者物価の見通しについては、上振れリスクの方が大きい。前述したとおり、基調的な物価上昇率が２％に近づいているなか、企業の賃金・価格設定行動が積極化していることや、中長期的な予想物価上昇率が引き続き上昇していることなどを踏まえると、基調的な物価上昇率が２％の「物価安定の目標」を超えて上振れていくリスクがある。こうしたリスクが顕在化し、それがその後の経済に悪影響を及ぼすことがないよう、十分に留意する必要がある。"
+    }
+   ],
+   "parent": "risks",
+   "points": [
+    {
+     "label": "景気のリスクは概ね均衡、物価は上振れリスクの方が大きい",
+     "sourceSpans": [
+      {
+       "start": 912,
+       "end": 922,
+       "text": "概ねバランスしている"
+      },
+      {
+       "start": 938,
+       "end": 950,
+       "text": "上振れリスクの方が大きい"
+      }
+     ]
+    },
+    {
+     "label": "理由：企業の賃金・価格設定が積極化し、予想物価上昇率も上がり続けている",
+     "sourceSpans": [
+      {
+       "start": 966,
+       "end": 986,
+       "text": "企業の賃金・価格設定行動が積極化している"
+      },
+      {
+       "start": 990,
+       "end": 1013,
+       "text": "中長期的な予想物価上昇率が引き続き上昇している"
+      }
+     ]
+    },
+    {
+     "label": "顕在化して、その後の経済を損なわないよう十分に留意",
+     "sourceSpans": [
+      {
+       "start": 1069,
+       "end": 1090,
+       "text": "その後の経済に悪影響を及ぼすことがないよう"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mideast",
+   "label": "中東情勢：大きなリスクは低下、ただし原油高の波及に注意",
+   "type": "リスク",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 4518,
+     "end": 4839,
+     "text": "第１に、中東情勢がわが国経済・物価に及ぼす影響である。中東情勢については、なお不透明な状況が続いているが、原油価格は一頃に比べて下落しており、前回の展望レポートで指摘したような、経済の大幅な下振れリスクや物価の大幅な上振れリスクは低下している。とくに、サプライチェーンの大規模な混乱が生じ、わが国企業の生産活動に大きな影響をもたらすリスクは、中東依存度の高い原材料の代替調達が進展していることもあり、低下している。もっとも、これまでの原油価格上昇が経済・物価に及ぼす影響については、引き続き注意が必要である。実体経済面では、原油高に伴う原材料等の価格上昇が、企業収益や家計の実質所得を想定以上に下押しすることがないか、確認していく必要がある。"
+    },
+    {
+     "start": 5009,
+     "end": 5085,
+     "text": "この間、原油価格については、なお振れの大きい展開が続いている。今後の原油価格の変動がわが国の経済・物価に及ぼす影響については、引き続き留意が必要である。"
+    }
+   ],
+   "parent": "risks",
+   "points": [
+    {
+     "label": "原油価格が下がり、大幅な下振れ・上振れのリスクは低下",
+     "sourceSpans": [
+      {
+       "start": 4607,
+       "end": 4639,
+       "text": "経済の大幅な下振れリスクや物価の大幅な上振れリスクは低下している"
+      }
+     ]
+    },
+    {
+     "label": "代替調達が進み、サプライチェーン混乱のリスクも低下",
+     "sourceSpans": [
+      {
+       "start": 4701,
+       "end": 4712,
+       "text": "代替調達が進展している"
+      }
+     ]
+    },
+    {
+     "label": "原油高が企業収益・実質所得を想定以上に下押ししないか確認",
+     "sourceSpans": [
+      {
+       "start": 4810,
+       "end": 4826,
+       "text": "想定以上に下押しすることがないか"
+      }
+     ]
+    },
+    {
+     "label": "原油価格はなお振れが大きい",
+     "sourceSpans": [
+      {
+       "start": 5023,
+       "end": 5039,
+       "text": "なお振れの大きい展開が続いている"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ai",
+   "label": "ＡＩ関連需要と内外経済：上にも下にも振れうる",
+   "type": "リスク",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 5086,
+     "end": 5706,
+     "text": "第２に、ＡＩ関連需要を含む内外の経済・物価動向である。ＡＩ関連については、その用途の急速な広がりとともに、グローバルな需要拡大が続いており、旺盛な設備投資が世界経済を一段と押し上げる可能性がある。一方、投資に見合った形で収益の拡大が実現しない場合には、資産価格の変動なども伴って、調整圧力が生じる可能性もある。物価面では、最近の半導体価格の上昇は、関連する耐久財の価格を押し上げるとみられるほか、企業間取引において、銅などの素材価格や機械類の価格が上昇していることも踏まえると、今後は、消費者段階においても、様々な品目の価格上昇につながる可能性がある。こうしたＡＩ関連の材料・部品などに対する内外の需要が想定以上に増加した場合には、価格面での上昇圧力が一段と高まるリスクもある。なお、ＡＩ関連需要拡大の好影響は、これまでのところ、ＩＴ関連セクターの収益拡大や株価上昇に伴う資産効果などを中心に現れている面があるが、今後、ＡＩの利活用による生産性向上などを通じて、その恩恵が幅広いセクターに広がるか、注意を払う必要がある。\nこのほか、米欧を含む各国の財政拡張的な動きなどが、世界経済・物価や金融市場に及ぼす影響にも留意が必要である。中国経済については、不動産市場や労働市場における調整圧力が続くなか、先行きの成長ペースを巡る不確実性は引き続き高いほか、一部の財における供給能力の過剰が世界経済・物価に及ぼす影響についても注意を払う必要がある。"
+    }
+   ],
+   "parent": "risks",
+   "points": [
+    {
+     "label": "上：旺盛な設備投資が世界経済をさらに押し上げる",
+     "sourceSpans": [
+      {
+       "start": 5164,
+       "end": 5180,
+       "text": "世界経済を一段と押し上げる可能性"
+      }
+     ]
+    },
+    {
+     "label": "下：収益が投資に見合わなければ調整圧力",
+     "sourceSpans": [
+      {
+       "start": 5226,
+       "end": 5237,
+       "text": "調整圧力が生じる可能性"
+      }
+     ]
+    },
+    {
+     "label": "物価：半導体・素材価格の上昇が消費者物価に広がりうる",
+     "sourceSpans": [
+      {
+       "start": 5340,
+       "end": 5358,
+       "text": "様々な品目の価格上昇につながる可能性"
+      }
+     ]
+    },
+    {
+     "label": "恩恵が幅広いセクターに広がるか",
+     "sourceSpans": [
+      {
+       "start": 5517,
+       "end": 5534,
+       "text": "その恩恵が幅広いセクターに広がるか"
+      }
+     ]
+    },
+    {
+     "label": "各国の財政拡張、中国経済の不確実性と供給過剰",
+     "sourceSpans": [
+      {
+       "start": 5557,
+       "end": 5568,
+       "text": "各国の財政拡張的な動き"
+      },
+      {
+       "start": 5661,
+       "end": 5676,
+       "text": "一部の財における供給能力の過剰"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "fx",
+   "label": "為替：円安は物価に効きやすくなっている",
+   "type": "リスク",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 5707,
+     "end": 6076,
+     "text": "第３に、為替相場の変動がわが国の経済・物価に及ぼす影響である。これについては様々な経路が考えられるが、為替円安の進行は、グローバル企業の収益などにプラスの影響を及ぼす一方、輸入物価の上昇などを通じて、家計の実質所得を下押しするほか、中小企業などの収益にマイナスに作用する面がある。また、企業の賃金・価格設定行動が積極化するもとで、過去と比べると、為替の変動が物価に影響を及ぼしやすくなっている面があることや、そうした動きが、予想物価上昇率の変化を通じて基調的な物価上昇率に影響する可能性があることにも留意が必要である。この点、原油高等の市況要因に加え、為替円安の進行から、足もと輸入物価の前年比が大きく上昇していることは、先行き、耐久財をはじめとした幅広い品目の価格を押し上げる方向に作用すると考えられ、その影響を十分注視する必要がある。"
+    }
+   ],
+   "parent": "risks",
+   "points": [
+    {
+     "label": "円安はグローバル企業の収益にプラス、家計の実質所得と中小企業にマイナス",
+     "sourceSpans": [
+      {
+       "start": 5767,
+       "end": 5786,
+       "text": "グローバル企業の収益などにプラスの影響"
+      },
+      {
+       "start": 5807,
+       "end": 5820,
+       "text": "家計の実質所得を下押しする"
+      }
+     ]
+    },
+    {
+     "label": "為替が物価に影響しやすくなり、予想物価を通じて基調にも波及しうる",
+     "sourceSpans": [
+      {
+       "start": 5880,
+       "end": 5903,
+       "text": "為替の変動が物価に影響を及ぼしやすくなっている"
+      }
+     ]
+    },
+    {
+     "label": "足もと輸入物価が大きく上昇し、幅広い品目の価格を押し上げる",
+     "sourceSpans": [
+      {
+       "start": 5996,
+       "end": 6010,
+       "text": "輸入物価の前年比が大きく上昇"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "longer",
+   "label": "やや長い目で：人手不足と通商政策が成長期待を左右",
+   "type": "リスク",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 6077,
+     "end": 6530,
+     "text": "これらのリスクに加え、やや長い目でみたリスク要因としては、わが国を巡る様々な環境変化が企業や家計の中長期的な成長期待や潜在成長率に与える影響がある。人口動態の構造的な変化等に伴う人手不足感の強まりは、デジタル化やＡＩの利活用などによる省力化投資の動きを加速させる可能性があり、政府が進めている成長分野への投資増加に向けた取り組みと相俟って、成長期待や潜在成長率を押し上げることも考えられる。この点、投資の制約要因として、人手不足とともに、資材価格の高騰等を指摘する声が多いことを踏まえると、適切な金融政策運営を通じて物価の安定を実現することは、わが国の成長投資の拡大を支える観点からも重要である。一方、人手不足下において、資本と労働の代替が十分に進展しない場合には、供給制約によって成長率が下押しされるリスクがあることには注意が必要である。この間、これまで打ち出された各国の通商政策はグローバル化の潮流に変化を及ぼしている面があり、今後の各国の政策の展開次第では、そうした変化が急速に進むことも考えられる。"
+    }
+   ],
+   "parent": "risks",
+   "points": [
+    {
+     "label": "人手不足が省力化投資を加速させ、潜在成長率を押し上げうる",
+     "sourceSpans": [
+      {
+       "start": 6194,
+       "end": 6211,
+       "text": "省力化投資の動きを加速させる可能性"
+      }
+     ]
+    },
+    {
+     "label": "資本と労働の代替が進まなければ、供給制約で成長が下押し",
+     "sourceSpans": [
+      {
+       "start": 6410,
+       "end": 6431,
+       "text": "供給制約によって成長率が下押しされるリスク"
+      }
+     ]
+    },
+    {
+     "label": "各国の通商政策でグローバル化の潮流が変わりつつある",
+     "sourceSpans": [
+      {
+       "start": 6469,
+       "end": 6488,
+       "text": "グローバル化の潮流に変化を及ぼしている"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "finance",
+   "label": "金融環境：なお緩和的で、金融システムは安定",
+   "type": "環境",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 7048,
+     "end": 7310,
+     "text": "政策金利の水準が一頃に比べて上昇しているなかにあっては、金融環境がどのように変化していくかを点検していくことも重要である。この点、実質金利は短中期ゾーンを中心にマイナスとなっているほか、企業全体の収益性と比較した金利コストはなお十分に低い状況が続いている。こうしたなか、企業等の資金需要は増加しており、金融機関の貸出態度も引き続き積極的である。ＣＰ・社債市場でも良好な発行環境が続いている。これらの動きを踏まえると、わが国の金融環境は緩和した状態が維持されており、引き続き、経済活動をしっかりとサポートしていくと考えられる。"
+    },
+    {
+     "start": 7725,
+     "end": 8009,
+     "text": "金融面のリスクについてみると、不動産価格や株価といった資産価格の動向には引き続き留意が必要であるものの、貸出などの金融仲介活動は円滑に行われており、現在の金融活動に大きな不均衡はみられていない。わが国の金融システムは、全体として安定性を維持している。内外の実体経済や国際金融市場が調整する状況を想定しても、わが国の金融機関が充実した資本基盤を備えていることなどを踏まえると、全体として相応の頑健性を有している。そのうえで、今後の中東情勢やＡＩ関連投資の収益性、海外ノンバンク部門の動向等が、様々な経路を通じて金融システムに及ぼす影響については丁寧にみていく必要がある。"
+    }
+   ],
+   "points": [
+    {
+     "label": "実質金利はマイナス、金利コストはなお十分に低い",
+     "sourceSpans": [
+      {
+       "start": 7113,
+       "end": 7132,
+       "text": "実質金利は短中期ゾーンを中心にマイナス"
+      },
+      {
+       "start": 7160,
+       "end": 7167,
+       "text": "なお十分に低い"
+      }
+     ]
+    },
+    {
+     "label": "資金需要は増加、貸出態度は積極的、社債市場も良好",
+     "sourceSpans": [
+      {
+       "start": 7187,
+       "end": 7194,
+       "text": "資金需要は増加"
+      },
+      {
+       "start": 7229,
+       "end": 7236,
+       "text": "良好な発行環境"
+      }
+     ]
+    },
+    {
+     "label": "緩和的な金融環境が経済活動を支え続ける",
+     "sourceSpans": [
+      {
+       "start": 7285,
+       "end": 7299,
+       "text": "経済活動をしっかりとサポート"
+      }
+     ]
+    },
+    {
+     "label": "金融システムは安定し、相応の頑健性。中東・ＡＩ投資・海外ノンバンクの影響は丁寧にみる",
+     "sourceSpans": [
+      {
+       "start": 7839,
+       "end": 7849,
+       "text": "安定性を維持している"
+      },
+      {
+       "start": 7917,
+       "end": 7929,
+       "text": "相応の頑健性を有している"
+      },
+      {
+       "start": 7955,
+       "end": 7967,
+       "text": "海外ノンバンク部門の動向"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "policy",
+   "label": "金融政策：利上げを続け、緩和の度合いを調整していく",
+   "type": "方針",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 6531,
+     "end": 6604,
+     "text": "４．金融政策運営\n以上の経済・物価情勢について、「物価安定の目標」のもとで、２つの「柱」による点検を行い、先行きの金融政策運営の考え方を整理する。"
+    },
+    {
+     "start": 8010,
+     "end": 8391,
+     "text": "金融政策運営については、基調的な物価上昇率が２％に近づいているなか、現在の金融環境が緩和的であることを踏まえると、経済・物価・金融情勢に応じて、引き続き政策金利を引き上げ、金融緩和の度合いを調整していくことになると考えている。そのうえで、調整のタイミングやペースについては、中東情勢やＡＩ関連需要の拡大、為替相場の変動の影響を含め、経済・物価の中心的な見通しが実現する確度やリスクを点検しながら、検討していく方針である。とくに、基調的な物価上昇率が２％の「物価安定の目標」を超えて上振れていくリスクが顕在化し、それがその後の経済に悪影響を及ぼすことがないよう、基調的な物価上昇率を２％程度の水準で安定させていくという観点が重要になると考えている。日本銀行は、２％の「物価安定の目標」のもとで、その持続的・安定的な実現という観点から、適切に金融政策を運営していく。"
+    },
+    {
+     "start": 8396,
+     "end": 8444,
+     "text": "注１　本基本的見解は、７月30、31日開催の政策委員会・金融政策決定会合で決定されたものである。"
+    }
+   ],
+   "points": [
+    {
+     "label": "引き続き政策金利を引き上げ、金融緩和の度合いを調整する",
+     "sourceSpans": [
+      {
+       "start": 8082,
+       "end": 8111,
+       "text": "引き続き政策金利を引き上げ、金融緩和の度合いを調整していく"
+      }
+     ]
+    },
+    {
+     "label": "タイミングとペースは、中東・ＡＩ・為替を含めて見通しの確度とリスクを点検して決める",
+     "sourceSpans": [
+      {
+       "start": 8129,
+       "end": 8141,
+       "text": "調整のタイミングやペース"
+      },
+      {
+       "start": 8194,
+       "end": 8207,
+       "text": "確度やリスクを点検しながら"
+      }
+     ]
+    },
+    {
+     "label": "とくに重視：基調的な物価上昇率を２％程度で安定させる",
+     "sourceSpans": [
+      {
+       "start": 8290,
+       "end": 8315,
+       "text": "基調的な物価上昇率を２％程度の水準で安定させていく"
+      }
+     ]
+    },
+    {
+     "label": "２つの柱で点検：中心的な見通し（第１）とリスク（第２）",
+     "sourceSpans": [
+      {
+       "start": 6569,
+       "end": 6580,
+       "text": "２つの「柱」による点検"
+      },
+      {
+       "start": 6608,
+       "end": 6612,
+       "text": "第１の柱"
+      },
+      {
+       "start": 7314,
+       "end": 7318,
+       "text": "第２の柱"
+      }
+     ]
+    },
+    {
+     "label": "７月30・31日の金融政策決定会合で決定",
+     "sourceSpans": [
+      {
+       "start": 8407,
+       "end": 8435,
+       "text": "７月30、31日開催の政策委員会・金融政策決定会合で決定"
+      }
+     ]
+    }
+   ],
+   "role": "conclusion"
+  }
+ ],
+ "relations": [
+  {
+   "id": "underlying-policy",
+   "type": "reason",
+   "label": "２％に近づいたので",
+   "source": "underlying",
+   "target": "policy",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 8022,
+     "end": 8043,
+     "text": "基調的な物価上昇率が２％に近づいているなか"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "finance-policy",
+   "type": "reason",
+   "label": "まだ緩和的なので",
+   "source": "finance",
+   "target": "policy",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 8044,
+     "end": 8066,
+     "text": "現在の金融環境が緩和的であることを踏まえると"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "overshoot-policy",
+   "type": "guards",
+   "label": "いちばん警戒",
+   "source": "overshoot",
+   "target": "policy",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 8234,
+     "end": 8264,
+     "text": "２％の「物価安定の目標」を超えて上振れていくリスクが顕在化し"
+    }
+   ]
+  },
+  {
+   "id": "risks-policy",
+   "type": "conditions",
+   "label": "タイミングとペースを左右",
+   "source": "risks",
+   "target": "policy",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 8147,
+     "end": 8175,
+     "text": "中東情勢やＡＩ関連需要の拡大、為替相場の変動の影響を含め"
+    }
+   ]
+  },
+  {
+   "id": "policy-finance",
+   "type": "checks",
+   "label": "利上げの効き具合を点検",
+   "source": "policy",
+   "target": "finance",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 7048,
+     "end": 7075,
+     "text": "政策金利の水準が一頃に比べて上昇しているなかにあっては"
+    }
+   ]
+  },
+  {
+   "id": "econ-underlying",
+   "type": "affects",
+   "label": "需給ギャップを通じて",
+   "source": "econ",
+   "target": "underlying",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 4100,
+     "end": 4113,
+     "text": "上記の経済の見通しのもとで"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "underlying-overshoot",
+   "type": "affects",
+   "label": "２％に近いからこそ",
+   "source": "underlying",
+   "target": "overshoot",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 7554,
+     "end": 7575,
+     "text": "基調的な物価上昇率が２％に近づいているなか"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "mideast-overshoot",
+   "type": "affects",
+   "label": "原油高を起点に価格転嫁",
+   "source": "mideast",
+   "target": "overshoot",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 4845,
+     "end": 4880,
+     "text": "原油高を起点に企業間取引における価格転嫁がやや速いスピードで進んでおり"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "ai-overshoot",
+   "type": "affects",
+   "label": "上昇圧力が一段と高まる",
+   "source": "ai",
+   "target": "overshoot",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 5402,
+     "end": 5421,
+     "text": "価格面での上昇圧力が一段と高まるリスク"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "fx-overshoot",
+   "type": "affects",
+   "label": "予想物価を通じて",
+   "source": "fx",
+   "target": "overshoot",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 5919,
+     "end": 5950,
+     "text": "予想物価上昇率の変化を通じて基調的な物価上昇率に影響する可能性"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "mideast-econ2026",
+   "type": "affects",
+   "label": "想定以上に下押し",
+   "source": "mideast",
+   "target": "econ-2026",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 4797,
+     "end": 4820,
+     "text": "企業収益や家計の実質所得を想定以上に下押しする"
+    }
+   ],
+   "polarity": "-"
+  },
+  {
+   "id": "finance-econ2026",
+   "type": "affects",
+   "label": "下支え",
+   "source": "finance",
+   "target": "econ-2026",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 1752,
+     "end": 1771,
+     "text": "緩和的な金融環境などが経済を下支えする"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "econ2026-econ2027",
+   "type": "then",
+   "label": "原油高が薄れると",
+   "source": "econ-2026",
+   "target": "econ-2027",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 2355,
+     "end": 2370,
+     "text": "原油高のマイナスの影響が減衰し"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "cpi-econ2026",
+   "type": "affects",
+   "label": "消費の重し",
+   "source": "cpi",
+   "target": "econ-2026",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 2186,
+     "end": 2206,
+     "text": "エネルギーを中心とした物価上昇の影響から"
+    }
+   ],
+   "polarity": "-"
+  },
+  {
+   "id": "cpi-econ2027",
+   "type": "affects",
+   "label": "落ち着けば消費が戻る",
+   "source": "cpi",
+   "target": "econ-2027",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 2717,
+     "end": 2736,
+     "text": "物価の上昇ペースが徐々に落ち着いていく"
+    }
+   ],
+   "polarity": "-"
+  },
+  {
+   "id": "premises-cpi",
+   "type": "conditions",
+   "label": "見通しを左右",
+   "source": "premises",
+   "target": "cpi",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 3465,
+     "end": 3489,
+     "text": "原油価格の動向や政府による各種施策の影響も受ける"
+    }
+   ]
+  },
+  {
+   "id": "longer-econbase",
+   "type": "affects",
+   "label": "潜在成長率を左右",
+   "source": "longer",
+   "target": "econ-base",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 6131,
+     "end": 6147,
+     "text": "成長期待や潜在成長率に与える影響"
+    }
+   ]
+  },
+  {
+   "id": "policy-longer",
+   "type": "affects",
+   "label": "物価の安定が成長投資を支える",
+   "source": "policy",
+   "target": "longer",
+   "provenance": "explicit",
+   "sourceSpans": [
+    {
+     "start": 6322,
+     "end": 6364,
+     "text": "適切な金融政策運営を通じて物価の安定を実現することは、わが国の成長投資の拡大を支える"
+    }
+   ],
+   "polarity": "+"
+  },
+  {
+   "id": "now-econ",
+   "type": "then",
+   "label": "ここから先行きへ",
+   "source": "now",
+   "target": "econ",
+   "provenance": "inferred",
+   "sourceSpans": [
+    {
+     "start": 1592,
+     "end": 1607,
+     "text": "先行きのわが国経済を展望すると"
+    }
+   ],
+   "note": "現状の評価が見通しの出発点になる。本文は章立てと「先行き」で示すだけで、因果としては結んでいない。"
+  },
+  {
+   "id": "now-prices",
+   "type": "then",
+   "label": "ここから先行きへ",
+   "source": "now",
+   "target": "prices",
+   "provenance": "inferred",
+   "sourceSpans": [
+    {
+     "start": 245,
+     "end": 257,
+     "text": "物価の先行きを展望すると"
+    }
+   ],
+   "note": "同上。"
+  }
+ ],
+ "metadata": {
+  "title": "経済・物価情勢の展望（2026年7月）基本的見解",
+  "source": "日本銀行「経済・物価情勢の展望（2026年7月）」基本的見解（本文・注。図表と数値表を除く）",
+  "language": "ja"
+ }
+}
+</script>
+<!-- View options (presentation only; never part of the model). build_viewer.py replaces this block. -->
+<script type="application/json" id="semantic-view">
+{}
+</script>
+
+<script>
+(function () {
+'use strict';
+
+/* =====================================================================
+   0. Utilities
+   ===================================================================== */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const SVGNS = 'http://www.w3.org/2000/svg';
+const svgEl = (tag, attrs = {}, parent) => {
+  const el = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(el);
+  return el;
+};
+const h = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const k in attrs) {
+    if (attrs[k] == null) continue;
+    if (k === 'class') el.className = attrs[k];
+    else if (k.startsWith('on')) el.addEventListener(k.slice(2), attrs[k]);
+    else el.setAttribute(k, attrs[k]);
+  }
+  for (const kid of kids) if (kid != null && kid !== false) el.append(kid);
+  return el;
+};
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function readJSON(id) {
+  const el = document.getElementById(id);
+  const t = el ? el.textContent.trim() : '';
+  return t ? JSON.parse(t) : null;
+}
+
+/* =====================================================================
+   1. Model: read, check lightly, index
+   ===================================================================== */
+const PROV = ['explicit', 'inferred', 'abstracted', 'uncertain'];
+const problems = [];
+let model, viewOpt;
+try {
+  model = readJSON('semantic-structure');
+  viewOpt = readJSON('semantic-view') || {};
+} catch (e) {
+  document.body.textContent = 'Could not read the embedded Semantic Structure: ' + e.message;
+  return;
+}
+if (!model || typeof model.sourceText !== 'string') {
+  document.body.textContent = 'No Semantic Structure is embedded in this page.';
+  return;
+}
+// dark by default; "light", or "auto" to follow the system. The reader can switch, and the choice is remembered here.
+const THEME_KEY = 'semantic-structure-viewer:theme';
+let savedTheme = null;
+try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) { /* storage unavailable */ }
+document.documentElement.dataset.theme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme
+  : viewOpt.theme === 'light' || (viewOpt.theme === 'auto' && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+const meta = model.metadata && typeof model.metadata === 'object' ? model.metadata : {};
+const text = model.sourceText;
+const cps = Array.from(text);                 // offsets are Unicode code points
+const textLen = cps.length;
+const slice = (s, e) => cps.slice(s, e).join('');
+
+const LANG = viewOpt.lang || meta.language || (/[぀-ヿ一-鿿]/.test(text) ? 'ja' : 'en');
+const I18N = {
+  en: {
+    focusAxis: 'Focus', formAxis: 'Form', stopText: 'Text', stopChunks: 'Chunks', stopModel: 'Model',
+    repStructure: 'Structure', repLinear: 'Linear', repTable: 'Table', repSummary: 'Summary', repSlides: 'Slides', light: 'Light', dark: 'Dark', play: 'Play to the summary', pause: 'Pause',
+    byNotes: 'Notes order', byReading: 'Reading order',
+    phase_text: 'Text', phase_wrap: 'Chunk', phase_notes: 'Notes', phase_structure: 'Structure', phase_link: 'Link', phase_summary: 'One sentence',
+    capNotes: 'Each chunk becomes a note: its message, and what matters in it', capStructure: 'The notes take their places: what leads to what',
+    capText: 'characters', conclusion: 'CONCLUSION', key: 'KEY', headline: 'Headline', points: 'Points', other: 'Other chunks', noSummary: 'This model has no summary.',
+    inText: 'In the text', links: 'Relations', basis: 'Derived from', basisOf: 'Basis for', partOf: 'Part of', contains: 'Contains', note: 'Note',
+    goText: 'Down to the text', release: 'Release', close: 'Hide (stays pinned)',
+    hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks, passage by passage; on the right, the chunks in the text\'s order. Keep dragging to rise to the model, where they merge and take their places.', hintText: 'Drag the knob on the gauge (top right) to the right: the text is wrapped into chunks, the chunks become a model, and the model one sentence. ▶ plays it to the summary.',
+    kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS', textOrder: 'IN TEXT ORDER',
+    explicit: 'explicit — stated in the text', inferred: 'inferred — follows from the text, not stated', abstracted: 'abstracted — a grouping made while modeling', uncertain: 'uncertain — more than one reading',
+    problems: 'Some parts of the model could not be shown',
+  },
+  ja: {
+    focusAxis: 'フォーカス', formAxis: '表現', stopText: '原文', stopChunks: '塊', stopModel: 'モデル',
+    repStructure: '構造', repLinear: '線形', repTable: '表', repSummary: '要約', repSlides: 'スライド', light: 'ライト', dark: 'ダーク', play: '要約まで再生', pause: '一時停止',
+    byNotes: 'ノート順', byReading: '読む順',
+    phase_text: '原文', phase_wrap: '塊を巻く', phase_notes: 'ノートにする', phase_structure: '構造にする', phase_link: 'つなぐ', phase_summary: '一言にする',
+    capNotes: '塊がノートになる：その塊のメッセージと、落とせない要点', capStructure: 'ノートが持ち場につく：何が何につながるか',
+    capText: '字', conclusion: '結論', key: '注目', headline: '見出し', points: '要点', other: 'ほかの塊', noSummary: 'このモデルには要約（summary）がありません。',
+    inText: '原文', links: 'つながり', basis: '根拠（導出元）', basisOf: 'これを根拠とするもの', partOf: '含まれる先', contains: '含むもの', note: 'メモ',
+    goText: '原文へ降りる', release: '解除', close: '閉じる（固定は維持）',
+    hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を一節ずつ塊に巻いた層。右は原文の順に並んだ塊の一覧。さらに右へ動かすと、塊がまとまって持ち場につき、モデルになる。', hintText: '右上のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルに、モデルが一言の要約になる。▶ で要約まで再生。',
+    kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS · 塊', textOrder: '原文の順',
+    explicit: 'explicit — 原文に明示', inferred: 'inferred — 原文から推論（明示はない）', abstracted: 'abstracted — モデル化でまとめたもの', uncertain: 'uncertain — 複数の読みがありうる',
+    problems: 'モデルの一部を表示できませんでした',
+  },
+};
+const T = I18N[LANG] || I18N.en;
+document.documentElement.lang = LANG;
+$$('[data-i18n]').forEach(el => { el.textContent = T[el.dataset.i18n] || el.textContent; });
+
+function readSpans(raw, owner) {
+  const out = [];
+  (Array.isArray(raw && raw.sourceSpans) ? raw.sourceSpans : []).forEach((sp, k) => {
+    if (!sp || !Number.isInteger(sp.start) || !Number.isInteger(sp.end) || sp.start < 0 || sp.end > textLen || sp.start >= sp.end) {
+      problems.push(`${owner}: span ${k + 1} is out of range`); return;
+    }
+    if (typeof sp.text === 'string' && sp.text !== slice(sp.start, sp.end)) problems.push(`${owner}: span ${k + 1} does not match the text`);
+    out.push({ start: sp.start, end: sp.end });
+  });
+  return out.sort((a, b) => a.start - b.start || a.end - b.end);
+}
+const prov = v => PROV.includes(v) ? v : 'explicit';
+
+const nodes = new Map();
+const nodeList = [];
+const elsById = new Map();
+(Array.isArray(model.nodes) ? model.nodes : []).forEach((raw, i) => {
+  if (!raw || typeof raw.id !== 'string' || elsById.has(raw.id)) { problems.push(`node #${i + 1}: missing or duplicate id`); return; }
+  const n = {
+    kind: 'node', id: raw.id, label: String(raw.label ?? raw.id), type: typeof raw.type === 'string' ? raw.type : '',
+    prov: prov(raw.provenance), spans: readSpans(raw, raw.id), role: raw.role, note: typeof raw.note === 'string' ? raw.note : '',
+    derivedFrom: Array.isArray(raw.derivedFrom) ? raw.derivedFrom.filter(x => typeof x === 'string') : [],
+    parentId: typeof raw.parent === 'string' ? raw.parent : null, parent: null, children: [], points: [], rels: [],
+  };
+  const pts = Array.isArray(raw.points) ? raw.points : [];
+  pts.forEach((p, k) => {
+    if (!p || typeof p.label !== 'string') return;
+    n.points.push({ kind: 'point', node: n, k: n.points.length, label: p.label, when: typeof p.when === 'string' ? p.when : '',
+      prov: p.provenance ? prov(p.provenance) : n.prov, spans: readSpans(p, `${n.id} point ${k + 1}`), note: typeof p.note === 'string' ? p.note : '' });
+  });
+  nodes.set(n.id, n); nodeList.push(n); elsById.set(n.id, n);
+});
+const rels = [];
+(Array.isArray(model.relations) ? model.relations : []).forEach((raw, i) => {
+  if (!raw || typeof raw.id !== 'string' || elsById.has(raw.id)) { problems.push(`relation #${i + 1}: missing or duplicate id`); return; }
+  const s = nodes.get(raw.source), t = nodes.get(raw.target);
+  if (!s || !t) { problems.push(`${raw.id}: source or target is not a node`); return; }
+  const r = {
+    kind: 'rel', id: raw.id, source: s, target: t, type: String(raw.type || ''), label: String(raw.label || raw.type || ''),
+    prov: prov(raw.provenance), polarity: raw.polarity === '+' || raw.polarity === '-' ? raw.polarity : null, directed: raw.directed !== false,
+    spans: readSpans(raw, raw.id), note: typeof raw.note === 'string' ? raw.note : '',
+    derivedFrom: Array.isArray(raw.derivedFrom) ? raw.derivedFrom.filter(x => typeof x === 'string') : [],
+  };
+  rels.push(r); elsById.set(r.id, r);
+  s.rels.push(r); if (t !== s) t.rels.push(r);
+});
+nodeList.forEach(n => {
+  const p = n.parentId && nodes.get(n.parentId);
+  if (!p) return;
+  for (let a = p; a; a = a.parent) if (a === n) { problems.push(`${n.id}: parent loop`); return; }
+  n.parent = p; p.children.push(n);
+});
+// the notes' order: model order, parts under their parent (2, 2.1, 2.2)
+const roots = nodeList.filter(n => !n.parent);
+const order = [];
+(function number(list, prefix, depth) {
+  list.forEach((n, k) => {
+    n.num = prefix ? `${prefix}.${k + 1}` : String(k + 1);
+    n.depth = depth; n.ord = order.length; order.push(n);
+    number(n.children, n.num, depth + 1);
+  });
+})(roots, '', 0);
+const maxDepth = order.reduce((m, n) => Math.max(m, n.depth), 0);
+const ancestors = n => { const out = []; for (let a = n.parent; a; a = a.parent) out.push(a); return out; };
+const descendants = n => n.children.flatMap(c => [c, ...descendants(c)]);
+const unitOf = n => { while (n.parent) n = n.parent; return n; };
+// the text's passages, in the order they are read. At the chunk layer each is a chunk of its own, as the text has it;
+// only the model merges a chunk's passages, nests the parts and puts them in the notes' order.
+const blocks = order.flatMap(n => n.spans.map((sp, k) => ({ n, sp, k }))).sort((a, b) => a.sp.start - b.sp.start || a.sp.end - b.sp.end);
+blocks.forEach((b, i) => { b.i = i; b.no = String(i + 1).padStart(2, '0'); });
+order.forEach(n => { n.blocks = blocks.filter(b => b.n === n); });
+const NB = Math.max(1, blocks.length - 1);
+// home: the passage a chunk is anchored to (its longest span); pos: where it first appears
+order.slice().reverse().forEach(n => {
+  n.home = n.spans.slice().sort((a, b) => (b.end - b.start) - (a.end - a.start))[0] || n.children.map(c => c.home).find(Boolean) || null;
+  const all = n.spans.concat(...n.points.map(p => p.spans));
+  n.pos = all.length ? Math.min(...all.map(s => s.start)) : Math.min(Infinity, ...n.children.map(c => c.pos));
+});
+const conclusions = order.filter(n => n.role === 'conclusion');
+const summary = (Array.isArray(model.summary) ? model.summary : [])
+  .filter(p => p && typeof p.text === 'string' && p.text)
+  .map((p, i) => ({ kind: 'phrase', i, text: p.text, refs: (Array.isArray(p.refs) ? p.refs : []).map(id => nodes.get(id)).filter(Boolean) }));
+const signOf = r => r.polarity === '+' ? 'pos' : r.polarity === '-' ? 'neg' : '';
+const titleNum = n => n.num.split('.').map((x, i) => i ? x : x.padStart(2, '0')).join('.');
+
+/* =====================================================================
+   2. L0: the text, cut at every span boundary
+   ===================================================================== */
+const textEl = $('#text');
+const owners = [];
+order.forEach(n => { if (n.spans.length) owners.push(n); n.points.forEach(p => { if (p.spans.length) owners.push(p); }); });
+rels.forEach(r => { if (r.spans.length) owners.push(r); });
+const cutSet = new Set([0, textLen]);
+owners.forEach(o => o.spans.forEach(sp => { cutSet.add(sp.start); cutSet.add(sp.end); }));
+const bounds = [...cutSet].sort((a, b) => a - b);
+const segIndex = new Map(bounds.map((b, i) => [b, i]));
+const segs = [];
+for (let i = 0; i < bounds.length - 1; i++) segs.push({ i, start: bounds[i], end: bounds[i + 1], owners: [] });
+owners.forEach(o => {
+  o.segs = [];
+  o.spans.forEach(sp => { for (let k = segIndex.get(sp.start); k < segIndex.get(sp.end); k++) { segs[k].owners.push({ o, len: sp.end - sp.start }); o.segs.push(k); } });
+});
+const segEls = segs.map(s => { const el = h('span', { class: s.owners.length ? 'seg c' : 'seg' }, slice(s.start, s.end)); el.dataset.k = s.i; return el; });
+textEl.append(...segEls);
+const KIND_RANK = { point: 0, rel: 1, node: 2 };
+function targetOfSeg(k) {   // the element with the smallest span over this piece of text
+  const own = segs[k].owners.slice().sort((a, b) => a.len - b.len || KIND_RANK[a.o.kind] - KIND_RANK[b.o.kind]);
+  return own.length ? own[0].o : null;
+}
+const spanSegs = sp => [segIndex.get(sp.start), segIndex.get(sp.end) - 1];
+const sentenceNo = (() => {
+  const out = []; let start = 0;
+  const END = new Set(Array.from('。．！？!?')), CLOSE = new Set(Array.from('」』）)】〕］]"\'”’'));
+  for (let i = 0; i < textLen; i++) {
+    const ch = cps[i];
+    const headingNumber = ch === '．' && i > 0 && /[0-9０-９]/.test(cps[i - 1]);
+    if (ch === '\n' || (END.has(ch) && !headingNumber) || (ch === '.' && (i + 1 === textLen || /\s/.test(cps[i + 1])))) {
+      let j = i + 1;
+      if (ch !== '\n') while (j < textLen && CLOSE.has(cps[j])) j++;
+      if (slice(start, j).trim()) out.push([start, j]);
+      start = j; i = j - 1;
+    }
+  }
+  if (slice(start, textLen).trim()) out.push([start, textLen]);
+  return pos => out.findIndex(([a, b]) => pos >= a && pos < b) + 1;
+})();
+const sentenceLabel = sp => { const a = sentenceNo(sp.start), b = sentenceNo(Math.max(sp.start, sp.end - 1)); return a === b ? `S${a}` : `S${a}–${b}`; };
+
+/* =====================================================================
+   3. State: the stages, and how they connect
+   text — chunks — model, and from the model its forms. The gauge moves along this.
+   ===================================================================== */
+const body = document.body, main = $('#main');
+const textPane = $('#textPane'), page = $('#page'), slabs = $('#slabs'), marks = $('#marks');
+const modelPane = $('#modelPane'), stage = $('#stage'), repEl = $('#rep'), details = $('#details');
+const pointerSvg = $('#pointer'), fly = $('#fly'), gaugeSvg = $('#gaugeSvg'), tickerEl = $('#ticker');
+const STAGES = {
+  text: { stop: 'text', rep: 'chunks' },
+  chunks: { stop: 'chunks', rep: 'chunks' },
+  model: { stop: 'model', rep: 'structure' },
+  linear: { stop: 'model', rep: 'linear' },
+  table: { stop: 'model', rep: 'table' },
+  summary: { stop: 'model', rep: 'summary' },
+  slides: { stop: 'model', rep: 'slides' },
+};
+// text — chunks — model is the trunk, the meta levels; the model's forms branch off it: A summary, B linear (and on to B2 slides), C table
+const PARENT = { chunks: 'text', model: 'chunks', summary: 'model', linear: 'model', table: 'model', slides: 'linear' };
+const FORMS = ['summary', 'linear', 'table', 'slides'];
+const SEGS = Object.entries(PARENT).map(([child, parent]) => [parent, child]);
+const first = STAGES[viewOpt.stage] ? viewOpt.stage : 'text';
+const S = { stage: first, stop: STAGES[first].stop, rep: STAGES[first].rep, hover: null, pinned: null, hoverSeg: null, follow: viewOpt.follow !== false };
+const isWrapped = () => S.stop !== 'text';
+const isShownRel = () => true;
+let G = {};
+
+/* =====================================================================
+   4. Layout of the ground and the space above it
+   ===================================================================== */
+const GUTTER = 34 + (maxDepth + 1) * 9;
+function geometry() {
+  const mw = main.clientWidth, mh = main.clientHeight;
+  const narrow = mw < 760;
+  const colW = narrow ? Math.max(240, mw - GUTTER - 22) : clamp(Math.round(mw * 0.355), 300, 560);
+  return { mw, mh, narrow, colW };
+}
+function applyLayout() {
+  G = geometry();
+  body.dataset.stop = S.stop;
+  main.classList.toggle('narrow', G.narrow);
+  const rs = document.documentElement.style;
+  rs.setProperty('--gutter', GUTTER + 'px'); rs.setProperty('--col', G.colW + 'px');
+  if (G.narrow) {
+    textPane.style.width = '100%'; textPane.style.marginLeft = '0';
+    textPane.style.height = S.stop === 'text' ? '100%' : '46%';
+  } else {
+    // the text keeps its width on every layer, so it never reflows; on the ground it is centred
+    const w = GUTTER + G.colW + 30;
+    textPane.style.height = '100%'; textPane.style.width = w + 'px';
+    // centred, but clear of the HUD
+    const hudLeft = G.mw - 14 - $('#gauge').offsetWidth - 16;
+    textPane.style.marginLeft = S.stop === 'text' ? Math.max(0, Math.min((G.mw - w) / 2, hudLeft - w)) + 'px' : '0';
+  }
+  const mm = $('#minimap');
+  mm.hidden = !FORMS.includes(S.stage) || G.narrow;
+  main.classList.toggle('forms', !mm.hidden);
+  // at a form the details dock sits beside the small model; the model gives way first, then the dock goes on top of it
+  const paneW = G.narrow ? G.mw : G.mw - textPane.offsetWidth, room = paneW - 28 - 10 - 320;
+  rs.setProperty('--mm-w', clamp(room, 260, 380) + 'px');
+  main.classList.toggle('stacked', room < 260);
+  rs.setProperty('--mm-h', mm.offsetHeight + 'px');
+  // the model's side starts below the HUD
+  body.classList.toggle('narrow', G.narrow);
+  const hud = $('#gauge').getBoundingClientRect(), top = main.getBoundingClientRect().top;
+  const overNotes = !G.narrow && S.stop !== 'text';
+  rs.setProperty('--ticker-x', overNotes ? Math.round(textPane.offsetWidth + (G.mw - textPane.offsetWidth) / 2) + 'px' : '50%');
+  rs.setProperty('--ticker-w', overNotes ? Math.round(G.mw - textPane.offsetWidth - 40) + 'px' : 'calc(100% - 32px)');
+  rs.setProperty('--hud-clear', (G.narrow ? 28 : Math.max(28, Math.round(hud.bottom - top + 16))) + 'px');
+  rs.setProperty('--gauge-clear', (G.narrow ? Math.round(main.getBoundingClientRect().bottom - hud.top + 8) : 176) + 'px');
+  const hint = $('#hint');
+  if (hint.textContent !== (hint.textContent = S.stop === 'model' ? T.hintModel : S.stop === 'chunks' ? T.hintChunks : T.hintText)) {
+    hint.classList.remove('gone'); clearTimeout(hint._t); hint._t = setTimeout(() => hint.classList.add('gone'), 7000);
+  }
+}
+/* ---- L1: brackets and slabs ---- */
+function spanBox(sp) {
+  const [a, b] = spanSegs(sp);
+  if (a == null || b == null || a > b) return null;
+  const range = document.createRange();
+  range.setStartBefore(segEls[a]); range.setEndAfter(segEls[b]);
+  const rs = Array.from(range.getClientRects()).filter(r => r.width > 0.5 && r.height > 0.5);
+  if (!rs.length) return null;
+  return { top: Math.min(...rs.map(r => r.top)), bottom: Math.max(...rs.map(r => r.bottom)), left: Math.min(...rs.map(r => r.left)), right: Math.max(...rs.map(r => r.right)), rects: rs };
+}
+function measureBoxes() {
+  const pr = page.getBoundingClientRect();
+  order.forEach(n => {
+    n.boxes = n.spans.map((sp, k) => { const b = spanBox(sp); return b && { sp, k, top: b.top - pr.top, bottom: b.bottom - pr.top }; }).filter(Boolean);
+    const hb = n.home && spanBox(n.home);
+    n.homeBox = hb ? { top: hb.top - pr.top, bottom: hb.bottom - pr.top } : null;
+  });
+}
+const bracketX = d => GUTTER - 10 - (maxDepth - d) * 9;
+function drawMarks(lift = new Set()) {
+  marks.innerHTML = ''; slabs.innerHTML = '';
+  if (S.stop === 'text') return;
+  const W = page.scrollWidth, H = page.scrollHeight;
+  [marks, slabs].forEach(s => { s.setAttribute('width', W); s.setAttribute('height', H); s.style.width = W + 'px'; s.style.height = H + 'px'; });
+  const labels = [], flat = S.stop === 'chunks';
+  order.forEach(n => {
+    if (!isWrapped(n)) return;
+    const depth = flat ? 0 : n.depth;
+    n.boxes.forEach(b => {
+      const x = bracketX(flat ? maxDepth : n.depth), y0 = b.top + 3, y1 = b.bottom - 3;
+      const g = svgEl('g', { class: 'br', 'data-node': n.id, 'data-k': b.k }, marks);
+      const d = `M${x + 6},${y0} H${x} V${y1} H${x + 6}`;
+      svgEl('path', { class: 'line', d, pathLength: 1 }, g);
+      svgEl('path', { class: 'hit', d }, g);
+      labels.push({ g, y: y0 - 1, text: flat ? (n.blocks.find(x => x.k === b.k) || { no: n.num }).no : n.num });
+      // the slab: the passage lifted off the page
+      const inset = depth * 5;
+      const sg = svgEl('g', { class: 'sl' + (lift.has(n.id) ? ' lift' : ''), 'data-node': n.id, 'data-k': b.k }, slabs);
+      svgEl('rect', { class: 'shadow', x: GUTTER - 6 + inset + 4, y: b.top - 2 + 4, width: G.colW + 12 - inset * 2, height: b.bottom - b.top + 4, rx: 6 }, sg);
+      svgEl('rect', { class: 'slab', x: GUTTER - 6 + inset, y: b.top - 2, width: G.colW + 12 - inset * 2, height: b.bottom - b.top + 4, rx: 6 }, sg);
+    });
+  });
+  labels.sort((a, b) => a.y - b.y);
+  let last = -99;
+  labels.forEach(l => {
+    const y = Math.max(l.y, last + 13); last = y;
+    const t = svgEl('text', { x: bracketX(0) - 4, y }, l.g); t.textContent = l.text;
+  });
+}
+function layoutText() { measureBoxes(); drawMarks(); }
+
+/* =====================================================================
+   5. L2: the model's forms — structure, linear, table, summary
+   ===================================================================== */
+function pointEl(p, noWhen) {
+  return h('li', { class: 'pt', 'data-key': `pt:${p.node.id}:${p.k}`, 'data-node': p.node.id, 'data-pt': p.k },
+    p.when && !noWhen ? h('span', { class: 'when' }, p.when) : null, p.label);
+}
+// the conclusion is what the text concludes; the key is what matters most to a reader when that is something else
+const roleCls = n => n.role === 'conclusion' ? ' concl' : n.role === 'key' ? ' key' : '';
+const kickOf = n => [n.role === 'conclusion' ? T.conclusion : n.role === 'key' ? '◆ ' + T.key : '', n.type].filter(Boolean).join(' · ');
+function cardEl(n, withPoints) {
+  const kick = kickOf(n);
+  const c = h('div', { class: `card box d${Math.min(n.depth, 1)} prov-${n.prov}${roleCls(n)}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
+    kick ? h('span', { class: 'kicker' }, kick) : null,
+    h('div', { class: 'ch' }, h('b', { class: 'num', 'data-key': `num:${n.id}` }, n.num), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)));
+  if (withPoints && n.points.length) c.append(h('ul', { class: 'pts' }, ...n.points.map(p => pointEl(p))));
+  if (n.children.length) c.append(h('div', { class: 'kids' }, ...n.children.map(k => cardEl(k, withPoints))));
+  return c;
+}
+// structure: top-level chunks in columns that flow toward the conclusion
+const unitRank = (() => {
+  const into = new Map(), out = new Set();
+  rels.forEach(r => {
+    const u = unitOf(r.source), v = unitOf(r.target);
+    if (u === v) return;
+    if (!into.has(v.id)) into.set(v.id, new Set());
+    into.get(v.id).add(u); out.add(u.id);
+  });
+  let sinks = roots.filter(u => u.role === 'conclusion' || descendants(u).some(n => n.role === 'conclusion'));
+  if (!sinks.length) sinks = roots.filter(u => !out.has(u.id) && into.has(u.id));
+  const rank = new Map(sinks.map(u => [u.id, 0]));
+  const queue = sinks.slice();
+  while (queue.length) {
+    const v = queue.shift();
+    (into.get(v.id) || []).forEach(u => { if (!rank.has(u.id)) { rank.set(u.id, rank.get(v.id) + 1); queue.push(u); } });
+  }
+  const max = Math.max(0, ...rank.values());
+  roots.forEach(u => { if (!rank.has(u.id)) rank.set(u.id, rels.length ? max + 1 : 0); });
+  return rank;
+})();
+function renderStructure() {
+  const width = stage.clientWidth - 56;
+  const maxCols = Math.max(1, Math.floor((width + 88) / 260));
+  const R = Math.min(Math.max(0, ...roots.map(u => unitRank.get(u.id))), maxCols - 1);
+  const cols = Array.from({ length: R + 1 }, () => []);
+  roots.forEach(u => cols[R - Math.min(unitRank.get(u.id), R)].push(u));
+  repEl.append(h('div', { class: 'cols' }, ...cols.map(list => h('div', { class: 'col' }, ...list.map(u => cardEl(u, false))))));
+}
+function renderLinear() { repEl.append(h('div', { class: 'stack' }, ...roots.map(u => cardEl(u, true)))); }
+function renderTable() {
+  const whens = [];
+  order.forEach(n => n.points.forEach(p => { if (p.when && !whens.includes(p.when)) whens.push(p.when); }));
+  const head = h('tr', {}, h('th', {}, T.headline), ...whens.map(w => h('th', {}, w)), h('th', {}, T.points));
+  const rows = order.map(n => h('tr', { class: `box d${Math.min(n.depth, 1)}${roleCls(n)}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
+    h('th', { class: 'rowh' }, h('b', { class: 'num', 'data-key': `num:${n.id}` }, n.num), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)),
+    ...whens.map(w => h('td', {}, h('ul', {}, ...n.points.filter(p => p.when === w).map(p => pointEl(p, true))))),
+    h('td', {}, h('ul', {}, ...n.points.filter(p => !p.when).map(p => pointEl(p))))));
+  repEl.append(h('table', {}, h('thead', {}, head), h('tbody', {}, ...rows)));
+}
+function renderSummary() {
+  repEl.append(h('div', { class: 'kick' }, LANG === 'ja' ? 'SUMMARY · 一言で' : 'SUMMARY · IN ONE SENTENCE'));
+  const gist = h('p', { class: 'gist' });
+  if (summary.length) {
+    summary.forEach(p => {
+      if (!p.refs.length) { gist.append(p.text); return; }
+      gist.append(h('span', { class: 'phrase', 'data-key': `phrase:${p.i}`, 'data-phrase': p.i, style: `animation-delay:${200 + p.i * 160}ms` },
+        p.text, h('sup', {}, p.refs.map(n => n.num).join('·'))));
+    });
+  } else gist.append(h('span', { class: 'empty' }, T.noSummary));
+  repEl.append(gist);
+  const refd = new Set(summary.flatMap(p => p.refs.map(n => n.id)));
+  const covered = n => refd.has(n.id) || (n.parent ? covered(n.parent) : false);
+  const rest = order.filter(n => !covered(n) && (!n.parent || covered(n.parent)));
+  if (rest.length) repEl.append(h('div', { class: 'rest' }, h('span', { class: 'rest-label' }, T.other),
+    ...rest.map(n => h('span', { class: 'chip box', 'data-key': `card:${n.id}`, 'data-node': n.id }, h('b', { class: 'num' }, n.num), h('span', {}, n.label)))));
+  // invisible anchors: where each chunk lands in the sentence
+  const rr = repEl.getBoundingClientRect();
+  const seen = new Set();
+  summary.forEach(p => p.refs.forEach(n => {
+    if (seen.has(n.id)) return; seen.add(n.id);
+    const el = repEl.querySelector(`[data-phrase="${p.i}"]`);
+    const r = el && el.getClientRects()[0];
+    if (!r) return;
+    repEl.append(h('div', { class: 'anchor box', 'data-key': `card:${n.id}`, 'data-node': n.id,
+      style: `left:${r.left - rr.left}px;top:${r.top - rr.top}px;width:${r.width}px;height:${r.height}px` }));
+  }));
+}
+function renderChunks() {      // one row for each passage, in the text's order: nothing merged, nested or moved yet
+  repEl.append(h('div', { class: 'kick' }, `${T.chunksN}  ${blocks.length}  ·  ${T.textOrder}`));
+  repEl.append(h('div', { class: 'clist' }, ...blocks.map(b => h('div', {
+    class: 'crow box' + (b.n.blocks[0] === b ? '' : ' again'), 'data-key': `blk:${b.n.id}:${b.k}`, 'data-node': b.n.id, 'data-k': b.k },
+    h('b', { class: 'num', 'data-key': `bnum:${b.n.id}:${b.k}` }, b.no), h('span', { class: 'head', 'data-key': `bhead:${b.n.id}:${b.k}` }, b.n.label)))));
+}
+function renderSlides() {
+  const deck = h('div', { class: 'deck' });
+  const total = order.length + 1 + (summary.length ? 1 : 0);
+  let k = 0;
+  const sno = () => h('span', { class: 'sno' }, `${String(++k).padStart(2, '0')} / ${String(total).padStart(2, '0')}`);
+  deck.append(h('section', { class: 'slide cover' }, sno(), h('span', { class: 'kicker' }, meta.source ? 'NOTES' : 'NOTES'),
+    h('h2', {}, meta.title || ''), summary.length ? h('p', { class: 'lede' }, summary.map(p => p.text).join('')) : null));
+  order.forEach(n => {
+    const kick = kickOf(n);
+    deck.append(h('section', { class: `slide box ${n.children.length ? 'section' : 'content'}${roleCls(n)}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
+      sno(), kick ? h('span', { class: 'kicker' }, kick) : null,
+      h('div', { class: 'sh' }, h('b', { class: 'num', 'data-key': `num:${n.id}` }, titleNum(n)), h('span', { class: 'head', 'data-key': `head:${n.id}` }, n.label)),
+      n.points.length ? h('ul', { class: 'pts' }, ...n.points.map(p => pointEl(p))) : null));
+  });
+  if (summary.length) deck.append(h('section', { class: 'slide closing' }, sno(), h('span', { class: 'kicker' }, 'SUMMARY'), h('p', { class: 'gist' }, summary.map(p => p.text).join(''))));
+  repEl.append(deck);
+}
+function renderRep() {
+  repEl.innerHTML = '';
+  repEl.className = 'rep ' + S.rep;
+  if (S.stop === 'text') return;
+  ({ chunks: renderChunks, structure: renderStructure, linear: renderLinear, table: renderTable, summary: renderSummary, slides: renderSlides })[S.rep]();
+  repEl.append(svgEl('svg', { id: 'links' }));
+}
+
+/* ---- the minimap: the structure, small, with straight lines ---- */
+const MM = { box: new Map() };
+function buildMinimap() {
+  const svg = $('#mmSvg');
+  svg.innerHTML = '';
+  const R = Math.min(Math.max(0, ...roots.map(u => unitRank.get(u.id))), 4);
+  const cols = Array.from({ length: R + 1 }, () => []);
+  roots.forEach(u => cols[R - Math.min(unitRank.get(u.id), R)].push(u));
+  const cw = 104, gap = 44, hh = 17, ph = 11, pg = 3, ug = 10;
+  const unitH = u => hh + (u.children.length ? descendants(u).length * (ph + pg) + 3 : 0);
+  const colH = list => list.reduce((m, u) => m + unitH(u), 0) + ug * Math.max(0, list.length - 1);
+  const H = Math.max(...cols.map(colH)), W = cols.length * cw + (cols.length - 1) * gap;
+  MM.box = new Map();
+  cols.forEach((list, i) => {
+    let y = (H - colH(list)) / 2;
+    const x = i * (cw + gap);
+    list.forEach(u => {
+      MM.box.set(u.id, { x, y, w: cw, h: unitH(u) });
+      let yy = y + hh;
+      descendants(u).forEach(d => { const ind = (d.depth - u.depth - 1) * 6; MM.box.set(d.id, { x: x + 4 + ind, y: yy, w: cw - 8 - ind, h: ph }); yy += ph + pg; });
+      y += unitH(u) + ug;
+    });
+  });
+  svg.setAttribute('viewBox', `-8 -8 ${W + 16} ${H + 16}`);
+  const lg = svgEl('g', {}, svg);
+  rels.forEach(r => {
+    const a = MM.box.get(r.source.id), b = MM.box.get(r.target.id);
+    if (!a || !b || r.source === r.target) return;
+    const ya = a.y + Math.min(a.h / 2, 8), yb = b.y + Math.min(b.h / 2, 8);
+    let d;
+    if (b.x > a.x + a.w - 1) d = `M${a.x + a.w},${ya} L${b.x},${yb}`;
+    else if (a.x > b.x + b.w - 1) d = `M${a.x},${ya} L${b.x + b.w},${yb}`;
+    else { const xr = Math.max(a.x + a.w, b.x + b.w) + 6; d = `M${a.x + a.w},${ya} H${xr} V${yb} H${b.x + b.w}`; }
+    svgEl('path', { class: `mm-link ${signOf(r)}`, 'data-rel': r.id, d }, lg);
+  });
+  order.forEach(n => {
+    const b = MM.box.get(n.id);
+    if (!b) return;
+    const g = svgEl('g', { class: `mm-box ${n.parent ? 'part' : 'unit'}${roleCls(n)}`, 'data-node': n.id }, svg);
+    svgEl('rect', { x: b.x, y: b.y, width: b.w, height: b.h }, g);
+    svgEl('text', { x: b.x + 4, y: b.y + (n.parent ? 8.5 : 12) }, g).textContent = n.num;
+  });
+  MM.view = svgEl('rect', { class: 'mm-view', x: 0, y: 0, width: 0, height: 0 }, svg);
+}
+// like a game's minimap: the chunks in view in the form are framed
+function updateInView() {
+  const mm = $('#minimap');
+  if (mm.hidden || !MM.view) return;
+  const c = stage.getBoundingClientRect();
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  order.forEach(n => {
+    const el = repEl.querySelector(`[data-key="card:${n.id}"]`);
+    const r = el && el.getBoundingClientRect();
+    const seen = !!r && r.height > 0 && r.bottom > c.top + 4 && r.top < c.bottom - 4;
+    const g = mm.querySelector(`.mm-box[data-node="${n.id}"]`);
+    if (g) g.classList.toggle('inview', seen);
+    const b = MM.box.get(n.id);
+    if (seen && b) { x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.w); y1 = Math.max(y1, b.y + b.h); }
+  });
+  if (x1 > x0) Object.entries({ x: x0 - 3, y: y0 - 3, width: x1 - x0 + 6, height: y1 - y0 + 6 }).forEach(([k, v]) => MM.view.setAttribute(k, v));
+  else MM.view.setAttribute('width', 0);
+}
+
+/* ---- relation lines ---- */
+const repBox = el => { const a = el.getBoundingClientRect(), b = repEl.getBoundingClientRect(); return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height }; };
+function cardOf(n) {
+  for (let a = n; a; a = a.parent) { const el = repEl.querySelector(`.card[data-key="card:${a.id}"]`); if (el) return el; }
+  return null;
+}
+function drawLinks(grow = new Set()) {
+  const svg = $('#links', repEl);
+  if (!svg) return;
+  svg.innerHTML = '';
+  if (S.stop !== 'model' || (S.rep !== 'structure' && S.rep !== 'linear')) return;
+  const W = repEl.scrollWidth, H = repEl.scrollHeight;
+  svg.setAttribute('width', W); svg.setAttribute('height', H); svg.style.width = W + 'px'; svg.style.height = H + 'px';
+  let k = 0;
+  rels.forEach(r => {
+    if (!isShownRel(r)) return;
+    const a = cardOf(r.source), b = cardOf(r.target);
+    if (!a || !b || a === b) return;
+    const A = repBox(a), B = repBox(b);
+    const yA = A.y + Math.min(A.h / 2, 18), yB = B.y + Math.min(B.h / 2, 18);
+    let p0, p1, c0, c1, lx, ly;
+    if (S.rep === 'linear') {
+      const xr = Math.max(A.x + A.w, B.x + B.w), d = 22 + Math.min(110, Math.abs(yB - yA) * 0.18);
+      p0 = [A.x + A.w + 2, yA]; p1 = [B.x + B.w + 6, yB]; c0 = [xr + d, yA]; c1 = [xr + d, yB];
+      lx = xr + d * 0.78; ly = (yA + yB) / 2;
+    } else if (B.x > A.x + A.w - 4) {
+      p0 = [A.x + A.w, yA]; p1 = [B.x - 4, yB];
+      const dx = Math.max(30, (p1[0] - p0[0]) * 0.5); c0 = [p0[0] + dx, yA]; c1 = [p1[0] - dx, yB];
+    } else if (A.x > B.x + B.w - 4) {
+      p0 = [A.x, yA]; p1 = [B.x + B.w + 4, yB];
+      const dx = Math.max(30, (p0[0] - p1[0]) * 0.5); c0 = [p0[0] - dx, yA]; c1 = [p1[0] + dx, yB];
+    } else {
+      const xr = Math.max(A.x + A.w, B.x + B.w), d = 24 + Math.min(70, Math.abs(yB - yA) * 0.15);
+      p0 = [A.x + A.w, yA]; p1 = [B.x + B.w + 4, yB]; c0 = [xr + d, yA]; c1 = [xr + d, yB];
+    }
+    if (lx == null) {   // labels sit nearer the source, so the ones converging on a card do not pile up
+      const t = 0.4, u = 1 - t, bz = d => u * u * u * p0[d] + 3 * u * u * t * c0[d] + 3 * u * t * t * c1[d] + t * t * t * p1[d];
+      lx = bz(0); ly = bz(1);
+    }
+    const growing = grow.has(r.id);
+    const delay = growing ? (k++ * 160) : 0;
+    const g = svgEl('g', { class: `link ${signOf(r)} prov-${r.prov}${growing ? ' grow' : ''}${r.target.role === 'conclusion' && S.rep === 'structure' ? ' show' : ''}`, 'data-rel': r.id }, svg);
+    const d = `M${p0[0]},${p0[1]} C${c0[0]},${c0[1]} ${c1[0]},${c1[1]} ${p1[0]},${p1[1]}`;
+    const path = svgEl('path', { class: 'l', d, pathLength: 1 }, g);
+    svgEl('path', { class: 'hit', d }, g);
+    let ar = null;
+    if (r.directed) {
+      const ang = Math.atan2(p1[1] - c1[1], p1[0] - c1[0]), s = 7;
+      const L = [p1[0] - s * Math.cos(ang - 0.42), p1[1] - s * Math.sin(ang - 0.42)], Rr = [p1[0] - s * Math.cos(ang + 0.42), p1[1] - s * Math.sin(ang + 0.42)];
+      ar = svgEl('path', { class: 'a', d: `M${p1[0]},${p1[1]} L${L[0]},${L[1]} L${Rr[0]},${Rr[1]} Z` }, g);
+    }
+    const sg = r.polarity === '+' ? '＋ ' : r.polarity === '-' ? '− ' : '';
+    const lbl = svgEl('g', { class: 'lbl', transform: `translate(${lx},${ly})` }, g);
+    const t = svgEl('text', {}, lbl); t.textContent = sg + r.label;
+    const w = Math.min(240, t.getComputedTextLength() + 16);
+    lbl.insertBefore(svgEl('rect', { x: -w / 2, y: -10, width: w, height: 20, rx: 10 }), t);
+    if (growing) {
+      path.style.animationDelay = delay + 'ms';
+      if (ar) ar.style.animationDelay = (delay + 620) + 'ms';
+      lbl.style.animationDelay = (delay + 520) + 'ms';
+    }
+  });
+}
+
+/* =====================================================================
+   6. The gauge's engine. Between two neighbouring stages the page can stand at any
+   point u in [0, 1]: every keyed piece (a chunk's card, number, headline, each point)
+   is shown by ghosts placed between where it is in one stage and where it is in the
+   other. Chunks wrap, and lines grow, in order as u advances. Letting go settles to
+   the nearer stage.
+   ===================================================================== */
+const GHOST_PROPS = ['color', 'backgroundColor', 'fontSize', 'fontWeight', 'fontFamily', 'lineHeight', 'letterSpacing', 'textAlign', 'whiteSpace',
+  'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'borderTopWidth', 'borderRightWidth', 'borderBottomWidth', 'borderLeftWidth',
+  'borderTopStyle', 'borderRightStyle', 'borderBottomStyle', 'borderLeftStyle', 'borderTopColor', 'borderRightColor', 'borderBottomColor', 'borderLeftColor',
+  'borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomLeftRadius', 'borderBottomRightRadius', 'boxShadow', 'opacity', 'backgroundImage', 'backgroundSize', 'backgroundPosition', 'backgroundRepeat'];
+function visibleIn(el, r) {
+  const pane = el.closest('#textPane, #stage');
+  if (!pane) return true;
+  const c = pane.getBoundingClientRect();
+  return r.bottom > c.top - 30 && r.top < c.bottom + 30 && r.right > c.left - 30 && r.left < c.right + 30;
+}
+function snapshot() {
+  const map = new Map();
+  $$('#textPane [data-key], #modelPane [data-key]').forEach(el => {
+    const key = el.dataset.key;
+    if (map.has(key)) return;
+    const r = el.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1 || !visibleIn(el, r)) return;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === 'hidden' || cs.display === 'none') return;
+    const style = {}; GHOST_PROPS.forEach(p => { style[p] = cs[p]; });
+    map.set(key, { el, r, style, box: el.classList.contains('box') });
+  });
+  const c = textPane.getBoundingClientRect();
+  order.forEach(n => {
+    if (!n.home) return;
+    const b = spanBox(n.home);
+    if (!b) return;
+    const top = clamp(b.top, c.top, c.bottom), bottom = clamp(b.bottom, c.top, c.bottom);
+    if (bottom - top < 6) return;
+    map.set('passage:' + n.id, { r: { left: b.left, top, width: b.right - b.left, height: bottom - top }, passage: true, box: true });
+  });
+  blocks.forEach(bl => {
+    const b = spanBox(bl.sp);
+    if (!b) return;
+    const top = clamp(b.top, c.top, c.bottom), bottom = clamp(b.bottom, c.top, c.bottom);
+    if (bottom - top < 6) return;
+    map.set(`pass:${bl.n.id}:${bl.k}`, { r: { left: b.left, top, width: b.right - b.left, height: bottom - top }, passage: true, box: true });
+  });
+  return map;
+}
+function ghost(rec) {
+  let g;
+  if (rec.passage) g = h('div', { style: 'background:rgba(var(--focus-rgb),.3);border-radius:4px' });
+  else {
+    g = rec.el.cloneNode(true);
+    g.removeAttribute('data-key'); g.removeAttribute('id'); g.classList.remove('landing');
+    // a box flies as a bare frame (its contents fly on their own); text keeps its contents
+    g.querySelectorAll(rec.box ? '*' : '[data-key]').forEach(d => { d.style.visibility = 'hidden'; });
+    g.querySelectorAll('[id]').forEach(d => d.removeAttribute('id'));
+    Object.assign(g.style, rec.style);
+  }
+  Object.assign(g.style, { position: 'fixed', left: rec.r.left + 'px', top: rec.r.top + 'px', width: rec.r.width + 'px', height: rec.r.height + 'px',
+    margin: '0', transformOrigin: '0 0', display: 'block', overflow: 'hidden', animation: 'none', transition: 'none', zIndex: rec.box ? 1 : 2 });
+  fly.append(g);
+  return g;
+}
+function fallbacks(key) {     // where a piece comes from, or goes to, when the other stage has no such piece
+  const [kind, id, k] = key.split(':');
+  const n = nodes.get(id);
+  if (!n) return [];
+  const up = [...ancestors(n).map(a => 'card:' + a.id), 'passage:' + id];
+  const twin = { blk: 'card', bnum: 'num', bhead: 'head' }[kind];
+  if (twin) return [`${twin}:${id}`, 'card:' + id, `pass:${id}:${k}`, ...up];      // a passage's row: into its card, or out of its passage
+  const first = n.blocks[0];
+  const row = first ? [{ num: 'bnum', head: 'bhead' }[kind], 'blk'].filter(Boolean).map(x => `${x}:${id}:${first.k}`) : [];
+  return [...(kind !== 'card' ? ['card:' + id] : []), ...row, ...up];
+}
+const firstOf = (keys, map) => { for (const k of keys) if (map.has(k)) return map.get(k); return null; };
+const shrinkInto = (src, size) => ({ left: src.left + 4, top: src.top + 4, width: Math.max(8, Math.min(src.width - 8, size.width)), height: Math.max(6, Math.min(src.height - 8, size.height)) });
+const lerpRect = (a, b, e) => ({ left: a.left + (b.left - a.left) * e, top: a.top + (b.top - a.top) * e, width: a.width + (b.width - a.width) * e, height: a.height + (b.height - a.height) * e });
+const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const settle = t => { const c = 1.25; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); };   // overshoots a little, then rests
+const levelOf = st => st === 'text' ? 0 : st === 'chunks' ? 0.42 : 1;
+const formLabel = st => T['rep' + st[0].toUpperCase() + st.slice(1)] || st;
+// the order in which lines grow: from the conclusion outward through its reasons
+const linkOrder = (() => {
+  const out = new Map(), seen = new Set(), queue = conclusions.slice();
+  let k = 0;
+  while (queue.length) {
+    const t = queue.shift();
+    if (seen.has(t.id)) continue;
+    seen.add(t.id);
+    rels.filter(r => r.target === t).sort((a, b) => a.source.ord - b.source.ord).forEach(r => { if (!out.has(r.id)) out.set(r.id, k++); queue.push(r.source); });
+    [t.parent, ...t.children].filter(Boolean).forEach(m => queue.push(m));
+  }
+  rels.forEach(r => { if (!out.has(r.id)) out.set(r.id, k++); });
+  return out;
+})();
+const linear = t => t;
+// ▶ moves the knob as a steady hand would, through the same frames as dragging, at a pace to read by
+const PLAY_SPEED = 1.5;
+const playMs = lo => (lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500) / PLAY_SPEED;
+const PLAY_HOLD = 800;
+let sess = null;
+function setStage(name) {
+  const st = STAGES[name];
+  S.stage = name; S.stop = st.stop; S.rep = st.rep;
+  renderAll();
+  drawLinks();
+}
+function contextGhost() {     // a form's own furniture (headers, lines, frames), faded as one piece
+  if (S.stop === 'text') return null;
+  const st = stage.getBoundingClientRect(), r = repEl.getBoundingClientRect();
+  const wrap = h('div');
+  Object.assign(wrap.style, { left: st.left + 'px', top: st.top + 'px', width: st.width + 'px', height: st.height + 'px', overflow: 'hidden', zIndex: 0 });
+  const c = repEl.cloneNode(true);
+  c.querySelectorAll('[data-key]').forEach(d => { d.style.visibility = 'hidden'; });
+  Object.assign(c.style, { position: 'absolute', left: (r.left - st.left) + 'px', top: (r.top - st.top) + 'px', width: r.width + 'px', minHeight: '0', margin: '0' });
+  wrap.append(c); fly.append(wrap);
+  return wrap;
+}
+function modelGhost() {      // the whole structure, which recedes into the minimap
+  const cols = repEl.querySelector('.cols');
+  if (!cols) return null;
+  const r = repEl.getBoundingClientRect(), cr = cols.getBoundingClientRect(), st = stage.getBoundingClientRect();
+  const wrap = h('div');
+  Object.assign(wrap.style, { left: '0', top: '0', width: '100vw', height: '100vh', overflow: 'visible', zIndex: 0 });
+  const c = repEl.cloneNode(true);
+  Object.assign(c.style, { position: 'absolute', left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', minHeight: '0', margin: '0', transformOrigin: `${cr.left - r.left}px ${cr.top - r.top}px` });
+  wrap.append(c); fly.append(wrap);
+  return { el: c, x: cr.left, y: cr.top, w: cr.width, h: cr.height, clip: st };
+}
+function beginSeg(a, b) {
+  const kind = a + '-' + b;
+  setStage(a);
+  const A = snapshot(), paneA = textPane.getBoundingClientRect().left, scroll0 = textPane.scrollTop;
+  const toForm = a === 'model' && FORMS.includes(b);
+  const ctxA = toForm ? null : contextGhost();
+  const shrink = toForm ? modelGhost() : null;
+  setStage(b);
+  const B = snapshot(), paneB = textPane.getBoundingClientRect().left;
+  const N = Math.max(1, order.length - 1);
+  const ordOf = key => {        // a passage's row goes in reading order; everything else in the notes' order
+    const [kind, id, k] = key.split(':'), n = nodes.get(id);
+    if (!n) return 0.5;
+    const bl = kind[0] === 'b' && n.blocks.find(b => b.k === +k);
+    return bl ? bl.i / NB : n.ord / N;
+  };
+  const [d0, spread, dur] = kind === 'text-chunks' ? [0.16, 0.62, 0.22] : kind === 'chunks-model' ? [0, 0.3, 0.42] : [0, 0.28, 0.55];
+  const pieces = [];
+  new Set([...A.keys(), ...B.keys()]).forEach(key => {
+    if (key.startsWith('passage:') || key.startsWith('pass:')) return;
+    const ra = A.get(key), rb = B.get(key);
+    const pc = { d: d0 + spread * ordOf(key) + (key.startsWith('pt:') ? 0.05 : 0), dur, uniform: !(rb || ra).box };
+    if (rb) rb.el.classList.add('landing');
+    if (ra && rb) Object.assign(pc, { from: ra.r, to: rb.r, gA: ghost(ra), gB: ghost(rb), baseA: ra.r, baseB: rb.r });
+    else if (rb) { const src = firstOf(fallbacks(key), A); Object.assign(pc, { from: src ? shrinkInto(src.r, rb.r) : null, to: rb.r, gB: ghost(rb), baseB: rb.r, fromText: kind === 'text-chunks' }); }
+    else { const dst = firstOf(fallbacks(key), B); Object.assign(pc, { from: ra.r, to: dst ? shrinkInto(dst.r, ra.r) : null, gA: ghost(ra), baseA: ra.r }); }
+    pieces.push(pc);
+  });
+  // in the text: brackets and slabs, one chunk after another
+  const wraps = kind === 'text-chunks' ? blocks.map(b => ({ n: b.n, b, d: 0.04 + 0.62 * b.i / NB, len: 0.2,
+    brs: $$(`#marks .br[data-node="${b.n.id}"][data-k="${b.k}"]`), sls: $$(`#slabs .sl[data-node="${b.n.id}"][data-k="${b.k}"]`) })) : [];
+  // in the model: lines, from the conclusion outward
+  const L = Math.max(1, rels.length - 1);
+  const links = kind === 'chunks-model' ? $$('#links .link', repEl).map(g => ({ g, d: 0.5 + 0.38 * (linkOrder.get(g.dataset.rel) || 0) / L, len: 0.1, r: elsById.get(g.dataset.rel) })) : [];
+  if (shrink) {   // where the model lands: the minimap, which is drawn in b
+    const m = $('#mmSvg').getBoundingClientRect(), { w, h: hh0, x, y } = shrink;
+    const sc = Math.min(m.width / w, m.height / hh0);
+    shrink.to = { s: sc, x: m.left + (m.width - w * sc) / 2, y: m.top + (m.height - hh0 * sc) / 2 };
+  }
+  sess = { a, b, kind, pieces, ctxA, shrink, dx: paneA - paneB, scroll0, wraps, links, u: 0 };
+  main.classList.add('scrubbing');
+  cancelAnimationFrame(FIELD.raf); FIELD.raf = 0;
+  frame(0);
+}
+function place(g, base, r, uniform) {
+  const x = r.left - base.left, y = r.top - base.top;
+  g.style.transform = uniform ? `translate(${x}px, ${y}px)` : `translate(${x}px, ${y}px) scale(${r.width / base.width}, ${r.height / base.height})`;
+}
+function frame(u) {
+  const s = sess;
+  if (!s) return;
+  s.u = u;
+  const uc = clamp(u, 0, 1);
+  const eg = easeInOut(clamp(u / 0.55, 0, 1));
+  const shiftX = -s.dx * eg, shiftY = s.scroll0 - textPane.scrollTop;          // where the text is now, against where it was
+  for (const p of s.pieces) {
+    const raw = (u - p.d) / p.dur, o = clamp(raw, 0, 1);
+    const e = raw < 1 ? easeInOut(o) : 1 + Math.min(0.15, Math.max(0, u - 1) / p.dur);   // a settling overshoot carries it a little past the end
+    const from = p.fromText && p.from ? { ...p.from, left: p.from.left + shiftX, top: p.from.top + shiftY } : p.from;
+    const at = from && p.to ? lerpRect(from, p.to, e) : null;
+    const fadeA = p.uniform ? 1 - smooth(0.42, 0.56, o) : 1 - smooth(0.25, 0.7, o), fadeB = p.uniform ? smooth(0.46, 0.6, o) : smooth(0.3, 0.8, o);
+    if (p.gA) { place(p.gA, p.baseA, at || p.baseA, p.uniform); p.gA.style.opacity = String(p.gB ? fadeA : 1 - smooth(0.35, 0.95, o)); }
+    if (p.gB) {
+      if (at) place(p.gB, p.baseB, at, p.uniform); else p.gB.style.transform = `translateY(${(1 - e) * 10}px)`;
+      p.gB.style.opacity = String(p.gA ? fadeB : smooth(0.15, 0.7, o));
+    }
+  }
+  // the ground slides aside, and tilts back for a moment as we rise
+  const tilt = s.kind === 'text-chunks' || s.kind === 'chunks-model' ? 8 * Math.sin(Math.PI * uc) : 0;
+  textPane.style.transform = `translateX(${s.dx * (1 - eg)}px)` + (tilt && !reduceMotion ? ` perspective(1600px) rotateX(${tilt}deg)` : '');
+  if (s.ctxA) s.ctxA.style.opacity = String(1 - smooth(0, 0.5, uc));
+  const mm = $('#minimap');
+  if (s.shrink && s.shrink.to) {
+    const k = easeInOut(clamp(u / 0.85, 0, 1)), t = s.shrink.to, sc = 1 + (t.s - 1) * k;
+    s.shrink.el.style.transform = `translate(${(t.x - s.shrink.x) * k}px, ${(t.y - s.shrink.y) * k}px) scale(${sc})`;
+    s.shrink.el.style.opacity = String((0.85 - 0.3 * Math.sin(Math.PI * k)) * (1 - smooth(0.8, 1, uc)));
+    mm.style.opacity = String(smooth(0.75, 1, uc));
+  } else mm.style.opacity = '';
+  if (s.kind === 'text-chunks') modelPane.style.opacity = String(smooth(0.02, 0.4, uc));
+  repEl.style.opacity = s.kind === 'chunks-model' || s.kind === 'text-chunks' ? '1' : String(smooth(0.4, 1, uc));
+  s.wraps.forEach(w => {
+    const k = clamp((u - w.d) / w.len, 0, 1);
+    w.brs.forEach(g => { const line = g.querySelector('path.line'), tx = g.querySelector('text');
+      if (line) { line.style.strokeDasharray = '1'; line.style.strokeDashoffset = String(1 - k); }
+      if (tx) tx.style.opacity = String(k); });
+    w.sls.forEach(g => { g.style.opacity = String(k); g.style.transform = `translate(${(1 - k) * 5}px, ${(1 - k) * 5}px)`;
+      const slab = g.querySelector('rect.slab'); if (slab) slab.style.fill = k > 0 && k < 1 ? `rgba(var(--focus-rgb), ${(0.22 * Math.sin(Math.PI * k)).toFixed(3)})` : ''; });
+  });
+  s.links.forEach(l => {
+    const k = clamp((u - l.d) / l.len, 0, 1), path = l.g.querySelector('path.l');
+    if (path) { if (l.r && l.r.prov === 'explicit') { path.style.strokeDasharray = '1'; path.style.strokeDashoffset = String(1 - k); } else path.style.opacity = String(k); }
+    const ar = l.g.querySelector('path.a'); if (ar) ar.style.opacity = String(smooth(0.7, 1, k));
+    if (l.g.classList.contains('show')) { const lb = l.g.querySelector('.lbl'); if (lb) lb.style.opacity = String(smooth(0.75, 1, k)); }
+  });
+  FIELD.t = levelOf(s.a) + (levelOf(s.b) - levelOf(s.a)) * uc;
+  drawField();
+  showTicker(s, u);
+  drawGauge();
+}
+function showTicker(s, u) {
+  let k = '', n = '', m = '';
+  if (u > 0.01 && u < 0.99) {
+    if (s.kind === 'text-chunks') {
+      const w = s.wraps.filter(w => u >= w.d + w.len * 0.5).pop();
+      if (w) { k = T.kWrap; n = w.b.no; m = w.n.label; }
+    } else if (s.kind === 'chunks-model') {
+      const l = s.links.filter(l => u >= l.d && l.r).sort((a, b) => a.d - b.d).pop();
+      if (l) { k = T.kLink; n = l.r.target.num; m = `← ${l.r.source.num}  ${l.r.label}`; }
+      else { k = T.kForm; m = meta.title || ''; }
+    } else { k = T.kRep; m = EN[s.b]; }
+  }
+  tickerEl.classList.toggle('on', !!(k || m));
+  const sig = k + '|' + n + '|' + m;
+  if (sig !== tickerEl._sig) {
+    tickerEl._sig = sig;
+    $('.k', tickerEl).textContent = k; $('.n', tickerEl).textContent = n; $('.m', tickerEl).textContent = m;
+    if (k || m) { tickerEl.classList.remove('cut'); void tickerEl.offsetWidth; tickerEl.classList.add('cut'); }
+  }
+}
+function endSeg(final) {
+  const s = sess;
+  if (!s) return;
+  sess = null;
+  main.classList.remove('scrubbing');
+  fly.querySelectorAll(':scope > :not(.slate)').forEach(el => el.remove());
+  $$('.landing').forEach(el => el.classList.remove('landing'));
+  textPane.style.transform = ''; modelPane.style.opacity = ''; repEl.style.opacity = ''; $('#minimap').style.opacity = '';
+  tickerEl.classList.remove('on');
+  setStage(final >= 0.5 ? s.b : s.a);
+  FIELD.t = levelOf(S.stage); drawField();
+  afterRender();
+  drawGauge();
+}
+let tw = 0;
+function tweenU(to, ms, ease = easeInOut) {
+  return new Promise(res => {
+    const s = sess;
+    if (!s) return res();
+    const from = s.u, t0 = performance.now(), my = goToken;
+    cancelAnimationFrame(tw);
+    const step = now => {
+      if (sess !== s || my !== goToken) return res();     // taken over, or paused: stop where it is
+      const k = ms > 0 ? clamp((now - t0) / ms, 0, 1) : 1;
+      frame(from + (to - from) * ease(k));
+      if (k < 1) tw = requestAnimationFrame(step); else res();
+    };
+    tw = requestAnimationFrame(step);
+  });
+}
+const chain = x => { const out = [x]; while (PARENT[out[out.length - 1]]) out.push(PARENT[out[out.length - 1]]); return out; };
+function route(a, b) {       // the stages passed through on the way from a to b
+  const ca = chain(a), cb = chain(b), meet = ca.find(x => cb.includes(x));
+  return [...ca.slice(0, ca.indexOf(meet) + 1), ...cb.slice(0, cb.indexOf(meet)).reverse()];
+}
+const segOf = (a, b) => SEGS.find(([x, y]) => (x === a && y === b) || (x === b && y === a));
+let goToken = 0;
+// the knob moves through the frames only under the hand and in the play; a click or a key switches at once
+function goTo(target, opts = {}) {
+  if (!STAGES[target]) return Promise.resolve(false);
+  if (opts.play) return playTo(target);
+  goToken++;
+  if (sess) endSeg(sess.u >= 0.5 ? 1 : 0);
+  if (S.stage !== target) { setStage(target); FIELD.t = levelOf(S.stage); drawField(); afterRender(); }
+  drawGauge();
+  arrived();
+  return Promise.resolve(true);
+}
+async function playTo(target) {     // the drag, played: along the gauge at a steady pace, a moment at each stage
+  const my = ++goToken;
+  let carried = false;
+  if (sess) {   // between two stages: carry on toward the target from where the knob is
+    const s = sess, back = route(s.b, target).includes(s.a), to = back ? 0 : 1;
+    await tweenU(to, playMs(s.a) * Math.abs(to - s.u), linear);
+    if (my !== goToken) return false;
+    endSeg(to);
+    carried = true;
+  }
+  const path = route(S.stage, target);
+  for (let i = 1; i < path.length; i++) {
+    const a = path[i - 1], b = path[i], [lo, hi] = segOf(a, b), up = a === lo;
+    if (i > 1 || carried) { await sleep(PLAY_HOLD); if (my !== goToken) return false; }
+    beginSeg(lo, hi);
+    frame(up ? 0 : 1);
+    await tweenU(up ? 1 : 0, playMs(lo), linear);
+    if (my !== goToken) return false;
+    endSeg(up ? 1 : 0);
+  }
+  arrived();
+  return true;
+}
+let playing = false;
+const CLOCK = { t0: 0, total: 0, iv: 0 };
+function planMs() {    // how long ▶ takes from here
+  let ms = 0, st = S.stage === 'summary' && !sess ? 'text' : S.stage;
+  if (sess) {
+    const s = sess, back = route(s.b, 'summary').includes(s.a);
+    ms += playMs(s.a) * (back ? s.u : 1 - s.u);
+    st = back ? s.a : s.b;
+  }
+  const path = route(st, 'summary');
+  for (let i = 1; i < path.length; i++) ms += playMs(segOf(path[i - 1], path[i])[0]) + (i > 1 || sess ? PLAY_HOLD : 0);
+  return ms;
+}
+const clockText = ms => { const t = Math.max(0, Math.round(ms / 1000)); return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; };
+function drawClock() {
+  if (!GG.time) return;
+  GG.time.classList.toggle('on', playing);
+  GG.time.textContent = playing ? `${clockText(Math.min(performance.now() - CLOCK.t0, CLOCK.total))} / ${clockText(CLOCK.total)}` : `T-${clockText(planMs())}`;
+}
+async function play() {
+  if (playing) { playing = false; goToken++; clearInterval(CLOCK.iv); drawGauge(); return; }
+  playing = true;
+  if (S.stage === 'summary' && !sess) goTo('text');
+  CLOCK.total = planMs(); CLOCK.t0 = performance.now();
+  clearInterval(CLOCK.iv); CLOCK.iv = setInterval(drawClock, 250);
+  drawGauge();
+  const done = await goTo('summary', { play: true });
+  if (done || !sess) playing = false;
+  if (!playing) clearInterval(CLOCK.iv);
+  drawGauge();
+}
+function arrived() {
+  if (FORMS.includes(S.stage)) slate(EN[S.stage], T.kRep);
+  if (S.stage === 'summary') sweepSummary();
+}
+async function release() {
+  const s = sess;
+  if (!s) return;
+  const to = s.u >= 0.5 ? 1 : 0;
+  await tweenU(to, 420, to ? settle : easeInOut);
+  if (sess === s) { endSeg(to); arrived(); }
+}
+function afterRender() { drawLinks(); applyFocus(); updateInView(); }
+
+/* =====================================================================
+   6b. The field: a classical, unruly geometry composed from the model itself.
+   Close to the text it lies shattered; rising, the shards come together.
+   - large chunks are discs, parts are rings, the conclusion a heavy ring,
+     placed by the golden angle (never on a grid)
+   - chunks that bear on each other are joined by bands; every relation is a hairline
+   - the summary is a hatched wedge from the conclusion to what it names
+   - shapes are filled even-odd, so where they cross they invert
+   ===================================================================== */
+function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function hashText() { let x = 2166136261; for (let i = 0; i < Math.min(text.length, 4000); i++) { x ^= text.charCodeAt(i); x = Math.imul(x, 16777619); } return x >>> 0; }
+const fieldCanvas = $('#field');
+const fctx = fieldCanvas.getContext('2d');
+const FIELD = { t: 0, boost: 0, raf: 0, hi: new Set(), w: 0, h: 0, dpr: 1, off: null, comp: null, shards: [], band: '' };
+const LEVEL = { text: 0, chunks: 0.42, model: 1 };
+const BOOST = 2.4;                 // the composition is drawn stronger while it assembles
+function fieldCentre() {
+  const w = FIELD.w, hh = FIELD.h;
+  if (G.narrow) return { cx: w / 2, cy: hh * 0.72, R: Math.min(w, hh * 0.56) * 0.5 };
+  const left = GUTTER + G.colW + 30, mw = w - left;
+  return { cx: left + mw * 0.5, cy: hh * 0.5, R: Math.min(mw * 0.9, hh) * 0.5, left };
+}
+function compose() {
+  const { cx, cy, R, left } = fieldCentre();
+  const W = FIELD.w, H = FIELD.h, L = Math.hypot(W, H) * 1.5;
+  const rand = rng(hashText());
+  const N = Math.max(1, order.length);
+  const a0 = rand() * Math.PI * 2;
+  const pos = new Map();
+  order.forEach((n, i) => {
+    const r = R * 0.98 * Math.sqrt((i + 0.7) / N), a = a0 + i * 2.39996;
+    pos.set(n.id, [cx + r * Math.cos(a) * 1.22, cy + r * Math.sin(a)]);
+  });
+  const chars = n => n.spans.reduce((m, sp) => m + sp.end - sp.start, 0) + n.children.reduce((m, c) => m + chars(c), 0);
+  const maxChars = Math.max(1, ...order.map(chars));
+  const fill = new Path2D(), thin = new Path2D(), tone = new Path2D(), parts = new Map();
+  const own = id => { if (!parts.has(id)) parts.set(id, new Path2D()); return parts.get(id); };
+  const band = (P, Q, w, path) => {
+    const dx = Q[0] - P[0], dy = Q[1] - P[1], d = Math.hypot(dx, dy) || 1, ux = dx / d, uy = dy / d, nx = -uy * w / 2, ny = ux * w / 2;
+    const A = [P[0] - ux * L, P[1] - uy * L], B = [Q[0] + ux * L, Q[1] + uy * L];
+    path.moveTo(A[0] + nx, A[1] + ny); path.lineTo(B[0] + nx, B[1] + ny); path.lineTo(B[0] - nx, B[1] - ny); path.lineTo(A[0] - nx, A[1] - ny); path.closePath();
+  };
+  const disc = (P, r, path) => { path.moveTo(P[0] + r, P[1]); path.arc(P[0], P[1], r, 0, Math.PI * 2); path.closePath(); };
+  // bands between top-level chunks that bear on each other (weighted; the conclusion's are heaviest)
+  const pairs = new Map();
+  rels.forEach(r => {
+    let u = unitOf(r.source), v = unitOf(r.target);
+    if (u === v) { u = r.source; v = r.target; }
+    const key = [u.id, v.id].sort().join('|');
+    pairs.set(key, (pairs.get(key) || 0) + (r.source.role === 'conclusion' || r.target.role === 'conclusion' ? 2 : 1));
+  });
+  [...pairs].sort((x, y) => y[1] - x[1]).slice(0, 9).forEach(([key, wgt]) => {
+    const [a, b] = key.split('|');
+    band(pos.get(a), pos.get(b), R * (0.035 + Math.min(4, wgt) * 0.022), fill);
+    band(pos.get(a), pos.get(b), 1, own(a)); band(pos.get(a), pos.get(b), 1, own(b));
+  });
+  rels.forEach(r => { const P = pos.get(r.source.id), Q = pos.get(r.target.id); thin.moveTo(P[0], P[1]); thin.lineTo(Q[0], Q[1]); own(r.source.id).moveTo(P[0], P[1]); own(r.source.id).lineTo(Q[0], Q[1]); own(r.target.id).moveTo(P[0], P[1]); own(r.target.id).lineTo(Q[0], Q[1]); });
+  // discs and rings
+  order.forEach(n => {
+    const P = pos.get(n.id), k = Math.sqrt(chars(n) / maxChars);
+    if (n.role === 'conclusion') { const r = R * 0.27; disc(P, r, fill); disc(P, r * 0.74, fill); disc(P, r * 0.34, fill); disc(P, r, own(n.id)); return; }
+    if (!n.parent) { const r = R * (0.07 + 0.2 * k); disc(P, r, fill); disc([P[0] + r * 0.18, P[1] - r * 0.12], r * 0.9, tone); disc(P, r, own(n.id)); }
+    else { const r = R * (0.035 + 0.08 * k); disc(P, r, fill); disc(P, r * 0.62, fill); disc(P, r, own(n.id)); }
+  });
+  // the summary: a hatched wedge from the conclusion toward what the sentence names
+  const apex = conclusions[0] ? pos.get(conclusions[0].id) : [cx, cy];
+  const named = [...new Set(summary.flatMap(p => p.refs))].filter(n => n.role !== 'conclusion').map(n => pos.get(n.id));
+  if (named.length >= 2) {
+    const angs = named.map(P => Math.atan2(P[1] - apex[1], P[0] - apex[0])).sort((x, y) => x - y);
+    let gap = 0, at = 0;
+    angs.forEach((x, i) => { const nx = i + 1 < angs.length ? angs[i + 1] : angs[0] + Math.PI * 2; if (nx - x > gap) { gap = nx - x; at = i; } });
+    const e1 = angs[(at + 1) % angs.length];
+    const e2 = e1 + clamp((((angs[at] - e1) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2), 0.35, 2.2);
+    const reach = R * 1.15, T1 = [apex[0] + Math.cos(e1) * reach, apex[1] + Math.sin(e1) * reach], T2 = [apex[0] + Math.cos(e2) * reach, apex[1] + Math.sin(e2) * reach];
+    const tri = [apex, T1, T2];
+    const dirx = Math.cos((e1 + e2) / 2 + Math.PI / 2), diry = Math.sin((e1 + e2) / 2 + Math.PI / 2);   // hatch across the wedge
+    const nxh = -diry, nyh = dirx, step = Math.max(6, R * 0.024), lw = step * 0.4;
+    const proj = tri.map(P => P[0] * nxh + P[1] * nyh);
+    for (let o = Math.min(...proj) + step / 2; o < Math.max(...proj); o += step) {
+      const hits = [];
+      for (let i = 0; i < 3; i++) {
+        const A = tri[i], B = tri[(i + 1) % 3], pa = A[0] * nxh + A[1] * nyh, pb = B[0] * nxh + B[1] * nyh;
+        if ((pa - o) * (pb - o) > 0 || pa === pb) continue;
+        const t = (o - pa) / (pb - pa); hits.push([A[0] + (B[0] - A[0]) * t, A[1] + (B[1] - A[1]) * t]);
+      }
+      if (hits.length < 2) continue;
+      const [P, Q] = hits;
+      fill.moveTo(P[0] + nxh * lw / 2, P[1] + nyh * lw / 2); fill.lineTo(Q[0] + nxh * lw / 2, Q[1] + nyh * lw / 2);
+      fill.lineTo(Q[0] - nxh * lw / 2, Q[1] - nyh * lw / 2); fill.lineTo(P[0] - nxh * lw / 2, P[1] - nyh * lw / 2); fill.closePath();
+    }
+  }
+  // a thin double frame around the model's space
+  if (left != null) { thin.rect(left + 12, 12, W - left - 24, H - 24); thin.rect(left + 18, 18, W - left - 36, H - 36); }
+  return { fill, thin, tone, parts };
+}
+function renderComposition() {
+  const { w, h: hh, dpr } = FIELD;
+  const off = FIELD.off || (FIELD.off = document.createElement('canvas'));
+  off.width = Math.round(w * dpr); off.height = Math.round(hh * dpr);
+  const c = off.getContext('2d');
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cs = getComputedStyle(document.documentElement);
+  const col = cs.getPropertyValue('--field').trim() || '165,188,240', base = +cs.getPropertyValue('--field-a') || 0.048;
+  FIELD.col = col; FIELD.base = base;
+  c.fillStyle = `rgba(${col},${Math.min(1, base * BOOST)})`;
+  c.fill(FIELD.comp.fill, 'evenodd');
+  // screentone: the top-level chunks' discs are dotted, as on a printed page
+  const tone = document.createElement('canvas'); tone.width = tone.height = Math.round(7 * dpr);
+  const tc = tone.getContext('2d'); tc.fillStyle = `rgba(${col},${Math.min(1, base * BOOST * 2.2)})`;
+  tc.beginPath(); tc.arc(tone.width / 2, tone.height / 2, 1.25 * dpr, 0, Math.PI * 2); tc.fill();
+  const pat = c.createPattern(tone, 'repeat'); pat.setTransform && pat.setTransform(new DOMMatrix().scale(1 / dpr));
+  if (document.documentElement.dataset.theme !== 'light') { c.fillStyle = pat; c.fill(FIELD.comp.tone); }
+  c.strokeStyle = `rgba(${col},${Math.min(1, base * BOOST * 1.4)})`; c.lineWidth = 1;
+  c.stroke(FIELD.comp.thin);
+}
+function layoutField() {
+  const sig = [main.clientWidth, main.clientHeight, G.colW, G.narrow].join();
+  if (FIELD.sig === sig) { if (!sess) { FIELD.t = levelOf(S.stage); drawField(); } return; }
+  FIELD.sig = sig;
+  FIELD.dpr = Math.min(2, devicePixelRatio || 1);
+  FIELD.w = main.clientWidth; FIELD.h = main.clientHeight;
+  fieldCanvas.width = Math.round(FIELD.w * FIELD.dpr); fieldCanvas.height = Math.round(FIELD.h * FIELD.dpr);
+  fctx.setTransform(FIELD.dpr, 0, 0, FIELD.dpr, 0, 0);
+  FIELD.comp = compose();
+  renderComposition();
+  // shards: the plane cut into triangles, each with its own way of falling apart
+  const rand = rng(hashText() ^ 0x9e3779b9), cols = G.narrow ? 4 : 7, rows = 5, cw = FIELD.w / cols, rh = FIELD.h / rows;
+  FIELD.shards = [];
+  for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+    const x0 = i * cw, y0 = j * rh, x1 = x0 + cw, y1 = y0 + rh, flip = rand() < 0.5;
+    const tris = flip ? [[[x0, y0], [x1, y0], [x1, y1]], [[x0, y0], [x1, y1], [x0, y1]]] : [[[x0, y0], [x1, y0], [x0, y1]], [[x1, y0], [x1, y1], [x0, y1]]];
+    tris.forEach(tri => FIELD.shards.push({ tri, c: [(tri[0][0] + tri[1][0] + tri[2][0]) / 3, (tri[0][1] + tri[1][1] + tri[2][1]) / 3],
+      ox: (rand() - 0.5) * FIELD.w * 0.5, oy: (rand() - 0.5) * FIELD.h * 0.6, rot: (rand() - 0.5) * 2.2, sc: 0.55 + rand() * 0.7, d: rand() * 0.38 }));
+  }
+  if (!sess) FIELD.t = levelOf(S.stage);
+  FIELD.boost = 0;
+  drawField();
+}
+const easeIO = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+function drawField() {
+  const { w, h: hh, off, dpr } = FIELD;
+  fctx.clearRect(0, 0, w, hh);
+  if (!off) return;
+  const alpha = (1 + FIELD.boost * (BOOST - 1)) / BOOST;
+  const t = FIELD.t;
+  if (t >= 0.999) {
+    fctx.globalAlpha = alpha;
+    fctx.drawImage(off, 0, 0, w, hh);
+    fctx.globalAlpha = 1;
+    if (FIELD.hi.size) {
+      fctx.strokeStyle = `rgba(${FIELD.col},${Math.min(0.6, FIELD.base * 6)})`; fctx.lineWidth = 1.4;
+      FIELD.hi.forEach(id => { const p = FIELD.comp.parts.get(id); if (p) fctx.stroke(p); });
+    }
+    return;
+  }
+  for (const s of FIELD.shards) {
+    const p = easeIO(clamp((t - s.d) / 0.62, 0, 1)), q = 1 - p;
+    const xs = s.tri.map(v => v[0]), ys = s.tri.map(v => v[1]);
+    const bx = Math.min(...xs), by = Math.min(...ys), bw = Math.max(...xs) - bx, bh = Math.max(...ys) - by;
+    fctx.save();
+    fctx.globalAlpha = alpha * (0.5 + 0.5 * p);
+    fctx.translate(s.c[0] + s.ox * q, s.c[1] + s.oy * q);
+    fctx.rotate(s.rot * q);
+    fctx.scale(1 + (s.sc - 1) * q, 1 + (s.sc - 1) * q);
+    fctx.translate(-s.c[0], -s.c[1]);
+    fctx.beginPath(); fctx.moveTo(...s.tri[0]); fctx.lineTo(...s.tri[1]); fctx.lineTo(...s.tri[2]); fctx.closePath(); fctx.clip();
+    fctx.drawImage(off, bx * dpr, by * dpr, bw * dpr, bh * dpr, bx, by, bw, bh);
+    fctx.restore();
+  }
+}
+/* ---- a slate names the form on arrival ---- */
+async function slate(label, phase) {
+  if (reduceMotion) return;
+  const host = (S.stop === 'text' ? main : modelPane).getBoundingClientRect();
+  const el = h('div', { class: 'slate' }, h('b', {}, phase), label);
+  el.style.top = (host.top + 14) + 'px';
+  el.style.left = (host.left + 16) + 'px';
+  fly.append(el);
+  const sp = 1;
+  await el.animate([{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }], { duration: 260 / sp, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'both' }).finished.catch(() => null);
+  await sleep(760 / sp);
+  await el.animate([{ clipPath: 'inset(0 0 0 0)' }, { clipPath: 'inset(0 0 0 100%)' }], { duration: 220 / sp, easing: 'cubic-bezier(.7,0,.2,1)', fill: 'both' }).finished.catch(() => null);
+  el.remove();
+}
+
+/* =====================================================================
+   7. Focus: what the pointer is on, on every layer at once
+   ===================================================================== */
+function focusSets(f) {
+  const F = { nodes: new Set(), point: null, rels: new Set(), related: new Map(), parts: new Set(), evidence: new Set(), phrases: new Set(), far: new Set() };
+  if (!f) return F;
+  if (f.kind === 'node') F.nodes.add(f);
+  else if (f.kind === 'point') { F.nodes.add(f.node); F.point = f; }
+  else if (f.kind === 'rel') { F.rels.add(f); F.related.set(f.source.id, signOf(f) || 'rel'); F.related.set(f.target.id, signOf(f) || 'rel'); }
+  else if (f.kind === 'phrase') f.refs.forEach(n => F.nodes.add(n));
+  const addRel = (r, other) => { F.rels.add(r); const s = signOf(r) || 'rel'; const was = F.related.get(other.id); F.related.set(other.id, was && was !== s ? 'rel' : s); };
+  F.nodes.forEach(n => {
+    const group = [n, ...descendants(n)];
+    group.forEach(m => { if (m !== n) F.parts.add(m.id); m.rels.forEach(r => { const o = r.source === m ? r.target : r.source; if (!group.includes(o)) addRel(r, o); }); });
+  });
+  F.nodes.forEach(n => F.related.delete(n.id));
+  F.related.forEach((_, id) => nodes.get(id).rels.forEach(r => { F.far.add(r.source.id); F.far.add(r.target.id); }));
+  const walk = (el, seen = new Set()) => (el.derivedFrom || []).forEach(id => { if (seen.has(id)) return; seen.add(id); const e = elsById.get(id); if (e) { F.evidence.add(id); walk(e, seen); } });
+  if (f.kind === 'rel' || f.kind === 'node') walk(f);
+  summary.forEach(p => { if (p.refs.some(n => F.nodes.has(n) || ancestors(n).some(a => F.nodes.has(a)) || [...F.nodes].some(m => ancestors(m).includes(n)))) F.phrases.add(p.i); });
+  return F;
+}
+let lit = [];
+function applyFocus() {
+  const f = S.pinned || S.hover;
+  const F = focusSets(f);
+  const focusing = !!f;
+  main.classList.toggle('focusing', focusing);
+  lit.forEach(k => { segEls[k].className = segs[k].owners.length ? 'seg c' : 'seg'; });
+  lit = [];
+  const mark = (o, cls) => (o && o.segs || []).forEach(k => { segEls[k].classList.add(...cls.split(' ').filter(Boolean)); lit.push(k); });
+  if (S.stop !== 'text') {
+    F.nodes.forEach(n => { mark(n, 'hn'); if (!F.point) n.points.forEach(p => mark(p, 'hq')); });
+    F.rels.forEach(r => mark(r, 'hr ' + signOf(r)));
+    if (F.point) mark(F.point, 'hp');
+    if (f && f.kind === 'rel') mark(f, 'hx');
+    F.evidence.forEach(id => mark(elsById.get(id), 'he'));
+  }
+  const cls = id => {
+    const n = nodes.get(id);
+    if (F.nodes.has(n)) return 'f0';
+    if (F.related.has(id)) return 'f1 ' + (F.related.get(id) === 'rel' ? '' : F.related.get(id));
+    if (F.parts.has(id)) return 'part';
+    if (F.evidence.has(id)) return 'ev';
+    if (F.far.has(id)) return '';
+    return 'dim';
+  };
+  $$('#marks .br, #slabs .sl, #rep [data-node], #mmSvg .mm-box').forEach(el => {
+    if (el.classList.contains('pt')) return;
+    el.classList.remove('f0', 'f1', 'pos', 'neg', 'part', 'ev', 'dim', 'cur');
+    if (focusing) { const c = cls(el.dataset.node); if (c) el.classList.add(...c.split(' ').filter(Boolean)); }
+  });
+  $$('#rep .pt').forEach(el => el.classList.toggle('fp', !!F.point && el.dataset.node === F.point.node.id && +el.dataset.pt === F.point.k));
+  $$('#rep .phrase').forEach(el => { el.classList.remove('f0', 'f1', 'dim'); if (focusing) el.classList.add(F.phrases.has(+el.dataset.phrase) ? 'f0' : 'dim'); });
+  $$('#mmSvg .mm-link').forEach(el => {
+    const r = elsById.get(el.dataset.rel);
+    el.classList.toggle('f0', f === r); el.classList.toggle('f1', f !== r && F.rels.has(r));
+  });
+  $$('#links .link').forEach(el => {
+    el.classList.remove('f0', 'f1', 'ev');
+    const r = elsById.get(el.dataset.rel);
+    if (f === r) el.classList.add('f0'); else if (F.rels.has(r)) el.classList.add('f1');
+    if (F.evidence.has(r.id)) el.classList.add('ev');
+  });
+  const hi = new Set(focusing ? [...F.nodes].map(n => n.id).concat([...F.related.keys()]) : []);
+  if (hi.size !== FIELD.hi.size || [...hi].some(x => !FIELD.hi.has(x))) { FIELD.hi = hi; if (!FIELD.raf) drawField(); }
+  renderDetails();
+  drawPointer();
+}
+
+/* ---- the thread: from the words on the ground to the note above ---- */
+function rowFor(n) {     // at the chunk layer: the row of the passage being pointed at, else one in view
+  const rows = $$(`.crow[data-node="${n.id}"]`, repEl);
+  if (!rows.length) return null;
+  if (S.hoverSeg != null) {
+    const at = segs[S.hoverSeg].start, b = n.blocks.find(b => b.sp.start <= at && at < b.sp.end);
+    const r = b && rows.find(r => +r.dataset.k === b.k);
+    if (r) return r;
+  }
+  const c = stage.getBoundingClientRect();
+  return rows.find(r => { const q = r.getBoundingClientRect(); return q.bottom > c.top && q.top < c.bottom; }) || rows[0];
+}
+function modelSideEl(f) {
+  if (!f) return null;
+  const scope = repEl;
+  if (f.kind === 'point') return scope.querySelector(`.pt[data-node="${f.node.id}"][data-pt="${f.k}"]`) || modelSideEl(f.node);
+  if (f.kind === 'node') {
+    for (let a = f; a; a = a.parent) {
+      if (S.stop === 'chunks') { const r = rowFor(a); if (r) return r; continue; }
+      if (S.stop === 'model' && S.rep === 'summary') { const p = summary.find(p => p.refs.includes(a)); const el = p && repEl.querySelector(`.phrase[data-phrase="${p.i}"]`); if (el) return el; }
+      const el = scope.querySelector(`[data-key="card:${a.id}"]:not(.anchor)`);
+      if (el) return el.querySelector(':scope > .ch, :scope > .rowh') || el;
+    }
+    return null;
+  }
+  if (f.kind === 'rel') return (S.stop === 'model' && repEl.querySelector(`#links .link[data-rel="${f.id}"] .lbl`)) || modelSideEl(f.target);
+  if (f.kind === 'phrase') return repEl.querySelector(`.phrase[data-phrase="${f.i}"]`);
+  return null;
+}
+function textSideRect(f) {
+  if (S.hoverSeg != null && f === S.hover) return segEls[S.hoverSeg].getBoundingClientRect();
+  const c = textPane.getBoundingClientRect();
+  const spans = f.kind === 'phrase' ? f.refs.flatMap(n => n.home ? [n.home] : []) : f.kind === 'node' ? (f.home ? [f.home] : []) : f.spans;
+  for (const sp of spans || []) {
+    const b = spanBox(sp);
+    const r = b && b.rects.find(r => r.bottom > c.top + 8 && r.top < c.bottom - 8);
+    if (r) return r;
+  }
+  return null;
+}
+function drawPointer() {
+  pointerSvg.innerHTML = '';
+  const f = S.hover || S.pinned;
+  if (!f || S.stop === 'text' || G.narrow || sess) return;
+  const host = main.getBoundingClientRect(), tp = textPane.getBoundingClientRect();
+  const inPane = (el, r) => { const pane = el.closest('#stage, #textPane'); if (!pane) return true; const c = pane.getBoundingClientRect(); return r.bottom > c.top && r.top < c.bottom; };
+  // the words and the note; the model's minimap, at a form, is lit by the focus itself
+  const mel = modelSideEl(f), mr = mel && mel.getBoundingClientRect();
+  const center = mr && inPane(mel, mr) ? { x: mr.left - host.left, y: mr.top + Math.min(mr.height / 2, 12) - host.top, right: mr.right - host.left } : null;
+  const tr = textSideRect(f);
+  const words = tr ? { x: Math.min(tp.right - 6, tp.left + GUTTER + G.colW + 8) - host.left, y: tr.top + tr.height / 2 - host.top } : null;
+  if (words && center && center.x - words.x > 8) {
+    const dx = (center.x - 6 - words.x) * 0.5;
+    svgEl('path', { d: `M${words.x},${words.y} C${words.x + dx},${words.y} ${center.x - 6 - dx},${center.y} ${center.x - 6},${center.y}` }, pointerSvg);
+    svgEl('circle', { cx: words.x, cy: words.y, r: 2.5 }, pointerSvg);
+    svgEl('circle', { class: 'end', cx: center.x - 6, cy: center.y, r: 4 }, pointerSvg);
+  }
+}
+
+/* ---- details of what is in focus: a peek while hovering, held when pinned ---- */
+const keyOf = f => f ? (f.id || `${f.kind}:${f.node ? f.node.id + ':' + f.k : f.i}`) : '';
+function renderDetails() {
+  const f = S.pinned || S.hover, peek = !S.pinned;
+  details.innerHTML = '';
+  details.hidden = !f || S.stop === 'text' || (!peek && details.dataset.closed === keyOf(f));
+  details.classList.toggle('peek', peek);
+  details.setAttribute('aria-live', peek ? 'off' : 'polite');
+  $('#hint').classList.toggle('gone', !details.hidden || $('#hint').classList.contains('gone'));
+  if (details.hidden) { details.classList.remove('under'); return; }
+  const pin = el => h('button', { type: 'button', onclick: () => setPinned(el, { scroll: true }) }, titleOf(el));
+  const q = sp => h('button', { type: 'button', onclick: () => scrollTextTo(sp, true) }, h('span', { class: 'q' }, sentenceLabel(sp) + '  '), quote(sp));
+  const cols = h('div', { class: 'cols' });
+  const list = (title, items, render, cls) => { if (items.length) cols.append(h('section', {}, h('h3', {}, title), h('ul', { class: cls || '' }, ...items.map(x => h('li', {}, render(x)))))); };
+  details.append(h('span', { class: 'dk' }, peek ? 'FOCUS · CLICK TO PIN' : 'PINNED'));
+  if (!peek) details.append(h('button', { type: 'button', class: 'x', 'aria-label': T.close, title: T.close, onclick: () => { details.dataset.closed = keyOf(f); renderDetails(); } }, '×'));
+  const node = f.kind === 'node' ? f : f.kind === 'point' ? f.node : null;
+  details.append(h('h2', {}, titleOf(f)));
+  const p = f.prov;
+  if (p && p !== 'explicit') details.append(h('div', {}, h('span', { class: 'badge' }, p), T[p].split(' — ')[1] || ''));
+  if (f.note) details.append(h('p', { class: 'note' }, f.note));
+  if (f.kind === 'phrase') list(T.contains, f.refs, pin);
+  if (f.kind !== 'phrase') list(T.inText, f.spans || [], q);
+  if (node) {
+    if (f.kind === 'node') list(T.points, node.points, x => h('button', { type: 'button', onclick: () => setPinned(x, { scroll: true }) }, (x.when ? x.when + '：' : '') + x.label));
+    list(T.links, node.rels, pin);
+    if (node.parent) list(T.partOf, [node.parent], pin);
+    if (f.kind === 'node') list(T.contains, node.children, pin);
+  }
+  if (f.kind === 'rel') list(T.links, [f.source, f.target], pin);
+  list(T.basis, (f.derivedFrom || []).map(id => elsById.get(id)).filter(Boolean), pin, 'ev');
+  if (f.id) list(T.basisOf, [...nodes.values(), ...rels].filter(e => e.derivedFrom.includes(f.id)), pin);
+  details.append(cols);
+  if (!peek) details.append(h('div', { class: 'row' },
+    node ? h('button', { type: 'button', onclick: () => focusIn(node) }, T.goText) : null,
+    h('button', { type: 'button', onclick: () => setPinned(null) }, T.release)));
+}
+// a peek lets the pointer through; it fades while the pointer is under it, so what it covers can still be read
+main.addEventListener('mousemove', ev => {
+  if (details.hidden || !details.classList.contains('peek')) return;
+  const r = details.getBoundingClientRect();
+  details.classList.toggle('under', ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom);
+});
+function quote(sp) { const s = slice(sp.start, sp.end).replace(/\s+/g, ' '); return Array.from(s).length > 54 ? Array.from(s).slice(0, 52).join('') + '…' : s; }
+function titleOf(x) {
+  if (x.kind === 'node') return `${x.num}  ${x.label}`;
+  if (x.kind === 'point') return `${x.node.num}  ${x.when ? x.when + '：' : ''}${x.label}`;
+  if (x.kind === 'rel') { const sg = x.polarity === '+' ? '（＋）' : x.polarity === '-' ? '（−）' : ''; return `${x.source.num} → ${x.target.num}  ${x.label}${sg}`; }
+  if (x.kind === 'phrase') return `「${x.text}」`;
+  return '';
+}
+
+/* ---- hover and pin ---- */
+function setHover(f, seg = null, mini = false) {
+  if (sess || (S.hover === f && S.hoverSeg === seg)) return;
+  S.hover = f; S.hoverSeg = seg;
+  applyFocus();
+  if (f && !S.pinned) followCounterpart(f, seg != null, mini);
+}
+function setPinned(f, opts = {}) {
+  S.pinned = f;
+  delete details.dataset.closed;
+  applyFocus();
+  if (f && opts.scroll) { revealInModel(f); if (!opts.fromText) revealInText(f); }
+}
+let followTimer = 0;
+function followCounterpart(f, fromText, fromMini) {
+  clearTimeout(followTimer);
+  followTimer = setTimeout(() => { if (S.hover !== f || S.pinned) return; if (fromText) revealInModel(f, true); else { revealInText(f, true); if (fromMini) revealInModel(f, true); } }, 280);
+}
+function revealInModel(f, onlyIfHidden) {
+  if (S.stop === 'text') return;
+  const el = modelSideEl(f);
+  if (!el) return;
+  const c = stage.getBoundingClientRect(), r = el.getBoundingClientRect();
+  if (onlyIfHidden && r.top > c.top + 20 && r.bottom < c.bottom - 90) return;
+  stage.scrollTo({ top: stage.scrollTop + r.top - c.top - c.height * 0.3, behavior: reduceMotion ? 'auto' : 'smooth' });
+}
+function revealInText(f, onlyIfHidden) {
+  const sp = f.kind === 'node' ? f.home : f.kind === 'phrase' ? (f.refs[0] && f.refs[0].home) : (f.spans || [])[0];
+  if (sp) scrollTextTo(sp, false, onlyIfHidden);
+}
+function scrollTextTo(sp, flash, onlyIfHidden) {
+  const b = sp && spanBox(sp);
+  if (!b) return;
+  const c = textPane.getBoundingClientRect();
+  if (onlyIfHidden && b.top > c.top + 20 && b.top < c.bottom - 110) return;
+  const target = textPane.scrollTop + b.top - c.top - Math.max(40, (c.height - Math.min(b.bottom - b.top, c.height * 0.6)) / 2.4);
+  textPane.scrollTo({ top: target, behavior: reduceMotion ? 'auto' : 'smooth' });
+  if (flash) { const [a, z] = spanSegs(sp); for (let k = a; k <= z; k++) { segEls[k].classList.remove('flash'); void segEls[k].offsetWidth; segEls[k].classList.add('flash'); } }
+}
+function scrollTextAndWait(sp) {
+  return new Promise(res => {
+    const b = sp && spanBox(sp);
+    if (!b) return res();
+    const c = textPane.getBoundingClientRect();
+    if (b.top > c.top + 40 && b.bottom < c.bottom - 150) return res();
+    scrollTextTo(sp);
+    const t = setTimeout(res, 560);
+    textPane.addEventListener('scrollend', () => { clearTimeout(t); res(); }, { once: true });
+  });
+}
+
+/* =====================================================================
+   8. The gauge: the meta-structure is the control.
+   text — chunks — model on the trunk; the model's forms branch from the model,
+   and only grow once the knob comes near it.
+   ===================================================================== */
+function renderAll() { applyLayout(); layoutText(); renderRep(); layoutField(); }
+function sweepSummary() {
+  if (!repEl.classList.contains('summary')) return;
+  repEl.classList.remove('sweep'); void repEl.offsetWidth; repEl.classList.add('sweep');
+}
+function focusIn(n) {
+  S.pinned = n;
+  const show = () => { scrollTextTo(n.home || n.spans[0], true); applyFocus(); };
+  if (S.stage === 'chunks' || S.stage === 'text') show(); else goTo('chunks').then(show);
+}
+// the HUD: where each stage sits. The model is the core: the text side runs into it, and its forms leave it.
+const GW = 392, GH = 150;
+const GP = { text: [44, 92], chunks: [120, 92], model: [196, 92], summary: [300, 92], linear: [250, 116], slides: [322, 116], table: [250, 138] };
+// the model's forms: A, the summary, straight on; B (on to B2) and C hang from that line, as in a tree
+const SPX = 232;
+const PATH = {};       // the line from each stage's parent to it
+Object.entries(PARENT).forEach(([b, a]) => { PATH[b] = b === 'linear' || b === 'table' ? [GP[a], [SPX, GP[a][1]], [SPX, GP[b][1]], GP[b]] : [GP[a], GP[b]]; });
+const plen = pts => pts.slice(1).reduce((t, q, i) => t + Math.hypot(q[0] - pts[i][0], q[1] - pts[i][1]), 0);
+function along(pts, u) {      // the point at fraction u of the way, and the line walked to it
+  let left = clamp(u, 0, 1) * plen(pts);
+  const out = [pts[0]];
+  for (let i = 1; i < pts.length; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], d = Math.hypot(x1 - x0, y1 - y0);
+    if (left <= d) { const k = d ? left / d : 0, q = [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k]; out.push(q); return { p: q, pts: out }; }
+    left -= d; out.push(pts[i]);
+  }
+  return { p: pts[pts.length - 1], pts: out };
+}
+const ptsAttr = pts => pts.map(q => q.map(v => +v.toFixed(1)).join(',')).join(' ');
+const IDX = { text: '01', chunks: '02', model: '03', summary: 'A', linear: 'B', slides: 'B2', table: 'C' };
+const EN = { text: 'TEXT', chunks: 'CHUNKS', model: 'MODEL', summary: 'SUMMARY', linear: 'LINEAR', slides: 'SLIDES', table: 'TABLE' };
+const STAT = (() => {
+  const pts = order.reduce((a, n) => a + n.points.length, 0), whens = new Set(order.flatMap(n => n.points.map(p => p.when).filter(Boolean)));
+  const pages = order.length + 1 + (summary.length ? 1 : 0), phrases = summary.filter(p => p.refs.length).length;
+  return { text: `${textLen.toLocaleString('en')} CHARS`, chunks: `${blocks.length} CHUNKS · TEXT ORDER`, model: `${order.length} NOTES · ${rels.length} LINKS`,
+    summary: summary.length ? `1 SENTENCE · ${phrases} PHRASES` : 'NO SUMMARY', linear: `${order.length} NOTES · ${pts} POINTS`,
+    slides: `${pages} PAGES · 16:9`, table: `${order.length} ROWS · ${whens.size + 2} COLS` };
+})();
+const GG = {};
+const hexPts = (x, y, r) => Array.from({ length: 6 }, (_, k) => { const a = Math.PI / 6 + k * Math.PI / 3; return `${(x + r * Math.cos(a)).toFixed(1)},${(y + r * Math.sin(a)).toFixed(1)}`; }).join(' ');
+const diaPts = (x, y, r) => `${x},${y - r} ${x + r},${y} ${x},${y + r} ${x - r},${y}`;
+function buildGauge() {
+  gaugeSvg.setAttribute('viewBox', `0 0 ${GW} ${GH}`);
+  gaugeSvg.innerHTML = '';
+  const g = (tag, attrs, parent = gaugeSvg) => svgEl(tag, attrs, parent);
+  const c = 12;     // the plate: one corner cut, marks at the others
+  g('polygon', { class: 'h-plate', points: `0,0 ${GW},0 ${GW},${GH} ${c},${GH} 0,${GH - c}` });
+  g('path', { class: 'h-mark', d: `M0,9 V0 H9 M${GW - 9},0 H${GW} V9 M${GW},${GH - 9} V${GH} H${GW - 9}` });
+  g('path', { class: 'h-chamfer', d: `M0,${GH - c - 6} V${GH - c} L${c},${GH} H${c + 6}` });
+  g('rect', { class: 'h-acc', x: 14, y: 11, width: 10, height: 3 });
+  g('text', { x: 30, y: 15 }).textContent = 'META NAVIGATOR';
+  GG.time = g('text', { class: 'h-time', x: GW - 14, y: 15, 'text-anchor': 'end' });
+  g('line', { class: 'h-rule', x1: 14, y1: 22, x2: GW - 14, y2: 22 });
+  // the readout: where the knob stands
+  GG.idx = g('text', { class: 'h-idx', x: 12, y: 57 });
+  GG.name = g('text', { class: 'h-name', x: 62, y: 43 });
+  GG.stat = g('text', { class: 'h-stat', x: 62, y: 55 });
+  // ▶ — the panel takes no keyboard focus, so a stray Enter cannot start or stop the play; Space and the arrows work from anywhere
+  const pb = g('g', { class: 'g-play', role: 'button', 'aria-label': T.play });
+  g('polygon', { points: `${GW - 78},35 ${GW - 14},35 ${GW - 18},53 ${GW - 82},53` }, pb);
+  GG.playIcon = g('path', { d: '' }, pb);
+  GG.playText = g('text', { x: GW - 58, y: 47 }, pb);
+  pb.addEventListener('click', ev => { ev.stopPropagation(); play(); });
+  pb.addEventListener('pointerdown', ev => ev.stopPropagation());
+  GG.play = pb;
+  // the lines: a hairline, a ruler on the trunk, and the way walked in the focus colour
+  SEGS.forEach(([a, b]) => g('polyline', { class: 'g-hit', points: ptsAttr(PATH[b]) }));
+  SEGS.forEach(([a, b]) => {
+    g('polyline', { class: 'g-track', points: ptsAttr(PATH[b]) });
+    if (/^\d/.test(IDX[b])) g('line', { class: 'g-ruler', x1: GP[a][0] + 8, y1: GP[a][1], x2: GP[b][0] - 8, y2: GP[b][1] });
+    GG['f_' + b] = g('polyline', { class: 'g-fill', points: ptsAttr([GP[a]]) });
+  });
+  // the stages
+  Object.keys(STAGES).forEach(st => {
+    const [x, y] = GP[st], lab = g('g', { class: 'g-label', 'data-stage': st });
+    let tx = x, ty = y + 15, anchor = 'middle';
+    if (st === 'model') {        // the core
+      g('circle', { class: 'g-core-ring', cx: x, cy: y, r: 16 });
+      GG.lock = g('path', { class: 'g-lock', d: [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([sx, sy]) => `M${x + sx * 11},${y + sy * 6} V${y + sy * 11} H${x + sx * 6}`).join(' ') });
+      GG['n_' + st] = g('polygon', { class: 'g-node', points: diaPts(x, y, 6) });
+      ty = y + 30;
+    } else if (st === 'text') GG['n_' + st] = g('rect', { class: 'g-node', x: x - 3.5, y: y - 3.5, width: 7, height: 7 });
+    else if (st === 'chunks') GG['n_' + st] = g('polygon', { class: 'g-node', points: hexPts(x, y, 4.5) });
+    else {         // a form: A, B (and on to B2), C
+      GG['n_' + st] = g('rect', { class: 'g-node', x: x - 4, y: y - 4, width: 8, height: 8 });
+      tx = x + 9; ty = y + 2.5; anchor = 'start';      // a row of the tree: the name beside its node
+    }
+    GG['t_' + st] = g('text', { x: tx, y: ty, 'text-anchor': anchor }, lab);
+    g('tspan', { class: 'g-idx' }, GG['t_' + st]).textContent = IDX[st] + ' ';
+    GG['t_' + st].append(EN[st]);
+    const w = (IDX[st].length + 1 + EN[st].length) * 5.9 + 4;
+    lab.prepend(svgEl('rect', { class: 'g-lab', x: anchor === 'middle' ? tx - w / 2 : anchor === 'end' ? tx - w : tx - 2, y: ty - 9, width: w, height: 12 }));   // behind the name
+  });
+  GG.halo = g('circle', { class: 'g-halo', r: 9 });
+  GG.knob = g('polygon', { class: 'g-knob', points: diaPts(0, 0, 4.5) });
+  GG.here = null;
+}
+// the readout decodes when the knob reaches a new stage
+let readRaf = 0;
+function setReadout(st) {
+  if (GG.here === st) return;
+  GG.here = st;
+  GG.idx.textContent = IDX[st]; GG.stat.textContent = STAT[st];
+  const word = EN[st], A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#/';
+  cancelAnimationFrame(readRaf);
+  if (reduceMotion) { GG.name.textContent = word; return; }
+  const t0 = performance.now();
+  const step = now => {
+    const k = (now - t0) / 340, n = Math.floor(k * (word.length + 1));
+    GG.name.textContent = k >= 1 ? word : word.split('').map((ch, i) => i < n ? ch : A[(Math.random() * A.length) | 0]).join('');
+    if (k < 1) readRaf = requestAnimationFrame(step);
+  };
+  readRaf = requestAnimationFrame(step);
+}
+const stageLabel = st => ({ text: T.stopText, chunks: T.stopChunks, model: T.stopModel })[st] || formLabel(st);
+function knobPos() {
+  return sess ? along(PATH[sess.b], sess.u).p : GP[S.stage];
+}
+function drawGauge() {
+  if (!GG.knob) return;
+  const [kx, ky] = knobPos();
+  const walked = chain(sess ? sess.a : S.stage);       // the way from the text to here
+  SEGS.forEach(([a, b]) => {
+    const line = GG['f_' + b];
+    const u = walked.includes(b) ? 1 : sess && sess.a === a && sess.b === b ? sess.u : 0;
+    line.setAttribute('points', ptsAttr(along(PATH[b], u).pts));
+    line.style.opacity = walked.includes(a) || (sess && sess.a === a) ? '1' : '0';
+  });
+  Object.keys(STAGES).forEach(st => {
+    const on = walked.includes(st) || (!!sess && sess.b === st && sess.u > 0.999);
+    GG['n_' + st].classList.toggle('on', on);
+    GG['t_' + st].classList.toggle('on', !sess && S.stage === st);
+  });
+  GG.lock.classList.toggle('on', walked.includes('model'));
+  GG.play.classList.toggle('on', playing);
+  const x = GW - 70, y = 44;
+  GG.playIcon.setAttribute('d', playing ? `M${x},${y - 4} h2.6 v8 h-2.6 Z M${x + 4.4},${y - 4} h2.6 v8 h-2.6 Z` : `M${x},${y - 4.5} L${x + 7},${y} L${x},${y + 4.5} Z`);
+  GG.playText.textContent = playing ? 'PAUSE' : 'PLAY';
+  GG.play.setAttribute('aria-label', playing ? T.pause : T.play);
+  const here = sess ? (sess.u >= 0.5 ? sess.b : sess.a) : S.stage;
+  setReadout(here);
+  drawClock();
+  GG.knob.setAttribute('transform', `translate(${kx},${ky})`);
+  GG.halo.setAttribute('cx', kx); GG.halo.setAttribute('cy', ky);
+  gaugeSvg.setAttribute('aria-valuetext', stageLabel(here));
+}
+function svgPoint(ev) { const r = gaugeSvg.getBoundingClientRect(); return [(ev.clientX - r.left) * GW / r.width, (ev.clientY - r.top) * GH / r.height]; }
+function project([x, y]) {   // the nearest point on any line of the gauge
+  const hits = [];
+  SEGS.forEach(([a, b]) => {
+    const pts = PATH[b], L = plen(pts);
+    let acc = 0, best = null;
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], vx = x1 - x0, vy = y1 - y0, len = Math.hypot(vx, vy);
+      const k = len ? clamp(((x - x0) * vx + (y - y0) * vy) / (len * len), 0, 1) : 0;
+      const d = Math.hypot(x - (x0 + vx * k), y - (y0 + vy * k));
+      if (!best || d < best.d) best = { d, seg: [a, b], u: L ? (acc + k * len) / L : 0 };
+      acc += len;
+    }
+    hits.push(best);
+  });
+  const min = Math.min(...hits.map(t => t.d)), near = hits.filter(t => t.d < min + 0.75);
+  // on the stretch the forms share, keep to the form under way, else go straight on to A
+  return near.find(t => sess && t.seg[1] === sess.b) || near.find(t => t.seg[1] === 'summary') || near[0];
+}
+function moveKnob(t) {
+  const [lo, hi] = t.seg;
+  if (sess && sess.a === lo && sess.b === hi) { frame(t.u); return; }
+  if (sess) {   // leave the segment at the end nearer the target
+    const far = st => route(st, lo).length + route(st, hi).length;
+    endSeg(far(sess.b) <= far(sess.a) ? 1 : 0);
+  }
+  beginSeg(lo, hi);
+  frame(t.u);
+}
+let drag = null;
+gaugeSvg.addEventListener('pointerdown', ev => {
+  const lab = ev.target.closest && ev.target.closest('.g-label');
+  drag = { x: ev.clientX, y: ev.clientY, lab: lab ? lab.dataset.stage : null, moved: false };
+  gaugeSvg.setPointerCapture(ev.pointerId);
+  goToken++; playing = false;
+  cancelAnimationFrame(tw);
+});
+gaugeSvg.addEventListener('pointermove', ev => {
+  if (!drag) return;
+  if (!drag.moved && Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) < 4) return;
+  if (!drag.moved) { drag.moved = true; gaugeSvg.classList.add('dragging'); S.hover = null; applyFocus(); }
+  const t = project(svgPoint(ev));
+  if (t.d < 40) moveKnob(t);
+});
+const endDrag = ev => {
+  const d = drag;
+  drag = null;
+  gaugeSvg.classList.remove('dragging');
+  if (!d) return;
+  if (d.moved) { release(); return; }
+  const t = project(svgPoint(ev));
+  const target = d.lab || (t.d < 14 ? (t.u < 0.5 ? t.seg[0] : t.seg[1]) : null);
+  if (target && target !== S.stage) goTo(target); else if (sess) release();
+};
+gaugeSvg.addEventListener('pointerup', endDrag);
+gaugeSvg.addEventListener('pointercancel', endDrag);
+const NEXT = { text: 'chunks', chunks: 'model', model: 'summary', linear: 'slides' };
+function stepStage(dir) {   // → toward the summary (or on to the slides), ← back toward the text
+  playing = false;
+  const to = dir > 0 ? NEXT[S.stage] : PARENT[S.stage];
+  if (to) goTo(to);
+}
+function cycleForm(dir) {   // ↑ ↓ between the model's forms, as they lie on the gauge: A summary, B linear, C table
+  if (S.stage !== 'model' && !FORMS.includes(S.stage)) return;
+  const col = ['summary', 'linear', 'table'], at = S.stage === 'slides' ? 'linear' : S.stage;
+  const i = col.indexOf(at);
+  playing = false;
+  goTo(col[i < 0 ? (dir > 0 ? 2 : 0) : clamp(i + dir, 0, 2)]);
+}
+
+/* =====================================================================
+   9. Events
+   ===================================================================== */
+const ownerNode = t => t.kind === 'point' ? t.node : t.kind === 'rel' ? t.source : t;
+textEl.addEventListener('mousemove', ev => {
+  if (S.stop === 'text') return;
+  const seg = ev.target.closest('.seg');
+  const k = seg ? +seg.dataset.k : null;
+  const t = k != null ? targetOfSeg(k) : null;
+  setHover(t, t ? k : null);
+});
+textEl.addEventListener('mouseleave', () => setHover(null));
+textEl.addEventListener('click', ev => {
+  if (S.stop === 'text' || sess) return;
+  const seg = ev.target.closest('.seg');
+  const t = seg ? targetOfSeg(+seg.dataset.k) : null;
+  if (!t) { setPinned(null); return; }
+  setPinned(S.pinned === t ? null : t, { scroll: true, fromText: true });
+});
+const targetOfEl = el => {
+  if (!el || !el.closest) return null;
+  const pt = el.closest('.pt');
+  if (pt) return nodes.get(pt.dataset.node).points[+pt.dataset.pt];
+  const ph = el.closest('.phrase');
+  if (ph) return summary[+ph.dataset.phrase];
+  const ln = el.closest('.link');
+  if (ln) return elsById.get(ln.dataset.rel);
+  const nd = el.closest('[data-node]');
+  return nd ? nodes.get(nd.dataset.node) : null;
+};
+[repEl, marks, $('#mmSvg')].forEach(host => {
+  host.addEventListener('mousemove', ev => setHover(targetOfEl(ev.target), null, host.id === 'mmSvg'));
+  host.addEventListener('mouseleave', () => setHover(null));
+  host.addEventListener('click', ev => {
+    if (sess) return;
+    const t = targetOfEl(ev.target);
+    if (!t) { if (host === repEl) setPinned(null); return; }
+    ev.stopPropagation();
+    setPinned(S.pinned === t ? null : t, { scroll: true });
+  });
+  host.addEventListener('dblclick', ev => { const t = targetOfEl(ev.target); const n = t && (t.kind === 'node' ? t : t.kind === 'point' ? t.node : null); if (n && S.stop === 'model') focusIn(n); });
+});
+let rafScroll = 0;
+textPane.addEventListener('scroll', () => { cancelAnimationFrame(rafScroll); rafScroll = requestAnimationFrame(() => { drawPointer(); followReading(); }); }, { passive: true });
+stage.addEventListener('scroll', () => requestAnimationFrame(() => { drawPointer(); updateInView(); }), { passive: true });
+// the model follows the part of the text being read
+let readingId = null, followTO = 0;
+function followReading() {
+  if (S.stop === 'text' || sess) return;
+  const mid = textPane.scrollTop + textPane.clientHeight * 0.42;
+  let best = null;
+  order.forEach(n => (n.boxes || []).forEach(b => { if (b.top <= mid && b.bottom >= mid && (!best || b.bottom - b.top < best.len)) best = { n, k: b.k, len: b.bottom - b.top }; }));
+  const id = best ? best.n.id + ':' + best.k : null;
+  if (id === readingId) return;
+  readingId = id;
+  $$('.reading').forEach(el => el.classList.remove('reading'));
+  if (!best) return;
+  $$(`#marks .br[data-node="${best.n.id}"]`).forEach(el => el.classList.add('reading'));
+  const card = repEl.querySelector(S.rep === 'chunks' ? `[data-key="blk:${best.n.id}:${best.k}"]` : `[data-key="card:${best.n.id}"]:not(.anchor)`);
+  if (card) card.classList.add('reading');
+  clearTimeout(followTO);
+  if (S.follow && card && (S.rep === 'linear' || S.rep === 'chunks') && !S.pinned && !S.hover) {
+    followTO = setTimeout(() => {
+      const c = stage.getBoundingClientRect(), r = card.getBoundingClientRect();
+      if (r.top < c.top + 10 || r.top > c.bottom - 150) stage.scrollTo({ top: stage.scrollTop + r.top - c.top - 30, behavior: reduceMotion ? 'auto' : 'smooth' });
+    }, 140);
+  }
+}
+document.addEventListener('keydown', ev => {
+  if (ev.target.closest && ev.target.closest('select, input, textarea')) return;
+  const inPane = ev.target.closest && ev.target.closest('#textPane, #stage');
+  if (ev.key === 'Escape') { if (S.pinned) setPinned(null); else setHover(null); }
+  else if (ev.key === ' ' && !inPane) { ev.preventDefault(); play(); }
+  else if (ev.key === 'ArrowRight') { ev.preventDefault(); stepStage(1); }
+  else if (ev.key === 'ArrowLeft') { ev.preventDefault(); stepStage(-1); }
+  else if ((ev.key === 'ArrowUp' || ev.key === 'ArrowDown') && !inPane) { ev.preventDefault(); cycleForm(ev.key === 'ArrowDown' ? 1 : -1); }
+});
+function showTheme() {
+  $$('#themeCtl button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeSet === document.documentElement.dataset.theme)));
+}
+$('#themeCtl').addEventListener('click', ev => {
+  const b = ev.target.closest('button');
+  if (!b || b.dataset.themeSet === document.documentElement.dataset.theme) return;
+  document.documentElement.dataset.theme = b.dataset.themeSet;
+  try { localStorage.setItem(THEME_KEY, b.dataset.themeSet); } catch (e) { /* storage unavailable */ }
+  showTheme();
+  FIELD.sig = null;      // the composition takes its colours from the theme
+  layoutField();
+  drawPointer();
+});
+let resizeTO = 0;
+addEventListener('resize', () => { clearTimeout(resizeTO); resizeTO = setTimeout(() => { if (sess) endSeg(sess.u >= 0.5 ? 1 : 0); renderAll(); afterRender(); drawGauge(); }, 120); });
+
+/* =====================================================================
+   10. Start
+   ===================================================================== */
+$('#title').textContent = meta.title || (LANG === 'ja' ? '無題' : 'Untitled');
+document.title = (meta.title ? meta.title + ' — ' : '') + 'Semantic Structure';
+if (meta.source) $('#sourceLine').textContent = meta.source;
+if (problems.length) {
+  const p = $('#problems'); p.hidden = false;
+  p.append(h('b', {}, T.problems), h('ul', {}, ...problems.slice(0, 8).map(x => h('li', {}, x))));
+}
+showTheme();
+buildGauge();
+buildMinimap();
+renderAll();
+afterRender();
+drawGauge();
+if (viewOpt.focus && nodes.get(viewOpt.focus)) setPinned(nodes.get(viewOpt.focus), { scroll: true });
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { if (!sess) { layoutText(); afterRender(); } });
+
+window.__semanticViewer = {
+  get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, moving: !!sess, pinned: S.pinned ? keyOf(S.pinned) : null, hover: S.hover ? keyOf(S.hover) : null }; },
+  problems, order: order.map(n => ({ id: n.id, num: n.num })),
+  goTo: (st, o) => goTo(st, o),
+  scrub: (a, b, u) => { if (!sess || sess.a !== a || sess.b !== b) { if (sess) endSeg(0); beginSeg(a, b); } frame(u); },
+  release: () => release(),
+  gauge: { w: GW, h: GH, at: GP },
+  pin: id => setPinned(elsById.get(id) || null, { scroll: true }), hover: id => setHover(elsById.get(id) || null),
+};
+})();
+</script>
+</body>
+</html>
