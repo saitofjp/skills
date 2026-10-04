@@ -7,7 +7,8 @@
   Checks: no console errors and no model problems; dragging the gauge's knob moves the page
   continuously from the text to the chunks to the model, and letting go settles it; each of the model's
   forms (summary, linear, slides, table) renders, with the model as a minimap; ▶ plays to the summary; hovering a mapped word focuses the model
-  and draws the thread; clicking pins it and opens the details card; Escape releases it;
+  and draws the thread, with a peek of its details along the bottom; clicking pins it and holds the details
+  card; Escape releases it; at a form the details card and the minimap sit side by side without overlapping;
   nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
 'use strict';
@@ -89,18 +90,34 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   await seg.scrollIntoViewIfNeeded();
   await seg.hover();
   await page.waitForTimeout(300);
-  const hov = await V(() => ({ f: document.querySelectorAll('#rep .f0, #rep .fp').length, thread: document.querySelectorAll('#pointer path').length }));
+  const hov = await V(() => ({ f: document.querySelectorAll('#rep .f0, #rep .fp').length, thread: document.querySelectorAll('#pointer path').length, peek: !document.querySelector('#details').hidden && document.querySelector('#details').classList.contains('peek') }));
   if (!hov.f) return fail('hovering a mapped word did not focus anything in the model');
-  ok(`hover on the text focuses the model${hov.thread ? ' and draws the thread' : ''}`);
+  if (!hov.peek) return fail('hovering a mapped word did not show a peek of its details');
+  ok(`hover on the text focuses the model${hov.thread ? ', draws the thread' : ''} and peeks its details`);
   const first = await V(() => window.__semanticViewer.order[0].id);
   await page.evaluate(id => window.__semanticViewer.pin(id), first);
   await page.waitForTimeout(300);
-  const pinned = await V(() => ({ pinned: window.__semanticViewer.state.pinned, card: !document.querySelector('#details').hidden }));
+  const pinned = await V(() => ({ pinned: window.__semanticViewer.state.pinned, card: !document.querySelector('#details').hidden && !document.querySelector('#details').classList.contains('peek') }));
   if (!pinned.pinned || !pinned.card) return fail('pinning a chunk did not open the details card');
   ok('pin opens the details card');
+  // at a form, the details card and the minimap line up along the bottom
+  await V(() => window.__semanticViewer.goTo('linear'));
+  await page.waitForTimeout(300);
+  const dock = await V(() => {
+    const d = document.querySelector('#details'), m = document.querySelector('#minimap');
+    if (d.hidden || m.hidden) return { shown: false };
+    const a = d.getBoundingClientRect(), b = m.getBoundingClientRect();
+    return { shown: true, overlap: a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1, low: a.bottom > innerHeight * 0.6 };
+  });
+  if (!dock.shown) return fail('at a form, the details card or the minimap is missing');
+  if (dock.overlap) return fail('at a form, the details card overlaps the minimap');
+  if (!dock.low) return fail('the details card is not along the bottom');
+  ok('at a form, the details card and the minimap sit along the bottom');
+  await V(() => window.__semanticViewer.goTo('model'));
   await page.mouse.move(2, 2);
   await page.keyboard.press('Escape');
   if (await V(() => window.__semanticViewer.state.pinned)) return fail('Escape did not release the pin');
+  if (await V(() => !document.querySelector('#details').hidden)) return fail('the details card stayed open after the release');
   ok('Escape releases the pin');
 
   // the light / dark switch
