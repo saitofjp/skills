@@ -64,8 +64,8 @@
   --shadow: none;
   color-scheme: light;
 }
-/* dopa light / dopa full: the same page in the dopagaki style (game × pachinko × anime OP × short video). Black stage, neon ink;
-   the conclusion is gold, the key hot pink. dopa full also stages the play as a show, in #fxBack and #show (section 6c). */
+/* dopa / dopa/full: the same page in the dopagaki style (game × pachinko × anime OP × short video). Black stage, neon ink;
+   the conclusion is gold, the key hot pink. dopa/full also stages the play as a show, in #fxBack and #show (section 6c). */
 :root[data-theme^="dopa"] {
   --space: #06050a; --ground: rgba(9, 8, 18, .9); --sky: rgba(14, 6, 28, .26); --field: 255, 45, 111; --field-a: .07;
   --ink: #f5f7ff; --ink-2: #c6cbe4; --muted: #8f96b3; --rule: rgba(25, 232, 255, .2);
@@ -97,6 +97,16 @@ header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; pad
 .theme-ctl button { border: 0; background: transparent; white-space: nowrap; padding: 4px 10px; font: 700 11px/1.2 var(--mono); letter-spacing: .08em; color: var(--muted); }
 .theme-ctl button + button { border-left: 1.5px solid var(--card-line); }
 .theme-ctl button[aria-pressed="true"] { background: var(--ui); color: var(--ui-fg); }
+/* dopa/full: the slash in hot pink and FULL in italics; chosen, it burns pink to violet, FULL in gold, with light running across it */
+.theme-ctl button.full { position: relative; overflow: hidden; }
+.theme-ctl button.full i { font-style: normal; color: #ff2d6f; margin: 0 1px; }
+.theme-ctl button.full b { font-weight: 800; font-style: italic; letter-spacing: .14em; }
+.theme-ctl button.full[aria-pressed="true"] { background: linear-gradient(100deg, #ff2d6f, #8b5cff); color: #fff; }
+.theme-ctl button.full[aria-pressed="true"] i { color: #ffd23f; }
+.theme-ctl button.full[aria-pressed="true"] b { color: #fff4b8; text-shadow: 0 0 8px rgba(255, 210, 63, .9); }
+.theme-ctl button.full[aria-pressed="true"]::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, .6) 50%, transparent 65%); transform: translateX(-100%); animation: full-shine 2.6s ease-in-out infinite; }
+@keyframes full-shine { 55%, 100% { transform: translateX(100%); } }
 
 /* ---------- main: the ground (text) and the space above it (model) ---------- */
 main { position: relative; display: flex; min-height: 0; overflow: hidden; }
@@ -474,7 +484,7 @@ main.narrow #rep { padding-bottom: 190px; }
 :where(:root[data-theme^="dopa"]) .slide.concl .num { color: var(--band-fg); text-shadow: none; }
 :where(:root[data-theme^="dopa"]) .slide.cover h2 { text-shadow: -1px 0 rgba(var(--hot-rgb), .9), 1px 0 rgba(var(--focus-rgb), .9); }
 
-/* ---------- the show (dopa full only): a stage that keeps moving behind the page, and cut-ins, counters,
+/* ---------- the show (dopa/full only): a stage that keeps moving behind the page, and cut-ins, counters,
    flashes and sparks over it (6c). It never takes the pointer, and the HUD stays above it. ---------- */
 #fxBack { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; display: none; }
 #show { position: fixed; inset: 0; z-index: 39; pointer-events: none; overflow: hidden; display: none; color: #fff; font-family: var(--font); }
@@ -504,7 +514,7 @@ main.narrow #rep { padding-bottom: 190px; }
 #show .dp-combo .dp-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--focus), var(--gold)); transform-origin: 0 50%; transform: scaleX(0); transition: transform .2s; }
 body.narrow #show .dp-combo { top: calc(var(--main-top, 90px) + 8px); bottom: auto; left: auto; right: 14px; min-width: 120px; }
 body.narrow #show .dp-combo .dp-n { font-size: 34px; }
-/* less motion, when the system asks for it; dopa full is the show the reader chose, so it keeps its motion */
+/* less motion, when the system asks for it; dopa/full is the show the reader chose, so it keeps its motion */
 @media (prefers-reduced-motion: reduce) { :root:not([data-theme="dopa-full"]) * { animation: none !important; transition: none !important; } }
 </style>
 </head>
@@ -512,7 +522,7 @@ body.narrow #show .dp-combo .dp-n { font-size: 34px; }
 <header>
   <div class="titles"><h1 id="title">Semantic Structure</h1><div class="src" id="sourceLine"></div></div>
   <div class="theme-ctl" id="themeCtl" role="group" aria-label="Theme">
-    <button type="button" data-theme-set="light">light</button><button type="button" data-theme-set="dark">dark</button><button type="button" data-theme-set="dopa-light">dopa light</button><button type="button" data-theme-set="dopa-full">dopa full</button>
+    <button type="button" data-theme-set="light">light</button><button type="button" data-theme-set="dark">dark</button><button type="button" data-theme-set="dopa">dopa</button><button type="button" class="full" data-theme-set="dopa-full" aria-label="dopa/full">dopa<i>/</i><b>full</b></button>
   </div>
 </header>
 <main id="main">
@@ -767,7 +777,7 @@ const h = (tag, attrs = {}, ...kids) => {
 };
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-// dopa full stages the play as a show (6c), and keeps all its motion even when the system asks for less: dopa light is the same look without it.
+// dopa/full stages the play as a show (6c), and keeps all its motion even when the system asks for less: dopa is the same look without it.
 // In the other themes, that setting stops the decoration (calm).
 const isFull = () => document.documentElement.dataset.theme === 'dopa-full';
 const calm = () => reduceMotion && !isFull();
@@ -796,11 +806,11 @@ if (!model || typeof model.sourceText !== 'string') {
   return;
 }
 // dark by default; "light", or "auto" to follow the system. The reader can switch, and a choice of light or dark is remembered here.
-// "dopa-light" and "dopa-full" are how the page is shown, not a reading preference: a page built with one always opens in it, and they are never remembered.
+// "dopa" and "dopa-full" are how the page is shown, not a reading preference: a page built with one always opens in it, and they are never remembered.
 const THEME_KEY = 'semantic-structure-viewer:theme';
 let savedTheme = null;
 try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) { /* storage unavailable */ }
-document.documentElement.dataset.theme = viewOpt.theme === 'dopa-light' || viewOpt.theme === 'dopa-full' ? viewOpt.theme
+document.documentElement.dataset.theme = viewOpt.theme === 'dopa' || viewOpt.theme === 'dopa-full' ? viewOpt.theme
   : savedTheme === 'light' || savedTheme === 'dark' ? savedTheme
   : viewOpt.theme === 'light' || (viewOpt.theme === 'auto' && matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
 const meta = model.metadata && typeof model.metadata === 'object' ? model.metadata : {};
@@ -1440,7 +1450,7 @@ const linkOrder = (() => {
 const linear = t => t;
 // ▶ moves the knob as a steady hand would, through the same frames as dragging, at a pace to read by
 const PLAY_SPEED = 1.5;
-// the dopa full show takes a little longer: the build-up before the summary, a beat at each stage for its cut-ins, and the sentence lit up
+// the dopa/full show takes a little longer: the build-up before the summary, a beat at each stage for its cut-ins, and the sentence lit up
 const playMs = lo => (lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500 * (fxLive() ? 1.5 : 1)) / PLAY_SPEED;
 const PLAY_HOLD = 800;
 const PLAY_LINGER = 2600;   // at the summary, a moment to read it before the play goes back to the model
@@ -1514,7 +1524,7 @@ function beginSeg(a, b) {
     const sc = Math.min(m.width / w, m.height / hh0);
     shrink.to = { s: sc, x: m.left + (m.width - w * sc) / 2, y: m.top + (m.height - hh0 * sc) / 2 };
   }
-  // landAt: where a chunk's card lands, whether or not it is in view (the dopa full show marks the conclusion and the key landing)
+  // landAt: where a chunk's card lands, whether or not it is in view (the dopa/full show marks the conclusion and the key landing)
   sess = { a, b, kind, pieces, ctxA, shrink, dx: paneA - paneB, scroll0, wraps, links, u: 0, landAt: id => d0 + spread * ordOf('card:' + id) + dur, fxSkip: true };
   main.classList.add('scrubbing');
   cancelAnimationFrame(FIELD.raf); FIELD.raf = 0;
@@ -1893,14 +1903,14 @@ function drawField() {
   }
 }
 /* =====================================================================
-   6c. The dopa full theme: the same play, staged as a show, after dopagaki-generator
+   6c. The dopa/full theme: the same play, staged as a show, after dopagaki-generator
    (game × pachinko × anime OP × short video). It adds nothing to what the page shows:
    every event is a moment the drag or the play already passes through (a passage wrapped,
    a line drawn, the conclusion or the key landing, the model complete, the summary arriving),
    and every number it shows is counted from the model. Behind the page the stage keeps moving;
    over it come cut-ins, flashes (never more than about three a second), shakes and sparks,
-   and the stronger the moment, the bigger the show. Only dopa full has it, and it always does, whatever the system says
-   about motion: on some machines that setting is on without the reader knowing. dopa light is the same look without the show.
+   and the stronger the moment, the bigger the show. Only dopa/full has it, and it always does, whatever the system says
+   about motion: on some machines that setting is on without the reader knowing. dopa is the same look without the show.
    ===================================================================== */
 const fxBack = $('#fxBack'), fxFront = $('#fxFront'), showEl = $('#show');
 const bctx = fxBack.getContext('2d'), sctx = fxFront.getContext('2d');
@@ -2518,7 +2528,7 @@ function setReadout(st) {
   const step = now => {
     const k = (now - t0) / 340, n = Math.floor(k * (word.length + 1)), kr = roll ? (now - t0) / 650 : 1;
     GG.name.textContent = k >= 1 ? word : word.split('').map((ch, i) => i < n ? ch : A[(Math.random() * A.length) | 0]).join('');
-    // in the dopa full show the figures count up
+    // in the dopa/full show the figures count up
     if (roll) GG.stat.textContent = kr >= 1 ? stat : stat.replace(/\d[\d,]*/g, m => Math.round(+m.replace(/,/g, '') * Math.max(0, kr)).toLocaleString('en'));
     if (k < 1 || kr < 1) readRaf = requestAnimationFrame(step);
   };

@@ -9,9 +9,9 @@
   when it opens (unless built with --no-autoplay); each of the model's forms (summary, linear, slides, table)
   renders, with the model as a minimap; ▶ plays to the summary and back to the model; hovering a mapped word focuses the model
   and draws the thread, with its details along the bottom; Escape clears the focus; at a form the details
-  card and the minimap sit side by side without overlapping; the theme switches between dark, light, dopa light and dopa full:
-  dopa light has no show, in dopa full ▶ stages the build-up and the summary's arrival once, neither is remembered, the show stops
-  with the theme, and dopa full keeps its show when the system asks for less motion;
+  card and the minimap sit side by side without overlapping; the theme switches between dark, light, dopa and dopa/full:
+  dopa has no show, in dopa/full ▶ stages the build-up and the summary's arrival once, neither is remembered, the show stops
+  with the theme, and dopa/full keeps its show when the system asks for less motion;
   nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
 'use strict';
@@ -135,32 +135,32 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   if ((await V(() => document.documentElement.dataset.theme)) !== 'dark') return fail('the theme switch did not change back to dark');
   ok('switches between dark and light');
 
-  // dopa light: the dopa look, without the show
-  await page.click('#themeCtl button[data-theme-set="dopa-light"]');
-  if (!(await V(() => document.documentElement.dataset.theme === 'dopa-light' && getComputedStyle(document.querySelector('#show')).display === 'none' && !window.__semanticViewer.fx.live)))
-    return fail('dopa light did not show the dopa look without the show');
-  ok('dopa light has the dopa look, without the show');
-  // dopa full: ▶ from the model plays the build-up before the summary and its arrival, once
+  // dopa: the dopa look, without the show
+  await page.click('#themeCtl button[data-theme-set="dopa"]');
+  if (!(await V(() => document.documentElement.dataset.theme === 'dopa' && getComputedStyle(document.querySelector('#show')).display === 'none' && !window.__semanticViewer.fx.live)))
+    return fail('dopa did not show the dopa look without the show');
+  ok('dopa has the dopa look, without the show');
+  // dopa/full: ▶ from the model plays the build-up before the summary and its arrival, once
   await page.click('#themeCtl button[data-theme-set="dopa-full"]');
   if (!(await V(() => document.documentElement.dataset.theme === 'dopa-full' && getComputedStyle(document.querySelector('#show')).display !== 'none' && window.__semanticViewer.fx.live)))
-    return fail('the theme switch did not turn on the dopa full show');
+    return fail('the theme switch did not turn on the dopa/full show');
   const before = await V(() => window.__semanticViewer.fx.count);
   await V(() => window.__semanticViewer.goTo('model', { ms: 1 }));
   await page.click('#gauge .g-play');
   try {
     await page.waitForFunction(() => { const s = window.__semanticViewer.state; return s.stage === 'model' && !s.moving && !s.playing; }, null, { timeout: 40000 });
-  } catch (e) { return fail('in dopa full, ▶ did not play to the summary and back: ' + JSON.stringify(await state())); }
+  } catch (e) { return fail('in dopa/full, ▶ did not play to the summary and back: ' + JSON.stringify(await state())); }
   const after = await V(() => window.__semanticViewer.fx.count);
-  if (!(after.aori > before.aori && after.summary > before.summary)) return fail('the dopa full show did not stage the summary: ' + JSON.stringify(after));
+  if (!(after.aori > before.aori && after.summary > before.summary)) return fail('the dopa/full show did not stage the summary: ' + JSON.stringify(after));
   if (after.aori - before.aori !== 1) return fail('the build-up before the summary played again on the way back to the model');
-  ok('in dopa full, ▶ stages the build-up and the summary\'s arrival, once');
+  ok('in dopa/full, ▶ stages the build-up and the summary\'s arrival, once');
   const kept = await V(() => { try { return localStorage.getItem('semantic-structure-viewer:theme'); } catch (e) { return null; } });
   if (kept && kept.startsWith('dopa')) return fail('a dopa theme was remembered as a reading preference');
   await page.click('#themeCtl button[data-theme-set="dark"]');
   if (await V(() => getComputedStyle(document.querySelector('#show')).display !== 'none' || document.querySelectorAll('#show .dp').length))
-    return fail('switching back to dark left the dopa full show on screen');
-  ok('switches to dopa light and dopa full and back, without remembering them');
-  // dopa full keeps its show even when the system asks for less motion
+    return fail('switching back to dark left the dopa/full show on screen');
+  ok('switches to dopa and dopa/full and back, without remembering them');
+  // dopa/full keeps its show even when the system asks for less motion
   const calm = await browser.newPage({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
   calm.on('pageerror', e => errors.push(e.message));
   await calm.goto('file://' + path.resolve(file));
@@ -172,8 +172,8 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
     return { live: v.fx.live, summary: v.fx.count.summary, show: getComputedStyle(document.querySelector('#show')).display };
   });
   await calm.close();
-  if (!shown.live || !shown.summary || shown.show === 'none') return fail('with reduced motion, dopa full dropped its show: ' + JSON.stringify(shown));
-  ok('dopa full keeps its show when the system asks for less motion');
+  if (!shown.live || !shown.summary || shown.show === 'none') return fail('with reduced motion, dopa/full dropped its show: ' + JSON.stringify(shown));
+  ok('dopa/full keeps its show when the system asks for less motion');
 
   // and back down
   await V(() => window.__semanticViewer.goTo('text', { ms: 60 }));

@@ -29,7 +29,7 @@ Rise through the layers of meaning. The text is the ground. Chunks lift off it a
 
 The look is flat, as on a printed manga page, dark by default (black paper, white ink) with a light theme a click away: solid fills, crisp lines and square, panel-like cards. The dark theme uses screentone dots; the light theme leaves them out and stays plain. There is no glow, blur or soft shadow. Motion is staged but plain. Pieces move in order, settle with a slight overshoot when you let go, and then hold.
 
-The dopa themes are the exception: the same page in the dopagaki style, and in dopa full the same play staged as a show (see [The dopa themes](#the-dopa-themes)).
+The dopa themes are the exception: the same page in the dopagaki style, and in dopa/full the same play staged as a show (see [The dopa themes](#the-dopa-themes)).
 
 ## The gauge is continuous
 
@@ -49,14 +49,14 @@ A caption band names what is happening: the chunk being wrapped, the line being 
 
 The page starts the play by itself when it opens: once the fonts are in (or after 1.5 s) and the page is in view, unless the reader has already taken the knob. `autoplay: false` (`--no-autoplay`) turns that off.
 
-Dragging, ▶ and the play on opening always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps. In dopa full it stops nothing (see below).
+Dragging, ▶ and the play on opening always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps. In dopa/full it stops nothing (see below).
 
 ## The dopa themes
 
-`dopa-light` and `dopa-full` (`--theme dopa-light`, `--theme dopa-full`) dress the page in the dopagaki style of [`dopagaki-generator`](../../dopagaki-generator/SKILL.md): game × pachinko × anime OP × short video.
+`dopa` and `dopa-full` (`--theme dopa`, `--theme dopa-full`) dress the page in the dopagaki style of [`dopagaki-generator`](../../dopagaki-generator/SKILL.md): game × pachinko × anime OP × short video.
 
-- **dopa light** is the look alone: a black stage in neon, the conclusion gold and the key hot pink, glowing cards and lines, scanlines and a vignette. The text keeps its plain type, so it can still be read. The play is the plain one.
-- **dopa full** is that look, with the play staged as a show. Built with it, the page plays the show when it opens, and a screen recording of the play is a short video.
+- **dopa** is the look alone: a black stage in neon, the conclusion gold and the key hot pink, glowing cards and lines, scanlines and a vignette. The text keeps its plain type, so it can still be read. The play is the plain one.
+- **dopa/full** is that look, with the play staged as a show. Built with it, the page plays the show when it opens, and a screen recording of the play is a short video.
 
 The show adds nothing to what the page shows. Every event is a moment the drag or the play already passes through, fired as the knob passes it going forward (once a segment; going back only runs the counters down), and every number on screen is counted from the model. The stronger the moment, the bigger the show: the conclusion and the summary get the most.
 
@@ -75,7 +75,7 @@ The show adds nothing to what the page shows. Every event is a moment the drag o
 - **The stage behind the page** keeps moving: rays turning slowly from the model's centre and sparks rising, stronger as the knob rises. The HUD's figures count up as the knob reaches a stage.
 - **Timing.** The show takes a little longer than the plain play: 1.1 s at each stage, 3.5 s for the build-up from the model to a form, and 4 s at the summary before going back to the model. The timecode counts it all.
 - **Limits.** Flashes come at most about three a second. The show never takes the pointer, and the HUD stays above it. On a phone, it centres above the HUD and the counter moves to the top right.
-- **Motion.** dopa full keeps all of its motion even when the system asks for less (`prefers-reduced-motion`): on some machines that setting is on without the reader knowing, and the show would quietly vanish. dopa light is the choice without the show. In the other themes, that setting still stops the decoration.
+- **Motion.** dopa/full keeps all of its motion even when the system asks for less (`prefers-reduced-motion`): on some machines that setting is on without the reader knowing, and the show would quietly vanish. dopa is the choice without the show. In the other themes, that setting still stops the decoration.
 - **Not remembered.** The dopa themes are how a page is shown, not a reading preference: a page built with one always opens in it, and choosing one in the header is never remembered. Light or dark, chosen there, is.
 
 ## Layers
@@ -154,7 +154,7 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | Click | Bring the other side to it at once: a word scrolls the model to its note, a note scrolls the text to its words. Nothing is pinned. |
 | Move off, or Esc | Clear the focus |
 | Double click a card | Go down to its passage |
-| light / dark / dopa light / dopa full (header) | Switch the theme. Dark is the default; a choice of light or dark is remembered in the browser. dopa full turns the show on; neither dopa theme is remembered. |
+| light / dark / dopa / dopa/full (header) | Switch the theme. Dark is the default; a choice of light or dark is remembered in the browser. dopa/full turns the show on; neither dopa theme is remembered. |
 
 ## View options
 
@@ -162,7 +162,7 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 |---|---|
 | `stage` | Where the knob starts: `"text"` (default), `"chunks"`, `"model"`, `"summary"`, `"linear"`, `"slides"`, `"table"` |
 | `focus` | A node id to focus when the page opens, until the pointer moves onto something else |
-| `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`, `"dopa-light"`, `"dopa-full"`. The reader can still switch. A page built with a dopa theme always opens in it. |
+| `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`, `"dopa"`, `"dopa-full"`. The reader can still switch. A page built with a dopa theme always opens in it. |
 | `follow` | `false` stops the right side from following the text |
 | `autoplay` | `false` stops the page from playing by itself when it opens (default `true`) |
 | `lang` | `"ja"` / `"en"`. Defaults to `metadata.language`, then to the script of the text. |
