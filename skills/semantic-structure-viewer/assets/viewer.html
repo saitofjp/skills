@@ -823,7 +823,7 @@ const LANG = viewOpt.lang || meta.language || (/[぀-ヿ一-鿿]/.test(text) ? '
 const I18N = {
   en: {
     focusAxis: 'Focus', formAxis: 'Form', stopText: 'Text', stopChunks: 'Chunks', stopModel: 'Model',
-    repStructure: 'Structure', repLinear: 'Linear', repTable: 'Table', repSummary: 'Summary', repSlides: 'Slides', play: 'Play to the summary', pause: 'Pause',
+    repStructure: 'Structure', repLinear: 'Linear', repTable: 'Table', repSummary: 'Summary', repSlides: 'Slides', play: 'Play from the text to the summary', pause: 'Pause',
     byNotes: 'Notes order', byReading: 'Reading order',
     phase_text: 'Text', phase_wrap: 'Chunk', phase_notes: 'Notes', phase_structure: 'Structure', phase_link: 'Link', phase_summary: 'One sentence',
     capNotes: 'Each chunk becomes a note: its message, and what matters in it', capStructure: 'The notes take their places: what leads to what',
@@ -836,7 +836,7 @@ const I18N = {
   },
   ja: {
     focusAxis: 'フォーカス', formAxis: '表現', stopText: '原文', stopChunks: '塊', stopModel: 'モデル',
-    repStructure: '構造', repLinear: '線形', repTable: '表', repSummary: '要約', repSlides: 'スライド', play: '要約まで再生', pause: '一時停止',
+    repStructure: '構造', repLinear: '線形', repTable: '表', repSummary: '要約', repSlides: 'スライド', play: '原文から要約まで再生', pause: '一時停止',
     byNotes: 'ノート順', byReading: '読む順',
     phase_text: '原文', phase_wrap: '塊を巻く', phase_notes: 'ノートにする', phase_structure: '構造にする', phase_link: 'つなぐ', phase_summary: '一言にする',
     capNotes: '塊がノートになる：その塊のメッセージと、落とせない要点', capStructure: 'ノートが持ち場につく：何が何につながるか',
@@ -1679,19 +1679,12 @@ async function playTo(target) {     // the drag, played: along the gauge at a st
   arrived();
   return true;
 }
-let playing = false, playEnd = -1;
+let playing = false;
 const CLOCK = { t0: 0, total: 0, iv: 0 };
-// ▶ starts again from the text when the knob is at the summary, or still where the last play left it
-const replay = () => !sess && (S.stage === 'summary' || (S.stage === 'model' && goToken === playEnd));
-function planMs() {    // how long ▶ takes from here: to the summary, a moment there, and back to the model
-  let ms = lingerMs() + playMs('model'), st = replay() ? 'text' : S.stage;
-  if (sess) {
-    const s = sess, back = route(s.b, 'summary').includes(s.a);
-    ms += playMs(s.a) * (back ? s.u : 1 - s.u);
-    st = back ? s.a : s.b;
-  }
-  const path = route(st, 'summary');
-  for (let i = 1; i < path.length; i++) ms += playMs(segOf(path[i - 1], path[i])[0]) + (i > 1 || sess ? holdMs() : 0);
+function planMs() {    // how long ▶ takes: from the text to the summary, a moment there, and back to the model
+  const path = route('text', 'summary');
+  let ms = lingerMs() + playMs('model');
+  for (let i = 1; i < path.length; i++) ms += playMs(segOf(path[i - 1], path[i])[0]) + (i > 1 ? holdMs() : 0);
   return ms;
 }
 const clockText = ms => { const t = Math.max(0, Math.round(ms / 1000)); return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; };
@@ -1702,7 +1695,7 @@ function drawClock() {
 }
 async function play() {
   if (playing) { playing = false; goToken++; clearInterval(CLOCK.iv); drawGauge(); return; }
-  if (replay()) goTo('text');
+  goTo('text');      // ▶ always plays from the start, wherever the knob is
   playing = true;
   CLOCK.total = planMs(); CLOCK.t0 = performance.now();
   clearInterval(CLOCK.iv); CLOCK.iv = setInterval(drawClock, 250);
@@ -1712,7 +1705,6 @@ async function play() {
     const my = goToken;
     await sleep(lingerMs());
     done = my === goToken && playing && await goTo('model', { play: true });
-    if (done) playEnd = goToken;
   }
   if (done || !sess) playing = false;
   if (!playing) clearInterval(CLOCK.iv);
@@ -2764,7 +2756,7 @@ if (AUTOPLAY) {
 }
 
 window.__semanticViewer = {
-  get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, moving: !!sess, playing, hover: S.hover ? keyOf(S.hover) : null }; },
+  get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, seg: sess ? sess.a + '-' + sess.b : null, moving: !!sess, playing, hover: S.hover ? keyOf(S.hover) : null }; },
   problems, order: order.map(n => ({ id: n.id, num: n.num })), autoplay: AUTOPLAY,
   goTo: (st, o) => goTo(st, o),
   scrub: (a, b, u) => { if (!sess || sess.a !== a || sess.b !== b) { if (sess) endSeg(0); beginSeg(a, b); } frame(u); },

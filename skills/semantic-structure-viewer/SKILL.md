@@ -11,7 +11,7 @@ One page shows one model and its text. One control moves it: a gauge that draws 
   - Dragging the knob right abstracts, and dragging it left returns to the words.
   - The page can stand anywhere in between. At the chunk layer the text is wrapped passage by passage, and the list on the right follows the text's order: nothing is restructured yet. Moving on to the model, the rows of each chunk merge into its card, the cards nest and take their places, and the lines grow from the conclusion outward (the Formation).
   - At the chunk and model layers, the text and its notes sit side by side, with their pointers linked (the Two Pane view).
-  - **▶** plays to the summary from wherever the knob is, holds there for a moment and goes back to the model: it moves the knob by itself, so it plays exactly the animation dragging shows. The page starts it by itself when it opens.
+  - **▶** always plays from the start, the text, to the summary, wherever the knob is, holds there for a moment and goes back to the model: it moves the knob by itself, so it plays exactly the animation dragging shows. The page starts it by itself when it opens.
 - **The forms, A summary / B linear (→ B2 slides) / C table (transform):**
   - These are representations of the model, so they branch from the model, in straight lines, and are reached only through it.
   - Moving the knob into a branch turns the model into that form: the cards fly into the phrases of the one sentence, points come out of their cards into linear notes, or drop into table cells. From the linear notes, the slides: each card grows into a 16:9 page, a plan for a presentation.
@@ -45,13 +45,13 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
 3. **Check it in a browser** if Node and Playwright are available:
    `NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html`
    - It checks that the page loads with no errors and that dragging the knob moves the page between stages and settles when let go.
-   - It checks that the page plays by itself when it opens, that each form renders, that ▶ plays to the summary and back to the model, and that hovering a word focuses the model.
+   - It checks that the page plays by itself when it opens, that each form renders, that ▶ plays from the text to the summary and back to the model, and that hovering a word focuses the model.
    - It checks that hovering shows the details along the bottom and Esc clears them, that at a form the card and the minimap sit side by side, and that nothing overflows a phone-width screen.
    - It checks that the theme switches between light, dark, dopa and dopa/full: dopa has no show, in dopa/full ▶ stages the build-up and the summary's arrival once, the show stops when the theme changes, and dopa/full keeps its show when the system asks for less motion.
 
    Then look at it yourself: drag slowly from the text to the model. Do the headlines read as a story, and does the summary land?
 4. **Deliver.** Give the path and how to use it:
-   - It plays by itself when it opens; ▶ (or Space) plays to the summary and back to the model. Drag the gauge's knob to watch every piece move; click its labels (or press ← →) to switch at once.
+   - It plays by itself when it opens; ▶ (or Space) plays from the start to the summary and back to the model. Drag the gauge's knob to watch every piece move; click its labels (or press ← →) to switch at once.
    - At the model, drag into a branch for linear notes, slides or a table (↑ ↓ switch between the branches).
    - Hover to link the text and the notes and show the details along the bottom; click to bring the other side to it. light / dark / dopa / dopa/full in the header switches the theme.
    - In dopa/full, the play is the show: to make a video, show the page full screen and screen-record it from the start.

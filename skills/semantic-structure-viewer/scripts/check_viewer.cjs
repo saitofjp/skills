@@ -7,7 +7,7 @@
   Checks: no console errors and no model problems; dragging the gauge's knob moves the page
   continuously from the text to the chunks to the model, and letting go settles it; the page plays by itself
   when it opens (unless built with --no-autoplay); each of the model's forms (summary, linear, slides, table)
-  renders, with the model as a minimap; ▶ plays to the summary and back to the model; hovering a mapped word focuses the model
+  renders, with the model as a minimap; ▶ plays from the text to the summary and back to the model, wherever the knob was; hovering a mapped word focuses the model
   and draws the thread, with its details along the bottom; Escape clears the focus; at a form the details
   card and the minimap sit side by side without overlapping; the theme switches between dark, light, dopa and dopa/full:
   dopa has no show, in dopa/full ▶ stages the build-up and the summary's arrival once, neither is remembered, the show stops
@@ -82,17 +82,18 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   }
   ok('turns into the summary, linear notes, slides and a table, with the model as a minimap, and back');
 
-  // ▶ plays the way to the goal, the summary
+  // ▶ always plays from the start, the text, to the goal, the summary, wherever the knob is
   await V(() => window.__semanticViewer.goTo('chunks', { ms: 1 }));
   await still();
   await page.click('#gauge .g-play');
+  if ((await state()).seg !== 'text-chunks') return fail('▶ did not start from the text: ' + JSON.stringify(await state()));
   try {
     await page.waitForFunction(() => window.__semanticViewer.state.stage === 'summary' && !window.__semanticViewer.state.moving, null, { timeout: 60000 });
   } catch (e) { return fail('▶ did not play to the summary: ' + JSON.stringify(await state())); }
   try {
     await page.waitForFunction(() => { const s = window.__semanticViewer.state; return s.stage === 'model' && !s.moving && !s.playing; }, null, { timeout: 20000 });
   } catch (e) { return fail('▶ did not go back to the model after the summary: ' + JSON.stringify(await state())); }
-  ok('▶ plays from where the knob is to the summary and, after a moment there, back to the model');
+  ok('▶ plays from the text to the summary and, after a moment there, back to the model');
   await V(() => window.__semanticViewer.goTo('model', { ms: 1 }));
   await still();
 

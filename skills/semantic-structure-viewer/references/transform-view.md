@@ -14,14 +14,14 @@ The gauge is a compact game HUD at the top right (at the bottom on a phone), in 
 
 - **The plate.** A flat panel with corner marks, one cut corner and hairline rules. The type is small, monospaced and widely spaced, and the focus colour is used sparingly.
 - **The readout.** A large index (`01`–`03` for the levels; `A`, `B`, `B2`, `C` for the forms), the stage's name, and figures taken from the model (`13 NOTES · 11 LINKS`). The name decodes, letter by letter, when the knob reaches a new stage.
-- **The play control.** `PLAY` / `PAUSE`, with a timecode: how long the play takes from here (`T-00:24`), and while it runs, the time elapsed (`00:07 / 00:24`).
+- **The play control.** `PLAY` / `PAUSE`, with a timecode: how long the play takes (`T-00:24`), and while it runs, the time elapsed (`00:07 / 00:24`).
 - **The graph.** It is the control, and the model sits at its centre: a diamond in a ring, framed by turning lock brackets. The levels below it (text, chunks) run into it from the left along a ruled track; its forms leave it to the right as a tree, a series: A, the summary, straight on; B linear (and along its row on to B2 slides) and C table hanging from that line. The knob is a small diamond with a pulse.
 
 The page's content starts below the HUD, and the text, centred at L0, keeps clear of it. The HUD takes no keyboard focus, so a stray Enter or a click cannot leave it ready to start or stop the play; Space and the arrow keys work from anywhere on the page.
 
 - **The trunk** (focus out / in, meta-cognition): the levels, from the text, to the text wrapped into chunks, to the model. Moving right abstracts; moving left returns to the words.
 - **The forms** (transform, representation): the model's forms, joined to the model by straight lines: A the summary in one sentence, B linear notes (which lead on to B2 slides), C a table. The only way to a form is through the model, because a form is a representation of the model, not of the text.
-- **▶** plays the way to the summary from where the knob is, holds there for a moment, and goes back to the model. It starts from the text again when the knob is at the summary, or still at the model where the last play left it. It moves the knob for you, so what plays is exactly what dragging shows. Space does the same; PAUSE stops the knob where it is, and dragging takes over at once. The page plays by itself when it opens.
+- **▶** always plays from the start: wherever the knob is, it goes back to the text and plays the way to the summary, holds there for a moment, and goes back to the model. It moves the knob for you, so what plays is exactly what dragging shows. Space does the same; PAUSE stops the knob where it is, and dragging takes over at once. The page plays by itself when it opens.
 
 ## Concept
 
@@ -147,7 +147,7 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | Drag the gauge's knob | Move continuously between stages; let go to settle |
 | Hover or click a box on the minimap | Focus that chunk; the form and the text scroll to it |
 | Click a label on the gauge | Switch to that stage at once |
-| ▶ PLAY or Space | Play to the summary and back to the model: the knob moves by itself, as in dragging; again (PAUSE) to stop where it is |
+| ▶ PLAY or Space | Play from the text to the summary and back to the model, wherever the knob is: the knob moves by itself, as in dragging; again (PAUSE) to stop where it is, and ▶ after that starts over |
 | ← / → | Switch toward the text / toward the summary (from Linear, on to Slides) |
 | ↑ / ↓ (at the model or a form) | Switch between A summary, B linear and C table, as they lie on the gauge |
 | Hover text, a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread, and show its details along the bottom |
