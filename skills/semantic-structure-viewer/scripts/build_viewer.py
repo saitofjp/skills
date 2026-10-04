@@ -3,7 +3,7 @@
 
   build_viewer.py MODEL.json -o OUT.html [--view VIEW.json]
                   [--stage text|chunks|model|summary|linear|slides|table]
-                  [--focus NODE_ID] [--theme dark|light|auto] [--no-follow]
+                  [--focus NODE_ID] [--theme dark|light|auto] [--no-follow] [--no-autoplay]
 
 The model is validated with semantic_structure.py first; nothing is written while
 it has errors. View options are presentation only and never change the model.
@@ -50,8 +50,9 @@ def check_view(view, model):
             problems.append(f"{key} must be one of {', '.join(allowed)}, not {view[key]!r}")
     if view.get("focus") is not None and view["focus"] not in node_ids:
         problems.append(f"focus {view['focus']!r} is not a node id")
-    if "follow" in view and not isinstance(view["follow"], bool):
-        problems.append("follow must be true or false")
+    for key in ("follow", "autoplay"):
+        if key in view and not isinstance(view[key], bool):
+            problems.append(f"{key} must be true or false")
     return problems
 
 
@@ -61,9 +62,10 @@ def main(argv=None):
     parser.add_argument("-o", "--output", required=True)
     parser.add_argument("--view", help="JSON file with view options")
     parser.add_argument("--stage", choices=STAGES, help="where the gauge starts (default text)")
-    parser.add_argument("--focus", help="node id to pin when it opens")
+    parser.add_argument("--focus", help="node id to focus when it opens")
     parser.add_argument("--theme", choices=["dark", "light", "auto"], help="default dark")
     parser.add_argument("--no-follow", action="store_true", help="do not move the notes with the text scroll")
+    parser.add_argument("--no-autoplay", action="store_true", help="do not play by itself when the page opens")
     parser.add_argument("--template", default=str(TEMPLATE))
     args = parser.parse_args(argv)
 
@@ -82,6 +84,8 @@ def main(argv=None):
             view[key] = getattr(args, key)
     if args.no_follow:
         view["follow"] = False
+    if args.no_autoplay:
+        view["autoplay"] = False
     problems = check_view(view, model)
     if problems:
         for p in problems:

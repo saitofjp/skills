@@ -21,7 +21,7 @@ The page's content starts below the HUD, and the text, centred at L0, keeps clea
 
 - **The trunk** (focus out / in, meta-cognition): the levels, from the text, to the text wrapped into chunks, to the model. Moving right abstracts; moving left returns to the words.
 - **The forms** (transform, representation): the model's forms, joined to the model by straight lines: A the summary in one sentence, B linear notes (which lead on to B2 slides), C a table. The only way to a form is through the model, because a form is a representation of the model, not of the text.
-- **▶** plays the way to the summary, from where the knob is (from the text again when it is already there). It moves the knob for you, so what plays is exactly what dragging shows. Space does the same; PAUSE stops the knob where it is, and dragging takes over at once.
+- **▶** plays the way to the summary from where the knob is, holds there for a moment, and goes back to the model. It starts from the text again when the knob is at the summary, or still at the model where the last play left it. It moves the knob for you, so what plays is exactly what dragging shows. Space does the same; PAUSE stops the knob where it is, and dragging takes over at once. The page plays by itself when it opens.
 
 ## Concept
 
@@ -43,9 +43,11 @@ A caption band names what is happening: the chunk being wrapped, the line being 
 
 ## The play
 
-▶ is the drag, played: the knob travels along the gauge by itself, through the same frames, as a steady hand would move it. It moves at a constant pace (about 0.47 s for each chunk, and 0.27 s for each line as it grows, with at least 4 s per segment) and stops for a moment at each stage. For the ruling example, the play takes about 16 seconds; the timecode in the HUD shows where it is.
+▶ is the drag, played: the knob travels along the gauge by itself, through the same frames, as a steady hand would move it. It moves at a constant pace (about 0.47 s for each chunk, and 0.27 s for each line as it grows, with at least 4 s per segment) and stops for a moment at each stage. At the summary it holds for 2.6 s, so the sentence can be read, then plays back down to the model and stops there, with the text and the notes side by side to explore. For the ruling example, the play takes about 22 seconds; the timecode in the HUD shows where it is.
 
-Dragging and ▶ always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps.
+The page starts the play by itself when it opens: once the fonts are in (or after 1.5 s) and the page is in view, unless the reader has already taken the knob. `autoplay: false` (`--no-autoplay`) turns that off.
+
+Dragging, ▶ and the play on opening always animate, even with `prefers-reduced-motion`, because the movement is what the page shows. That setting stops only the decoration: the HUD's pulse and turning lock, the decoding readout, cut-ins and sweeps.
 
 ## Layers
 
@@ -60,10 +62,9 @@ Dragging and ▶ always animate, even with `prefers-reduced-motion`, because the
 
 The details of what is in focus are docked along the bottom of the model's side, never over the top of it:
 
-- **Peek.** Hovering anything that can be focused shows its details at once (`FOCUS · CLICK TO PIN`). A peek lets the pointer through, and it fades away while the pointer is under it, so what it covers can still be hovered and read.
-- **Pinned.** A click holds the card (`PINNED`), and its entries become links: a passage scrolls the text to it, a point, line, part or piece of evidence pins that instead. `×` hides the card and keeps the pin.
+- **On focus.** Hovering anything that can be focused shows its details at once (`FOCUS`), and moving off clears them. Nothing is pinned. The card lets the pointer through, and it fades away while the pointer is under it, so what it covers can still be hovered and read. When the details are longer than the card, the bottom fades out.
 - **Where.** At the chunks and the model, it spans the bottom of the model's side. At a form, it sits to the left of the minimap, at least as tall as it. Where the side is too narrow for both, the minimap shrinks first, then the card goes above it. On a phone it sits just above the HUD. It hides while the knob moves.
-- **Inside.** The headline, then its provenance and note, then its passages, points, lines, parts and evidence in columns that fill the card's width.
+- **Inside.** The headline, then its provenance and note, then its passages, points, lines, parts and evidence in columns that fill the card's width. It is for reading, with no buttons.
 
 ## Forms
 
@@ -88,7 +89,7 @@ The details of what is in focus are docked along the bottom of the model's side,
 
 | Color | Meaning |
 |---|---|
-| Teal (blue-green), with a thick outline | The focus: what the pointer is on, or what is pinned. In the text, a light wash and an underline. Also the knob and the path walked on the gauge. Not yellow: yellow reads as a warning. |
+| Teal (blue-green), with a thick outline | The focus: what the pointer is on. In the text, a light wash and an underline. Also the knob and the path walked on the gauge. Not yellow: yellow reads as a warning. |
 | Orange-red | `+`: raises, moves with |
 | Blue | `−`: lowers, moves against |
 | Grey | Related, no sign |
@@ -113,14 +114,14 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | Action | Result |
 |---|---|
 | Drag the gauge's knob | Move continuously between stages; let go to settle |
-| Hover or click a box on the minimap | Focus or pin that chunk; the form and the text scroll to it |
+| Hover or click a box on the minimap | Focus that chunk; the form and the text scroll to it |
 | Click a label on the gauge | Switch to that stage at once |
-| ▶ PLAY or Space | Play to the summary: the knob moves by itself, as in dragging; again (PAUSE) to stop where it is |
+| ▶ PLAY or Space | Play to the summary and back to the model: the knob moves by itself, as in dragging; again (PAUSE) to stop where it is |
 | ← / → | Switch toward the text / toward the summary (from Linear, on to Slides) |
 | ↑ / ↓ (at the model or a form) | Switch between A summary, B linear and C table, as they lie on the gauge |
-| Hover text, a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread, and peek its details along the bottom |
-| Click | Pin it. The details card along the bottom holds, and lists its passages (click to go there), points, lines, parts and evidence. |
-| Click again, click the background, or Esc | Release |
+| Hover text, a bracket, a row, a card, a point, a line, a phrase | Focus it on every layer at once, with the thread, and show its details along the bottom |
+| Click | Bring the other side to it at once: a word scrolls the model to its note, a note scrolls the text to its words. Nothing is pinned. |
+| Move off, or Esc | Clear the focus |
 | Double click a card | Go down to its passage |
 | Light / Dark (header) | Switch the theme. Dark is the default; the reader's choice is remembered in the browser. |
 
@@ -129,7 +130,8 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | Option | Values |
 |---|---|
 | `stage` | Where the knob starts: `"text"` (default), `"chunks"`, `"model"`, `"summary"`, `"linear"`, `"slides"`, `"table"` |
-| `focus` | A node id to pin |
+| `focus` | A node id to focus when the page opens, until the pointer moves onto something else |
 | `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`. The reader can still switch. |
 | `follow` | `false` stops the right side from following the text |
+| `autoplay` | `false` stops the page from playing by itself when it opens (default `true`) |
 | `lang` | `"ja"` / `"en"`. Defaults to `metadata.language`, then to the script of the text. |

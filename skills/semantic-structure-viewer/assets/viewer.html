@@ -291,28 +291,23 @@ body[data-stop="text"] .seg.c { cursor: text; }
 #pointer circle { fill: var(--thread); }
 #pointer circle.end { fill: var(--focus); stroke: var(--space); stroke-width: 1.5; }
 
-/* details (pinned) */
-/* the details dock along the bottom: what is in focus, or pinned; at a form, beside the model */
-#details { position: absolute; left: 14px; right: 14px; bottom: 14px; min-height: var(--mm-h, 0px); max-height: min(32%, 260px); overflow: auto; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 20px 14px 10px; z-index: 9; font-size: 12.5px; transition: opacity .18s; }
+/* details: the dock along the bottom shows what is in focus; at a form, beside the model. It lets the pointer through. */
+#details { position: absolute; left: 14px; right: 14px; bottom: 14px; min-height: var(--mm-h, 0px); max-height: min(32%, 260px); overflow: hidden; pointer-events: none; background: var(--card); border: 1.5px solid var(--card-line); border-left: 4px solid var(--focus); border-radius: 0; padding: 20px 14px 10px; z-index: 9; font-size: 12.5px; transition: opacity .18s; }
 main.forms #details { right: calc(var(--mm-w, 380px) + 24px); }
 main.forms.stacked #details { right: 14px; bottom: calc(var(--mm-h, 0px) + 24px); min-height: 0; }
 #details .dk { position: absolute; left: 14px; top: 6px; font: 700 9px/1 var(--mono); letter-spacing: .22em; color: var(--muted); }
-#details.peek { pointer-events: none; border-left-color: var(--accent); }
-#details.peek.under { opacity: 0; }
+#details.under { opacity: 0; }
+#details.clip { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent); }
 main.scrubbing #details { visibility: hidden; }
 #details .cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 0 18px; align-items: start; }
-#details .x { position: absolute; top: 6px; right: 8px; border: 0; background: transparent; font-size: 16px; color: var(--muted); }
-#details h2 { font-size: 14px; margin: 0 24px 4px 0; line-height: 1.45; }
+#details h2 { font-size: 14px; margin: 0 0 4px; line-height: 1.45; }
 #details h3 { font: 700 9.5px/1 var(--mono); letter-spacing: .18em; color: var(--muted); margin: 10px 0 5px; text-transform: uppercase; }
 #details ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; }
-#details li button { border: 0; background: transparent; text-align: left; padding: 2px 4px; border-radius: 4px; width: 100%; color: var(--ink-2); }
-#details li button:hover { background: var(--chip); color: var(--ink); }
+#details li { padding: 2px 4px; color: var(--ink-2); }
 #details .badge { display: inline-block; font: 700 10px/1.6 var(--mono); padding: 0 6px; border-radius: 4px; background: var(--chip); margin-right: 4px; }
 #details .note { color: var(--ink-2); margin: 6px 0 0; }
 #details .q { color: var(--muted); font-family: var(--mono); font-size: 11px; }
-#details ul.ev button { color: var(--evidence); }
-#details .row { display: flex; gap: 6px; margin-top: 8px; }
-#details .row button { border: 1px solid var(--rule); background: transparent; border-radius: 7px; padding: 3px 9px; font-size: 12px; }
+#details ul.ev li { color: var(--evidence); }
 
 /* the HUD: the meta-structure, text — chunks — model — its forms, is the control. It hangs at the top right. */
 #gauge { position: fixed; right: 14px; top: 10px; z-index: 40; width: 404px; touch-action: none; user-select: none; -webkit-user-select: none;
@@ -433,7 +428,7 @@ main.narrow #rep { padding-bottom: 190px; }
   </section>
   <section id="modelPane" aria-label="Model">
     <div id="stage"><div id="rep" class="rep"></div></div>
-    <aside id="details" hidden aria-live="polite"></aside>
+    <aside id="details" hidden></aside>
   </section>
   <svg id="pointer" aria-hidden="true"></svg>
   <div id="hint"></div>
@@ -718,7 +713,6 @@ const I18N = {
     capNotes: 'Each chunk becomes a note: its message, and what matters in it', capStructure: 'The notes take their places: what leads to what',
     capText: 'characters', conclusion: 'CONCLUSION', key: 'KEY', headline: 'Headline', points: 'Points', other: 'Other chunks', noSummary: 'This model has no summary.',
     inText: 'In the text', links: 'Relations', basis: 'Derived from', basisOf: 'Basis for', partOf: 'Part of', contains: 'Contains', note: 'Note',
-    goText: 'Down to the text', release: 'Release', close: 'Hide (stays pinned)',
     hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks, passage by passage; on the right, the chunks in the text\'s order. Keep dragging to rise to the model, where they merge and take their places.', hintText: 'Drag the knob on the gauge (top right) to the right: the text is wrapped into chunks, the chunks become a model, and the model one sentence. ▶ plays it to the summary.',
     kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS', textOrder: 'IN TEXT ORDER',
     explicit: 'explicit — stated in the text', inferred: 'inferred — follows from the text, not stated', abstracted: 'abstracted — a grouping made while modeling', uncertain: 'uncertain — more than one reading',
@@ -732,7 +726,6 @@ const I18N = {
     capNotes: '塊がノートになる：その塊のメッセージと、落とせない要点', capStructure: 'ノートが持ち場につく：何が何につながるか',
     capText: '字', conclusion: '結論', key: '注目', headline: '見出し', points: '要点', other: 'ほかの塊', noSummary: 'このモデルには要約（summary）がありません。',
     inText: '原文', links: 'つながり', basis: '根拠（導出元）', basisOf: 'これを根拠とするもの', partOf: '含まれる先', contains: '含むもの', note: 'メモ',
-    goText: '原文へ降りる', release: '解除', close: '閉じる（固定は維持）',
     hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を一節ずつ塊に巻いた層。右は原文の順に並んだ塊の一覧。さらに右へ動かすと、塊がまとまって持ち場につき、モデルになる。', hintText: '右上のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルに、モデルが一言の要約になる。▶ で要約まで再生。',
     kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS · 塊', textOrder: '原文の順',
     explicit: 'explicit — 原文に明示', inferred: 'inferred — 原文から推論（明示はない）', abstracted: 'abstracted — モデル化でまとめたもの', uncertain: 'uncertain — 複数の読みがありうる',
@@ -893,7 +886,7 @@ const PARENT = { chunks: 'text', model: 'chunks', summary: 'model', linear: 'mod
 const FORMS = ['summary', 'linear', 'table', 'slides'];
 const SEGS = Object.entries(PARENT).map(([child, parent]) => [parent, child]);
 const first = STAGES[viewOpt.stage] ? viewOpt.stage : 'text';
-const S = { stage: first, stop: STAGES[first].stop, rep: STAGES[first].rep, hover: null, pinned: null, hoverSeg: null, follow: viewOpt.follow !== false };
+const S = { stage: first, stop: STAGES[first].stop, rep: STAGES[first].rep, hover: null, hoverSeg: null, follow: viewOpt.follow !== false };
 const isWrapped = () => S.stop !== 'text';
 const isShownRel = () => true;
 let G = {};
@@ -1343,6 +1336,7 @@ const linear = t => t;
 const PLAY_SPEED = 1.5;
 const playMs = lo => (lo === 'text' ? Math.max(6000, 700 * order.length) : lo === 'chunks' ? Math.max(7000, 4000 + 400 * rels.length) : 3500) / PLAY_SPEED;
 const PLAY_HOLD = 800;
+const PLAY_LINGER = 2600;   // at the summary, a moment to read it before the play goes back to the model
 let sess = null;
 function setStage(name) {
   const st = STAGES[name];
@@ -1562,10 +1556,12 @@ async function playTo(target) {     // the drag, played: along the gauge at a st
   arrived();
   return true;
 }
-let playing = false;
+let playing = false, playEnd = -1;
 const CLOCK = { t0: 0, total: 0, iv: 0 };
-function planMs() {    // how long ▶ takes from here
-  let ms = 0, st = S.stage === 'summary' && !sess ? 'text' : S.stage;
+// ▶ starts again from the text when the knob is at the summary, or still where the last play left it
+const replay = () => !sess && (S.stage === 'summary' || (S.stage === 'model' && goToken === playEnd));
+function planMs() {    // how long ▶ takes from here: to the summary, a moment there, and back to the model
+  let ms = PLAY_LINGER + playMs('model'), st = replay() ? 'text' : S.stage;
   if (sess) {
     const s = sess, back = route(s.b, 'summary').includes(s.a);
     ms += playMs(s.a) * (back ? s.u : 1 - s.u);
@@ -1583,12 +1579,18 @@ function drawClock() {
 }
 async function play() {
   if (playing) { playing = false; goToken++; clearInterval(CLOCK.iv); drawGauge(); return; }
+  if (replay()) goTo('text');
   playing = true;
-  if (S.stage === 'summary' && !sess) goTo('text');
   CLOCK.total = planMs(); CLOCK.t0 = performance.now();
   clearInterval(CLOCK.iv); CLOCK.iv = setInterval(drawClock, 250);
   drawGauge();
-  const done = await goTo('summary', { play: true });
+  let done = await goTo('summary', { play: true });
+  if (done) {     // the summary lands, holds for a moment, and the play goes back to the model
+    const my = goToken;
+    await sleep(PLAY_LINGER);
+    done = my === goToken && playing && await goTo('model', { play: true });
+    if (done) playEnd = goToken;
+  }
   if (done || !sess) playing = false;
   if (!playing) clearInterval(CLOCK.iv);
   drawGauge();
@@ -1815,7 +1817,7 @@ function focusSets(f) {
 }
 let lit = [];
 function applyFocus() {
-  const f = S.pinned || S.hover;
+  const f = S.hover;
   const F = focusSets(f);
   const focusing = !!f;
   main.classList.toggle('focusing', focusing);
@@ -1903,7 +1905,7 @@ function textSideRect(f) {
 }
 function drawPointer() {
   pointerSvg.innerHTML = '';
-  const f = S.hover || S.pinned;
+  const f = S.hover;
   if (!f || S.stop === 'text' || G.narrow || sess) return;
   const host = main.getBoundingClientRect(), tp = textPane.getBoundingClientRect();
   const inPane = (el, r) => { const pane = el.closest('#stage, #textPane'); if (!pane) return true; const c = pane.getBoundingClientRect(); return r.bottom > c.top && r.top < c.bottom; };
@@ -1920,46 +1922,40 @@ function drawPointer() {
   }
 }
 
-/* ---- details of what is in focus: a peek while hovering, held when pinned ---- */
+/* ---- details of what is in focus, docked along the bottom ---- */
 const keyOf = f => f ? (f.id || `${f.kind}:${f.node ? f.node.id + ':' + f.k : f.i}`) : '';
 function renderDetails() {
-  const f = S.pinned || S.hover, peek = !S.pinned;
+  const f = S.hover;
   details.innerHTML = '';
-  details.hidden = !f || S.stop === 'text' || (!peek && details.dataset.closed === keyOf(f));
-  details.classList.toggle('peek', peek);
-  details.setAttribute('aria-live', peek ? 'off' : 'polite');
+  details.hidden = !f || S.stop === 'text';
   $('#hint').classList.toggle('gone', !details.hidden || $('#hint').classList.contains('gone'));
   if (details.hidden) { details.classList.remove('under'); return; }
-  const pin = el => h('button', { type: 'button', onclick: () => setPinned(el, { scroll: true }) }, titleOf(el));
-  const q = sp => h('button', { type: 'button', onclick: () => scrollTextTo(sp, true) }, h('span', { class: 'q' }, sentenceLabel(sp) + '  '), quote(sp));
+  const q = sp => h('span', {}, h('span', { class: 'q' }, sentenceLabel(sp) + '  '), quote(sp));
   const cols = h('div', { class: 'cols' });
   const list = (title, items, render, cls) => { if (items.length) cols.append(h('section', {}, h('h3', {}, title), h('ul', { class: cls || '' }, ...items.map(x => h('li', {}, render(x)))))); };
-  details.append(h('span', { class: 'dk' }, peek ? 'FOCUS · CLICK TO PIN' : 'PINNED'));
-  if (!peek) details.append(h('button', { type: 'button', class: 'x', 'aria-label': T.close, title: T.close, onclick: () => { details.dataset.closed = keyOf(f); renderDetails(); } }, '×'));
+  details.append(h('span', { class: 'dk' }, 'FOCUS'));
   const node = f.kind === 'node' ? f : f.kind === 'point' ? f.node : null;
   details.append(h('h2', {}, titleOf(f)));
   const p = f.prov;
   if (p && p !== 'explicit') details.append(h('div', {}, h('span', { class: 'badge' }, p), T[p].split(' — ')[1] || ''));
   if (f.note) details.append(h('p', { class: 'note' }, f.note));
-  if (f.kind === 'phrase') list(T.contains, f.refs, pin);
+  if (f.kind === 'phrase') list(T.contains, f.refs, titleOf);
   if (f.kind !== 'phrase') list(T.inText, f.spans || [], q);
   if (node) {
-    if (f.kind === 'node') list(T.points, node.points, x => h('button', { type: 'button', onclick: () => setPinned(x, { scroll: true }) }, (x.when ? x.when + '：' : '') + x.label));
-    list(T.links, node.rels, pin);
-    if (node.parent) list(T.partOf, [node.parent], pin);
-    if (f.kind === 'node') list(T.contains, node.children, pin);
+    if (f.kind === 'node') list(T.points, node.points, x => (x.when ? x.when + '：' : '') + x.label);
+    list(T.links, node.rels, titleOf);
+    if (node.parent) list(T.partOf, [node.parent], titleOf);
+    if (f.kind === 'node') list(T.contains, node.children, titleOf);
   }
-  if (f.kind === 'rel') list(T.links, [f.source, f.target], pin);
-  list(T.basis, (f.derivedFrom || []).map(id => elsById.get(id)).filter(Boolean), pin, 'ev');
-  if (f.id) list(T.basisOf, [...nodes.values(), ...rels].filter(e => e.derivedFrom.includes(f.id)), pin);
+  if (f.kind === 'rel') list(T.links, [f.source, f.target], titleOf);
+  list(T.basis, (f.derivedFrom || []).map(id => elsById.get(id)).filter(Boolean), titleOf, 'ev');
+  if (f.id) list(T.basisOf, [...nodes.values(), ...rels].filter(e => e.derivedFrom.includes(f.id)), titleOf);
   details.append(cols);
-  if (!peek) details.append(h('div', { class: 'row' },
-    node ? h('button', { type: 'button', onclick: () => focusIn(node) }, T.goText) : null,
-    h('button', { type: 'button', onclick: () => setPinned(null) }, T.release)));
+  details.classList.toggle('clip', details.scrollHeight > details.clientHeight + 1);
 }
-// a peek lets the pointer through; it fades while the pointer is under it, so what it covers can still be read
+// the dock fades while the pointer is under it, so what it covers can still be read
 main.addEventListener('mousemove', ev => {
-  if (details.hidden || !details.classList.contains('peek')) return;
+  if (details.hidden) return;
   const r = details.getBoundingClientRect();
   details.classList.toggle('under', ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom);
 });
@@ -1972,23 +1968,21 @@ function titleOf(x) {
   return '';
 }
 
-/* ---- hover and pin ---- */
+/* ---- hover: the focus; a click only brings the other side to it ---- */
 function setHover(f, seg = null, mini = false) {
   if (sess || (S.hover === f && S.hoverSeg === seg)) return;
   S.hover = f; S.hoverSeg = seg;
   applyFocus();
-  if (f && !S.pinned) followCounterpart(f, seg != null, mini);
-}
-function setPinned(f, opts = {}) {
-  S.pinned = f;
-  delete details.dataset.closed;
-  applyFocus();
-  if (f && opts.scroll) { revealInModel(f); if (!opts.fromText) revealInText(f); }
+  if (f) followCounterpart(f, seg != null, mini);
 }
 let followTimer = 0;
 function followCounterpart(f, fromText, fromMini) {
   clearTimeout(followTimer);
-  followTimer = setTimeout(() => { if (S.hover !== f || S.pinned) return; if (fromText) revealInModel(f, true); else { revealInText(f, true); if (fromMini) revealInModel(f, true); } }, 280);
+  followTimer = setTimeout(() => { if (S.hover !== f) return; if (fromText) revealInModel(f, true); else { revealInText(f, true); if (fromMini) revealInModel(f, true); } }, 280);
+}
+function bringIntoView(f, fromText, fromMini) {
+  clearTimeout(followTimer);
+  if (fromText) revealInModel(f); else { revealInText(f); if (fromMini) revealInModel(f); }
 }
 function revealInModel(f, onlyIfHidden) {
   if (S.stop === 'text') return;
@@ -2034,7 +2028,7 @@ function sweepSummary() {
   repEl.classList.remove('sweep'); void repEl.offsetWidth; repEl.classList.add('sweep');
 }
 function focusIn(n) {
-  S.pinned = n;
+  S.hover = n; S.hoverSeg = null;
   const show = () => { scrollTextTo(n.home || n.spans[0], true); applyFocus(); };
   if (S.stage === 'chunks' || S.stage === 'text') show(); else goTo('chunks').then(show);
 }
@@ -2260,8 +2254,7 @@ textEl.addEventListener('click', ev => {
   if (S.stop === 'text' || sess) return;
   const seg = ev.target.closest('.seg');
   const t = seg ? targetOfSeg(+seg.dataset.k) : null;
-  if (!t) { setPinned(null); return; }
-  setPinned(S.pinned === t ? null : t, { scroll: true, fromText: true });
+  if (t) bringIntoView(t, true);
 });
 const targetOfEl = el => {
   if (!el || !el.closest) return null;
@@ -2280,9 +2273,9 @@ const targetOfEl = el => {
   host.addEventListener('click', ev => {
     if (sess) return;
     const t = targetOfEl(ev.target);
-    if (!t) { if (host === repEl) setPinned(null); return; }
+    if (!t) return;
     ev.stopPropagation();
-    setPinned(S.pinned === t ? null : t, { scroll: true });
+    bringIntoView(t, false, host.id === 'mmSvg');
   });
   host.addEventListener('dblclick', ev => { const t = targetOfEl(ev.target); const n = t && (t.kind === 'node' ? t : t.kind === 'point' ? t.node : null); if (n && S.stop === 'model') focusIn(n); });
 });
@@ -2305,7 +2298,7 @@ function followReading() {
   const card = repEl.querySelector(S.rep === 'chunks' ? `[data-key="blk:${best.n.id}:${best.k}"]` : `[data-key="card:${best.n.id}"]:not(.anchor)`);
   if (card) card.classList.add('reading');
   clearTimeout(followTO);
-  if (S.follow && card && (S.rep === 'linear' || S.rep === 'chunks') && !S.pinned && !S.hover) {
+  if (S.follow && card && (S.rep === 'linear' || S.rep === 'chunks') && !S.hover) {
     followTO = setTimeout(() => {
       const c = stage.getBoundingClientRect(), r = card.getBoundingClientRect();
       if (r.top < c.top + 10 || r.top > c.bottom - 150) stage.scrollTo({ top: stage.scrollTop + r.top - c.top - 30, behavior: reduceMotion ? 'auto' : 'smooth' });
@@ -2315,7 +2308,7 @@ function followReading() {
 document.addEventListener('keydown', ev => {
   if (ev.target.closest && ev.target.closest('select, input, textarea')) return;
   const inPane = ev.target.closest && ev.target.closest('#textPane, #stage');
-  if (ev.key === 'Escape') { if (S.pinned) setPinned(null); else setHover(null); }
+  if (ev.key === 'Escape') setHover(null);
   else if (ev.key === ' ' && !inPane) { ev.preventDefault(); play(); }
   else if (ev.key === 'ArrowRight') { ev.preventDefault(); stepStage(1); }
   else if (ev.key === 'ArrowLeft') { ev.preventDefault(); stepStage(-1); }
@@ -2353,17 +2346,30 @@ buildMinimap();
 renderAll();
 afterRender();
 drawGauge();
-if (viewOpt.focus && nodes.get(viewOpt.focus)) setPinned(nodes.get(viewOpt.focus), { scroll: true });
+if (viewOpt.focus && nodes.get(viewOpt.focus)) { const n = nodes.get(viewOpt.focus); setHover(n); bringIntoView(n, false, true); }
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => { if (!sess) { layoutText(); afterRender(); } });
+// the page plays by itself when it opens: once the fonts are in (or after a moment) and the page is in view,
+// unless the reader has already taken the knob. Like ▶, it plays even with prefers-reduced-motion.
+const AUTOPLAY = viewOpt.autoplay !== false;
+if (AUTOPLAY) {
+  const tok = goToken;
+  const inView = () => new Promise(res => {
+    if (!document.hidden) return res();
+    const on = () => { if (!document.hidden) { document.removeEventListener('visibilitychange', on); res(); } };
+    document.addEventListener('visibilitychange', on);
+  });
+  Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), sleep(1500)]).then(inView)
+    .then(() => setTimeout(() => { if (goToken === tok && !sess && !playing) play(); }, 700));
+}
 
 window.__semanticViewer = {
-  get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, moving: !!sess, pinned: S.pinned ? keyOf(S.pinned) : null, hover: S.hover ? keyOf(S.hover) : null }; },
-  problems, order: order.map(n => ({ id: n.id, num: n.num })),
+  get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, moving: !!sess, playing, hover: S.hover ? keyOf(S.hover) : null }; },
+  problems, order: order.map(n => ({ id: n.id, num: n.num })), autoplay: AUTOPLAY,
   goTo: (st, o) => goTo(st, o),
   scrub: (a, b, u) => { if (!sess || sess.a !== a || sess.b !== b) { if (sess) endSeg(0); beginSeg(a, b); } frame(u); },
   release: () => release(),
   gauge: { w: GW, h: GH, at: GP },
-  pin: id => setPinned(elsById.get(id) || null, { scroll: true }), hover: id => setHover(elsById.get(id) || null),
+  hover: id => setHover(elsById.get(id) || null),
 };
 })();
 </script>
