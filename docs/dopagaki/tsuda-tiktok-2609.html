@@ -1,0 +1,1520 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>津田健次郎 対 TikTok 判決 ドパガキ版</title>
+<meta name="description" content="東京地裁 令和8年9月30日判決（投稿記事削除請求事件：声優 vs TikTok）を、ゲーム×パチンコ×アニメOP×ショート動画の過剰演出で見せるAUTO再生モーションプレゼン（非公式の要約演出）。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="津田健次郎 対 TikTok 判決 ドパガキ版">
+<meta property="og:description" content="東京地裁 令和8年9月30日判決を約2分7秒のAUTO再生モーションプレゼンに。dopagaki-generator スキルの作例（非公式の要約演出）。">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Dela+Gothic+One&family=Noto+Sans+JP:wght@500;700;900&display=swap">
+<style>
+/* Layout: fixed 1920x1080 stage scaled to fit and letterboxed on black; depth = bg canvas (voice waveform etc.) / slide DOM / fx canvas, framed by a game HUD */
+:root{
+  --ink:#06050a; --paper:#f5f7ff; --dim:#8f96b3;
+  --hot:#ff2d6f; --cyan:#19e8ff; --gold:#ffd23f; --lime:#a6ff3a; --red:#ff3131; --violet:#8b5cff;
+  --f-disp:"Dela Gothic One","Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --f-body:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+  --f-hud:"Chakra Petch","Noto Sans JP",ui-monospace,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%;margin:0;background:#000;overflow:hidden}
+body{color:var(--paper);font-family:var(--f-body);-webkit-font-smoothing:antialiased}
+#viewport{position:fixed;inset:0;overflow:hidden;background:#000;user-select:none;-webkit-user-select:none}
+#viewport.idle{cursor:none}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;margin:-540px 0 0 -960px;transform-origin:50% 50%;overflow:hidden;background:var(--ink)}
+#cam{position:absolute;inset:0;transform-origin:50% 50%}
+#bg{position:absolute;inset:0;width:100%;height:100%}
+#layer,#out{position:absolute;inset:0}
+#fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#overlay{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 2px,transparent 2px 4px),radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.6) 100%)}
+#noise{position:absolute;inset:-100px;pointer-events:none;opacity:.07;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");animation:noise .5s steps(5) infinite}
+@keyframes noise{0%{transform:translate(0,0)}20%{transform:translate(-40px,20px)}40%{transform:translate(30px,-50px)}60%{transform:translate(-60px,-10px)}80%{transform:translate(20px,40px)}100%{transform:translate(0,0)}}
+#flash{position:absolute;inset:0;pointer-events:none}
+.flash{position:absolute;inset:0}
+
+/* ---------- typography primitives ---------- */
+.slide{position:absolute;inset:0;overflow:hidden}
+.full{position:absolute;inset:0}
+.pos{position:absolute;white-space:nowrap}
+.disp{font-family:var(--f-disp);font-weight:900;font-synthesis:none;line-height:1.04;letter-spacing:-.01em}
+.jp{font-family:var(--f-body);font-weight:900;line-height:1.3}
+.hudf{font-family:var(--f-hud);font-weight:700;letter-spacing:.16em}
+.tabnum{font-variant-numeric:tabular-nums}
+.ch{display:inline-block;white-space:pre}
+.rgb{text-shadow:-.03em 0 rgba(255,30,100,.95),.03em 0 rgba(20,230,255,.95),0 0 .12em rgba(255,255,255,.35)}
+.goldx{color:#fff4b8;text-shadow:0 .015em 0 #ffb300,0 .03em 0 #e08a00,0 .045em 0 #b86400,0 .06em 0 #7a3f00,0 .075em 0 #3d1f00,0 0 .2em rgba(255,190,40,.8),0 0 .5em rgba(255,110,0,.5)}
+.hotx{color:#fff;text-shadow:0 .025em 0 #ff2d6f,0 .05em 0 #b3004a,0 .075em 0 #5c0026,0 0 .25em rgba(255,45,111,.85)}
+.kyk{color:#fff;text-shadow:0 .02em 0 #ff3131,0 .04em 0 #b00010,0 .06em 0 #5c0008,0 0 .2em rgba(255,49,49,.9),0 0 .5em rgba(255,0,0,.45)}
+.stroke-g{color:transparent;-webkit-text-stroke:10px var(--gold);filter:drop-shadow(0 0 30px rgba(255,210,63,.6))}
+.cap{background:#ffe600;color:#0a0a0a;padding:.06em .4em .12em;box-shadow:.12em .12em 0 #000;font-family:var(--f-body);font-weight:900}
+.chip{display:inline-block;font:700 26px/1 var(--f-hud);letter-spacing:.2em;padding:12px 18px 10px;border:3px solid currentColor}
+.hdr{display:flex;align-items:center;gap:30px}
+.h1{font-size:70px;color:#fff;line-height:1.1}
+.hsub{font-size:27px;color:var(--dim);font-weight:700;margin-top:6px}
+.cur{color:var(--hot);animation:blink .5s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.halftone{background-image:radial-gradient(rgba(0,0,0,.2) 22%,transparent 24%);background-size:22px 22px}
+
+/* ---------- hook / opening ---------- */
+.bub{position:relative;font:900 40px/1.2 var(--f-body);color:#07060d;background:#fff;padding:14px 28px 16px;border-radius:44px;box-shadow:0 0 0 5px #07060d,0 0 36px rgba(25,232,255,.55)}
+.bub::after{content:"";position:absolute;left:46px;bottom:-24px;border-left:16px solid transparent;border-right:16px solid transparent;border-top:26px solid #fff}
+.bub.r::after{left:auto;right:46px}
+.bub small{display:block;font:700 18px/1 var(--f-hud);letter-spacing:.24em;color:var(--hot);margin-bottom:6px}
+.slash{width:2700px;height:190px;background:#07060d;border-block:8px solid var(--hot);display:flex;align-items:center;justify-content:center;gap:48px;font:900 96px/1 var(--f-disp);font-synthesis:none;color:#fff;transform:rotate(-7deg)}
+.slash b{color:var(--hot);font-family:var(--f-hud);font-size:80px}
+.sweep{color:transparent;background:linear-gradient(100deg,transparent 42%,rgba(255,255,255,.95) 50%,transparent 58%) no-repeat;background-size:300% 100%;-webkit-background-clip:text;background-clip:text}
+.chap{display:flex;gap:22px}
+.chap span{font:900 34px/1 var(--f-body);padding:14px 22px;color:#07060d}
+.chap i{font:700 22px var(--f-hud);font-style:normal;margin-right:10px;letter-spacing:.1em}
+.chip-w{display:inline-block;background:#fff;color:#07060d;padding:4px 16px;margin-right:14px}
+.wvb{display:flex;align-items:center;gap:10px;height:700px}
+.wvb i{width:16px;border-radius:8px;background:rgba(25,232,255,.38);animation:wvb .45s ease-in-out infinite alternate}
+@keyframes wvb{from{height:40px}to{height:640px}}
+
+/* ---------- versus ---------- */
+.vsL{background:linear-gradient(160deg,#ff2d6f,#6d0030 70%);clip-path:polygon(0 0,58% 0,42% 100%,0 100%)}
+.vsR{background:linear-gradient(200deg,#19e8ff,#063a5c 70%);clip-path:polygon(58% 0,100% 0,100% 100%,42% 100%)}
+.who{white-space:normal;width:700px}
+.who.r{text-align:right}
+.who .role{display:inline-block;font:900 44px/1 var(--f-body);background:#07060d;color:#fff;padding:12px 24px 14px}
+.who .nm{font:900 130px/1.02 var(--f-disp);font-synthesis:none;color:#fff;margin:24px 0 18px;text-shadow:0 8px 0 rgba(0,0,0,.35)}
+.who .nm small{display:block;font:700 44px/1.2 var(--f-hud);letter-spacing:.1em;margin-top:8px}
+.who .ds{font:900 36px/1.5 var(--f-body);color:#fff}
+.who .ds b{background:#07060d;padding:2px 12px}
+.vs{color:#fff;-webkit-text-stroke:8px #07060d;text-shadow:0 0 50px var(--gold),0 0 100px rgba(255,210,63,.6)}
+.unk{background:#07060d;border:4px dashed rgba(255,255,255,.75);padding:16px 40px 18px;text-align:center;white-space:normal;box-shadow:0 0 0 10px rgba(7,6,13,.6)}
+.unk b{display:block;font:900 60px/1 var(--f-disp);font-synthesis:none;color:#fff;letter-spacing:.1em}
+.unk span{display:block;font:900 32px/1.4 var(--f-body);color:#fff;margin-top:10px}
+.unk small{display:block;font:700 24px/1.4 var(--f-body);color:#c9cfe6}
+.bandw>div{transform:rotate(-3deg)}
+.band{width:2400px;padding:22px 0 26px;background:#07060d;border-block:6px solid var(--gold);display:flex;justify-content:center;align-items:center;gap:30px;font:900 56px/1 var(--f-body);color:#fff}
+.band b{font:900 84px/1 var(--f-disp);color:var(--gold);font-synthesis:none}
+
+/* ---------- status ---------- */
+.panel{position:absolute;box-sizing:border-box;padding:30px 40px;display:flex;flex-direction:column;gap:6px;background:linear-gradient(180deg,rgba(14,22,40,.88),rgba(6,8,18,.92));border:2px solid rgba(25,232,255,.6);box-shadow:inset 0 0 0 1px rgba(25,232,255,.12),0 0 50px rgba(25,232,255,.16)}
+.srow{display:grid;grid-template-columns:230px 1fr;align-items:center;gap:20px;min-height:150px;padding:6px 18px;box-sizing:border-box;border-left:4px solid rgba(25,232,255,.6);background:linear-gradient(90deg,rgba(25,232,255,.1),transparent 70%)}
+.srow .lbl{font:900 36px var(--f-body);color:#9fb3d9}
+.srow .val{font:900 96px/1 var(--f-disp);font-synthesis:none;color:#fff;display:flex;align-items:baseline;gap:14px}
+.srow .val small{font:900 40px var(--f-body);color:#fff}
+.srow .nt{font:700 25px/1.3 var(--f-body);color:#9fb3d9;margin-top:8px}
+.meter{height:14px;background:rgba(255,255,255,.1);margin-top:12px;position:relative;overflow:hidden}
+.meter i{position:absolute;inset:0;background:linear-gradient(90deg,var(--cyan),var(--gold));transform-origin:0 50%;transform:scaleX(0)}
+.per{display:flex;align-items:center;gap:18px;font:900 50px/1 var(--f-disp);font-synthesis:none;color:#fff}
+.per .ln{display:block;width:160px;height:10px;background:var(--gold);transform-origin:0 50%;box-shadow:0 0 16px var(--gold)}
+.pr2{gap:22px;border-color:rgba(255,45,111,.7);box-shadow:inset 0 0 0 1px rgba(255,45,111,.12),0 0 50px rgba(255,45,111,.16)}
+.rp-h{font:900 40px var(--f-body);color:var(--hot)}
+.formula{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.formula span{font:900 38px/1 var(--f-body);padding:12px 18px;border:3px solid #fff;color:#fff}
+.formula i{font:900 40px/1 var(--f-disp);font-style:normal;color:var(--gold)}
+.formula span.v{background:var(--hot);border-color:var(--hot)}
+.tags{display:flex;gap:12px;flex-wrap:wrap}
+.tags span{font:900 30px/1 var(--f-body);background:#fff;color:#07060d;padding:10px 16px}
+.wv{display:flex;align-items:center;gap:7px;height:100px}
+.wv i{width:11px;border-radius:6px;background:var(--hot);animation:wv .5s ease-in-out infinite alternate}
+@keyframes wv{from{height:10px}to{height:96px}}
+.rp-n{font:900 38px/1.4 var(--f-body);color:#fff}
+.rp-n b{color:var(--gold);font-size:52px}
+
+/* ---------- comments ---------- */
+.cm{position:absolute;left:1920px;white-space:nowrap;font:900 50px/1 var(--f-body);color:#fff;text-shadow:3px 3px 0 #000,-2px -2px 0 #000,0 0 14px rgba(0,0,0,.8);will-change:transform}
+.cm.y{color:#ffe600}.cm.p{color:#ff8fb5}.cm.c{color:#8ff4ff}
+.msgw{width:1500px;box-sizing:border-box;white-space:normal;background:rgba(6,10,40,.95);border:6px solid #fff;border-radius:18px;box-shadow:0 0 0 6px #07060d,0 0 0 10px rgba(255,255,255,.35),0 0 70px rgba(25,232,255,.35);padding:26px 46px 30px}
+.msgw .mh{display:flex;justify-content:space-between;align-items:center;font:900 30px var(--f-body);color:var(--gold);border-bottom:2px solid rgba(255,255,255,.3);padding-bottom:14px;margin-bottom:18px}
+.msgw .mh .hudf{font-size:22px;color:var(--cyan)}
+.msgw p{margin:0;font:900 48px/1.55 var(--f-body);color:#fff;min-height:225px}
+
+/* ---------- mission ---------- */
+.mc{width:500px;height:500px;box-sizing:border-box;padding:30px 36px;display:flex;flex-direction:column;gap:10px;white-space:normal;background:linear-gradient(180deg,rgba(10,14,30,.94),rgba(4,6,14,.96));border:4px solid var(--c);box-shadow:0 0 0 2px #07060d,0 0 40px -6px var(--c)}
+.mc .f{font:700 24px var(--f-hud);letter-spacing:.2em;color:var(--c)}
+.mc .n{font:900 150px/1 var(--f-disp);color:transparent;-webkit-text-stroke:4px var(--c);font-synthesis:none}
+.mc .t{font:900 50px/1.15 var(--f-body);color:#fff}
+.mc .q{font:900 32px/1.45 var(--f-body);color:#d8dcf0;margin-top:auto}
+.mc.warn{animation:warnb .5s steps(1) infinite}
+@keyframes warnb{50%{border-color:#ff3131;box-shadow:0 0 0 2px #07060d,0 0 70px rgba(255,49,49,.9)}}
+.bang{font:900 120px/1 var(--f-disp);color:#ff3131;-webkit-text-stroke:4px #fff;font-synthesis:none}
+.ystripw>div{transform:skewX(-10deg)}
+.ystrip{background:var(--gold);color:#07060d;font:900 44px/1 var(--f-body);padding:18px 44px}
+
+/* ---------- battle ---------- */
+.plate{display:flex;align-items:center;gap:18px;font:900 46px/1 var(--f-body);color:#fff;padding:14px 26px;background:#07060d;border:4px solid}
+.plate.p1{border-color:var(--hot);box-shadow:-10px 10px 0 var(--hot)}
+.plate.p2{border-color:var(--cyan);box-shadow:10px 10px 0 var(--cyan)}
+.plate .hudf{font-size:28px}
+.combo{font:700 28px/1 var(--f-hud);letter-spacing:.14em;display:flex;align-items:baseline}
+.combo b{display:inline-block;font:900 60px/1 var(--f-disp);font-synthesis:none;margin-left:10px}
+.atk{width:850px;box-sizing:border-box;min-height:140px;padding:14px 26px;white-space:normal;display:flex;flex-direction:column;justify-content:center;gap:4px;background:linear-gradient(90deg,rgba(255,45,111,.34),rgba(8,6,16,.92) 70%);border-left:12px solid var(--hot);transition:opacity .3s}
+.atk.d{background:linear-gradient(270deg,rgba(25,232,255,.3),rgba(8,6,16,.92) 70%);border-left:0;border-right:12px solid var(--cyan)}
+.atk .tg{font:700 20px var(--f-hud);letter-spacing:.2em;color:var(--hot)}
+.atk.d .tg{color:var(--cyan)}
+.atk p{margin:0;font:900 33px/1.4 var(--f-body);color:#fff}
+.atk p b{color:var(--gold)}
+.atk.key{box-shadow:0 0 0 4px #ff3131,0 0 60px rgba(255,49,49,.75);border-right-color:#ff3131}
+.atk.dim{opacity:.3}
+
+/* ---------- judge 01 ---------- */
+.say{width:1400px;box-sizing:border-box;white-space:normal;display:grid;grid-template-columns:190px 1fr;align-items:center;gap:26px;padding:22px 34px;background:rgba(7,6,13,.9);border:4px solid}
+.say .who2{font:900 40px/1.1 var(--f-body);text-align:center;padding:14px 0;color:#07060d}
+.say p{margin:0;font:900 42px/1.45 var(--f-body);color:#fff}
+.say p b{color:var(--gold)}
+.say.d{border-color:var(--cyan)}.say.d .who2{background:var(--cyan)}
+.say.j{border-color:var(--gold)}.say.j .who2{background:var(--gold)}
+.say.p{border-color:var(--hot)}.say.p .who2{background:var(--hot);color:#fff}
+.say.sm{width:830px;grid-template-columns:130px 1fr;gap:20px;padding:18px 24px}
+.say.sm .who2{font-size:30px;padding:10px 0}
+.say.sm p{font-size:30px;line-height:1.45}
+.rej{font:900 60px/1 var(--f-hud);letter-spacing:.1em;color:#ff3131;border:8px solid #ff3131;padding:12px 22px 8px;transform:rotate(-10deg);background:rgba(7,6,13,.85)}
+
+/* ---------- reach ---------- */
+.vig{background:radial-gradient(ellipse at center,transparent 35%,rgba(255,0,40,.55) 100%);animation:beat .8s ease-out infinite}
+@keyframes beat{0%{opacity:.95}18%{opacity:.35}32%{opacity:.8}100%{opacity:.2}}
+.orb{width:230px;height:230px;border-radius:50%;background:radial-gradient(circle,#fff 0 18%,var(--oc,#fff) 45%,transparent 70%);box-shadow:0 0 90px 24px var(--oc,#fff)}
+.orb.max{animation:hue .35s linear infinite}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+.fchip{font:900 44px var(--f-body);padding:14px 26px;border:4px solid;background:rgba(0,0,0,.75)}
+.gauge{display:flex;align-items:center;gap:12px}
+.gauge i{width:110px;height:34px;border:3px solid rgba(255,255,255,.5);transform:skewX(-20deg)}
+.gauge i.on{background:var(--gold);box-shadow:0 0 24px var(--gold);border-color:var(--gold)}
+.g-l{font:900 30px var(--f-body);color:#fff;margin-right:14px}
+.g-m{font:700 30px var(--f-hud);color:rgba(255,255,255,.3);margin-left:14px;letter-spacing:.2em}
+.g-m.on{color:var(--gold);animation:blink .25s steps(1) infinite}
+.cd{font-size:430px;color:#fff;text-shadow:0 0 40px var(--hot),0 0 100px var(--hot)}
+.cutin>div{width:2500px;height:124px;background:var(--hot);color:#07060d;display:flex;align-items:center;font:900 72px/1 var(--f-disp);font-synthesis:none;transform:rotate(-4deg);overflow:hidden;border-block:6px solid #fff}
+.cutin span{display:block;white-space:nowrap}
+.stampr>div{font:900 70px/1 var(--f-disp);font-synthesis:none;color:var(--red);border:10px solid var(--red);padding:16px 26px 18px;transform:rotate(10deg);background:rgba(255,255,255,.94);box-shadow:0 0 40px rgba(255,49,49,.6)}
+
+/* ---------- rule ---------- */
+.cond{width:1560px;box-sizing:border-box;display:grid;grid-template-columns:84px 1fr;gap:30px;align-items:center;padding:22px 34px;white-space:normal;background:rgba(20,12,0,.82);border:4px solid rgba(255,210,63,.35)}
+.cond .ck{position:relative;width:84px;height:84px;box-sizing:border-box;border:6px solid var(--gold)}
+.cond .ck::after{content:"";position:absolute;left:24px;top:6px;width:20px;height:40px;border:solid #07060d;border-width:0 10px 10px 0;transform:rotate(45deg);opacity:0}
+.cond.on{border-color:var(--gold);box-shadow:0 0 50px rgba(255,210,63,.45)}
+.cond.on .ck{background:var(--gold)}
+.cond.on .ck::after{opacity:1}
+.cond .cl{font:700 24px var(--f-hud);letter-spacing:.2em;color:var(--gold)}
+.cond p{margin:4px 0 0;font:900 44px/1.4 var(--f-body);color:#fff}
+.cond em{font-style:normal;color:var(--gold)}
+.caut{display:flex;align-items:center;gap:18px;background:#07060d;border:4px solid #fff;padding:14px 30px;font:900 34px/1.2 var(--f-body);color:#fff}
+.caut b{font:700 26px/1 var(--f-hud);background:#fff;color:#07060d;padding:8px 12px 6px;letter-spacing:.14em}
+
+/* ---------- twist ---------- */
+.siren{position:absolute;left:50%;top:50%;width:3200px;height:3200px;margin:-1600px 0 0 -1600px;background:conic-gradient(from 0deg,rgba(255,40,40,.3) 0 16deg,transparent 16deg 180deg,rgba(255,40,40,.3) 180deg 196deg,transparent 196deg);animation:spin 1.6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tape{position:absolute;left:-100px;width:2120px;height:44px;background:repeating-linear-gradient(-45deg,var(--gold) 0 34px,#07060d 34px 68px);animation:tape .9s linear infinite}
+@keyframes tape{to{background-position:96.17px 0}}
+.warn{color:var(--red);-webkit-text-stroke:6px #fff;text-shadow:0 0 70px rgba(255,0,0,.8)}
+.tline{position:absolute;left:160px;top:556px;width:1600px;height:8px;transform-origin:0 50%}
+.tdot{width:44px;height:44px;border-radius:50%;background:#07060d;border:6px solid #fff;box-sizing:border-box}
+.tdot.on{background:var(--gold);box-shadow:0 0 30px var(--gold)}
+.tdot.key{background:#ff3131;box-shadow:0 0 40px #ff3131}
+.tdate{font:900 50px/1 var(--f-disp);color:#fff;font-synthesis:none;text-align:center}
+.tdate small{display:block;font:700 22px/1 var(--f-hud);letter-spacing:.2em;color:var(--gold);margin-bottom:10px}
+.tdesc{font:900 31px/1.4 var(--f-body);color:#fff;text-align:center;white-space:normal;width:350px;box-sizing:border-box;background:rgba(7,6,13,.85);padding:12px 14px;border-top:4px solid var(--gold)}
+.tdesc.key{border-top-color:#ff3131;background:rgba(90,0,12,.9)}
+.tseg{font:900 26px/1 var(--f-body);color:#07060d;background:var(--gold);padding:8px 14px}
+.comet2{width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 0 20px 8px #fff,0 0 50px 20px var(--gold)}
+.hanko{font:900 180px/1 var(--f-disp);font-synthesis:none;color:#ff2230;border:16px solid #ff2230;border-radius:28px;padding:22px 44px 20px;background:rgba(255,248,240,.95);transform:rotate(-8deg);box-shadow:0 0 0 8px rgba(255,248,240,.95),0 0 80px rgba(255,34,48,.6)}
+.hanko small{display:block;font:900 46px/1 var(--f-body);text-align:right;margin-top:12px}
+
+/* ---------- verdict ---------- */
+.crack{position:absolute;inset:0;filter:drop-shadow(0 0 6px #fff)}
+.crack path{fill:none;stroke:#fff;stroke-width:3;stroke-dasharray:1;stroke-dashoffset:1;animation:crack .25s ease-out forwards}
+@keyframes crack{to{stroke-dashoffset:0}}
+.doc{width:1240px;box-sizing:border-box;white-space:normal;background:#f6f3ea;color:#16130e;padding:34px 64px 38px;box-shadow:0 30px 80px rgba(0,0,0,.7);border-top:10px solid #16130e}
+.doc h5{margin:0 0 16px;text-align:center;font:900 50px/1 var(--f-body);letter-spacing:.8em;padding-left:.8em}
+.doc p{margin:0;font:900 46px/1.7 var(--f-body)}
+.why{width:1560px;box-sizing:border-box;white-space:normal;display:flex;flex-direction:column;gap:14px;padding:34px 50px;background:rgba(7,6,13,.93);border:4px solid var(--gold);box-shadow:0 0 60px rgba(255,210,63,.25)}
+.why .c{align-self:flex-start;font:900 34px/1 var(--f-body);background:var(--gold);color:#07060d;padding:10px 18px}
+.why .s{font:900 36px/1.3 var(--f-body);color:#c9cfe6}
+.why .m{font:900 84px/1.12 var(--f-disp);font-synthesis:none;color:#fff}
+.why .m em{font-style:normal;color:var(--gold)}
+.why .r{font:900 46px/1.35 var(--f-body);color:#fff}
+.why .x{font:700 30px/1.4 var(--f-body);color:#9fb3d9;border-top:2px solid rgba(255,255,255,.2);padding-top:14px}
+
+/* ---------- final ---------- */
+.res{width:1500px;box-sizing:border-box;padding:28px 50px;background:linear-gradient(180deg,rgba(30,20,4,.93),rgba(10,6,0,.95));border:4px solid var(--gold);box-shadow:0 0 0 2px #07060d,0 0 80px rgba(255,210,63,.45);white-space:normal;display:flex;flex-direction:column;gap:12px}
+.res-h{display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid rgba(255,210,63,.5);padding-bottom:12px}
+.res-h .hudf{font-size:44px;color:var(--gold)}
+.res-h .jp{font-size:28px;color:#e8dcc0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.stats div{background:rgba(255,210,63,.08);border:2px solid rgba(255,210,63,.4);padding:12px 20px;display:flex;align-items:baseline;justify-content:center;gap:12px}
+.stats span{font:900 28px var(--f-body);color:#bfb49a}
+.stats b{font:900 72px/1 var(--f-disp);color:#fff;font-synthesis:none}
+.stats small{font:900 30px var(--f-body);color:#fff}
+.rr{display:grid;grid-template-columns:300px 1fr 150px;align-items:center;gap:18px;min-height:76px;border-top:1px solid rgba(255,255,255,.14)}
+.rr span{font:900 30px/1.2 var(--f-body);color:#bfb49a}
+.rr span small{display:block;font-size:22px}
+.rr b{font:900 32px/1.4 var(--f-body);color:#fff}
+.rr b.red{color:#ff6b6b;font-size:40px}
+.rr b.gold{color:var(--gold)}
+.rr i{justify-self:end;font:700 22px/1 var(--f-hud);font-style:normal;letter-spacing:.14em;padding:10px 12px 8px}
+.bd-x{background:#ff3131;color:#fff}.bd-s{background:#8f96b3;color:#07060d}.bd-r{background:var(--gold);color:#07060d}.bd-k{background:var(--cyan);color:#07060d}
+
+/* ---------- HUD ---------- */
+#hud{position:absolute;inset:0;pointer-events:none;font-family:var(--f-hud);color:rgba(235,245,255,.92)}
+#hud.off{display:none}
+.hud-top{position:absolute;left:40px;right:40px;top:22px;height:44px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.hud-l,.hud-r{display:flex;align-items:center;gap:18px}
+.hud-chip{font:900 20px/1 var(--f-body);background:#fff;color:#000;padding:8px 12px}
+.hud-t{font-size:20px;letter-spacing:.22em;font-weight:700}
+#hud-genre{font-size:20px;letter-spacing:.3em;color:var(--gold);padding:7px 14px 5px;border:2px solid var(--gold);font-weight:700}
+.hud-bot{position:absolute;left:40px;right:40px;bottom:18px;height:44px;display:flex;align-items:center;gap:22px}
+#hud-mode{font-size:20px;letter-spacing:.2em;min-width:150px;font-weight:700;color:var(--lime)}
+#hud-mode.p{color:var(--gold)}
+#hud-time{font-size:20px;letter-spacing:.12em;font-weight:700;min-width:210px;text-align:right}
+.ticker{flex:1;overflow:hidden;height:30px;border-inline:2px solid rgba(255,255,255,.25);position:relative;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.ticker-in{position:absolute;left:0;top:0;white-space:nowrap;font:700 21px/30px var(--f-body);color:rgba(235,245,255,.75);animation:tick 80s linear infinite}
+.ticker-in em{font-style:normal;color:var(--gold);margin:0 18px}
+@keyframes tick{to{transform:translateX(-50%)}}
+#prog{position:absolute;left:0;right:0;bottom:0;height:6px;display:flex;gap:4px}
+#prog i{position:relative;background:rgba(255,255,255,.14);overflow:hidden}
+#prog b{position:absolute;inset:0;background:var(--gold);transform-origin:0 50%;transform:scaleX(0)}
+.corner{position:absolute;width:40px;height:40px;border:4px solid rgba(255,255,255,.55)}
+.corner.a{left:12px;top:12px;border-right:0;border-bottom:0}.corner.b{right:12px;top:12px;border-left:0;border-bottom:0}
+.corner.c{left:12px;bottom:12px;border-right:0;border-top:0}.corner.d{right:12px;bottom:12px;border-left:0;border-top:0}
+
+/* ---------- controls (outside the stage, not scaled) ---------- */
+#ctrl{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;flex-wrap:wrap;justify-content:center;gap:8px;align-items:center;padding:8px 10px;max-width:calc(100vw - 32px);box-sizing:border-box;background:rgba(10,10,18,.86);border:1px solid rgba(255,255,255,.22);border-radius:6px;transition:opacity .3s;z-index:10}
+#ctrl.hide{opacity:0;pointer-events:none}
+#ctrl button{font:700 15px/1 var(--f-hud);color:#fff;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:4px;padding:9px 12px;min-width:44px;min-height:36px;cursor:pointer}
+#ctrl button:hover{background:rgba(255,255,255,.1)}
+#ctrl button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#ctrl .keys{font:500 13px var(--f-body);color:rgba(255,255,255,.72);padding:0 6px}
+@media (max-width:640px){#ctrl .keys{display:none}}
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <div id="cam">
+      <canvas id="bg"></canvas>
+      <div id="layer"></div>
+      <div id="out"></div>
+      <canvas id="fx"></canvas>
+    </div>
+    <div id="overlay"></div>
+    <div id="noise"></div>
+    <div id="hud">
+      <i class="corner a"></i><i class="corner b"></i><i class="corner c"></i><i class="corner d"></i>
+      <div class="hud-top">
+        <div class="hud-l"><span class="hud-chip">判決</span><span class="hud-t">2026.09.30 // 東京地裁 民事第46部</span></div>
+        <div class="hud-r"><span id="hud-genre">HOOK</span><span id="hud-stage" class="hud-t">STAGE 01/13</span></div>
+      </div>
+      <div class="hud-bot">
+        <span id="hud-mode">▶ AUTO</span>
+        <div class="ticker"><div class="ticker-in" id="ticker"></div></div>
+        <span id="hud-time" class="tabnum">00:00.0</span>
+      </div>
+      <div id="prog"></div>
+    </div>
+    <div id="flash"></div>
+  </div>
+  <div id="ctrl" role="toolbar" aria-label="再生コントロール">
+    <button id="b-prev" type="button" aria-label="前のステージ">◀◀</button>
+    <button id="b-play" type="button" aria-label="一時停止">❚❚</button>
+    <button id="b-next" type="button" aria-label="次のステージ">▶▶</button>
+    <button id="b-re" type="button" aria-label="最初から再生">⟲</button>
+    <button id="b-fs" type="button" aria-label="全画面">⛶</button>
+    <span class="keys">Space 停止/再開 · ←→ 前後 · R 最初から · F 全画面 · H HUD</span>
+  </div>
+</div>
+<script id="main">
+(() => {
+'use strict';
+/* =========================================================
+   素材（出典：東京地方裁判所 令和8年9月30日判決
+   令和7年(ワ)第70635号 投稿記事削除請求事件）
+   画面に出す数値・日付はすべて判決文に記載のもの
+   ========================================================= */
+const TICKER = [
+  '原告：声優 津田健次郎 ／ 被告：TikTok Pte. Ltd.（シンガポール法人）',
+  '対象：令和6年7月〜令和7年9月に投稿された188件の記事',
+  '本件アカウントは令和7年11月時点でフォロワー21万人以上',
+  '令和8年5月29日 投稿者がアカウントを削除',
+  '令和8年6月28日の経過をもって 記事のデータはサーバから削除（認定）',
+  '口頭弁論終結 令和8年7月3日',
+  '主文：原告の請求をいずれも棄却する',
+  '人の声は、人の肖像と同様に個人の人格の象徴（判決理由より）',
+  '不競法に基づく請求（争点1）などその余の争点は判断されず',
+];
+
+/* ---------- basics ---------- */
+const $ = s => document.querySelector(s);
+const W = 1920, H = 1080, CX = 960, CY = 540;
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const rnd = (a, b) => a + Math.random() * (b - a);
+const OUT = 'cubic-bezier(.16,1,.3,1)', BACK = 'cubic-bezier(.34,1.56,.64,1)', IN = 'cubic-bezier(.7,0,.84,0)', SNAP = 'cubic-bezier(.85,0,.15,1)';
+const eOut = k => 1 - Math.pow(1 - k, 3), eInOut = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3) / 2;
+
+function h(tag, cls, html, parent, style) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (html != null) e.innerHTML = html;
+  if (style) Object.assign(e.style, style);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+/* 位置決めラッパー（translateで中心合わせ）＋ アニメ用の中身を返す */
+function P(parent, x, y, cls, html, style, ax = .5, ay = .5) {
+  const w = h('div', 'pos', null, parent, {left: x + 'px', top: y + 'px', transform: `translate(${-ax*100}%,${-ay*100}%)`});
+  return h('div', cls, html, w, style);
+}
+function A(el, kf, dur, ease = OUT, o = {}) {
+  return el.animate(kf, Object.assign({fill: 'both'}, o, {duration: dur * 1000, easing: ease, delay: (o.delay || 0) * 1000}));
+}
+const fx = {
+  slam(el, {from = 3, dur = .3, rot = 0, blur = 18, delay = 0} = {}) {
+    return A(el, [
+      {transform: `scale(${from}) rotate(${rot}deg)`, opacity: 0, filter: `blur(${blur}px)`},
+      {transform: 'scale(.94) rotate(0deg)', opacity: 1, filter: 'blur(0px)', offset: .72},
+      {transform: 'scale(1) rotate(0deg)', opacity: 1, filter: 'none'}], dur, 'cubic-bezier(.3,.7,.2,1)', {delay});
+  },
+  pop(el, {dur = .38, delay = 0} = {}) {
+    return A(el, [{transform: 'scale(0)', opacity: 0}, {transform: 'scale(1.2)', opacity: 1, offset: .6}, {transform: 'scale(1)', opacity: 1}], dur, 'ease-out', {delay});
+  },
+  from(el, {x = 0, y = 0, dur = .4, delay = 0, blur = 0, ease = OUT, rot = 0, scale = 1} = {}) {
+    return A(el, [{transform: `translate(${x}px,${y}px) rotate(${rot}deg) scale(${scale})`, opacity: 0, filter: `blur(${blur}px)`}, {transform: 'none', opacity: 1, filter: 'none'}], dur, ease, {delay});
+  },
+  out(el, {dur = .25, scale = 1.25, delay = 0} = {}) {
+    return A(el, [{opacity: 1, transform: 'scale(1)'}, {opacity: 0, transform: `scale(${scale})`}], dur, IN, {delay});
+  },
+  glitch(el, d = .35) {
+    const kf = [];
+    for (let i = 0; i < 8; i++) {
+      const y1 = rnd(0, 70), y2 = Math.min(100, y1 + rnd(10, 40));
+      kf.push({transform: `translate(${rnd(-36,36)}px,${rnd(-8,8)}px) skewX(${rnd(-14,14)}deg)`, clipPath: `inset(${y1}% 0 ${100-y2}% 0)`, easing: 'steps(1,end)'});
+    }
+    kf.push({transform: 'none', clipPath: 'inset(0% 0 0% 0)'});
+    return el.animate(kf, {duration: d * 1000, easing: 'linear'});
+  },
+};
+function sweepText(parent, x, y, text, size) {
+  const s = P(parent, x, y, 'disp sweep', text, {fontSize: size + 'px'});
+  A(s, [{backgroundPosition: '120% 0'}, {backgroundPosition: '-40% 0'}], .9, 'ease-in-out');
+  return s;
+}
+function crack(n, cx = CX, cy = CY) {
+  let s = '';
+  for (let i = 0; i < n; i++) {
+    const a = i / n * 6.2832 + rnd(-.2, .2); let x = cx, y = cy, d = `M${x} ${y}`;
+    for (let j = 0; j < 5; j++) { const aa = a + rnd(-.35, .35), l = rnd(60, 190); x += Math.cos(aa) * l; y += Math.sin(aa) * l; d += ` L${x.toFixed(0)} ${y.toFixed(0)}`; }
+    s += `<path pathLength="1" d="${d}"/>`;
+  }
+  return `<svg class="crack" viewBox="0 0 1920 1080" width="1920" height="1080">${s}</svg>`;
+}
+
+/* ---------- flash / camera ---------- */
+let lastFlash = 0;
+function flash(col = '#fff', dur = .3, peak = 1) {
+  const now = performance.now();
+  if (now - lastFlash < 300) peak *= .45;           // 光の点滅は 1秒あたり約3回以下に抑える
+  lastFlash = now;
+  if (RM) peak *= .3;
+  const f = h('div', 'flash', null, $('#flash'), {background: col});
+  f.animate([{opacity: peak}, {opacity: 0}], {duration: dur * 1000, easing: 'ease-out', fill: 'forwards'}).onfinish = () => f.remove();
+}
+const CAM = {z: 1, r: 0, x: 0, y: 0, pz: 0, amp: 0, t: 0, d: 1};
+function shake(a = 20, d = .4) {
+  if (RM) a *= .15;
+  const cur = CAM.t > 0 ? CAM.amp * (CAM.t / CAM.d) : 0;
+  if (a >= cur) { CAM.amp = a; CAM.t = d; CAM.d = d; }
+}
+function punch(z = .06) { CAM.pz = Math.max(CAM.pz, RM ? z * .2 : z); }
+function camReset() { Object.assign(CAM, {z: 1, r: 0, x: 0, y: 0, pz: 0, t: 0}); }
+function camStep(dt) {
+  if (dt <= 0) return;
+  CAM.t = Math.max(0, CAM.t - dt);
+  CAM.pz *= Math.exp(-dt * 8);
+  let sx = 0, sy = 0, sr = 0;
+  if (CAM.t > 0) { const k = CAM.t / CAM.d, a = CAM.amp * k * k; sx = rnd(-a, a); sy = rnd(-a, a); sr = rnd(-a, a) * .02; }
+  $('#cam').style.transform = `translate(${CAM.x + sx}px,${CAM.y + sy}px) rotate(${CAM.r + sr}deg) scale(${CAM.z + CAM.pz})`;
+}
+
+/* ---------- background canvas (half resolution) ---------- */
+const BG = (() => {
+  const cv = $('#bg'), g = cv.getContext('2d'), w = 960, hh = 540;
+  cv.width = w; cv.height = hh;
+  const D = {mode: 'dark', hue: 340, hue2: 190, speed: 1, energy: .5};
+  const S = Object.assign({}, D);
+  let t = 0, pulse = 0;
+  const dust = Array.from({length: 80}, () => ({x: Math.random()*w, y: Math.random()*hh, z: rnd(.3, 1), p: rnd(0, 6.28)}));
+  const NUMS = ['188','21万','980万','5/29','6/28','7/3','9/30','声','AI','VOICE','甲22','乙8','争点3'];
+  const cols = Array.from({length: 30}, (_, i) => ({x: i*32 + 8, y: rnd(0, hh), v: rnd(30, 110), s: Array.from({length: 12}, () => NUMS[Math.random()*NUMS.length | 0])}));
+  const set = o => Object.assign(S, D, o || {});
+  const mod = o => Object.assign(S, o);
+  const kick = (v = 1) => { pulse = Math.min(1.6, pulse + v); };
+  function step(dt) { if (dt <= 0) return; t += dt * S.speed; pulse = Math.max(0, pulse - dt * 1.8); draw(dt); }
+  function draw(dt) {
+    const e = Math.min(1.6, S.energy + pulse * .7), H1 = S.hue, H2 = S.hue2, m = S.mode;
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+    const gr = g.createRadialGradient(w/2, hh/2, 20, w/2, hh/2, w*.75);
+    gr.addColorStop(0, `hsl(${H1},60%,${5 + e*9}%)`); gr.addColorStop(1, `hsl(${H1},50%,2%)`);
+    g.fillStyle = gr; g.fillRect(0, 0, w, hh);
+    if (m === 'wave') {
+      /* 声の波形：スペクトラムのバー＋3本の揺れる波 */
+      const n = 48, bw = w / n, mid = hh / 2;
+      for (let i = 0; i < n; i++) {
+        const v = (Math.sin(t*4.1 + i*.55) * .5 + .5) * (Math.sin(t*1.9 + i*.21) * .5 + .5);
+        const bh = (14 + v * 150) * (.45 + e * .6);
+        g.fillStyle = `hsla(${H1 + (i % 2 ? 0 : 20)},100%,60%,${.07 + e*.1})`;
+        g.fillRect(i*bw + 2, mid - bh, bw - 4, bh*2);
+      }
+      g.lineWidth = 2;
+      for (let k = 0; k < 3; k++) {
+        g.strokeStyle = `hsla(${k === 1 ? H2 : H1},100%,${65 + k*5}%,${Math.max(.05, .3 + e*.3 - k*.08)})`;
+        g.beginPath();
+        for (let x = 0; x <= w; x += 6) {
+          const env = Math.sin(x / w * Math.PI);
+          const y = mid + Math.sin(x*.021*(1 + k*.35) + t*(3 + k)) * Math.sin(x*.004 + t*1.3 + k*2) * (26 + e*70) * env;
+          if (x === 0) g.moveTo(x, y); else g.lineTo(x, y);
+        }
+        g.stroke();
+      }
+    } else if (m === 'grid') {
+      const hz = hh * .56;
+      g.lineWidth = 1.2; g.strokeStyle = `hsla(${H1},100%,62%,${.18 + e*.3})`;
+      g.beginPath(); for (let i = -18; i <= 18; i++) { g.moveTo(w/2 + i*10, hz); g.lineTo(w/2 + i*150, hh); } g.stroke();
+      for (let i = 0; i < 16; i++) { const z = (i + (t*1.4) % 1) / 16, y = hz + (hh - hz) * z * z; g.globalAlpha = Math.min(1, z*1.6); g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+      g.globalAlpha = 1; g.strokeStyle = `hsla(${H2},100%,62%,${.07 + e*.12})`;
+      g.beginPath(); for (let i = -18; i <= 18; i++) { g.moveTo(w/2 + i*10, hz - 60); g.lineTo(w/2 + i*150, 0); } g.stroke();
+      for (let i = 0; i < 10; i++) { const z = (i + (t*1.4) % 1) / 10, y = (hz - 60) * (1 - z*z); g.globalAlpha = z * .6; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+      g.globalAlpha = 1;
+      const hg = g.createLinearGradient(0, hz - 80, 0, hz + 30);
+      hg.addColorStop(0, 'rgba(0,0,0,0)'); hg.addColorStop(.7, `hsla(${H1},100%,60%,${.22 + e*.25})`); hg.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = hg; g.fillRect(0, hz - 80, w, 110);
+    } else if (m === 'rays' || m === 'fever') {
+      const n = 22, rot = t * .22, fev = m === 'fever';
+      g.save(); g.translate(w/2, hh/2);
+      for (let i = 0; i < n; i++) {
+        const a0 = rot + i * 6.2832 / n, a1 = a0 + 6.2832 / n * .55, hu = fev ? (t*120 + i*33) % 360 : (i % 2 ? H1 : H2);
+        g.fillStyle = `hsla(${hu},100%,${fev ? 60 : 55}%,${(fev ? .2 : .08) + e*.18})`;
+        g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, 1200, a0, a1); g.closePath(); g.fill();
+      }
+      g.restore();
+      const cg = g.createRadialGradient(w/2, hh/2, 0, w/2, hh/2, 300);
+      cg.addColorStop(0, `hsla(${H1},100%,75%,${.12 + e*.3})`); cg.addColorStop(1, 'rgba(0,0,0,0)');
+      g.fillStyle = cg; g.fillRect(0, 0, w, hh);
+    } else if (m === 'tunnel') {
+      g.save(); g.translate(w/2, hh/2);
+      for (let i = 0; i < 18; i++) { const z = ((i/18) + t*.9) % 1, s = Math.pow(z, 2.4) * 1.3; g.strokeStyle = `hsla(${H1 + i*8},100%,60%,${z * (.25 + e*.5)})`; g.lineWidth = 1 + z*7; g.strokeRect(-w*s/2, -hh*s/2, w*s, hh*s); }
+      g.restore();
+    } else if (m === 'data') {
+      g.strokeStyle = `hsla(${H1},80%,55%,.08)`; g.lineWidth = 1; g.beginPath();
+      for (let x = 0; x <= w; x += 40) { g.moveTo(x, 0); g.lineTo(x, hh); }
+      for (let y = 0; y <= hh; y += 40) { g.moveTo(0, y); g.lineTo(w, y); }
+      g.stroke();
+      g.font = '600 13px ui-monospace,monospace'; g.fillStyle = `hsla(${H1},100%,70%,${.12 + e*.16})`;
+      for (const c of cols) { c.y += c.v * dt * S.speed; if (c.y - 12*18 > hh) c.y = -rnd(0, 200); for (let j = 0; j < c.s.length; j++) { g.globalAlpha = 1 - j / c.s.length; g.fillText(c.s[j], c.x, c.y - j*18); } }
+      g.globalAlpha = 1;
+    } else if (m === 'stripes') {
+      const off = (t * 80) % 100; g.fillStyle = `hsla(0,100%,45%,${.08 + e*.14})`;
+      for (let x = -hh - 100; x < w + 100; x += 100) { g.beginPath(); g.moveTo(x + off, 0); g.lineTo(x + off + 50, 0); g.lineTo(x + off + 50 + hh, hh); g.lineTo(x + off + hh, hh); g.closePath(); g.fill(); }
+      const pul = (Math.sin(t*7) + 1) / 2; g.fillStyle = `rgba(255,0,30,${.04 + pul*.12*e})`; g.fillRect(0, 0, w, hh);
+    }
+    g.globalCompositeOperation = 'lighter';
+    g.fillStyle = `hsl(${H2},100%,75%)`;
+    for (const d of dust) {
+      d.y -= d.z * 14 * dt * S.speed; d.x += Math.sin(t + d.p) * 4 * dt;
+      if (d.y < -4) { d.y = hh + 4; d.x = Math.random() * w; }
+      g.globalAlpha = (.25 + .35 * Math.sin(t*2 + d.p) ** 2) * d.z * (.4 + e*.5);
+      g.fillRect(d.x, d.y, 1.6*d.z + .4, 1.6*d.z + .4);
+    }
+    g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  }
+  return {set, mod, kick, step};
+})();
+
+/* ---------- particle / fx canvas ---------- */
+const FX = (() => {
+  const cv = $('#fx'), g = cv.getContext('2d');
+  cv.width = W; cv.height = H;
+  let ps = [], speed = null, rain = null, imp = null;
+  const spr = {};
+  const pick = a => a[Math.random() * a.length | 0];
+  function sprite(c) {
+    if (spr[c]) return spr[c];
+    const s = document.createElement('canvas'); s.width = s.height = 64;
+    const x = s.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.3, c); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+    return spr[c] = s;
+  }
+  const add = p => { if (ps.length < 1600) ps.push(p); };
+  function burst(x, y, o = {}) {
+    const n = Math.round((o.n ?? 80) * (RM ? .4 : 1)), cols = o.colors || ['#ffffff','#ffd23f','#ff2d6f'], sp = o.speed || [300, 1400], lf = o.life || [.5, 1.1], sz = o.size || [2, 5], spread = o.spread ?? Math.PI * 2, dir = o.dir ?? 0, jx = o.jx || 0, jy = o.jy || 0;
+    for (let i = 0; i < n; i++) {
+      const a = dir + rnd(-spread/2, spread/2), v = rnd(sp[0], sp[1]);
+      add({k: o.type || 'spark', x: x + rnd(-jx, jx), y: y + rnd(-jy, jy), vx: Math.cos(a)*v, vy: Math.sin(a)*v, l: 0, L: rnd(lf[0], lf[1]), s: rnd(sz[0], sz[1]), c: pick(cols), g: o.grav ?? 600, dr: o.drag ?? 2.2, r: rnd(0, 6.28), vr: rnd(-12, 12)});
+    }
+  }
+  const ring = (x, y, o = {}) => add({k: 'ring', x, y, l: 0, L: o.life ?? .55, r0: o.r0 ?? 20, r1: o.r1 ?? 900, w: o.w ?? 14, c: o.color || '#fff'});
+  function confetti(n, o = {}) {
+    const cols = o.colors || ['#ffd23f','#ff2d6f','#19e8ff','#a6ff3a','#ffffff','#8b5cff'];
+    for (let i = 0; i < n; i++) {
+      const top = o.x == null;
+      add({k: 'conf', x: top ? rnd(0, W) : o.x + rnd(-40, 40), y: top ? rnd(-200, -20) : o.y, vx: top ? rnd(-80, 80) : rnd(-900, 900), vy: top ? rnd(150, 420) : rnd(-1500, -500), l: 0, L: rnd(2.5, 4.5), s: rnd(8, 16), c: pick(cols), g: top ? 120 : 900, dr: top ? .3 : 1.4, r: rnd(0, 6.28), vr: rnd(-8, 8)});
+    }
+  }
+  const speedOn = o => { speed = o ? {cx: o.cx ?? CX, cy: o.cy ?? CY, c: o.color || 'rgba(255,255,255,.85)', rate: o.rate ?? 120, acc: 0} : null; };
+  const rainOn = o => { rain = o ? {rate: o.rate ?? 40, acc: 0, colors: o.colors} : null; };
+  const implode = o => { imp = o ? {x: o.x ?? CX, y: o.y ?? CY, rate: o.rate ?? 140, acc: 0, colors: o.colors || ['#ffd23f','#ffffff']} : null; };
+  const stopStreams = () => { speed = rain = imp = null; };
+  function clear() { ps = []; stopStreams(); g.clearRect(0, 0, W, H); }
+  function step(dt) {
+    if (dt <= 0) return;
+    if (speed) { speed.acc += speed.rate * dt * (RM ? .3 : 1); while (speed.acc >= 1) { speed.acc--; add({k: 'sl', x: speed.cx, y: speed.cy, a: rnd(0, 6.28), r: rnd(260, 700), v: rnd(2600, 4200), len: rnd(120, 360), l: 0, L: .4, w: rnd(1.5, 4.5), c: speed.c}); } }
+    if (rain) { rain.acc += rain.rate * dt; while (rain.acc >= 1) { rain.acc--; confetti(1, {colors: rain.colors}); } }
+    if (imp) { imp.acc += imp.rate * dt; while (imp.acc >= 1) { imp.acc--; const a = rnd(0, 6.28), d = rnd(500, 1100), L = rnd(.45, .8); add({k: 'dot', x: imp.x + Math.cos(a)*d, y: imp.y + Math.sin(a)*d, vx: -Math.cos(a)*d/L, vy: -Math.sin(a)*d/L, l: 0, L, s: rnd(3, 7), c: pick(imp.colors), g: 0, dr: 0, r: 0, vr: 0}); } }
+    const keep = [];
+    for (const p of ps) {
+      p.l += dt; if (p.l >= p.L) continue;
+      if (p.k === 'sl') p.r += p.v * dt;
+      else if (p.k !== 'ring') { const f = Math.max(0, 1 - p.dr * dt); p.vx *= f; p.vy = p.vy * f + p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.vr * dt; if (p.y > H + 120) continue; }
+      keep.push(p);
+    }
+    ps = keep;
+    g.clearRect(0, 0, W, H);
+    g.globalCompositeOperation = 'lighter';
+    for (const p of ps) {
+      const k = p.l / p.L;
+      if (p.k === 'spark') { g.globalAlpha = 1 - k; g.strokeStyle = p.c; g.lineWidth = p.s; g.beginPath(); g.moveTo(p.x, p.y); g.lineTo(p.x - p.vx*.035, p.y - p.vy*.035); g.stroke(); }
+      else if (p.k === 'dot') { g.globalAlpha = Math.min(1, (1 - k) * 1.5); const s = p.s * 7; g.drawImage(sprite(p.c), p.x - s/2, p.y - s/2, s, s); }
+      else if (p.k === 'ring') { const e = 1 - Math.pow(1 - k, 3); g.globalAlpha = 1 - k; g.strokeStyle = p.c; g.lineWidth = p.w * (1 - k) + 1; g.beginPath(); g.arc(p.x, p.y, p.r0 + (p.r1 - p.r0) * e, 0, 6.2832); g.stroke(); }
+      else if (p.k === 'sl') { g.globalAlpha = Math.min(1, (1 - k) * 2); g.strokeStyle = p.c; g.lineWidth = p.w; const ca = Math.cos(p.a), sa = Math.sin(p.a); g.beginPath(); g.moveTo(p.x + ca*p.r, p.y + sa*p.r); g.lineTo(p.x + ca*(p.r + p.len), p.y + sa*(p.r + p.len)); g.stroke(); }
+    }
+    g.globalCompositeOperation = 'source-over';
+    for (const p of ps) {
+      if (p.k !== 'conf') continue;
+      const k = p.l / p.L;
+      g.globalAlpha = Math.min(1, (1 - k) * 4);
+      g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.scale(1, Math.cos(p.l*6 + p.r)); g.fillStyle = p.c; g.fillRect(-p.s, -p.s*.45, p.s*2, p.s*.9); g.restore();
+    }
+    g.globalAlpha = 1;
+  }
+  return {burst, ring, confetti, speedOn, rainOn, implode, clear, stopStreams, step};
+})();
+
+/* ---------- timeline engine ---------- */
+const E = {i: 0, t: 0, playing: true, ended: false, cues: [], ci: 0, ticks: new Set(), slide: null};
+function makeCtx(root) {
+  return {
+    root,
+    at(t, fn) { const q = E.cues; let i = q.length; while (i > E.ci && q[i-1].t > t) i--; q.splice(i, 0, {t, fn}); },
+    tick(f) { E.ticks.add(f); return f; },
+    untick(f) { E.ticks.delete(f); },
+  };
+}
+function count(c, el, to, dur, {from = 0, dec = 0, sign = false, ease = eOut, onStep, onDone} = {}) {
+  const t0 = E.t;
+  const f = c.tick(t => {
+    const k = Math.min(1, (t - t0) / dur), v = from + (to - from) * ease(k);
+    el.textContent = (sign && v > .0001 ? '+' : '') + v.toFixed(dec);
+    if (onStep) onStep(v, k);
+    if (k >= 1) { c.untick(f); if (onDone) onDone(); }
+  });
+}
+function typeOn(c, el, text, cps = 30, onDone) {
+  const t0 = E.t;
+  const f = c.tick(t => {
+    const n = Math.min(text.length, Math.floor((t - t0) * cps) + 1);
+    el.innerHTML = text.slice(0, n) + (n < text.length ? '<span class="cur">▍</span>' : '');
+    if (n >= text.length) { c.untick(f); if (onDone) onDone(); }
+  });
+}
+function camTo(c, to, dur, ease = eInOut) {
+  const from = {z: CAM.z, r: CAM.r, x: CAM.x, y: CAM.y}, t0 = E.t;
+  const f = c.tick(t => {
+    const k = Math.min(1, (t - t0) / dur), e = ease(k);
+    for (const key in to) CAM[key] = from[key] + (to[key] - from[key]) * e;
+    if (k >= 1) c.untick(f);
+  });
+}
+function header(r, chip, col, title, sub) {
+  const el = P(r, 110, 160, 'hdr', `<span class="chip" style="color:${col}">${chip}</span><div><div class="jp h1">${title}</div>${sub ? `<div class="jp hsub">${sub}</div>` : ''}</div>`, null, 0, .5);
+  fx.from(el, {x: -120, dur: .35, blur: 10});
+  flash(col, .2, .35);
+  return el;
+}
+function hudLine(r, y, text, col = '#ffe59a', size = 30) {
+  const t = P(r, CX, y, 'hudf', text, {fontSize: size + 'px', color: col});
+  A(t, [{letterSpacing: '0em', opacity: 0}, {letterSpacing: '.35em', opacity: 1}], .8, OUT);
+  return t;
+}
+
+/* =========================================================
+   SLIDES — dur（秒）と各キュー時刻を変えるだけで尺を調整できる
+   ========================================================= */
+const SLIDES = [
+
+/* 00 HOOK — ショート動画の掴み：いきなり問い */
+{genre: 'HOOK', dur: 6, bg: {mode: 'wave', hue: 190, hue2: 330, energy: .45}, trans: 'shatter', build(c) {
+  const r = c.root;
+  const ghost = P(r, CX, CY, 'disp', '声', {fontSize: '1150px', color: 'rgba(25,232,255,.06)'});
+  A(ghost, [{transform: 'scale(1.18) rotate(-4deg)'}, {transform: 'scale(1) rotate(0deg)'}], 6, 'linear');
+  let a, b;
+  c.at(0, () => {
+    a = P(r, CX, 330, 'disp rgb', 'その声、', {fontSize: '220px', color: '#fff'});
+    fx.slam(a, {from: 4.5, dur: .32, blur: 28});
+    flash('#19e8ff', .32, .8); shake(30, .45); BG.kick(1);
+    FX.ring(CX, 330, {color: '#19e8ff', r1: 1200, w: 30});
+    FX.burst(CX, 330, {n: 130, colors: ['#ffffff','#19e8ff','#ff2d6f'], speed: [600, 1900]});
+  });
+  c.at(.5, () => {
+    b = P(r, CX, 610, 'disp goldx', '誰のもの？', {fontSize: '260px'});
+    fx.slam(b, {from: 3, dur: .3, rot: -8, blur: 16});
+    flash('#fff', .3, .9); shake(36, .5); punch(.07);
+    FX.burst(CX, 610, {n: 170, colors: ['#ffd23f','#ffffff','#ff9d00'], speed: [500, 1900], jx: 500});
+    FX.speedOn({color: 'rgba(200,245,255,.85)'});
+    BG.mod({energy: .95}); BG.kick(1.2);
+  });
+  c.at(1.05, () => FX.speedOn(null));
+  /* 判決文が認定したコメント欄の投稿（原文ママ） */
+  [['ツダケンの声がする', 330, 150, -5, ''], ['津田健次郎の声に似てる', 1575, 165, 4, ' r'], ['津田健次郎...？', 290, 800, 4, '']].forEach((d, i) => c.at(1.2 + i * .32, () => {
+    const el = P(r, d[1], d[2], '', `<div class="bub${d[4]}" style="transform:rotate(${d[3]}deg)"><small>COMMENT</small>${d[0]}</div>`);
+    fx.pop(el, {dur: .3}); shake(8, .15); BG.kick(.25);
+    FX.burst(d[1], d[2], {n: 30, colors: ['#ffffff','#19e8ff'], speed: [200, 700]});
+  }));
+  c.at(2.25, () => { fx.glitch(a, .3); fx.glitch(b, .3); });
+  c.at(2.5, () => {
+    const s = P(r, CX, CY, '', '<div class="slash"><span>声優 vs TikTok、判決。</span><b>▶▶▶</b></div>');
+    A(s, [{transform: 'translateX(-2600px)'}, {transform: 'translateX(40px)', offset: .5}, {transform: 'translateX(0)'}], .6, OUT);
+    flash('#fff', .2, .5); shake(16, .3);
+  });
+  c.at(3.3, () => { const cap = P(r, CX, 935, 'cap', '東京地裁 2026年9月30日判決（投稿記事削除請求事件）', {fontSize: '48px'}); fx.from(cap, {y: 80, dur: .35, ease: BACK}); });
+  c.at(4.4, () => {
+    const t = P(r, 1580, 800, 'hudf', 'AI VOICE?', {fontSize: '64px', color: '#ff2d6f', textShadow: '0 0 24px rgba(255,45,111,.8)'});
+    fx.slam(t, {from: 2, dur: .2}); fx.glitch(t, .5); shake(10, .2);
+  });
+  c.at(5.3, () => { fx.glitch(a, .4); fx.glitch(b, .4); flash('#ff2d6f', .2, .35); });
+}},
+
+/* 01 OPENING — アニメOP風の高速カット → タイトルロゴ */
+{genre: 'OPENING', dur: 7.5, bg: {mode: 'rays', hue: 45, hue2: 330, energy: 0}, trans: 'spin', build(c) {
+  const r = c.root;
+  let cur = null;
+  const cut = (bg, f, fl) => { if (cur) cur.remove(); cur = h('div', 'full', null, r, {background: bg}); f(cur); if (fl) flash('#fff', .15, .45); shake(12, .15); punch(.03); };
+  c.at(0, () => cut('#ff2d6f', k => {
+    h('div', 'full halftone', null, k);
+    const t = P(k, CX, 500, 'disp', '声優', {fontSize: '460px', color: '#07060d'});
+    A(t, [{transform: 'rotate(-8deg) scale(1.5)'}, {transform: 'rotate(-8deg) scale(1)'}], .4, OUT);
+    P(k, CX, 880, 'hudf', 'VOICE ACTOR', {fontSize: '56px', color: '#fff', background: '#07060d', padding: '8px 30px'});
+  }));
+  c.at(.4, () => cut('#07060d', k => {
+    P(k, CX, CY, 'wvb', Array.from({length: 56}, (_, i) => `<i style="animation-delay:${(-i * .06).toFixed(2)}s"></i>`).join(''));
+    const t = P(k, CX, 500, 'disp rgb', 'AI音声', {fontSize: '300px', color: '#fff'});
+    A(t, [{transform: 'translateX(-200px)', filter: 'blur(14px)'}, {transform: 'none', filter: 'none'}], .3, OUT);
+    P(k, CX, 830, 'hudf', 'SYNTHETIC VOICE ?', {fontSize: '52px', color: '#19e8ff'});
+  }, true));
+  c.at(.8, () => cut('#ffd23f', k => {
+    for (let i = 0; i < 9; i++) P(k, CX, 60 + i*120, 'hudf', 'VIDEO PLATFORM · VIDEO PLATFORM · VIDEO PLATFORM', {fontSize: '64px', color: 'rgba(0,0,0,.1)'});
+    const t = P(k, CX, 500, 'disp', 'TikTok', {fontSize: '330px', color: '#07060d'});
+    A(t, [{transform: 'translateX(300px)', filter: 'blur(14px)'}, {transform: 'none', filter: 'none'}], .3, OUT);
+    P(k, CX, 830, 'jp', '動画投稿サイトの運営会社', {fontSize: '56px', color: '#07060d'});
+  }));
+  c.at(1.2, () => cut('#07060d', k => {
+    const L = h('div', '', null, k, {position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', background: '#07060d', display: 'grid', placeItems: 'center'});
+    h('div', 'disp goldx', '188', L, {fontSize: '360px'});
+    const R = h('div', '', null, k, {position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', background: '#f5f7ff', display: 'grid', placeItems: 'center'});
+    h('div', 'jp', '件の<br>投稿記事', R, {fontSize: '150px', color: '#07060d', lineHeight: 1.15});
+    A(L, [{transform: 'translateY(-100%)'}, {transform: 'none'}], .22, OUT);
+    A(R, [{transform: 'translateY(100%)'}, {transform: 'none'}], .22, OUT);
+  }, true));
+  c.at(1.6, () => cut('#f5f7ff', k => {
+    h('div', 'full', null, k, {background: 'repeating-linear-gradient(-60deg,rgba(255,45,111,.2) 0 40px,transparent 40px 80px)'});
+    const t = P(k, CX, CY, 'disp', 'パブリシティ権', {fontSize: '220px', color: '#07060d'});
+    A(t, [{transform: 'scale(2.3)'}, {transform: 'scale(1)'}], .3, OUT);
+  }));
+  c.at(2.0, () => cut('#07060d', k => {
+    const t = P(k, CX, 480, 'disp stroke-g', '不競法', {fontSize: '420px'});
+    A(t, [{transform: 'rotate(-30deg) scale(.5)'}, {transform: 'rotate(0) scale(1)'}], .35, OUT);
+    P(k, CX, 850, 'jp', '不正競争防止法', {fontSize: '60px', color: '#ffd23f'});
+    FX.ring(CX, 480, {color: '#ffd23f', r1: 1100, w: 20});
+  }, true));
+  const tl = P(r, CX, 470, 'disp', '', {fontSize: '170px', color: '#fff'});
+  const chars = [...'声は、誰のものか。'].map(ch => h('span', 'ch', ch, tl, {opacity: 0}));
+  c.at(2.45, () => {
+    if (cur) { cur.remove(); cur = null; }
+    hudLine(r, 290, 'VOICE · AI · PLATFORM // TOKYO DISTRICT COURT', '#ffe59a', 28);
+  });
+  chars.forEach((s, i) => c.at(2.6 + i*.06, () => {
+    A(s, [{transform: 'scale(3.2) translateY(-40px)', opacity: 0, filter: 'blur(10px)'}, {transform: 'none', opacity: 1, filter: 'none'}], .22, 'cubic-bezier(.2,.9,.3,1)');
+    shake(6, .1);
+  }));
+  c.at(3.25, () => {
+    tl.classList.add('goldx');
+    flash('#fff', .45, 1); shake(30, .5); punch(.07);
+    BG.mod({energy: .9}); BG.kick(1.2);
+    FX.ring(CX, 470, {color: '#ffd23f', r1: 1300, w: 30});
+    FX.burst(CX, 470, {n: 220, colors: ['#ffd23f','#ffffff','#ff9d00'], speed: [400, 1800], jx: 700, jy: 40});
+    camTo(c, {z: 1.06}, 3.8, eOut);
+  });
+  c.at(3.4, () => sweepText(r, CX, 470, '声は、誰のものか。', 170));
+  c.at(3.6, () => { const s = P(r, CX, 650, 'jp', '<span class="chip-w">投稿記事削除請求事件</span>東京地方裁判所　令和8年9月30日判決', {fontSize: '44px', color: '#fff'}); fx.from(s, {y: 30, dur: .35}); });
+  c.at(4.3, () => {
+    const box = P(r, CX, 810, 'chap', '');
+    [['01','事件','#19e8ff'], ['02','争点','#a6ff3a'], ['03','判断','#ffd23f'], ['04','結論','#ff2d6f']].forEach((d, i) => {
+      const s = h('span', '', `<i>${d[0]}</i>${d[1]}`, box, {background: d[2]});
+      fx.pop(s, {delay: i * .15});
+    });
+  });
+  c.at(5.9, () => sweepText(r, CX, 470, '声は、誰のものか。', 170));
+  c.at(6.8, () => fx.glitch(tl, .4));
+}},
+
+/* 02 VERSUS — 格闘ゲームのキャラ選択風に当事者紹介 */
+{genre: 'VERSUS', dur: 9, bg: {mode: 'dark', hue: 300, energy: .3}, trans: 'split', build(c) {
+  const r = c.root;
+  const L = h('div', 'full vsL', null, r), R = h('div', 'full vsR', null, r);
+  h('div', 'full halftone', null, L); h('div', 'full halftone', null, R);
+  P(L, 40, 120, 'hudf', 'PLAINTIFF', {fontSize: '150px', color: 'transparent', webkitTextStroke: '3px rgba(255,255,255,.28)'}, 0, .5);
+  P(R, 1880, 965, 'hudf', 'DEFENDANT', {fontSize: '150px', color: 'transparent', webkitTextStroke: '3px rgba(255,255,255,.28)'}, 1, .5);
+  A(L, [{transform: 'translateX(-100%)'}, {transform: 'none'}], .35, OUT);
+  A(R, [{transform: 'translateX(100%)'}, {transform: 'none'}], .35, OUT);
+  c.at(0, () => { flash('#fff', .2, .5); shake(18, .3); });
+  c.at(.35, () => {
+    const w = P(r, 90, 590, 'who', '<span class="role">原告</span><div class="nm" style="font-size:116px">津田健次郎</div><div class="ds">声優・俳優・ナレーター<br>TVアニメ「呪術廻戦」<b>七海建人</b> 役</div>', null, 0, .5);
+    fx.from(w, {x: -300, dur: .4, blur: 14}); shake(14, .2);
+    FX.burst(400, 590, {n: 60, colors: ['#ffffff','#ff2d6f'], speed: [300, 1200]});
+  });
+  c.at(1.05, () => {
+    const w = P(r, 1830, 590, 'who r', '<span class="role">被告</span><div class="nm">TikTok<small>Pte. Ltd.</small></div><div class="ds">動画投稿サイト「TikTok」を運営<br><b>シンガポール法人</b></div>', null, 1, .5);
+    fx.from(w, {x: 300, dur: .4, blur: 14}); shake(14, .2);
+    FX.burst(1520, 590, {n: 60, colors: ['#ffffff','#19e8ff'], speed: [300, 1200]});
+  });
+  c.at(1.8, () => {
+    const v = P(r, CX, 560, 'disp vs', 'VS', {fontSize: '240px'});
+    fx.slam(v, {from: 5, dur: .3, rot: -20, blur: 20});
+    flash('#fff', .35, 1); shake(44, .6); punch(.08); BG.kick(1.2);
+    FX.ring(CX, 560, {color: '#ffd23f', r1: 1300, w: 36});
+    FX.burst(CX, 560, {n: 220, colors: ['#ffd23f','#ffffff','#ff2d6f','#19e8ff'], speed: [700, 2200]});
+  });
+  let band;
+  c.at(2.9, () => {
+    band = P(r, CX, 915, 'bandw', '<div class="band"><span>請求</span><b>投稿記事 188件</b><span>の削除</span></div>');
+    A(band, [{transform: 'translateX(2600px)'}, {transform: 'none'}], .3, OUT); shake(12, .2); flash('#ffd23f', .15, .35);
+  });
+  c.at(4.2, () => {
+    const u = P(r, CX, 195, 'unk', '<b>？？？</b><span>実際に投稿したのは、氏名不詳の人物</span><small>※この裁判の当事者ではない</small>');
+    fx.pop(u, {dur: .35}); fx.glitch(u, .5); flash('#8b5cff', .2, .4); shake(10, .2);
+  });
+  c.at(5.8, () => {
+    fx.glitch(band, .3);
+    band.innerHTML = '<div class="band"><span>削除を求めた相手は</span><b>サイト運営者</b></div>';
+    shake(10, .2); BG.kick(.4);
+  });
+  c.at(8.1, () => flash('#fff', .15, .3));
+}},
+
+/* 03 STATUS — ゲームのステータス画面で「問題のアカウント」 */
+{genre: 'STATUS', dur: 9.5, bg: {mode: 'data', hue: 190, energy: .5}, trans: 'glitch', build(c) {
+  const r = c.root;
+  header(r, 'TARGET', '#19e8ff', '問題のアカウント', '動画投稿サイト上の「本件アカウント」── 投稿者は氏名不詳');
+  const pl = h('div', 'panel', `
+    <div class="srow"><div class="lbl">投稿数</div><div><div class="val"><span class="tabnum">0</span><small>件</small></div><div class="meter"><i></i></div></div></div>
+    <div class="srow"><div class="lbl">投稿期間</div><div><div class="per"><span>2024.07</span><i class="ln"></i><span>2025.09</span></div><div class="nt">令和6年7月 〜 令和7年9月</div></div></div>
+    <div class="srow"><div class="lbl">フォロワー</div><div><div class="val"><span class="tabnum">0</span><small>万人以上</small></div><div class="nt">令和7年11月時点</div></div></div>
+    <div class="srow"><div class="lbl">いいね</div><div><div class="val" style="font-size:78px">数千〜数万</div><div class="nt">各記事が獲得</div></div></div>`, r, {left: '110px', top: '262px', width: '1040px', height: '700px', opacity: 0});
+  const bars = Array.from({length: 38}, (_, i) => `<i style="animation-delay:${(-i * .07).toFixed(2)}s"></i>`).join('');
+  const pr = h('div', 'panel pr2', `
+    <div class="rp-h">動画の中身</div>
+    <div class="formula"><span>映像</span><i>＋</i><span>字幕</span><i>＋</i><span class="v">ナレーション</span></div>
+    <div class="tags"><span>都市伝説</span><span>心霊現象</span><span>等の雑学</span></div>
+    <div class="wv">${bars}</div>
+    <div class="rp-n">争いの的は<br>このナレーションの<b>声</b></div>`, r, {left: '1190px', top: '262px', width: '620px', height: '700px', opacity: 0});
+  const rows = [...pl.querySelectorAll('.srow')]; rows.forEach(e => { e.style.opacity = 0; });
+  const prk = [...pr.children]; prk.forEach(e => { e.style.opacity = 0; });
+  c.at(.25, () => {
+    A(pl, [{transform: 'scaleY(0)', opacity: 0}, {transform: 'scaleY(1)', opacity: 1}], .3, OUT);
+    A(pr, [{transform: 'scaleY(0)', opacity: 0}, {transform: 'scaleY(1)', opacity: 1}], .3, OUT, {delay: .1});
+    shake(8, .2);
+  });
+  c.at(.6, () => {
+    fx.from(rows[0], {x: -40, dur: .25});
+    const n = rows[0].querySelector('.tabnum'), m = rows[0].querySelector('.meter i');
+    let q = 0;
+    count(c, n, 188, 1.5, {onStep: v => { const s = Math.floor(v / 25); if (s > q) { q = s; punch(.01); BG.kick(.1); } }, onDone: () => {
+      fx.pop(n, {dur: .3}); flash('#19e8ff', .25, .6); shake(22, .3); punch(.04);
+      FX.burst(520, 360, {n: 110, colors: ['#19e8ff','#ffffff','#ffd23f'], speed: [400, 1500]});
+      FX.ring(520, 360, {color: '#19e8ff', r1: 700, w: 16});
+    }});
+    A(m, [{transform: 'scaleX(0)'}, {transform: 'scaleX(1)'}], 1.5, 'cubic-bezier(.2,.7,.3,1)');
+  });
+  c.at(2.5, () => { fx.from(rows[1], {x: -40, dur: .25}); A(rows[1].querySelector('.ln'), [{transform: 'scaleX(0)'}, {transform: 'scaleX(1)'}], .7, OUT, {delay: .15}); shake(6, .15); });
+  c.at(3.4, () => {
+    fx.from(rows[2], {x: -40, dur: .25});
+    const n = rows[2].querySelector('.tabnum');
+    count(c, n, 21, 1.0, {onDone: () => {
+      fx.pop(n, {dur: .3}); flash('#ffd23f', .25, .6); shake(24, .3); punch(.04);
+      FX.burst(500, 680, {n: 110, colors: ['#ffd23f','#ffffff','#ff9d00'], speed: [400, 1500]});
+    }});
+  });
+  c.at(4.8, () => {
+    fx.from(rows[3], {x: -40, dur: .25}); fx.slam(rows[3].querySelector('.val'), {from: 2.2, dur: .28});
+    shake(16, .25); flash('#ff2d6f', .2, .45);
+    FX.burst(560, 840, {n: 90, colors: ['#ff2d6f','#ff8fb5','#ffffff'], speed: [300, 1100], dir: -Math.PI/2, spread: 1.4, grav: 200});
+  });
+  c.at(5.6, () => fx.from(prk[0], {y: -20, dur: .25}));
+  c.at(5.8, () => { prk[1].style.opacity = 1; [...prk[1].children].forEach((e, i) => fx.pop(e, {delay: i * .1})); shake(8, .2); });
+  c.at(6.5, () => { prk[2].style.opacity = 1; [...prk[2].children].forEach((e, i) => fx.pop(e, {delay: i * .1})); });
+  c.at(7.1, () => {
+    fx.from(prk[3], {x: 60, dur: .3}); fx.from(prk[4], {y: 30, dur: .35, delay: .15});
+    flash('#ff2d6f', .2, .4); punch(.03); camTo(c, {z: 1.04, x: -60}, 2.2, eOut);
+  });
+  c.at(8.9, () => fx.glitch(pr, .35));
+}},
+
+/* 04 COMMENTS — 弾幕コメント → 一瞬の静止 → RPGのメッセージ窓 */
+{genre: 'COMMENTS', dur: 9.5, bg: {mode: 'wave', hue: 330, hue2: 190, energy: .45}, trans: 'invert', build(c) {
+  const r = c.root;
+  const lanes = h('div', 'full', null, r);
+  /* 判決文が認定したコメント欄の投稿（原文ママ） */
+  const Q = ['津田健次郎...？', 'ツダケンの声がする', '津田健次郎の声に似てる', '津田健次郎の声真似が上手い友達の声をAI変換させたって言ってるけど嘘だよな'];
+  const CL = ['', 'y', 'p', 'c'];
+  let n = 0;
+  const spawn = () => {
+    const lane = (n * 4) % 9;
+    const el = h('div', 'cm ' + CL[n % 4], Q[(n + (n >> 2)) % 4], lanes, {top: (190 + lane * 86) + 'px', fontSize: (40 + (n * 13) % 22) + 'px'});
+    n++;
+    const wd = el.offsetWidth;
+    A(el, [{transform: 'translateX(0)'}, {transform: `translateX(${-(1920 + wd + 80)}px)`}], rnd(2.4, 3.6), 'linear').onfinish = () => el.remove();
+  };
+  c.at(0, () => { const t = P(r, CX, 118, 'cap', '動画のコメント欄には──', {fontSize: '44px'}); fx.from(t, {y: -40, dur: .3}); });
+  for (let i = 0; i < 34; i++) c.at(.1 + i * .095, spawn);
+  c.at(1.8, () => { shake(10, .3); BG.kick(.6); });
+  c.at(3.4, () => {
+    lanes.getAnimations({subtree: true}).forEach(a => a.pause());
+    flash('#fff', .15, .5); BG.mod({speed: .05, energy: .15});
+    const dim = h('div', 'full', null, r, {background: 'rgba(4,4,12,.74)'});
+    A(dim, [{opacity: 0}, {opacity: 1}], .25, OUT);
+  });
+  c.at(3.6, () => { const t = P(r, CX, 185, 'jp', '一方、本件アカウントのリンク先（外部サイト）には', {fontSize: '46px', color: '#ffd23f'}); fx.from(t, {y: -30, dur: .3}); });
+  let msg;
+  c.at(3.9, () => {
+    msg = P(r, CX, 520, 'msgw', '<div class="mh"><span>▼ 外部サイトの記載（判決が認定した趣旨）</span><span class="hudf">MESSAGE</span></div><p></p>');
+    A(msg, [{transform: 'scaleY(0)', opacity: 0}, {transform: 'scaleY(1)', opacity: 1}], .25, OUT);
+    shake(8, .15);
+  });
+  c.at(4.2, () => typeOn(c, msg.querySelector('p'), '本件音声は、原告の声を無断で使ってAIに学習させたものではない。声真似が上手い友人の声をAIに学習させたデータを使用している。', 26));
+  c.at(7.0, () => {
+    const b = P(r, CX, 880, 'bandw', '<div class="band"><span>“似た声”の動画、</span><b>削除させられる？</b></div>');
+    A(b, [{transform: 'translateX(-2600px)'}, {transform: 'none'}], .3, OUT); flash('#ffd23f', .2, .5); shake(16, .25);
+  });
+  c.at(8.2, () => {
+    lanes.getAnimations({subtree: true}).forEach(a => { a.updatePlaybackRate(2.2); a.play(); });
+    BG.mod({speed: 1.5, energy: .7}); BG.kick(.8); shake(14, .3);
+  });
+}},
+
+/* 05 MISSION — ミッション選択風に「3つの争点」 */
+{genre: 'MISSION', dur: 8.5, bg: {mode: 'grid', hue: 200, hue2: 280, energy: .45}, trans: 'wipe', build(c) {
+  const r = c.root;
+  header(r, 'ISSUES', '#ffd23f', '争点は 3つ', 'MISSION SELECT ── この裁判で争われたこと');
+  const D = [
+    ['01', '争点1', '不正競争防止法', '声質は原告の「営業表示」？<br>混同のおそれは？', '#19e8ff'],
+    ['02', '争点2', 'パブリシティ権', '声の「顧客吸引力」を<br>無断で利用した？', '#a6ff3a'],
+    ['03', '争点3', 'もう削除済み？', '問題の記事は<br>すでに消えている？', '#ff2d6f'],
+  ];
+  const cards = [];
+  D.forEach((d, i) => c.at(.5 + i * .55, () => {
+    const x = 420 + i * 540;
+    const el = P(r, x, 590, 'mc', `<div class="f">${d[1]} // MISSION ${d[0]}</div><div class="n">${d[0]}</div><div class="t">${d[2]}</div><div class="q">${d[3]}</div>`);
+    el.style.setProperty('--c', d[4]);
+    cards.push(el);
+    A(el, [{transform: 'perspective(1200px) rotateY(90deg) scale(.8)', opacity: 0}, {transform: 'perspective(1200px) rotateY(0deg) scale(1)', opacity: 1}], .4, OUT);
+    flash(d[4], .2, .4); shake(12, .2); BG.kick(.4);
+    FX.burst(x, 590, {n: 60, colors: [d[4], '#ffffff'], speed: [300, 1200], jx: 200, jy: 200});
+  }));
+  c.at(2.6, () => {
+    const s = P(r, CX, 925, 'ystripw', '<div class="ystrip">＋ 運営者のTikTokに削除義務があるかも争われた</div>');
+    A(s, [{transform: 'translateX(-2400px)'}, {transform: 'none'}], .3, OUT); shake(8, .15);
+  });
+  c.at(3.9, () => {
+    cards[2].classList.add('warn'); fx.glitch(cards[2], .4);
+    const b = P(r, 1730, 350, 'bang', '!?'); fx.slam(b, {from: 3, dur: .25, rot: 20});
+    flash('#ff3131', .2, .45); shake(16, .25);
+    FX.burst(1730, 350, {n: 60, colors: ['#ff3131','#ffffff'], speed: [300, 1000]});
+  });
+  c.at(5.3, () => {
+    const dim = h('div', 'full', null, r, {background: 'rgba(4,4,12,.7)'});
+    A(dim, [{opacity: 0}, {opacity: 1}], .25, OUT);
+    const t = P(r, CX, CY, 'hudf', 'READY?', {fontSize: '150px', color: '#fff'});
+    fx.from(t, {scale: 1.6, dur: .3, blur: 10}); A(t, [{opacity: 1}, {opacity: 0}], .15, IN, {delay: 1.0});
+  });
+  c.at(6.55, () => {
+    const t = P(r, CX, 500, 'disp goldx', 'FIGHT!!', {fontSize: '270px'});
+    fx.slam(t, {from: 4, dur: .28, blur: 20});
+    const s = P(r, CX, 720, 'jp', '原告と被告、それぞれの主張', {fontSize: '52px', color: '#fff', background: 'rgba(0,0,0,.6)', padding: '6px 24px'});
+    fx.from(s, {y: 30, dur: .3, delay: .15});
+    flash('#fff', .35, .9); shake(40, .5); punch(.08); BG.kick(1.2);
+    FX.ring(CX, 500, {color: '#ffd23f', r1: 1200, w: 30});
+    FX.burst(CX, 500, {n: 200, colors: ['#ffd23f','#ffffff','#ff2d6f'], speed: [600, 2000], jx: 400});
+    FX.speedOn({color: 'rgba(255,230,160,.85)'});
+  });
+  c.at(7.3, () => FX.speedOn(null));
+}},
+
+/* 06 BATTLE — 格ゲー風に主張をぶつけ合う（COMBO） */
+{genre: 'BATTLE', dur: 12, bg: {mode: 'rays', hue: 340, hue2: 195, energy: .25, speed: .6}, trans: 'shatter', build(c) {
+  const r = c.root;
+  const p1 = P(r, 90, 150, 'plate p1', '<span class="hudf">P1</span>原告の主張', null, 0, .5);
+  const p2 = P(r, 1830, 150, 'plate p2', '被告の主張<span class="hudf">P2</span>', null, 1, .5);
+  fx.from(p1, {x: -200, dur: .3}); fx.from(p2, {x: 200, dur: .3});
+  const vs = P(r, CX, 150, 'disp', 'VS', {fontSize: '80px', color: '#ffd23f', textShadow: '0 0 30px rgba(255,210,63,.7)'});
+  fx.pop(vs, {delay: .2});
+  const cmb = [P(r, 495, 150, 'combo', 'COMBO<b>×0</b>', {color: '#ff2d6f'}, 0, .5), P(r, 1425, 150, 'combo', 'COMBO<b>×0</b>', {color: '#19e8ff'}, 1, .5)];
+  const cnt = [0, 0];
+  const ATK = [
+    ['p', '「艶のある低音ボイス」は原告を想起させる<br>→ 声質は原告の<b>営業表示</b>'],
+    ['d', '本件音声は<b>普遍的な男性の声</b><br>→ 類似とは直ちにいえない'],
+    ['p', '「劇場版 呪術廻戦0」は<b><span class="tabnum">0</span>万人</b>を動員<br>→ 声質の認知度は高い'],
+    ['d', '外部サイトで<b>原告の声ではない</b>と明示<br>→ 混同のおそれはない'],
+    ['p', '科学的手法による<b>音声比較分析</b>で<br>類似を証明'],
+    ['d', '被告は投稿の<b>「場」を提供</b>しているにすぎない<br>→ 不競法上の「侵害する者」ではない'],
+    ['p', '再生数に応じて投稿者に収益<br>→ 本件音声で<b>動画の商品価値</b>を高めた'],
+    ['d', '記事のデータは<b>2026.6.28の経過</b>をもって<br>サーバから<b>削除済み</b>'],
+  ];
+  const cards = [];
+  ATK.forEach((a, k) => {
+    const t0 = .6 + k * 1.05;
+    c.at(t0, () => {
+      const side = a[0] === 'p', row = k >> 1, y = 300 + row * 168, col = side ? '#ff2d6f' : '#19e8ff';
+      const el = P(r, side ? 90 : 1830, y, 'atk' + (side ? '' : ' d'), `<div class="tg">${side ? '原告' : '被告'} ATTACK ${row + 1}</div><p>${a[1]}</p>`, null, side ? 0 : 1, .5);
+      cards.push(el);
+      fx.from(el, {x: side ? -500 : 500, dur: .28, blur: 12});
+      flash(col, .15, .3); shake(10 + row * 3, .2); punch(.015); BG.kick(.35);
+      FX.burst(side ? 520 : 1400, y, {n: 50, colors: [col, '#ffffff'], speed: [300, 1200], jx: 300});
+      FX.speedOn({cx: side ? 0 : W, cy: y, color: side ? 'rgba(255,140,180,.8)' : 'rgba(140,240,255,.8)', rate: 160});
+      const si = side ? 0 : 1; cnt[si]++;
+      cmb[si].innerHTML = `COMBO<b>×${cnt[si]}</b>`; fx.pop(cmb[si].querySelector('b'), {dur: .25});
+      if (k === 2) count(c, el.querySelector('.tabnum'), 980, .7, {onDone: () => {
+        flash('#ffd23f', .2, .5); shake(18, .25);
+        FX.burst(560, y, {n: 90, colors: ['#ffd23f','#ffffff'], speed: [400, 1400]});
+      }});
+      if (k === 7) {
+        el.classList.add('key'); flash('#ff3131', .25, .6); shake(30, .4); punch(.05);
+        FX.burst(1400, y, {n: 120, colors: ['#ff3131','#ffffff','#ffd23f'], speed: [500, 1700], jx: 300});
+      }
+    });
+    c.at(t0 + .25, () => FX.speedOn(null));
+  });
+  c.at(8.5, () => {
+    const s = P(r, 990, 730, 'stampr', '<div>!?</div>');
+    fx.slam(s, {from: 3, dur: .25, rot: 30}); shake(20, .3);
+  });
+  c.at(9.2, () => {
+    cards.forEach((e, i) => { if (i !== 7) e.classList.add('dim'); });
+    camTo(c, {z: 1.12, x: -260, y: -160}, .8, eOut);
+    const t = P(r, 1400, 670, 'hudf', 'KEY POINT', {fontSize: '34px', color: '#ff3131', background: '#07060d', padding: '6px 14px'});
+    fx.pop(t, {delay: .3});
+  });
+  c.at(10.4, () => {
+    camTo(c, {z: 1, x: 0, y: 0}, .3, eOut);
+    const b = P(r, CX, CY, 'bandw', '<div class="band"><span>判定は、</span><b>裁判所へ ▶▶▶</b></div>');
+    A(b, [{transform: 'translateX(-2600px)'}, {transform: 'none'}], .3, OUT); flash('#fff', .2, .5); shake(18, .3);
+  });
+}},
+
+/* 07 JUDGE 01 — 裁判所の判断その1：訴えの利益 */
+{genre: 'JUDGE 01', dur: 6.5, bg: {mode: 'tunnel', hue: 45, energy: .5, speed: .8}, trans: 'zoom', build(c) {
+  const r = c.root;
+  c.at(0, () => hudLine(r, 140, 'JUDGMENT PHASE 01 // 訴えの利益'));
+  c.at(.15, () => {
+    const t = P(r, CX, 255, 'disp goldx', '裁判所の判断', {fontSize: '130px'});
+    fx.slam(t, {from: 3, dur: .3}); flash('#ffd23f', .3, .7); shake(26, .4); punch(.05);
+    FX.ring(CX, 255, {color: '#ffd23f', r1: 1100, w: 24});
+  });
+  let d;
+  c.at(.9, () => {
+    d = P(r, CX, 470, 'say d', '<div class="who2">被告</div><p>記事はもう削除済み。だから<b>訴えの利益</b>がない</p>');
+    fx.from(d, {x: 300, dur: .3, blur: 10}); shake(8, .15);
+  });
+  c.at(2.0, () => {
+    const s = P(r, 1590, 420, 'rej', 'REJECTED');
+    fx.slam(s, {from: 3, dur: .22, rot: -30}); flash('#ff3131', .2, .5); shake(24, .3);
+    A(d, [{opacity: 1}, {opacity: .5}], .2, 'linear', {delay: .1});
+  });
+  c.at(2.3, () => {
+    const j = P(r, CX, 675, 'say j', '<div class="who2">裁判所</div><p>削除の対象があるかどうかは<b>削除請求権そのもの</b>の問題。訴えの利益は左右されない</p>');
+    fx.from(j, {x: -300, dur: .3, blur: 10}); shake(12, .2); punch(.03);
+    FX.burst(CX, 675, {n: 70, colors: ['#ffd23f','#ffffff'], speed: [300, 1200], jx: 600});
+  });
+  c.at(3.7, () => { const k = P(r, CX, 890, 'cap', '→ 門前払い（却下）はしない。中身の判断へ', {fontSize: '52px'}); fx.from(k, {y: 60, dur: .35, ease: BACK}); flash('#fff', .15, .3); });
+  c.at(5.3, () => { const n = P(r, 1700, 890, 'hudf', 'NEXT ▶▶', {fontSize: '40px', color: '#ffd23f'}); fx.from(n, {x: 100, dur: .25}); BG.mod({speed: 2}); });
+}},
+
+/* 08 REACH — パチンコ的「溜め」から、判決理由の核心をリビール */
+{genre: 'REACH', dur: 9.5, bg: {mode: 'dark', hue: 350, energy: .12}, trans: 'invert', build(c) {
+  const r = c.root;
+  const vig = h('div', 'full vig', null, r);
+  let q, orb, gauge, segs = [], gm;
+  c.at(.15, () => { q = P(r, CX, 290, 'jp', '', {fontSize: '64px', color: '#fff'}); typeOn(c, q, 'パブリシティ権について、裁判所は──', 16); });
+  c.at(1.0, () => {
+    orb = P(r, CX, 580, 'orb', ''); fx.pop(orb, {dur: .5});
+    gauge = P(r, CX, 915, 'gauge', '<span class="g-l">期待度</span><i></i><i></i><i></i><i></i><span class="g-m">MAX</span>');
+    fx.from(gauge, {y: 40, dur: .3});
+    segs = [...gauge.querySelectorAll('i')]; gm = gauge.querySelector('.g-m');
+  });
+  const F = [['人の声', -1, -1, '#ffffff'], ['人の肖像', 1, -1, '#19e8ff'], ['人格', -1, 1, '#a6ff3a'], ['顧客吸引力', 1, 1, '#ff2d6f']];
+  F.forEach((f, i) => {
+    const t0 = 1.35 + i * .5, sx = CX + f[1] * 560, sy = 580 + f[2] * 250;
+    c.at(t0, () => {
+      const lb = P(r, sx, sy, 'fchip', f[0], {borderColor: f[3], color: f[3]});
+      A(lb, [{transform: 'translate(0,0) scale(.6)', opacity: 0}, {transform: 'translate(0,0) scale(1)', opacity: 1, offset: .3}, {transform: 'translate(0,0) scale(1)', opacity: 1, offset: .62}, {transform: `translate(${CX - sx}px,${580 - sy}px) scale(.15)`, opacity: 0}], .62, 'linear');
+    });
+    c.at(t0 + .6, () => {
+      orb.style.setProperty('--oc', f[3]);
+      segs[i].classList.add('on');
+      FX.ring(CX, 580, {color: f[3], r1: 520 + i*120, w: 12});
+      FX.burst(CX, 580, {n: 40 + i*20, colors: [f[3], '#ffffff'], speed: [300, 1000 + i*300]});
+      shake(6 + i*5, .25); punch(.02 + i*.012); BG.kick(.3 + i*.15);
+    });
+  });
+  c.at(3.5, () => {
+    orb.classList.add('max'); gm.classList.add('on');
+    q.innerHTML = '<span style="color:var(--gold)">期待度 MAX!!</span>';
+    BG.set({mode: 'tunnel', hue: 40, energy: .8, speed: 1.6});
+    FX.speedOn({color: 'rgba(255,220,120,.9)', rate: 150});
+    flash('#ffd23f', .3, .6); shake(18, .3);
+  });
+  ['3', '2', '1'].forEach((n, i) => c.at(3.85 + i * .5, () => {
+    if (i === 0) A(orb.parentNode, [{opacity: 1}, {opacity: 0}], .2);
+    const d = P(r, CX, 580, 'disp cd', n);
+    A(d, [{transform: 'scale(3)', opacity: 0}, {transform: 'scale(1)', opacity: 1, offset: .35}, {transform: 'scale(.9)', opacity: 1, offset: .8}, {transform: 'scale(.6)', opacity: 0}], .5, 'ease-out');
+    flash('#fff', .18, .5); punch(.07); BG.kick(.6); shake(10 + i*6, .2);
+  }));
+  let blk;
+  c.at(5.35, () => {
+    blk = h('div', 'full', null, r, {background: '#000'});
+    const ln = P(blk, CX, CY, '', '', {width: '1920px', height: '3px', background: '#fff', boxShadow: '0 0 20px #fff'});
+    A(ln, [{transform: 'scaleX(0)'}, {transform: 'scaleX(1)'}], .3, 'ease-in');
+    BG.mod({energy: 0, speed: .05}); FX.clear();
+  });
+  c.at(5.7, () => {
+    blk.remove(); vig.remove(); q.parentNode.remove(); gauge.parentNode.remove();
+    flash('#fff', .6, 1);
+    BG.set({mode: 'rays', hue: 45, hue2: 350, energy: 1, speed: 2}); BG.kick(1.5);
+    shake(46, .8); punch(.1);
+    FX.ring(CX, CY, {color: '#ffffff', r1: 1400, w: 40}); FX.ring(CX, CY, {color: '#ffd23f', r1: 1100, w: 24, life: .8});
+    FX.burst(CX, CY, {n: 320, colors: ['#ffffff','#ffd23f','#ff2d6f','#ff9d00'], speed: [800, 2600], life: [.6, 1.4], size: [2, 7]});
+    const l = P(r, CX, 150, 'jp', '東京地裁の判断（判決理由より）', {fontSize: '40px', color: '#fff', background: 'rgba(0,0,0,.7)', padding: '6px 24px'});
+    fx.from(l, {y: -30, dur: .3, delay: .1});
+    const a = P(r, CX, 320, 'disp goldx', '人の声は、', {fontSize: '190px'}); fx.slam(a, {from: 5, dur: .3});
+    const b = P(r, CX, 505, 'jp', '人の肖像と同様に', {fontSize: '96px', color: '#fff', textShadow: '0 0 24px rgba(0,0,0,.9)'}); fx.slam(b, {from: 3, dur: .28, delay: .12});
+    const d = P(r, CX, 685, 'disp hotx', '個人の人格の象徴', {fontSize: '165px'}); fx.slam(d, {from: 4, dur: .3, delay: .24});
+  });
+  c.at(6.5, () => {
+    const b = P(r, CX, 900, 'cutin', '<div><span>声 ＝ 人格の象徴 ▲▲▲ 声 ＝ 人格の象徴 ▲▲▲ 声 ＝ 人格の象徴 ▲▲▲ 声 ＝ 人格の象徴 ▲▲▲</span></div>');
+    A(b, [{transform: 'translateX(-2600px)'}, {transform: 'none'}], .28, OUT);
+    A(b.querySelector('span'), [{transform: 'translateX(0)'}, {transform: 'translateX(-600px)'}], 3, 'linear');
+    shake(16, .25);
+  });
+  c.at(7.0, () => {
+    const s = P(r, 1660, 250, 'stampr', '<div>CRITICAL!!</div>');
+    fx.slam(s, {from: 3, dur: .25, rot: 30}); flash('#ff2d6f', .22, .45); shake(20, .3); punch(.04);
+    FX.burst(1660, 250, {n: 60, colors: ['#ff3131','#ffffff'], speed: [300, 1100]});
+  });
+  c.at(7.8, () => FX.burst(CX, 1000, {n: 90, colors: ['#ffd23f','#ffffff'], speed: [900, 1700], spread: .8, dir: -Math.PI/2, grav: 400, life: [.7, 1.2]}));
+  c.at(8.6, () => sweepText(r, CX, 685, '個人の人格の象徴', 165));
+}},
+
+/* 09 RULE — 判断枠組みを「条件クリア」型で */
+{genre: 'RULE', dur: 9.5, bg: {mode: 'rays', hue: 45, hue2: 25, energy: .35, speed: .5}, trans: 'glitch', build(c) {
+  const r = c.root;
+  header(r, 'RULE', '#ffd23f', 'パブリシティ権の侵害になるのは？', '判決が示した判断枠組み（例：実演家の声等を無断で使う行為）');
+  const C = [
+    P(r, CX, 380, 'cond', '<div class="ck"></div><div><div class="cl">CONDITION 1</div><p>その声が、商品の販売等を促進する<em>「顧客吸引力」</em>を持つ</p></div>'),
+    P(r, CX, 578, 'cond', '<div class="ck"></div><div><div class="cl">CONDITION 2</div><p>声を使う行為が、<em>専ら</em>その声の顧客吸引力の利用を目的とする</p></div>'),
+  ];
+  C.forEach(e => { e.style.opacity = 0; });
+  [[.6, 1.6], [2.2, 3.2]].forEach(([tin, ton], i) => {
+    c.at(tin, () => { fx.from(C[i], {x: -200, dur: .3, blur: 10}); shake(8, .15); });
+    c.at(ton, () => {
+      C[i].classList.add('on'); fx.pop(C[i].querySelector('.ck'), {dur: .3});
+      flash('#ffd23f', .2, .5); shake(18, .25); punch(.03); BG.kick(.5);
+      FX.burst(222, i ? 578 : 380, {n: 70, colors: ['#ffd23f','#ffffff'], speed: [300, 1200]});
+      const k = P(r, 1760, i ? 578 : 380, 'hudf', 'CLEAR', {fontSize: '34px', color: '#07060d', background: '#ffd23f', padding: '6px 12px'});
+      fx.pop(k, {dur: .3});
+    });
+  });
+  c.at(3.9, () => {
+    const t = P(r, CX, 772, 'disp goldx', '＝ パブリシティ権の侵害', {fontSize: '118px'});
+    fx.slam(t, {from: 4, dur: .3, blur: 20});
+    flash('#fff', .4, 1); shake(40, .6); punch(.08);
+    BG.set({mode: 'rays', hue: 45, hue2: 20, energy: .9, speed: 1.4}); BG.kick(1.2);
+    FX.ring(CX, 772, {color: '#ffd23f', r1: 1300, w: 30});
+    FX.burst(CX, 772, {n: 240, colors: ['#ffd23f','#ffffff','#ff9d00'], speed: [600, 2200], jx: 600});
+  });
+  c.at(4.4, () => { const s = P(r, CX, 868, 'jp', 'と解するのが相当（判決理由より）', {fontSize: '38px', color: '#fff', background: 'rgba(0,0,0,.6)', padding: '4px 20px'}); fx.from(s, {y: 20, dur: .3}); });
+  c.at(5.6, () => {
+    const n = P(r, CX, 952, 'caut', '<b>NOTE</b>一般論として示された枠組み。本件の音声が侵害に当たるかは判断されていない');
+    fx.from(n, {y: 60, dur: .35, ease: BACK}); shake(10, .2); BG.mod({energy: .4});
+  });
+  c.at(7.3, () => {
+    const b = P(r, 1720, 160, 'hudf', 'BUT──', {fontSize: '56px', color: '#ff3131', textShadow: '0 0 20px rgba(255,49,49,.8)'});
+    fx.slam(b, {from: 2, dur: .2}); fx.glitch(b, .6); flash('#ff3131', .2, .35); shake(12, .2);
+  });
+  c.at(8.4, () => { BG.set({mode: 'stripes', hue: 0, energy: .4}); fx.glitch(C[0], .4); fx.glitch(C[1], .4); });
+}},
+
+/* 10 TWIST — 「もっとも──」からの急展開：先に争点3 */
+{genre: 'TWIST', dur: 12.5, bg: {mode: 'stripes', hue: 0, energy: .5}, trans: 'glitch', build(c) {
+  const r = c.root;
+  const blk = h('div', 'full', null, r, {background: '#000', zIndex: 5});
+  c.at(.1, () => { const t = P(blk, CX, CY, 'jp', '', {fontSize: '84px', color: '#fff'}); typeOn(c, t, 'もっとも──', 9); });
+  let grp;
+  c.at(1.1, () => {
+    blk.remove();
+    grp = h('div', 'full', null, r);
+    h('div', 'siren', null, grp);
+    const t1 = h('div', 'tape', null, grp, {top: '96px'}), t2 = h('div', 'tape', null, grp, {top: '940px'});
+    A(t1, [{transform: 'translateX(-2200px)'}, {transform: 'none'}], .3, OUT); A(t2, [{transform: 'translateX(2200px)'}, {transform: 'none'}], .3, OUT);
+    const w = P(grp, CX, 400, 'disp warn', '急展開', {fontSize: '260px'});
+    fx.slam(w, {from: 4, dur: .3}); flash('#ff3131', .35, .9); shake(44, .6); punch(.08); BG.kick(1.2);
+    FX.burst(CX, 400, {n: 200, colors: ['#ff3131','#ffffff','#ffd23f'], speed: [600, 2000]});
+    const s = P(grp, CX, 640, 'jp', '裁判所は、まず<span style="color:#ffd23f">争点3</span>を検討した', {fontSize: '72px', color: '#fff', background: 'rgba(0,0,0,.75)', padding: '8px 30px'});
+    fx.from(s, {y: 40, dur: .3, delay: .2});
+  });
+  c.at(2.5, () => { A(grp, [{opacity: 1, transform: 'scale(1)'}, {opacity: 0, transform: 'scale(1.6)'}], .25, IN).onfinish = () => grp.remove(); BG.mod({energy: .2}); });
+  let hd, fill;
+  const NX = [300, 800, 1300, 1680];
+  const ND = [
+    ['2026.05.29', 'ACCOUNT', '投稿者が本件アカウントを削除', ''],
+    ['2026.06.28', 'DATA', 'この日の経過をもって記事のデータがサーバから削除', ' key'],
+    ['2026.07.03', 'CLOSE', '口頭弁論終結（審理の締めくくり）', ''],
+    ['2026.09.30', 'JUDGMENT', '判決言渡し', ''],
+  ];
+  c.at(2.6, () => {
+    hd = P(r, CX, 190, 'jp', '争点3：問題の記事は、もう削除されているか？', {fontSize: '62px', color: '#fff'}); fx.from(hd, {y: -30, dur: .3});
+    const base = h('div', 'tline', null, r, {background: 'rgba(255,255,255,.28)'});
+    A(base, [{transform: 'scaleX(0)'}, {transform: 'scaleX(1)'}], .4, OUT);
+    fill = h('div', 'tline', null, r, {background: '#ffd23f', boxShadow: '0 0 18px #ffd23f', transform: 'scaleX(0)'});
+    NX.forEach(x => P(r, x, 560, 'tdot', ''));
+  });
+  const node = i => {
+    const key = i === 1, x = NX[i];
+    const dot = r.querySelectorAll('.tdot')[i]; dot.classList.add(key ? 'key' : 'on'); fx.pop(dot, {dur: .3});
+    const dt = P(r, x, 455, 'tdate', `<small>${ND[i][1]}</small>${ND[i][0]}`); fx.from(dt, {y: -30, dur: .25});
+    const ds = P(r, x, 690, 'tdesc' + ND[i][3], ND[i][2]); fx.from(ds, {y: 30, dur: .25});
+    if (key) {
+      flash('#fff', .3, .8); shake(30, .4); punch(.05); BG.kick(1);
+      FX.ring(x, 560, {color: '#ff3131', r1: 700, w: 20});
+      FX.burst(x, 560, {n: 140, colors: ['#ff3131','#ffffff','#ffd23f'], speed: [400, 1600]});
+      const g = P(r, x, 355, 'hudf', 'DELETE', {fontSize: '44px', color: '#ff3131'}); fx.glitch(g, .6);
+    } else { shake(10, .2); FX.burst(x, 560, {n: 50, colors: ['#ffd23f','#ffffff'], speed: [300, 1000]}); }
+  };
+  c.at(3.0, () => {
+    const cw = h('div', 'pos', null, r, {left: '300px', top: '560px', transform: 'translate(-50%,-50%)'});
+    h('div', 'comet2', null, cw);
+    const KF = [[0, 300], [1.4, 800], [2.0, 800], [2.8, 1300], [3.4, 1680]];
+    const t0 = E.t; let hit = 0;
+    const f = c.tick(t => {
+      const s = Math.min(KF[KF.length - 1][0], t - t0);
+      let j = 0; while (j < KF.length - 2 && s > KF[j + 1][0]) j++;
+      const [ta, xa] = KF[j], [tb, xb] = KF[j + 1], x = xa + (xb - xa) * eInOut(Math.min(1, (s - ta) / (tb - ta)));
+      cw.style.left = x + 'px'; fill.style.transform = `scaleX(${(x - 160) / 1600})`;
+      while (hit < 4 && x >= NX[hit] - .5) node(hit++);
+      if (s >= KF[KF.length - 1][0]) { c.untick(f); A(cw, [{opacity: 1}, {opacity: 0}], .3); }
+    });
+  });
+  c.at(3.7, () => { const s = P(r, 550, 522, 'tseg', '30日以内に復旧申請なし'); fx.pop(s, {dur: .3}); });
+  c.at(7.0, () => {
+    const a = P(r, 110, 880, 'say p sm', '<div class="who2">原告</div><p>公表と実際のデータ保持期間が違うことはよくある（報道等を指摘）</p>', null, 0, .5);
+    fx.from(a, {x: -300, dur: .3, blur: 8}); shake(8, .15);
+  });
+  c.at(8.0, () => {
+    const b = P(r, 1810, 880, 'say j sm', '<div class="who2">裁判所</div><p>被告の内部規則・利用ポリシーと整合。報道は本件の削除手続と直接関係しない</p>', null, 1, .5);
+    fx.from(b, {x: 300, dur: .3, blur: 8}); shake(12, .2);
+  });
+  c.at(9.3, () => {
+    const s = P(r, CX, 560, 'hanko', '削除済み<small>と認定</small>');
+    fx.slam(s, {from: 3.5, dur: .26, rot: -30, blur: 10});
+    flash('#fff', .45, 1); shake(52, .7); punch(.1); BG.kick(1.4);
+    FX.ring(CX, 560, {color: '#ff2230', r1: 1300, w: 36});
+    FX.burst(CX, 560, {n: 260, colors: ['#ff2230','#ffffff','#ffd23f'], speed: [700, 2300], life: [.6, 1.3]});
+  });
+  c.at(10.7, () => {
+    A(hd, [{opacity: 1}, {opacity: 0}], .2);
+    const k = P(r, CX, 190, 'cap', '口頭弁論終結（7/3）の時点で、記事はもう存在しない', {fontSize: '50px'});
+    fx.from(k, {y: -40, dur: .3, ease: BACK}); shake(10, .2);
+  });
+}},
+
+/* 11 VERDICT — 主文：パチンコの「結果」演出 */
+{genre: 'VERDICT', dur: 10, bg: {mode: 'dark', hue: 0, energy: .05}, trans: 'cut', build(c) {
+  const r = c.root;
+  const vig = h('div', 'full vig', null, r);
+  let hl, q;
+  c.at(0, () => { hl = hudLine(r, 300, 'THE JUDGMENT // 主文', '#ffe59a', 32); });
+  c.at(.3, () => { q = P(r, CX, 500, 'jp', '', {fontSize: '96px', color: '#fff'}); typeOn(c, q, '判決は──', 7); });
+  [.9, 1.3, 1.6, 1.8].forEach(t => c.at(t, () => { FX.ring(CX, CY, {color: 'rgba(255,49,49,.8)', r0: 420, r1: 40, w: 6, life: .4}); BG.kick(.15); shake(4, .1); }));
+  let blk;
+  c.at(2.0, () => {
+    blk = h('div', 'full', null, r, {background: '#000'});
+    const ln = P(blk, CX, CY, '', '', {width: '1920px', height: '3px', background: '#fff', boxShadow: '0 0 20px #fff'});
+    A(ln, [{transform: 'scaleX(0)'}, {transform: 'scaleX(1)'}], .3, 'ease-in');
+    FX.clear(); BG.mod({energy: 0, speed: .05});
+  });
+  let big, doc;
+  c.at(2.35, () => {
+    blk.remove(); vig.remove(); q.parentNode.remove(); hl.parentNode.remove();
+    flash('#fff', .6, 1); shake(64, 1); punch(.12);
+    BG.set({mode: 'rays', hue: 0, hue2: 350, energy: .9, speed: 1.4}); BG.kick(1.5);
+    h('div', 'full', crack(14, CX, 400), r);
+    big = P(r, CX, 400, 'disp kyk', '請求棄却', {fontSize: '320px'});
+    fx.slam(big, {from: 5, dur: .3, blur: 26});
+    FX.ring(CX, 400, {color: '#ffffff', r1: 1400, w: 40}); FX.ring(CX, 400, {color: '#ff3131', r1: 1100, w: 26, life: .8});
+    FX.burst(CX, 400, {n: 300, colors: ['#ffffff','#ff3131','#ffd23f'], speed: [800, 2600], life: [.6, 1.4], size: [2, 7]});
+  });
+  c.at(3.3, () => BG.mod({energy: .3, speed: .4}));
+  c.at(3.5, () => {
+    doc = P(r, CX, 790, 'doc', '<h5>主文</h5><p>１　原告の請求をいずれも棄却する。</p><p>２　訴訟費用は原告の負担とする。</p>');
+    fx.from(doc, {y: 300, dur: .45, ease: BACK}); shake(10, .2);
+  });
+  c.at(5.7, () => { fx.out(big.parentNode, {dur: .25, scale: .6}); fx.out(doc.parentNode, {dur: .25, scale: .6}); r.querySelectorAll('.crack').forEach(e => e.remove()); });
+  c.at(5.9, () => {
+    const w = P(r, CX, 560, 'why', '<span class="c">理由</span><div class="s">仮に、TikTokに削除義務が生じ得るとしても──</div><div class="m">口頭弁論終結までに<br>記事は<em>削除済み</em></div><div class="r">→ TikTokが更に削除義務を負うことはない</div><div class="x">その余の争点（不競法など）については、これ以上判断しない</div>');
+    A(w, [{transform: 'scaleY(0)', opacity: 0}, {transform: 'scaleY(1)', opacity: 1}], .3, OUT); flash('#ffd23f', .2, .45); shake(16, .25);
+    BG.set({mode: 'grid', hue: 40, hue2: 20, energy: .3});
+  });
+  c.at(9.0, () => flash('#fff', .15, .3));
+}},
+
+/* 12 RESULT — 最終リザルト → ラストカット */
+{genre: 'RESULT', dur: 17, bg: {mode: 'dark', hue: 40, energy: 0}, trans: 'cut', build(c) {
+  const r = c.root;
+  const hold = h('div', 'full', null, r);
+  c.at(0, () => hudLine(hold, 360, 'FINAL STAGE // CASE REPORT'));
+  c.at(.35, () => { const q = P(hold, CX, 540, 'jp', '', {fontSize: '76px', color: '#fff'}); typeOn(c, q, '整理すると──', 10); });
+  [1.2, 1.7, 2.1, 2.4].forEach(t => c.at(t, () => { FX.ring(CX, CY, {color: 'rgba(255,210,63,.8)', r0: 380, r1: 40, w: 6, life: .4}); BG.kick(.15); }));
+  c.at(1.4, () => FX.implode({x: CX, y: CY, rate: 160}));
+  [[1.5, 5, 8], [1.9, 8, 13], [2.3, 12, 19]].forEach(([t, n, a]) => c.at(t, () => { h('div', 'full', crack(n), hold); shake(a, .2); punch(.015); }));
+  c.at(2.62, () => { hold.remove(); FX.implode(null); BG.mod({energy: 0}); });
+  c.at(2.8, () => {
+    flash('#fff', .7, 1);
+    BG.set({mode: 'fever', hue: 45, energy: 1.1, speed: 1.6}); BG.kick(1.6);
+    shake(55, 1.1); punch(.12);
+    FX.ring(CX, CY, {color: '#ffffff', r1: 1500, w: 50}); FX.ring(CX, CY, {color: '#ffd23f', r1: 1200, w: 30, life: .8}); FX.ring(CX, CY, {color: '#ff2d6f', r1: 900, w: 20, life: 1});
+    FX.burst(CX, CY, {n: 280, colors: ['#ffffff','#ffd23f','#ff2d6f','#19e8ff'], speed: [900, 2800], life: [.6, 1.4], size: [2, 7]});
+    FX.confetti(160, {x: CX, y: 700});
+    const m = P(r, CX, CY, 'disp goldx', 'ALL STAGES CLEAR', {fontSize: '130px'});
+    fx.slam(m, {from: 3, dur: .28});
+    A(m, [{opacity: 1, transform: 'scale(1)'}, {opacity: 0, transform: 'scale(.4)'}], .2, IN, {delay: .75});
+  });
+  let res;
+  c.at(3.8, () => {
+    BG.set({mode: 'rays', hue: 45, hue2: 30, energy: .35, speed: .5});
+    res = P(r, CX, 560, 'res', `<div class="res-h"><span class="hudf">CASE REPORT</span><span class="jp">投稿記事削除請求事件　東京地裁 2026.09.30</span></div>
+      <div class="stats"><div><span>対象記事</span><b class="tabnum" data-v="188">0</b><small>件</small></div><div><span>フォロワー</span><b class="tabnum" data-v="21">0</b><small>万人以上</small></div><div><span>争点</span><b class="tabnum" data-v="3">0</b><small>つ</small></div></div>
+      <div class="rr" data-row><span>結論</span><b class="red">請求棄却（訴訟費用は原告の負担）</b><i class="bd-x">DENIED</i></div>
+      <div class="rr" data-row><span>争点1<small>不正競争防止法</small></span><b>判断されず</b><i class="bd-s">SKIP</i></div>
+      <div class="rr" data-row><span>争点2<small>パブリシティ権</small></span><b>声は肖像と同様に「人格の象徴」。侵害の判断枠組みを示す（本件へのあてはめはなし）</b><i class="bd-r">RULE</i></div>
+      <div class="rr" data-row><span>争点3<small>削除済みか</small></span><b class="gold">2026年6月28日の経過をもって削除済みと認定</b><i class="bd-k">KEY</i></div>`);
+    A(res, [{transform: 'scaleY(0)', opacity: 0}, {transform: 'scaleY(1)', opacity: 1}], .3, OUT);
+    res.querySelectorAll('[data-row]').forEach(el => { el.style.opacity = 0; });
+  });
+  c.at(4.1, () => {
+    res.querySelectorAll('.stats b').forEach((el, j) => { count(c, el, +el.dataset.v, .6 + j * .1); fx.pop(el.parentNode, {delay: j * .08}); });
+    shake(12, .2); flash('#ffd23f', .15, .3);
+  });
+  [4.9, 5.4, 5.9, 6.4].forEach((t, j) => c.at(t, () => {
+    const el = res.querySelectorAll('[data-row]')[j];
+    fx.from(el, {x: -60, dur: .25, blur: 6});
+    if (j === 0) { flash('#ff3131', .25, .5); shake(24, .3); punch(.04); FX.burst(640, 480, {n: 80, colors: ['#ff3131','#ffffff'], speed: [400, 1300], jx: 300}); }
+    else if (j === 3) { flash('#19e8ff', .25, .5); shake(22, .3); punch(.04); FX.burst(CX, 800, {n: 90, colors: ['#19e8ff','#ffffff','#ffd23f'], speed: [400, 1400], jx: 400}); }
+    else shake(9, .2);
+  }));
+  c.at(8.6, () => {
+    A(res, [{transform: 'scale(1)', opacity: 1, filter: 'none'}, {transform: 'scale(1.8)', opacity: 0, filter: 'blur(20px)'}], .3, IN);
+    FX.burst(CX, 560, {n: 260, colors: ['#ffd23f','#ffffff','#ff9d00'], speed: [500, 2200], jx: 700, jy: 330, life: [.5, 1.2]});
+    flash('#fff', .5, 1); shake(40, .6);
+  });
+  c.at(9.0, () => {
+    flash('#ffd23f', .5, .8);
+    BG.set({mode: 'fever', hue: 45, energy: 1.2, speed: 1.1}); BG.kick(1.6);
+    shake(60, 1.2); punch(.14);
+    [0, .1, .2].forEach((d, j) => FX.ring(CX, 390, {color: ['#ffffff','#ffd23f','#ff2d6f'][j], r1: 1500 - j*200, w: 40 - j*10, life: .7 + d}));
+    FX.burst(CX, 390, {n: 300, colors: ['#ffffff','#ffd23f','#ff2d6f','#19e8ff','#a6ff3a'], speed: [900, 2800], life: [.7, 1.5], size: [2, 7]});
+    FX.confetti(240, {x: CX, y: 700});
+    FX.rainOn({rate: 40});
+    const s0 = P(r, CX, 205, 'jp', '東京地裁（判決理由より）', {fontSize: '40px', color: '#fff', background: 'rgba(0,0,0,.6)', padding: '4px 22px'}); fx.from(s0, {y: -30, dur: .3});
+    const f = P(r, CX, 390, 'disp goldx', '声は、人格の象徴。', {fontSize: '180px'});
+    fx.slam(f, {from: 5, dur: .34, blur: 26});
+    camTo(c, {z: 1.04}, 7, eOut);
+  });
+  c.at(9.8, () => { const s = P(r, CX, 578, 'jp', '── 人の肖像と同様に', {fontSize: '58px', color: '#fff', textShadow: '0 0 24px rgba(0,0,0,.9)'}); fx.from(s, {y: 30, dur: .35}); shake(8, .2); });
+  c.at(10.7, () => {
+    const s = P(r, CX, 730, 'disp hotx', 'ただし本件は、請求棄却。', {fontSize: '104px'});
+    fx.slam(s, {from: 3, dur: .3}); flash('#ff2d6f', .3, .6); shake(30, .4); punch(.05);
+    FX.burst(CX, 730, {n: 140, colors: ['#ff2d6f','#ffffff'], speed: [500, 1700], jx: 500});
+  });
+  c.at(11.5, () => { const s = P(r, CX, 858, 'jp', '審理が終わる前に、問題の記事は消えていた', {fontSize: '50px', color: '#fff', background: 'rgba(0,0,0,.62)', padding: '6px 24px'}); fx.from(s, {y: 30, dur: .35}); });
+  c.at(12.3, () => sweepText(r, CX, 390, '声は、人格の象徴。', 180));
+  c.at(13.3, () => { const s = P(r, CX, 958, 'jp', '出典：東京地裁 令和8年9月30日判決（令和7年(ワ)第70635号）をもとにした非公式の要約演出です。法的助言ではありません。', {fontSize: '22px', color: 'rgba(255,255,255,.85)', background: 'rgba(0,0,0,.6)', padding: '6px 18px', fontWeight: 700}); fx.from(s, {dur: .5}); });
+  c.at(14.6, () => sweepText(r, CX, 390, '声は、人格の象徴。', 180));
+}},
+];
+
+/* ---------- transitions ---------- */
+function freeze(node) { node.getAnimations({subtree: true}).forEach(a => { try { a.commitStyles(); } catch (e) {} a.cancel(); }); }
+const TR = {
+  cut(n) { n.remove(); },
+  zoom(n) { A(n, [{transform: 'scale(1)', filter: 'blur(0px)', opacity: 1}, {transform: 'scale(2.4)', filter: 'blur(16px)', opacity: 0}], .42, IN).onfinish = () => n.remove(); flash('#fff', .4, .9); },
+  spin(n) { A(n, [{transform: 'rotate(0deg) scale(1)', opacity: 1}, {transform: 'rotate(-40deg) scale(.05)', opacity: .2}], .42, IN).onfinish = () => n.remove(); flash('#fff', .3, .6); },
+  shatter(n) {
+    const cols = 4, rows = 3, pts = [];
+    for (let j = 0; j <= rows; j++) { pts[j] = []; for (let i = 0; i <= cols; i++) { const ex = i === 0 || i === cols, ey = j === 0 || j === rows; pts[j][i] = [i / cols * 100 + (ex ? 0 : rnd(-7, 7)), j / rows * 100 + (ey ? 0 : rnd(-9, 9))]; } }
+    const par = n.parentNode;
+    for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+      const p = [pts[j][i], pts[j][i+1], pts[j+1][i+1], pts[j+1][i]];
+      const cl = n.cloneNode(true); cl.style.clipPath = 'polygon(' + p.map(q => q[0] + '% ' + q[1] + '%').join(',') + ')';
+      par.appendChild(cl);
+      const cx = (p[0][0] + p[2][0]) / 2 - 50, cy = (p[0][1] + p[2][1]) / 2 - 50;
+      A(cl, [{transform: 'none', opacity: 1}, {transform: `translate(${cx * rnd(14, 24)}px,${cy * rnd(14, 24) + 300}px) rotate(${rnd(-50, 50)}deg) scale(${rnd(.6, .9)})`, opacity: 0}], rnd(.5, .7), 'cubic-bezier(.4,0,.8,.5)', {delay: Math.hypot(cx, cy) * .002}).onfinish = () => cl.remove();
+    }
+    n.remove(); flash('#fff', .3, .8); shake(18, .3);
+  },
+  split(n) {
+    const a = n.cloneNode(true); a.style.clipPath = 'inset(0 0 50% 0)'; n.style.clipPath = 'inset(50% 0 0 0)'; n.parentNode.appendChild(a);
+    A(a, [{transform: 'none'}, {transform: 'translateY(-110%) rotate(-3deg)'}], .45, IN).onfinish = () => a.remove();
+    A(n, [{transform: 'none'}, {transform: 'translateY(110%) rotate(3deg)'}], .45, IN).onfinish = () => n.remove();
+    flash('#fff', .25, .5);
+  },
+  glitch(n) {
+    const k = [];
+    for (let i = 0; i < 7; i++) k.push({transform: `translate(${rnd(-90, 90)}px,${rnd(-20, 20)}px) skewX(${rnd(-20, 20)}deg)`, clipPath: `inset(${rnd(0, 55)}% 0 ${rnd(0, 40)}% 0)`, filter: `hue-rotate(${rnd(0, 360)}deg) saturate(3)`, opacity: 1, easing: 'steps(1,end)'});
+    k.push({opacity: 0});
+    A(n, k, .38, 'linear').onfinish = () => n.remove();
+  },
+  invert(n) { n.style.filter = 'invert(1) hue-rotate(180deg)'; A(n, [{transform: 'scale(1)', opacity: 1}, {transform: 'scale(1.25)', opacity: 0}], .32, IN).onfinish = () => n.remove(); flash('#fff', .2, .5); },
+  wipe(n) {
+    const b = h('div', 'full', null, $('#out'), {top: '-20%', left: '-10%', width: '120%', height: '140%', background: 'linear-gradient(90deg,#a6ff3a 0 3%,#07060d 3% 97%,#a6ff3a 97%)'});
+    A(b, [{transform: 'translateX(-130%) skewX(-18deg)'}, {transform: 'translateX(130%) skewX(-18deg)'}], .55, SNAP).onfinish = () => b.remove();
+    A(n, [{opacity: 1}, {opacity: 1, offset: .45}, {opacity: 0, offset: .46}, {opacity: 0}], .55, 'linear').onfinish = () => n.remove();
+  },
+};
+
+/* ---------- player ---------- */
+const OFF = []; let TOTAL = 0;
+SLIDES.forEach((s, i) => { OFF[i] = TOTAL; TOTAL += s.dur; });
+const fmtT = s => { const m = Math.floor(s / 60), r = s - m * 60; return String(m).padStart(2, '0') + ':' + r.toFixed(1).padStart(4, '0'); };
+
+function go(i, mode) {
+  i = Math.max(0, Math.min(SLIDES.length - 1, i));
+  const out = $('#out');
+  if (E.slide) {
+    const old = E.slide;
+    freeze(old);
+    if (mode === 'manual') out.innerHTML = '';
+    out.appendChild(old);
+    (TR[mode === 'manual' ? 'glitch' : SLIDES[E.i].trans] || TR.cut)(old);
+  }
+  E.i = i; E.t = 0; E.ci = 0; E.cues = []; E.ticks.clear(); E.ended = false;
+  FX.stopStreams(); camReset();
+  const def = SLIDES[i];
+  BG.set(def.bg);
+  const root = h('div', 'slide', null, $('#layer'));
+  E.slide = root;
+  def.build(makeCtx(root));
+  const g = $('#hud-genre'); g.textContent = def.genre; fx.glitch(g, .3);
+  $('#hud-stage').textContent = `STAGE ${String(i + 1).padStart(2, '0')}/${SLIDES.length}`;
+  hudMode();
+}
+function end() { E.ended = true; hudMode(); }
+let pausedAnims = [];
+function setPlaying(p) {
+  if (p === E.playing) return;
+  E.playing = p;
+  if (!p) { pausedAnims = document.getAnimations().filter(a => a.playState === 'running'); pausedAnims.forEach(a => a.pause()); }
+  else { pausedAnims.forEach(a => { try { a.play(); } catch (e) {} }); pausedAnims = []; }
+  hudMode();
+}
+function restart() { $('#out').innerHTML = ''; FX.clear(); setPlaying(true); go(0, 'manual'); }
+function toggle() { if (E.ended) restart(); else setPlaying(!E.playing); }
+function nav(d) { setPlaying(true); if (d > 0 && E.i === SLIDES.length - 1) { E.t = SLIDES[E.i].dur; return; } go(E.i + d, 'manual'); }
+function hudMode() {
+  const m = $('#hud-mode');
+  m.textContent = E.ended ? '■ END · R' : E.playing ? '▶ AUTO' : '❚❚ PAUSE';
+  m.classList.toggle('p', !E.playing || E.ended);
+  const b = $('#b-play'); b.textContent = E.playing && !E.ended ? '❚❚' : '▶'; b.setAttribute('aria-label', E.playing && !E.ended ? '一時停止' : '再生');
+}
+
+let last = performance.now();
+function loop(now) {
+  let dt = (now - last) / 1000; last = now;
+  if (dt > .25) dt = .25;
+  const pdt = E.playing ? dt : 0;
+  if (E.playing && !E.ended) {
+    E.t += dt;
+    while (E.ci < E.cues.length && E.cues[E.ci].t <= E.t) { const q = E.cues[E.ci++]; try { q.fn(); } catch (err) { console.error(err); } }
+    for (const f of [...E.ticks]) f(E.t, dt);
+    if (E.t >= SLIDES[E.i].dur) { if (E.i < SLIDES.length - 1) go(E.i + 1, 'auto'); else end(); }
+  }
+  BG.step(pdt); FX.step(pdt); camStep(pdt);
+  const tot = OFF[E.i] + Math.min(E.t, SLIDES[E.i].dur);
+  $('#hud-time').textContent = fmtT(tot) + ' / ' + fmtT(TOTAL);
+  PSEG.forEach((s, i) => { s.style.transform = `scaleX(${i < E.i ? 1 : i === E.i ? Math.min(1, E.t / SLIDES[i].dur) : 0})`; });
+  requestAnimationFrame(loop);
+}
+
+/* ---------- HUD / controls ---------- */
+const PSEG = SLIDES.map(s => { const i = h('i', '', null, $('#prog'), {flex: String(s.dur)}); return h('b', '', null, i); });
+const tk = TICKER.map(s => `${s}<em>◆</em>`).join('');
+$('#ticker').innerHTML = tk + tk;
+
+function fit() { const s = Math.min(innerWidth / W, innerHeight / H); $('#stage').style.transform = `scale(${s})`; }
+addEventListener('resize', fit);
+
+const ctrl = $('#ctrl'), vp = $('#viewport');
+let idleT = 0;
+function wake() { ctrl.classList.remove('hide'); vp.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(() => { ctrl.classList.add('hide'); vp.classList.add('idle'); }, 2200); }
+addEventListener('mousemove', wake); addEventListener('touchstart', wake, {passive: true});
+async function fullscreen() { try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); } catch (e) {} }
+$('#b-prev').addEventListener('click', e => { e.stopPropagation(); nav(-1); });
+$('#b-next').addEventListener('click', e => { e.stopPropagation(); nav(1); });
+$('#b-play').addEventListener('click', e => { e.stopPropagation(); toggle(); });
+$('#b-re').addEventListener('click', e => { e.stopPropagation(); restart(); });
+$('#b-fs').addEventListener('click', e => { e.stopPropagation(); fullscreen(); });
+ctrl.addEventListener('click', e => e.stopPropagation());
+vp.addEventListener('click', e => {
+  const x = e.clientX / innerWidth;
+  if (x < .22) nav(-1); else if (x > .78) nav(1); else toggle();
+});
+addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
+  const k = e.key;
+  if (k === ' ' || k === 'k' || k === 'K') { e.preventDefault(); toggle(); }
+  else if (k === 'ArrowRight' || k === 'l' || k === 'L' || k === 'PageDown') { e.preventDefault(); nav(1); }
+  else if (k === 'ArrowLeft' || k === 'j' || k === 'J' || k === 'PageUp') { e.preventDefault(); nav(-1); }
+  else if (k === 'r' || k === 'R' || k === 'Home') restart();
+  else if (k === 'f' || k === 'F') fullscreen();
+  else if (k === 'h' || k === 'H') $('#hud').classList.toggle('off');
+});
+let autoPaused = false;
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && E.playing) { autoPaused = true; setPlaying(false); }
+  else if (!document.hidden && autoPaused) { autoPaused = false; last = performance.now(); setPlaying(true); }
+});
+
+/* ---------- boot: 使う文字だけ先にフォント読み込み → AUTO再生 ---------- */
+async function boot() {
+  fit();
+  const txt = [...new Set(($('#main').textContent + document.body.innerText).replace(/[\x00-\x7f]/g, ''))].join('') + '0123456789%+.!?ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  try {
+    await Promise.race([
+      Promise.all(['900 100px "Dela Gothic One"', '900 40px "Noto Sans JP"', '700 40px "Noto Sans JP"', '500 20px "Noto Sans JP"', '700 20px "Chakra Petch"'].map(f => document.fonts.load(f, txt))),
+      new Promise(res => setTimeout(res, 4000)),
+    ]);
+  } catch (e) {}
+  wake();
+  go(0, 'auto');
+  last = performance.now();
+  requestAnimationFrame(loop);
+}
+boot();
+})();
+</script>
+</body>
+</html>
