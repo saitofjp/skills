@@ -12,7 +12,8 @@
   when it opens (unless built with --no-autoplay); each of the model's forms (summary, linear, slides, table)
   renders, with the model as a minimap; ▶ plays from the text to the summary and back to the model, wherever the knob was; hovering a mapped word focuses the model
   and draws the thread, with its details along the bottom, and so does hovering anywhere inside a chunk's frame; Escape clears the focus; at a form the details
-  card and the minimap sit side by side without overlapping; the theme switches between dark, light and dopa: in dopa,
+  card and the minimap sit side by side without overlapping; the theme switches between dark, light and dopa: in dark,
+  the field's lines are faint and of a hue of their own, apart from the model's lines; in dopa,
   dragging the knob stages nothing, ▶ stages the play as a show (the build-up and the summary's arrival once), even when
   the system asks for less motion, dopa is not remembered, and the show stops with the theme;
   nothing overflows a phone-width screen. Exits 1 on the first failure.
@@ -179,6 +180,18 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   await page.click('#themeCtl button[data-theme-set="dark"]');
   if ((await V(() => document.documentElement.dataset.theme)) !== 'dark') return fail('the theme switch did not change back to dark');
   ok('switches between dark and light');
+  // in dark, the field's lines must not be read as the model's: a hue of their own, and faint
+  const lines = await V(() => {
+    const cs = getComputedStyle(document.documentElement), rgb = n => cs.getPropertyValue(n).split(',').map(Number);
+    const hue = ([r, g, b]) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; if (!d) return null;
+      const h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return (h * 60 + 360) % 360; };
+    const field = hue(rgb('--field-line')), model = hue(rgb('--rel-rgb'));
+    const gap = field == null || model == null ? 0 : Math.min(Math.abs(field - model), 360 - Math.abs(field - model));
+    return { gap, line: +cs.getPropertyValue('--field-line-a'), hi: +cs.getPropertyValue('--field-hi-a') };
+  });
+  if (!(lines.gap >= 60)) return fail(`in dark, the field's lines are too close in hue to the model's lines (${Math.round(lines.gap)}°)`);
+  if (!(lines.line > 0 && lines.line <= 0.06 && lines.hi > 0 && lines.hi <= 0.2)) return fail(`in dark, the field's lines are not faint (hairline ${lines.line}, trace ${lines.hi})`);
+  ok(`in dark, the field's lines are faint and of their own hue (${Math.round(lines.gap)}° from the model's lines)`);
 
   // dopa: the knob, moved by hand, stages nothing; ▶ stages the play as a show
   await page.click('#themeCtl button[data-theme-set="dopa"]');

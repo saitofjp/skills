@@ -145,6 +145,7 @@ The composition behind the model is built from the model:
 - Chunks that bear on each other are joined by bands, and the conclusion's bands are heaviest. Every relation is a hairline.
 - The summary is a hatched wedge from the conclusion toward the chunks it names.
 - Shapes are filled even-odd, so they invert where they cross. A thin double frame closes the model's space.
+- Its lines (the hairlines, the frame and the trace of a focused chunk) have a colour of their own, `--field-line`, so they are never read as the model's lines. In the dark theme it is a faint sand, far in hue from the model's blue-grey lines and fainter than any of them; in light and dopa it is the field's colour.
 
 Its assembly follows the knob: shattered into triangles at L0, half assembled at L1, whole at L2. Focusing a chunk traces its shapes in the composition.
 
