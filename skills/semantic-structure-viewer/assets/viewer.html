@@ -22,6 +22,9 @@
   --sky: rgba(12, 16, 25, .28);       /* L2: the model's space, the figure shows through */
   --field: 165, 188, 240;             /* the field: shards on the ground, a composition above */
   --field-a: .048;
+  --field-line: 205, 184, 146;        /* the field's lines: a faint sand, so they are never read as the model's lines */
+  --field-line-a: .04;                /* its hairlines and frame */
+  --field-hi-a: .15;                  /* the trace of a focused chunk */
   --ink: #e8ecf4;
   --ink-2: #b4bdcd;
   --muted: #7d889d;
@@ -54,6 +57,7 @@
 }
 :root[data-theme="light"] {
   --space: #e9edf3; --ground: rgba(246, 248, 251, .9); --sky: rgba(240, 244, 249, .3); --field: 30, 45, 85; --field-a: .038;
+  --field-line: 30, 45, 85; --field-line-a: .053; --field-hi-a: .23;
   --ink: #111622; --ink-2: #39414f; --muted: #687286; --rule: rgba(30, 50, 90, .14);
   --card: #ffffff; --card-hi: transparent; --card-line: #111622; --accent: #111622;
   --frame: rgba(30, 50, 90, .04); --slab: rgba(40, 70, 130, .05); --slab-line: rgba(40, 70, 130, .2); --bracket: rgba(30, 50, 90, .3);
@@ -68,6 +72,7 @@
    the conclusion is gold, the key hot pink. While ▶ plays, the play is also staged as a show, in #fxBack and #show (section 6c). */
 :root[data-theme="dopa"] {
   --space: #06050a; --ground: rgba(9, 8, 18, .9); --sky: rgba(14, 6, 28, .26); --field: 255, 45, 111; --field-a: .07;
+  --field-line: 255, 45, 111; --field-line-a: .098; --field-hi-a: .42;
   --ink: #f5f7ff; --ink-2: #c6cbe4; --muted: #8f96b3; --rule: rgba(25, 232, 255, .2);
   --card: #0e0b1e; --card-hi: transparent; --card-line: rgba(25, 232, 255, .5); --accent: #19e8ff;
   --frame: rgba(255, 45, 111, .08); --slab: rgba(25, 232, 255, .07); --slab-line: rgba(25, 232, 255, .32); --bracket: rgba(25, 232, 255, .55);
@@ -1838,7 +1843,8 @@ function renderComposition() {
   c.setTransform(dpr, 0, 0, dpr, 0, 0);
   const cs = getComputedStyle(document.documentElement);
   const col = cs.getPropertyValue('--field').trim() || '165,188,240', base = +cs.getPropertyValue('--field-a') || 0.048;
-  FIELD.col = col; FIELD.base = base;
+  const line = cs.getPropertyValue('--field-line').trim() || col, lineA = +cs.getPropertyValue('--field-line-a') || base * 1.4;
+  FIELD.line = line; FIELD.hiA = +cs.getPropertyValue('--field-hi-a') || Math.min(0.6, base * 6);
   c.fillStyle = `rgba(${col},${Math.min(1, base * BOOST)})`;
   c.fill(FIELD.comp.fill, 'evenodd');
   // screentone: the top-level chunks' discs are dotted, as on a printed page
@@ -1847,7 +1853,7 @@ function renderComposition() {
   tc.beginPath(); tc.arc(tone.width / 2, tone.height / 2, 1.25 * dpr, 0, Math.PI * 2); tc.fill();
   const pat = c.createPattern(tone, 'repeat'); pat.setTransform && pat.setTransform(new DOMMatrix().scale(1 / dpr));
   if (document.documentElement.dataset.theme !== 'light') { c.fillStyle = pat; c.fill(FIELD.comp.tone); }
-  c.strokeStyle = `rgba(${col},${Math.min(1, base * BOOST * 1.4)})`; c.lineWidth = 1;
+  c.strokeStyle = `rgba(${line},${Math.min(1, lineA * BOOST)})`; c.lineWidth = 1;
   c.stroke(FIELD.comp.thin);
 }
 function layoutField() {
@@ -1886,7 +1892,7 @@ function drawField() {
     fctx.drawImage(off, 0, 0, w, hh);
     fctx.globalAlpha = 1;
     if (FIELD.hi.size) {
-      fctx.strokeStyle = `rgba(${FIELD.col},${Math.min(0.6, FIELD.base * 6)})`; fctx.lineWidth = 1.4;
+      fctx.strokeStyle = `rgba(${FIELD.line},${FIELD.hiA})`; fctx.lineWidth = 1.4;
       FIELD.hi.forEach(id => { const p = FIELD.comp.parts.get(id); if (p) fctx.stroke(p); });
     }
     return;
