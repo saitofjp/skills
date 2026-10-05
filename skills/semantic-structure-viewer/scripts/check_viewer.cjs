@@ -5,7 +5,10 @@
     NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html
 
   Checks: no console errors and no model problems; dragging the gauge's knob moves the page
-  continuously from the text to the chunks to the model, and letting go settles it; the page plays by itself
+  continuously from the text to the chunks to the model, and letting go settles it; the structure and the minimap run
+  the same way (with the conclusion on the right when they run from it); the columns follow the shape of the text: a
+  question branching out runs from the start, reasons gathering into a conclusion run from the conclusion (a chunk with
+  no lines does not tip it), and an anchor given in the view options wins; the page plays by itself
   when it opens (unless built with --no-autoplay); each of the model's forms (summary, linear, slides, table)
   renders, with the model as a minimap; ▶ plays from the text to the summary and back to the model, wherever the knob was; hovering a mapped word focuses the model
   and draws the thread, with its details along the bottom, and so does hovering anywhere inside a chunk's frame; Escape clears the focus; at a form the details
@@ -15,6 +18,7 @@
   nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
 'use strict';
+const fs = require('fs');
 const path = require('path');
 let chromium;
 try { ({ chromium } = require('playwright')); } catch (e) {
@@ -36,6 +40,17 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   const V = fn => page.evaluate(fn);
   const state = () => V(() => window.__semanticViewer.state);
   const still = () => page.waitForFunction(() => !window.__semanticViewer.state.moving, null, { timeout: 15000 });
+  // the top-level chunks, column by column from the left: in the structure (at the model) and on the minimap
+  const structureCols = () => V(() => [...document.querySelectorAll('#rep .cols > .col')].map(c => [...c.children].map(x => x.dataset.node)));
+  const minimapCols = p => p.evaluate(() => {
+    const at = new Map();
+    document.querySelectorAll('#mmSvg .mm-box.unit').forEach(g => {
+      const x = Math.round(+g.querySelector('rect').getAttribute('x'));
+      if (!at.has(x)) at.set(x, []);
+      at.get(x).push(g.dataset.node);
+    });
+    return [...at.entries()].sort((a, b) => a[0] - b[0]).map(e => e[1]);
+  });
 
   await page.goto('file://' + path.resolve(file));
   await page.waitForFunction(() => window.__semanticViewer, null, { timeout: 15000 });
@@ -69,6 +84,19 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   let st = await state();
   if (st.stage !== 'model') return fail('letting go near the model did not settle on the model: ' + JSON.stringify(st));
   ok('letting go settles on the model');
+
+  // the structure and the minimap run the same way, and from the conclusion it sits on the right
+  const sCols = await structureCols(), mCols = await minimapCols(page);
+  const colOf = cols => new Map(cols.flatMap((c, i) => c.map(id => [id, i])));
+  const sAt = colOf(sCols), mAt = colOf(mCols);
+  const units = [...mAt.keys()];
+  if (units.some(a => units.some(b => sAt.get(a) < sAt.get(b) && mAt.get(a) > mAt.get(b))))
+    return fail('the structure and the minimap run different ways: ' + JSON.stringify({ structure: sCols, minimap: mCols }));
+  const anchor = await V(() => window.__semanticViewer.anchor);
+  const concl = await V(() => { const c = document.querySelector('#rep .cols > .col > .card.concl, #rep .cols > .col > .card:has(.concl)'); return c && c.dataset.node; });
+  if (anchor === 'end' && concl && (sAt.get(concl) !== sCols.length - 1 || mAt.get(concl) !== mCols.length - 1))
+    return fail('the columns run from the conclusion, but it is not on the right: ' + JSON.stringify({ structure: sCols, minimap: mCols }));
+  ok(`the structure and the minimap run the same way, from the ${anchor === 'end' ? 'end (the conclusion on the right)' : 'start (on the left)'}`);
 
   // each form
   for (const f of ['summary', 'linear', 'slides', 'table', 'model']) {
@@ -200,6 +228,46 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
   await still();
   if ((await state()).stage !== 'text') return fail('could not descend to the text');
   ok('descends back to the text');
+
+  // the columns follow the shape of the text: this page's code, with small models of the two shapes in it
+  const html = fs.readFileSync(path.resolve(file), 'utf8');
+  const embed = v => JSON.stringify(v).replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
+  const withModel = (model, view) => html
+    .replace(/(<script type="application\/json" id="semantic-structure">)[\s\S]*?(<\/script>)/, (m, a, b) => a + embed(model) + b)
+    .replace(/(<script type="application\/json" id="semantic-view">)[\s\S]*?(<\/script>)/, (m, a, b) => a + embed(view) + b);
+  // one chunk per sentence, [id, sentence, role?], and lines [source, target]
+  const shape = (chunks, lines) => {
+    let text = '';
+    const nodes = chunks.map(([id, label, role]) => {
+      const start = Array.from(text).length;
+      text += label + '。';
+      return { id, label, type: 'note', provenance: 'explicit', ...(role ? { role } : {}),
+        sourceSpans: [{ start, end: start + Array.from(label).length, text: label }] };
+    });
+    const relations = lines.map(([a, b]) => ({ id: `${a}-${b}`, source: a, target: b, type: 'leads to', provenance: 'inferred', sourceSpans: [] }));
+    return { version: 'semantic-structure/1', sourceText: text, nodes, relations, metadata: { title: 'shape', language: 'ja' } };
+  };
+  const branching = shape([['q', '問：空き店舗をどう減らすか'], ['plan', '方針：若い店主を呼ぶ'], ['steps', '手順：家賃を半年補助する'],
+    ['issue', '課題：補助のあとも続くか'], ['ruling', '結論：まず三店で試す', 'conclusion']],
+    [['q', 'plan'], ['plan', 'steps'], ['steps', 'issue'], ['q', 'ruling']]);
+  const gathering = shape([['case', '事件：声の似た動画'], ['claim', '請求：動画の削除'], ['standard', '基準：声も人格の象徴'],
+    ['gone', '認定：すでに削除済み'], ['ruling', '結論：請求を棄却', 'conclusion']],
+    [['standard', 'claim'], ['claim', 'ruling'], ['gone', 'ruling']]);
+  for (const [name, model, view, want, cols] of [
+    ['a question branching out', branching, {}, 'start', 'q | plan,ruling | steps | issue'],
+    ['a question branching out, with anchor end', branching, { anchor: 'end' }, 'end', 'plan,steps,issue | q | ruling'],
+    ['reasons gathering into the conclusion, with a chunk that has no lines', gathering, {}, 'end', 'case | standard | claim,gone | ruling'],
+    ['reasons gathering into the conclusion, with anchor start', gathering, { anchor: 'start' }, 'start', 'case,standard,gone | claim,ruling'],
+  ]) {
+    const p = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+    p.on('pageerror', e => errors.push(e.message));
+    await p.setContent(withModel(model, { ...view, autoplay: false }));
+    await p.waitForFunction(() => window.__semanticViewer, null, { timeout: 15000 });
+    const got = { anchor: await p.evaluate(() => window.__semanticViewer.anchor), cols: (await minimapCols(p)).map(c => c.join(',')).join(' | ') };
+    await p.close();
+    if (got.anchor !== want || got.cols !== cols) return fail(`${name}: expected ${want}, ${cols}; got ${got.anchor}, ${got.cols}`);
+  }
+  ok('the columns follow the shape of the text: a question branching out runs from the start, reasons gathering into a conclusion from it, and the view options win');
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(400);
