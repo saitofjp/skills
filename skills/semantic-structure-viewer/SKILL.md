@@ -74,7 +74,7 @@ Pass them as flags, or as a JSON file with `--view`. They live in their own bloc
 
 ## What not to do
 
-- **Do not edit the model to improve the picture.** If the notes are unclear, fix them with the builder. If only the presentation is wrong, change the view options.
+- **Do not edit the model to improve the picture.** If the notes are unclear, fix them with the builder, or with the user through [`semantic-structure-reconstructor`](../semantic-structure-reconstructor/SKILL.md). If only the presentation is wrong, change the view options.
 - **Do not add text analysis to the page.** Everything it shows comes from the model.
 - **Do not hand-write a new page per text.** The template is the implementation. If you improve it, keep [`references/transform-view.md`](references/transform-view.md) in step with it.
 

@@ -1,6 +1,6 @@
 # Semantic Structure contract (`semantic-structure/1`)
 
-The Semantic Structure is the only thing `semantic-structure-builder` and `semantic-structure-viewer` share. The builder writes it; the viewer only reads it.
+The Semantic Structure is the only thing the semantic skills share. `semantic-structure-builder` writes it; `semantic-structure-viewer` only reads it; `semantic-structure-reconstructor` refines it with the user and writes the text back from it.
 
 It is a model of what a text means. In the terms of text comprehension, the chunks' headlines and the one sentence are the text's macrostructure, its meaning from the top down; the points keep what must not be lost from the details; the lines are how the parts hold together; the conclusion and the key say which parts weigh most. Everything is grounded in the text's words.
 
@@ -8,7 +8,7 @@ The model is a set of **notes on a text**. The text is wrapped into chunks. Each
 
 The contract is small on purpose. It fixes what a view needs in order to draw the notes and trace them back to the text. How to chunk, what to call things, and what to keep are left to the modeler.
 
-> This file is copied verbatim into both skills. Edit the copy in `semantic-structure-builder`, then run `python3 scripts/sync_semantic_shared.py` from the repository root.
+> This file is copied verbatim into each of the semantic skills. Edit the copy in `semantic-structure-builder`, then run `python3 scripts/sync_semantic_shared.py` from the repository root.
 
 ## Shape
 
@@ -70,6 +70,8 @@ There is no type vocabulary.
 | `directed` | Relation | `false` when direction carries no meaning. Default `true`. |
 | `derivedFrom` | Node, Relation | Ids of the elements this one was inferred or abstracted from. The viewer walks an inference back to the text through it. |
 | `note` | Node, Relation, Point | Why: how it was inferred, what the competing readings are. |
+| `transition` | Node | How the chunk is brought in after the one before it in reading order, when no line says so: a change of topic, a return to the main thread (`ここから争点`). The viewer does not use it. |
+| `confirmed` | Node, Relation, Point | `true` when the user has checked the element and agrees with it. It does not change `provenance`: an inference the user agrees with is still not stated by the text. The viewer does not use it. |
 
 Any other field is allowed. The viewer ignores fields it does not know.
 
@@ -121,6 +123,6 @@ Sentence numbers come from `semantic_structure.py sentences`. Spans that already
 python3 scripts/semantic_structure.py validate model.json
 ```
 
-Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`.
+Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`, a `transition` that is not a string on a node, a `confirmed` other than `true` / `false`.
 
 Warnings: something that cannot be traced to the text, `uncertain` without a `note`, a duplicate relation, a summary that names no node, and sentences no span touches. An untouched sentence is a prompt to check for something lost, not a quota.

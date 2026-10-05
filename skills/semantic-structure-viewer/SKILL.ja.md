@@ -76,7 +76,7 @@ description: 文章の意味構造（semantic-structure-builderが作る、文�
 
 ## しないこと
 
-- **見た目のためにモデルを直さない。** ノートが分かりにくいなら、builderでノートを直す。見せ方だけの問題なら、ビューオプションを変える。
+- **見た目のためにモデルを直さない。** ノートが分かりにくいなら、builderでノートを直すか、[`semantic-structure-reconstructor`](../semantic-structure-reconstructor/SKILL.ja.md) でユーザーと一緒に直す。見せ方だけの問題なら、ビューオプションを変える。
 - **ページに原文の解析を足さない。** ページが表示するものはすべてモデルから来る。
 - **原文ごとにページを書き起こさない。** テンプレートが実装である。テンプレートを改良したときは、[`references/transform-view.md`](references/transform-view.md) もテンプレートに合わせる。
 

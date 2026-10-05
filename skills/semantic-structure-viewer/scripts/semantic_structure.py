@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Semantic Structure contract tool (semantic-structure/1).
 
-Shared by semantic-structure-builder and semantic-structure-viewer. This file is
-copied verbatim into both skills; edit the builder copy and run
-scripts/sync_semantic_shared.py from the repository root.
+Shared by the semantic skills (semantic-structure-builder, -viewer and
+-reconstructor). This file is copied verbatim into each of them; edit the builder
+copy and run scripts/sync_semantic_shared.py from the repository root.
 
 Standard library only.
 
@@ -397,6 +397,8 @@ def validate_model(model):
                         continue
                     if "when" in point and not isinstance(point["when"], str):
                         errors.append(f"{where}: when must be a string")
+                    if "confirmed" in point and not isinstance(point["confirmed"], bool):
+                        errors.append(f"{where}: confirmed must be true or false")
                     pprov = point.get("provenance", prov)
                     if pprov not in PROVENANCE:
                         errors.append(f"{where}: provenance must be one of {', '.join(PROVENANCE)}")
@@ -404,6 +406,10 @@ def validate_model(model):
                         warnings.append(f"{where} ({point['label']!r}) has no sourceSpans - point at the words that state it")
         if "polarity" in el and (kind != "relation" or el["polarity"] not in ("+", "-")):
             errors.append(f"{name}: polarity is for relations and must be \"+\" or \"-\"")
+        if "transition" in el and (kind != "node" or not isinstance(el["transition"], str) or not el["transition"].strip()):
+            errors.append(f"{name}: transition is for nodes and must be a non-empty string")
+        if "confirmed" in el and not isinstance(el["confirmed"], bool):
+            errors.append(f"{name}: confirmed must be true or false")
         if "role" in el and not isinstance(el["role"], str):
             errors.append(f"{name}: role must be a string")
         elif el.get("role") == "key" and not el.get("note"):
@@ -664,6 +670,8 @@ def outline(model):
         where = _sentence_list(n.get("sourceSpans") or [], sentences) or "no words of its own"
         star = "★ " if n.get("role") == "conclusion" else "◆ " if n.get("role") == "key" else ""
         out.append(f"{pad}{star}{num} {n['label']}{prov(n)}  ({where})")
+        if n.get("transition"):
+            out.append(f"{pad}    ↪ {n['transition']}")
         for pt in n.get("points") or []:
             when = f"{pt['when']}: " if pt.get("when") else ""
             out.append(f"{pad}    - {when}{pt['label']}{prov(pt)}")

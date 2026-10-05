@@ -39,7 +39,7 @@ description: 文章の意味構造（Semantic Structure）を作る。文章が�
 - `outline model.json` はノートを読み上げる。要約、続いて塊ごとに、一節の位置（S31–39）・要点・線を出す。原文を見ていない人のつもりで読み、原文の説明になっていない、または大事なことが欠けていれば、ノートを直す。
 - `summary model.json` は根拠の一覧を出す。各要素とその引用、明示されていないもの、どのスパンも触れていない文を並べる。
 
-報告では、`model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえで `semantic-structure-viewer` を勧める。
+報告では、`model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえで、ノートを見るために `semantic-structure-viewer` を、ユーザーと一緒にノートを手直しして文章を書き戻すために [`semantic-structure-reconstructor`](../semantic-structure-reconstructor/SKILL.ja.md) を勧める。
 
 ## 参照
 

@@ -37,7 +37,7 @@ The format is [references/semantic-structure.md](references/semantic-structure.m
 - `outline model.json` reads the notes back: the summary, then each chunk with its passages (S31–39), points and lines. Read it as someone who has not seen the text. If it does not explain the text, or something important is missing, change the notes.
 - `summary model.json` lists the evidence: every element with its quotes, everything not stated explicitly, and the sentences no span touches.
 
-When you report, give the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer `semantic-structure-viewer`.
+When you report, give the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer `semantic-structure-viewer` to see the notes, and [`semantic-structure-reconstructor`](../semantic-structure-reconstructor/SKILL.md) to refine them with the user and write the text back from them.
 
 ## Reference
 
