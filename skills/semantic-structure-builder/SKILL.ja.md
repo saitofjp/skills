@@ -1,6 +1,6 @@
 ---
 name: semantic-structure-builder
-description: 文章の意味構造（Semantic Structure）を作る。文章が意味していることのモデルで、よくできる学生が教科書をノートにまとめるように書き表す。文章を塊に巻き、塊ごとに、そのメッセージを言う見出しと、落とせない要点（数字・条件・時期・主体・理由）を付ける。塊の間には、互いにどう効くかを示す線を引き、全体を一言の文にする。見出し・要点・線はどれも、拠り所の原文の言葉を指し、原文が明示しているかどうかを示す。塊ごとに1セクションで発表を組み立てられるくらい分かりやすいノートを目指す。文書を理解したい・ノートにまとめたい・構造化したい・図にしたいとき、semantic-structure-viewerの入力を作るときに使う。「ノートにまとめて」「意味構造を作って」「意味構造にして」「この文章を構造化して」などで使う。
+description: 文章の意味構造（Semantic Structure）を作る。文章が意味していることのモデルで、よくできる学生が教科書をノートにまとめるように書き表す。文章を塊に巻き、塊ごとに、そのメッセージを言う見出しと、落とせない要点（数字・条件・時期・主体・理由）を付ける。塊の間には、互いにどう効くかを示す線を引き、全体を一言の文にする。見出し・要点・線はどれも、拠り所の原文の言葉を指し、原文が明示しているかどうかを示す。塊ごとに1セクションで発表を組み立てられるくらい分かりやすいノートを目指す。文書を理解したい・ノートにまとめたい・構造化したい・図にしたいとき、semantic-structure-viewerの入力を作るときに使う。文章の指定が無ければ、会話セッション（この会話、またはユーザーが挙げた別の Claude Code セッション）を対象にする。「ノートにまとめて」「意味構造を作って」「意味構造にして」「この文章を構造化して」「この会話を意味構造にして」「セッションをノートにまとめて」などで使う。
 ---
 
 # Semantic Structure Builder
@@ -26,7 +26,9 @@ description: 文章の意味構造（Semantic Structure）を作る。文章が�
 
 ## 入力と出力
 
-- 文章は引数から受け取る（貼り付け・ファイルパス・URL）。無ければ尋ねる。1万字程度までなら1つのモデルに収まる。それより長いときは、どの部分を扱うか尋ねるか、部分ごとにモデルを作る。
+- 文章は引数から受け取る（貼り付け・ファイルパス・URL）。
+- 指定が無ければ、会話セッションを文章にする。ユーザーがタイトル・ID・リンクで別のセッションを挙げない限り、この会話を使う。原文は [references/conversation.md](references/conversation.md)（英語）のとおり会話から作る。ユーザーの発言は全文、Claude の返答は各ターンを担う文を、どちらも一字一句そのまま写す。まだモデルにするほどの会話が無ければ、文章を尋ねる。
+- 1万字程度までなら1つのモデルに収まる。それより長いときは、どの部分を扱うか尋ねるか、部分ごとにモデルを作る。
 - 原文はそのまま出力フォルダの `source.txt` に保存する。保存先はユーザー指定が無ければ `.semantic/<YYYYMMDD>-<slug>/`。コミットはユーザーに求められたときだけ行う。
 - PDFやWebページからは本文をそのまま取り出す。取り除くのは抽出のゴミ（ページ番号、柱、文中の改行）だけにし、取り除いたものを `metadata.source` に書く。スパンはこの本文を指すので、言い換えない。
 
@@ -39,11 +41,14 @@ description: 文章の意味構造（Semantic Structure）を作る。文章が�
 - `outline model.json` はノートを読み上げる。要約、続いて塊ごとに、一節の位置（S31–39）・要点・線を出す。原文を見ていない人のつもりで読み、原文の説明になっていない、または大事なことが欠けていれば、ノートを直す。
 - `summary model.json` は根拠の一覧を出す。各要素とその引用、明示されていないもの、どのスパンも触れていない文を並べる。
 
+会話セッションには `scripts/session_transcript.py` を使う。記録を読み込み（`current`・`sessions`・`collect`）、ターンごとに見せ（`turns`・`dialogue`）、抄録の各行が会話に一字一句あるかを確かめる（`check`）。詳しくは [references/conversation.md](references/conversation.md)。
+
 報告では、`model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえで、ノートを見るために `semantic-structure-viewer` を、ユーザーと一緒にノートを手直しして文章を書き戻すために [`semantic-structure-reconstructor`](../semantic-structure-reconstructor/SKILL.ja.md) を勧める。
 
 ## 参照
 
 - [references/semantic-structure.md](references/semantic-structure.md)：形式（塊、要点、要約、スパン、来歴、検証）。英語。
+- [references/conversation.md](references/conversation.md)：会話セッションを文章にするとき（会話の取り出し、抄録の作り方、会話のノートの勘所）。英語。
 - [examples/notes.model.json](examples/notes.model.json)：短い文章を3つの塊にした例。要点、線、要約を含む。
 - [examples/minimal.model.json](examples/minimal.model.json)：1文を語の粒度でモデルにした例。形式は粒度を決めない。
 - 実寸の例：東京地裁の判決（令和8年9月30日、声優 対 TikTok）。約5,000字を13の塊にし、結論（請求棄却）と key（声も肖像と同じくパブリシティ権で守られうる）を分けた。[モデル](https://github.com/saitofjp/skills/blob/main/docs/semantic/tsuda-tiktok-2609.model.json)と[表示](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html)。

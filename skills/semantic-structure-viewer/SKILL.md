@@ -26,7 +26,7 @@ The page is a fixed template, [`assets/viewer.html`](assets/viewer.html). It wor
 
 ## Input
 
-- A Semantic Structure file (`semantic-structure/1`). If the user has only a text, make the notes first with [`semantic-structure-builder`](../semantic-structure-builder/SKILL.md). Do not work out the structure here.
+- A Semantic Structure file (`semantic-structure/1`). If the user has only a text, make the notes first with [`semantic-structure-builder`](../semantic-structure-builder/SKILL.md). If they name nothing, the builder takes the conversation session, this one or the one they name, as the text. Do not work out the structure here.
 - Where the user wants to start, if they say.
 
 ## Steps
