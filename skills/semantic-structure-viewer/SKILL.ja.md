@@ -38,8 +38,9 @@ description: 文章の意味構造（semantic-structure-builderが作る、文�
 1. **つまみの初期位置を決める。** これは見せ方の選択であり、モデルは変えない。
    - 文章が構造になる様子を見せるなら、原文から始める（既定）。読み手はそこから動かす。
    - 読んで探るなら、モデル（`--stage model`）や表現（`--stage summary`・`linear`・`slides`・`table`）から始める。
+   - **構造の列の向き**（`--anchor`）も見せ方の選択。`end` は結論を右端にして、結論からの距離で並べる。判決のように、根拠が結論に集まる文章に合う。`start` は線の始まり（入ってくる線のない塊）を左端にして、そこからの距離で並べる。調査メモのように、問いから枝分かれする文章に合う。ふつうは `auto`（既定）のままでよい。線のある塊の半分より多くが結論にたどり着かないときに `start` を選ぶ。向きが読みにくいときだけ指定する。
 2. **ビルドする。**
-   `python3 scripts/build_viewer.py model.json -o view.html [--stage text|chunks|model|summary|linear|slides|table] [--focus ID] [--theme dark|light|auto|dopa] [--no-autoplay]`
+   `python3 scripts/build_viewer.py model.json -o view.html [--stage text|chunks|model|summary|linear|slides|table] [--focus ID] [--theme dark|light|auto|dopa] [--anchor auto|end|start] [--no-autoplay]`
    - builderと同じ検査器でモデルを検証し、エラーがある間は何も書き出さない。
    - ドパガキ風の見た目や、録画して見せるショーにしたいとき、またはユーザーが dopa やドパガキを求めたときは `--theme dopa` でビルドする。dopa でビルドしたページは、いつも dopa で開く。
    - 保存先はユーザーの指定があればそこ、無ければモデルと同じ場所の `.semantic/<YYYYMMDD>-<slug>/view.html`。
@@ -47,6 +48,7 @@ description: 文章の意味構造（semantic-structure-builderが作る、文�
 3. **ブラウザで確認する**（NodeとPlaywrightが使える場合）。
    `NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html`
    - エラーなく開くこと、つまみをドラッグすると段階の間を動き、離すと落ち着くことを確かめる。
+   - 構造とミニマップが同じ向きに並ぶこと、列が文章の形に合うこと（問いから枝分かれする文章は始まりから、根拠が結論に集まる文章は結論から並び、`anchor` の指定がそれより優先されること）を確かめる。
    - 開くと自動で再生が始まること、各表現が表示できること、▶ で原文から要約まで再生されてモデルに戻ること、言葉や塊の枠内にカーソルを重ねるとモデルに焦点が移ることを確かめる。
    - カーソルを重ねると下部に詳細が出てEscで消えること、表現ではカードとミニマップが下に並ぶこと、スマホ幅ではみ出さないことを確かめる。
    - テーマが light・dark・dopa で切り替わること、dopa ではつまみを手で動かしても演出が出ず、▶ で演出（要約前の煽りと要約の到着が1回ずつ）が出て再生とともに止まること、動きを減らす設定でも演出が出ること、テーマを変えると演出が止まることを確かめる。
@@ -65,10 +67,12 @@ description: 文章の意味構造（semantic-structure-builderが作る、文�
 フラグで渡すか、JSONファイルにして `--view` で渡す。ページ内のモデルとは別のブロックに入り、モデルには入らない。
 
 ```json
-{ "stage": "text", "focus": "node-id", "theme": "dark", "follow": true, "autoplay": true, "lang": "ja" }
+{ "stage": "text", "focus": "node-id", "theme": "dark", "anchor": "auto", "follow": true, "autoplay": true, "lang": "ja" }
 ```
 
 `theme` は `dark`（既定）・`light`・`auto`（システムの設定に合わせる）・`dopa`。
+
+`anchor` は `auto`（既定）・`end`（結論を右端にして、結論から並べる）・`start`（入ってくる線のない塊を左端にして、そこから並べる）。
 
 ## しないこと
 

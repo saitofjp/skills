@@ -97,11 +97,21 @@ The details of what is in focus are docked along the bottom of the model's side,
 
 | Form | What it shows |
 |---|---|
-| Structure (the model itself) | Top-level chunks in columns that flow toward the conclusion. A chunk's column is its distance, in lines, from the conclusion, and the conclusion sits on the right. Parts sit inside their chunk as one-line cards. Lines run between cards. The labels of lines into the conclusion are always shown; the others appear on focus. |
+| Structure (the model itself) | Top-level chunks in columns along the lines, run from the conclusion or from the start (below). Parts sit inside their chunk as one-line cards. Lines run between cards. The labels of lines into the conclusion are always shown; the others appear on focus. |
 | B Linear | The notes in their order (`nodes` order, with parts under their parent). Each card has its headline and points. Lines are arcs in the right margin. |
 | C Table | One row per chunk, one column per `when` value (in order of first appearance), then a column for points without `when`. |
 | A Summary | The `summary` sentence, large. Each phrase is underlined with the numbers of the chunks it names. Chunks the sentence does not reach are chips below it. |
 | B2 Slides (from Linear) | Each note on a 16:9 page. The deck opens with a cover (the title and the one sentence) and has a section page for each chunk with parts and a page for each other chunk, with its headline large and its points. The conclusion's page is inverted, and the one sentence closes the deck. The linear cards grow into the pages. It is a plan for a presentation, such as one made with `dopagaki-generator`. |
+
+**Which way the structure runs.** The view option `anchor` sets it; the model never does. The minimap uses the same columns.
+
+| `anchor` | A chunk's column | Fits |
+|---|---|---|
+| `end` | Its distance, in lines, from the conclusion. The conclusion sits on the right. | A text whose reasons gather into its conclusion, such as a ruling or an argument |
+| `start` | Its distance, in lines, from the chunks no line comes into. Those sit on the left. | A text that branches out from a question into a plan, its steps and the answer, such as a research memo or a Q&A |
+| `auto` (default) | `start` when more than half of the chunks with lines never reach the conclusion; otherwise `end`. | Chooses for each text. Chunks with no lines are not counted, so a background chunk does not tip it. |
+
+Without a conclusion, `end` runs from the chunks lines go into and none come out of. Chunks the lines never reach sit on the far side: on the left for `end`, on the right for `start`, with the chunks with no lines on the left either way. When the columns do not fit, the farthest chunks share the far column.
 
 ## Source ↔ model mapping
 
@@ -163,4 +173,5 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | `theme` | The starting theme: `"dark"` (default), `"light"`, `"auto"`, `"dopa"`. The reader can still switch. A page built with `"dopa"` always opens in it. |
 | `follow` | `false` stops the right side from following the text |
 | `autoplay` | `false` stops the page from playing by itself when it opens (default `true`) |
+| `anchor` | Which way the structure's columns run: `"auto"` (default), `"end"` (from the conclusion, on the right), `"start"` (from the chunks no line comes into, on the left). See [Forms](#forms). |
 | `lang` | `"ja"` / `"en"`. Defaults to `metadata.language`, then to the script of the text. |

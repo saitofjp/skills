@@ -231,7 +231,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 
 /* linear: the notes in reading order */
 .rep.linear .stack { max-width: 720px; display: grid; gap: 14px; margin-right: 130px; }
-/* structure: columns that flow toward the conclusion */
+/* structure: columns along the lines, from the conclusion or from the start */
 .rep.structure .cols { display: flex; align-items: center; gap: 88px; min-height: calc(100% - 20px); }
 .rep.structure .col { flex: 1 1 0; min-width: 0; max-width: 320px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 .rep.structure .card { padding: 8px 12px 9px 10px; }
@@ -1120,33 +1120,51 @@ function cardEl(n, withPoints) {
   if (n.children.length) c.append(h('div', { class: 'kids' }, ...n.children.map(k => cardEl(k, withPoints))));
   return c;
 }
-// structure: top-level chunks in columns that flow toward the conclusion
-const unitRank = (() => {
-  const into = new Map(), out = new Set();
+// structure: top-level chunks in columns along the lines. The anchor is which end they run from:
+//   end   - a chunk's column is its distance, in lines, from the conclusion, and the conclusion sits on the right (reasons gather into it)
+//   start - its distance from the chunks no line comes into, and those sit on the left (a question branches out into what follows)
+//   auto  - start when more than half of the chunks with lines never reach the conclusion, else end
+const ANCHOR = (() => {
+  const into = new Map(), from = new Map();
+  const add = (m, k, u) => { if (!m.has(k)) m.set(k, new Set()); m.get(k).add(u); };
   rels.forEach(r => {
     const u = unitOf(r.source), v = unitOf(r.target);
-    if (u === v) return;
-    if (!into.has(v.id)) into.set(v.id, new Set());
-    into.get(v.id).add(u); out.add(u.id);
+    if (u !== v) { add(into, v.id, u); add(from, u.id, v); }
   });
+  // distance in lines from `ends` to every chunk they reach along `step`
+  const walk = (ends, step) => {
+    const rank = new Map(ends.map(u => [u.id, 0]));
+    const queue = ends.slice();
+    while (queue.length) {
+      const v = queue.shift();
+      (step.get(v.id) || []).forEach(u => { if (!rank.has(u.id)) { rank.set(u.id, rank.get(v.id) + 1); queue.push(u); } });
+    }
+    return rank;
+  };
   let sinks = roots.filter(u => u.role === 'conclusion' || descendants(u).some(n => n.role === 'conclusion'));
-  if (!sinks.length) sinks = roots.filter(u => !out.has(u.id) && into.has(u.id));
-  const rank = new Map(sinks.map(u => [u.id, 0]));
-  const queue = sinks.slice();
-  while (queue.length) {
-    const v = queue.shift();
-    (into.get(v.id) || []).forEach(u => { if (!rank.has(u.id)) { rank.set(u.id, rank.get(v.id) + 1); queue.push(u); } });
-  }
+  if (!sinks.length) sinks = roots.filter(u => !from.has(u.id) && into.has(u.id));
+  const starts = roots.filter(u => !into.has(u.id));
+  const toEnd = walk(sinks, into);
+  const linked = roots.filter(u => into.has(u.id) || from.has(u.id));
+  const astray = linked.filter(u => !toEnd.has(u.id)).length;
+  const side = viewOpt.anchor === 'end' || viewOpt.anchor === 'start' ? viewOpt.anchor
+    : starts.some(u => from.has(u.id)) && astray * 2 > linked.length ? 'start' : 'end';
+  const rank = side === 'end' ? toEnd : walk(starts, from);
+  // chunks no walk reaches go to the far side: left of everything for end, right of everything for start
   const max = Math.max(0, ...rank.values());
-  roots.forEach(u => { if (!rank.has(u.id)) rank.set(u.id, rels.length ? max + 1 : 0); });
-  return rank;
+  roots.forEach(u => { if (!rank.has(u.id)) rank.set(u.id, rels.length && rank.size ? max + 1 : 0); });
+  return { side, rank };
 })();
+// the top-level chunks in at most maxCols columns, left to right; the chunks farthest from the anchor share the far column
+function unitColumns(maxCols) {
+  const R = Math.min(Math.max(0, ...roots.map(u => ANCHOR.rank.get(u.id))), maxCols - 1);
+  const cols = Array.from({ length: R + 1 }, () => []);
+  roots.forEach(u => { const r = Math.min(ANCHOR.rank.get(u.id), R); cols[ANCHOR.side === 'end' ? R - r : r].push(u); });
+  return cols;
+}
 function renderStructure() {
   const width = stage.clientWidth - 56;
-  const maxCols = Math.max(1, Math.floor((width + 88) / 260));
-  const R = Math.min(Math.max(0, ...roots.map(u => unitRank.get(u.id))), maxCols - 1);
-  const cols = Array.from({ length: R + 1 }, () => []);
-  roots.forEach(u => cols[R - Math.min(unitRank.get(u.id), R)].push(u));
+  const cols = unitColumns(Math.max(1, Math.floor((width + 88) / 260)));
   repEl.append(h('div', { class: 'cols' }, ...cols.map(list => h('div', { class: 'col' }, ...list.map(u => cardEl(u, false))))));
 }
 function renderLinear() { repEl.append(h('div', { class: 'stack' }, ...roots.map(u => cardEl(u, true)))); }
@@ -1224,9 +1242,7 @@ const MM = { box: new Map() };
 function buildMinimap() {
   const svg = $('#mmSvg');
   svg.innerHTML = '';
-  const R = Math.min(Math.max(0, ...roots.map(u => unitRank.get(u.id))), 4);
-  const cols = Array.from({ length: R + 1 }, () => []);
-  roots.forEach(u => cols[R - Math.min(unitRank.get(u.id), R)].push(u));
+  const cols = unitColumns(5);
   const cw = 104, gap = 44, hh = 17, ph = 11, pg = 3, ug = 10;
   const unitH = u => hh + (u.children.length ? descendants(u).length * (ph + pg) + 3 : 0);
   const colH = list => list.reduce((m, u) => m + unitH(u), 0) + ug * Math.max(0, list.length - 1);
@@ -2779,7 +2795,7 @@ if (AUTOPLAY) {
 
 window.__semanticViewer = {
   get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, seg: sess ? sess.a + '-' + sess.b : null, moving: !!sess, playing, hover: S.hover ? keyOf(S.hover) : null }; },
-  problems, order: order.map(n => ({ id: n.id, num: n.num })), autoplay: AUTOPLAY,
+  problems, order: order.map(n => ({ id: n.id, num: n.num })), autoplay: AUTOPLAY, anchor: ANCHOR.side,
   goTo: (st, o) => goTo(st, o),
   scrub: (a, b, u) => { if (!sess || sess.a !== a || sess.b !== b) { if (sess) endSeg(0); beginSeg(a, b); } frame(u); },
   release: () => release(),

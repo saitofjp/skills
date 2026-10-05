@@ -36,8 +36,9 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
 1. **Choose where the knob starts.** This is a presentation choice; it never changes the model.
    - To show how the text becomes a structure, start at the text (the default). The reader drags from there.
    - To read and explore, start at the model (`--stage model`) or at a form (`--stage summary`, `linear`, `slides`, `table`).
+   - **Which way the structure runs** (`--anchor`) is a presentation choice too. With `end` the columns run from the conclusion, on the right: for a text whose reasons gather into it, such as a ruling. With `start` they run from where the lines start, on the left: for a text that branches out from a question, such as a research memo. Leave it at `auto` (the default), which takes `start` when more than half of the chunks with lines never reach the conclusion. Set it only when the picture reads the wrong way.
 2. **Build.**
-   `python3 scripts/build_viewer.py model.json -o view.html [--stage text|chunks|model|summary|linear|slides|table] [--focus ID] [--theme dark|light|auto|dopa] [--no-autoplay]`
+   `python3 scripts/build_viewer.py model.json -o view.html [--stage text|chunks|model|summary|linear|slides|table] [--focus ID] [--theme dark|light|auto|dopa] [--anchor auto|end|start] [--no-autoplay]`
    - It validates the model with the builder's checker and writes nothing while the model has errors.
    - For the dopagaki look, a show to screen-record, or when the user asks for dopa or dopagaki, build with `--theme dopa`. A page built with it always opens in it.
    - Save next to the model unless the user names another place: `.semantic/<YYYYMMDD>-<slug>/view.html`.
@@ -45,6 +46,7 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
 3. **Check it in a browser** if Node and Playwright are available:
    `NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html`
    - It checks that the page loads with no errors and that dragging the knob moves the page between stages and settles when let go.
+   - It checks that the structure and the minimap run the same way, and that the columns follow the shape of the text: a question branching out runs from the start, reasons gathering into a conclusion run from it, and `anchor` overrides that.
    - It checks that the page plays by itself when it opens, that each form renders, that ▶ plays from the text to the summary and back to the model, and that hovering a word, or anywhere inside a chunk's frame, focuses the model.
    - It checks that hovering shows the details along the bottom and Esc clears them, that at a form the card and the minimap sit side by side, and that nothing overflows a phone-width screen.
    - It checks that the theme switches between light, dark and dopa: in dopa, moving the knob by hand stages nothing, ▶ stages the show (the build-up and the summary's arrival once) and it stops with the play, the show plays even when the system asks for less motion, and it stops when the theme changes.
@@ -63,10 +65,12 @@ The tool is `scripts/build_viewer.py` in this skill's folder (Python 3, standard
 Pass them as flags, or as a JSON file with `--view`. They live in their own block in the page, never in the model.
 
 ```json
-{ "stage": "text", "focus": "node-id", "theme": "dark", "follow": true, "autoplay": true, "lang": "ja" }
+{ "stage": "text", "focus": "node-id", "theme": "dark", "anchor": "auto", "follow": true, "autoplay": true, "lang": "ja" }
 ```
 
 `theme` is `dark` (default), `light`, `auto` (follows the system) or `dopa`.
+
+`anchor` is `auto` (default), `end` (the structure runs from the conclusion, on the right) or `start` (from the chunks no line comes into, on the left).
 
 ## What not to do
 

@@ -3,7 +3,8 @@
 
   build_viewer.py MODEL.json -o OUT.html [--view VIEW.json]
                   [--stage text|chunks|model|summary|linear|slides|table]
-                  [--focus NODE_ID] [--theme dark|light|auto|dopa] [--no-follow] [--no-autoplay]
+                  [--focus NODE_ID] [--theme dark|light|auto|dopa] [--anchor auto|end|start]
+                  [--no-follow] [--no-autoplay]
 
 The model is validated with semantic_structure.py first; nothing is written while
 it has errors. View options are presentation only and never change the model.
@@ -40,13 +41,14 @@ def replace_block(page, block_id, value):
 
 STAGES = ("text", "chunks", "model", "summary", "linear", "slides", "table")
 THEMES = ("dark", "light", "auto", "dopa")
+ANCHORS = ("auto", "end", "start")
 
 
 def check_view(view, model):
     """Return problems with the view options."""
     problems = []
     node_ids = {n["id"] for n in model["nodes"]}
-    for key, allowed in (("stage", STAGES), ("theme", THEMES)):
+    for key, allowed in (("stage", STAGES), ("theme", THEMES), ("anchor", ANCHORS)):
         if view.get(key) not in (None,) + allowed:
             problems.append(f"{key} must be one of {', '.join(allowed)}, not {view[key]!r}")
     if view.get("focus") is not None and view["focus"] not in node_ids:
@@ -65,6 +67,8 @@ def main(argv=None):
     parser.add_argument("--stage", choices=STAGES, help="where the gauge starts (default text)")
     parser.add_argument("--focus", help="node id to focus when it opens")
     parser.add_argument("--theme", choices=THEMES, help="default dark; dopa is the dopagaki look, and stages ▶ as a show")
+    parser.add_argument("--anchor", choices=ANCHORS,
+                        help="which way the structure's columns run: from the conclusion (end), from the start, or auto (default)")
     parser.add_argument("--no-follow", action="store_true", help="do not move the notes with the text scroll")
     parser.add_argument("--no-autoplay", action="store_true", help="do not play by itself when the page opens")
     parser.add_argument("--template", default=str(TEMPLATE))
@@ -80,7 +84,7 @@ def main(argv=None):
         sys.exit(f"{len(errors)} error(s) in {args.model}; {args.output} not written")
 
     view = json.loads(Path(args.view).read_text(encoding="utf-8")) if args.view else {}
-    for key in ("stage", "focus", "theme"):
+    for key in ("stage", "focus", "theme", "anchor"):
         if getattr(args, key):
             view[key] = getattr(args, key)
     if args.no_follow:
