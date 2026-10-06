@@ -43,7 +43,7 @@ description: 文章の意味構造（Semantic Structure）を作る。文章が�
 
 会話セッションには `scripts/session_transcript.py` を使う。記録を読み込み（`current`・`sessions`・`collect`）、ターンごとに見せ（`turns`・`dialogue`）、抄録の各行が会話に一字一句あるかを確かめる（`check`）。詳しくは [references/conversation.md](references/conversation.md)。
 
-報告では、`model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえで `semantic-structure-viewer` を勧める。
+報告では、`model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえで、ノートを見るために `semantic-structure-viewer` を、ユーザーと一緒にノートを手直しして文章を再構築するために [`semantic-structure-reconstructor`](../semantic-structure-reconstructor/SKILL.ja.md) を勧める。
 
 ## 参照
 
