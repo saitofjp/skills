@@ -1,6 +1,6 @@
 # Semantic Structure contract (`semantic-structure/1`)
 
-The Semantic Structure is the only thing the semantic skills share. `semantic-structure-builder` writes it; `semantic-structure-viewer` only reads it; `semantic-structure-reconstructor` refines it with the user and writes the text back from it.
+The Semantic Structure is the only thing the semantic skills share. `semantic-structure-builder` writes it; `semantic-structure-viewer` only reads it; `semantic-structure-reconstructor` refines it with the user and reconstructs the text from it.
 
 It is a model of what a text means. In the terms of text comprehension, the chunks' headlines and the one sentence are the text's macrostructure, its meaning from the top down; the points keep what must not be lost from the details; the lines are how the parts hold together; the conclusion and the key say which parts weigh most. Everything is grounded in the text's words.
 
@@ -71,7 +71,7 @@ There is no type vocabulary.
 | `derivedFrom` | Node, Relation | Ids of the elements this one was inferred or abstracted from. The viewer walks an inference back to the text through it. |
 | `note` | Node, Relation, Point | Why: how it was inferred, what the competing readings are. |
 | `transition` | Node | How the chunk is brought in after the one before it in reading order, when no line says so: a change of topic, a return to the main thread (`ここから争点`). The viewer does not use it. |
-| `confirmed` | Node, Relation, Point | `true` when the user has checked the element and agrees with it. It does not change `provenance`: an inference the user agrees with is still not stated by the text. The viewer does not use it. |
+| `confirmed` | Node, Relation, Point | `true` when the user has checked the element and agrees with it. It does not change `provenance`: an inference the user agrees with is still not stated by the text, though a text reconstructed from the model may now say it. The viewer does not use it. |
 
 Any other field is allowed. The viewer ignores fields it does not know.
 

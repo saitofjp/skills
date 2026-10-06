@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Write a text back from its Semantic Structure and lay it beside the original.
+"""Reconstruct a text from its Semantic Structure, in the flow of the model.
 
 Part of semantic-structure-reconstructor. It uses semantic_structure.py, the contract
 tool shared by the semantic skills, from the same folder. Standard library only.
 
-  reconstruct.py flow MODEL.json [--order notes|text]
-      The chunks in the order the text is written back, what brings each one in
-      from what came before, and the questions to settle with the user.
-  reconstruct.py brief MODEL.json [--order notes|text] [--style TEXT] [-o BRIEF.md]
-      The model without the text: what a writer who has not read the text needs
-      to write it back, with the rules for writing it.
-  reconstruct.py compare MODEL.json REBUILT.md [--order notes|text] [-o COMPARE.md]
-      The text written back next to the original, chunk by chunk, with the numbers
-      one side has and the other lacks, the writer's [?: ...] questions and the lengths.
+  reconstruct.py flow MODEL.json
+      The chunks in the order of the notes, what brings each one in from what came
+      before, and the questions to settle with the user.
+  reconstruct.py blueprint MODEL.json [--style TEXT] [-o BLUEPRINT.md]
+      The plan of the text: for each chunk, its message, points, the turn from what
+      came before, its weight, and its passage of the original as the material.
+  reconstruct.py check MODEL.json DRAFT.md [-o CHECK.md]
+      The draft chunk by chunk against the blueprint: chunks missing or out of order,
+      numbers in the notes that a paragraph lacks, numbers from neither the notes nor
+      the original, the [?: ...] left open, the lengths.
+  reconstruct.py export DRAFT.md [-o TEXT.md]
+      The draft without its chunk markers: the reconstructed text.
   reconstruct.py diff BEFORE.json AFTER.json [-o DIFF.md]
       What changed in the model.
-
---order notes (the default) writes the text back in the order of the notes;
---order text in the order the chunks' passages start in the text.
 """
 
 import argparse
@@ -31,55 +31,12 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import semantic_structure as ss  # noqa: E402  (shared contract tool, copied from semantic-structure-builder)
 
-ORDERS = ("notes", "text")
 MARKER = re.compile(r"^[ \t]*<!--\s*(\S+?)\s*-->[ \t]*$", re.M)
 QUESTION = re.compile(r"\[\?:\s*(.*?)\s*\]", re.S)
 NUMBER = re.compile(r"\d+(?:[.,]\d+)*")
 
 
-# ---------------------------------------------------------------- reading order
-
-
-def reading_order(model, order="notes"):
-    """The chunks in the order the text is written back: [(id, number, depth)].
-
-    notes: the order of the notes, parts under their chunk, numbered as the outline
-    and the viewer number them. text: the same tree, with the chunks under each
-    parent sorted by where their passages (or their parts' passages) start.
-    """
-    if order == "notes":
-        return ss.note_order(model)
-    by_id = {n["id"]: n for n in model["nodes"]}
-    children, roots = {}, []
-    for n in model["nodes"]:
-        (children.setdefault(n["parent"], []) if n.get("parent") in by_id else roots).append(n["id"])
-    first = {}
-
-    def start(nid):
-        if nid not in first:
-            starts = [sp["start"] for sp in by_id[nid].get("sourceSpans") or []]
-            starts += [s for s in (start(c) for c in children.get(nid, [])) if s is not None]
-            first[nid] = min(starts) if starts else None
-        return first[nid]
-
-    def ordered(ids):
-        keyed, last = [], -1
-        for nid in ids:
-            s = start(nid)
-            last = s if s is not None else last      # a chunk with no passage stays after the one before it
-            keyed.append((last, nid))
-        return [nid for _, nid in sorted(keyed, key=lambda kv: kv[0])]
-
-    out = []
-
-    def walk(nid, number, depth):
-        out.append((nid, number, depth))
-        for k, child in enumerate(ordered(children.get(nid, [])), 1):
-            walk(child, f"{number}.{k}", depth + 1)
-
-    for k, root in enumerate(ordered(roots), 1):
-        walk(root, str(k), 0)
-    return out
+# ---------------------------------------------------------------- reading the notes
 
 
 def _merge(intervals):
@@ -120,15 +77,19 @@ def _quote(s, width=40):
     return f"「{ss._clip(s, width)}」"
 
 
-class Notes:
-    """A valid model read in one reading order."""
+def _blockquote(text):
+    return "\n".join("> " + line if line.strip() else ">" for line in text.strip().split("\n"))
 
-    def __init__(self, model, order="notes"):
+
+class Notes:
+    """A valid model read in the order of its notes (parts under their chunk, numbered 2, 2.1, …)."""
+
+    def __init__(self, model):
         self.model = model
         self.text = model["sourceText"]
         self.sentences = ss.split_sentences(self.text)
         self.nodes = {n["id"]: n for n in model["nodes"]}
-        self.order = reading_order(model, order)
+        self.order = ss.note_order(model)
         self.number = {nid: num for nid, num, _ in self.order}
         self.position = {nid: k for k, (nid, _, _) in enumerate(self.order)}
         self.children = {}
@@ -173,8 +134,11 @@ class Notes:
                        for sp in self.nodes[d].get("sourceSpans") or [])
         return [(s, e) for s, e in _subtract(own, parts) if self.text[s:e].strip()]
 
+    def passage_texts(self, nid):
+        return [self.text[s:e].strip() for s, e in self.own_passages(nid)]
+
     def own_length(self, nid):
-        return sum(_chars(self.text[s:e]) for s, e in self.own_passages(nid))
+        return sum(_chars(p) for p in self.passage_texts(nid))
 
     def where(self, nid):
         spans = self.nodes[nid].get("sourceSpans") or []
@@ -186,8 +150,8 @@ class Notes:
             return "—"
         return "←" if r["target"] == nid else "→"
 
-    def line(self, r, nid, for_writer=False):
-        """A line as seen from one of its chunks: `← 2 X: label (type, +, inferred)`."""
+    def line(self, r, nid):
+        """A line as seen from one of its chunks: `← 2 X: label (type, +, inferred, confirmed)`."""
         extra = []
         if r.get("label") and r["label"] != r["type"]:
             extra.append(r["type"])
@@ -195,8 +159,8 @@ class Notes:
             extra.append(r["polarity"])
         if r["provenance"] != "explicit":
             extra.append(r["provenance"])
-        if r.get("confirmed") and not for_writer:
-            extra.append("confirmed")
+            if r.get("confirmed"):
+                extra.append("confirmed")
         tail = f" ({', '.join(extra)})" if extra else ""
         return f"{self.arrow(r, nid)} {self.name(self.other(r, nid))}: {r.get('label') or r['type']}{tail}"
 
@@ -204,23 +168,22 @@ class Notes:
         role = self.nodes[nid].get("role")
         return "★ " if role == "conclusion" else "◆ " if role == "key" else ""
 
+    def roles(self):
+        out = []
+        for nid, _, _ in self.order:
+            role = self.nodes[nid].get("role")
+            if role == "conclusion":
+                out.append(f"★ conclusion: {self.name(nid)}")
+            elif role == "key":
+                out.append(f"◆ key: {self.name(nid)}")
+        return out
 
-def _prov(el, default="explicit", confirmed=True):
+
+def _prov(el, default="explicit"):
     prov = el.get("provenance", default)
     if prov == "explicit":
         return ""
-    return f" [{prov}{', confirmed' if confirmed and el.get('confirmed') else ''}]"
-
-
-def _roles(notes):
-    out = []
-    for nid, _, _ in notes.order:
-        role = notes.nodes[nid].get("role")
-        if role == "conclusion":
-            out.append(f"★ conclusion: {notes.name(nid)}")
-        elif role == "key":
-            out.append(f"◆ key: {notes.name(nid)}")
-    return out
+    return f" [{prov}{', confirmed' if el.get('confirmed') else ''}]"
 
 
 # ---------------------------------------------------------------- flow
@@ -294,16 +257,15 @@ def _questions(notes):
     return qs
 
 
-def flow(model, order="notes"):
-    notes = Notes(model, order)
+def flow(model):
+    notes = Notes(model)
     qs = _questions(notes)
     qnum = {(kind, subject): f"Q{k}" for k, (kind, subject, _) in enumerate(qs, 1) if subject is not None}
-    out = ["# Flow: the chunks in the order the text is written back", "",
+    out = ["# Flow: the chunks in the order the text will follow", "",
            "Each chunk should be brought in by what comes before it: a line to an earlier chunk,",
-           "the chunk it is part of, or a transition (↪). Where nothing brings a chunk in, a writer",
-           "has to guess the turn. Each line is shown once, at its later end.", "",
-           " ".join([f"{len(notes.order)} chunks in the order of the {order}, "
-                     f"{len(model['relations'])} lines."] + _roles(notes)), ""]
+           "the chunk it is part of, or a transition (↪). Where nothing brings a chunk in, the text",
+           "cannot say why it comes there. Each line is shown once, at its later end.", "",
+           " ".join([f"{len(notes.order)} chunks, {len(model['relations'])} lines."] + notes.roles()), ""]
     if model.get("summary"):
         out += ["The whole: " + "".join(part["text"] for part in model["summary"]), ""]
     out += ["## Flow", ""]
@@ -337,39 +299,40 @@ def flow(model, order="notes"):
     return "\n".join(out) + "\n"
 
 
-# ---------------------------------------------------------------- brief
+# ---------------------------------------------------------------- blueprint
 
 RULES = """\
-1. Write one paragraph per chunk, in the order below; a long chunk may take a few. Put its
-   marker, exactly as given (`<!-- id -->`), on a line of its own before it, and write
-   nothing before the first marker. Parts (2.1, 2.2) follow their chunk.
-2. Say each chunk's headline as a statement, and carry every point. Keep numbers, dates and
-   names exactly as given.
-3. Bring each chunk in as "Brought in by" says. `← X: words` means X does that to this chunk,
-   `→ X: words` that this chunk does it to X, `— X: words` that they go together. `+` means
-   raises or goes the same way, `-` lowers or goes against. `↪` is a transition: the text
-   moves on. Choose your own connecting words.
-4. `inferred` means the text implies it but does not say it: let the order and the context
-   carry it, and do not state it outright. `uncertain` means the text can be read more than
-   one way: do not settle it.
-5. Give the ★ conclusion and the ◆ key the weight the text gives them. The lengths say
-   roughly how much room each chunk had in the text. A chunk with no passage of its own gets
-   at most a short lead-in to its parts.
-6. Add nothing the notes do not say: no facts, reasons, examples or judgements of your own.
-   Where you need something the notes do not give, write [?: what is missing] and go on.
-7. Reply with the text only."""
+1. Write the chunks in the order below, one paragraph each; a long chunk may take a few, and
+   with headings a top-level chunk's headline may become its heading. Put each chunk's marker,
+   exactly as given (`<!-- id -->`), on a line of its own before it.
+2. Make each chunk's message, its headline, plain, and carry every point.
+3. Take the facts from the material, the chunk's passage of the original: numbers, dates,
+   names, conditions and the wording of what is decided, exactly as it has them. Keep its
+   sentences where they already say it well; rewrite where the flow needs it. Use what the
+   notes leave out only where a sentence needs it to make sense.
+4. Bring each chunk in as "Brought in by" says, so that the reader sees why it comes here.
+   `← X: words` means X does that to this chunk, `→ X: words` that this chunk does it to X,
+   `— X: words` that they go together; `+` raises or goes the same way, `-` lowers or goes
+   against; `↪` moves on. Say the lines that are stated or confirmed. Let an `inferred` line or
+   point that is not confirmed be carried by the order, with a light connective at most. Do
+   not settle what is `uncertain`.
+5. Give the ★ conclusion and the ◆ key the room and the place they need; do not let the key
+   disappear behind the conclusion. The whole must come to the one sentence above.
+6. Add nothing that neither the notes nor the material says. Where you need something they do
+   not give, write [?: what is missing] and go on."""
 
 
-def brief(model, order="notes", style=None):
-    notes = Notes(model, order)
+def blueprint(model, style=None):
+    notes = Notes(model)
     meta = model.get("metadata") or {}
     title, language = meta.get("title"), meta.get("language")
-    out = [f"# Brief: {title}" if title else "# Brief", "",
-           "These are notes on a text you have not seen. Write the text back from them.", "",
-           f"- Language: {language}." if language else "- Language: the language of the notes.",
+    out = [f"# Blueprint: {title}" if title else "# Blueprint", "",
+           "The plan for writing the text again, in the flow of its notes: the order, the turns and",
+           "the weight come from the notes, the facts and the wording from the original.", "",
+           f"- Language: {language}." if language else "- Language: the language of the original.",
            *([f"- Style: {style}"] if style else []),
-           f"- Length: about {_chars(model['sourceText']):,} characters in all.",
-           "- " + " ".join([f"{len(notes.order)} chunks and {len(model['relations'])} lines."] + _roles(notes)),
+           f"- The original: about {_chars(model['sourceText']):,} characters.",
+           "- " + " ".join([f"{len(notes.order)} chunks and {len(model['relations'])} lines."] + notes.roles()),
            "", "## How to write it", "", RULES, ""]
     if model.get("summary"):
         out += ["## The whole, in one sentence", "", "".join(part["text"] for part in model["summary"]), ""]
@@ -382,9 +345,9 @@ def brief(model, order="notes", style=None):
         elif n.get("role") == "key":
             facts.append("◆ key")
         length = notes.own_length(nid)
-        facts.append(f"about {length:,} characters" if length else "no passage of its own")
+        facts.append(f"about {length:,} characters in the original" if length else "no passage of its own")
         if n["provenance"] != "explicit":
-            facts.append(n["provenance"])
+            facts.append(n["provenance"] + (", confirmed" if n.get("confirmed") else ""))
         out += [f"### {notes.mark(nid)}{num} {n['label']}", "", " · ".join(facts), ""]
         parent, transition, lines = notes.brought_in(nid)
         brought = ["the text starts here"] if k == 0 else []
@@ -392,37 +355,35 @@ def brief(model, order="notes", style=None):
             brought.append(f"part of {notes.name(parent)}")
         if transition:
             brought.append(f"↪ {transition}")
-        brought += [notes.line(r, nid, for_writer=True) for r in lines]
+        brought += [notes.line(r, nid) for r in lines]
         out += ["Brought in by:", ""] + [f"- {b}" for b in brought or ["nothing in the notes"]] + [""]
         if n.get("points"):
             out += ["Points:", ""]
             for pt in n["points"]:
                 when = f"{pt['when']}: " if pt.get("when") else ""
-                out.append(f"- {when}{pt['label']}{_prov(pt, n['provenance'], confirmed=False)}")
+                out.append(f"- {when}{pt['label']}{_prov(pt, n['provenance'])}")
             out.append("")
         later = notes.later_lines(nid)
         if later:
-            out += ["Lines to later chunks:", ""] + [f"- {notes.line(r, nid, for_writer=True)}" for r in later] + [""]
+            out += ["Lines to later chunks:", ""] + [f"- {notes.line(r, nid)}" for r in later] + [""]
+        passages = notes.passage_texts(nid)
+        if passages:
+            out += ["Material:", "", "\n>\n> …\n>\n".join(_blockquote(p) for p in passages), ""]
     return "\n".join(out).rstrip() + "\n"
 
 
-# ---------------------------------------------------------------- compare
+# ---------------------------------------------------------------- check
 
 
-def parse_rebuilt(text):
-    """Split a rebuilt text at its markers: (text before the first marker, [(id, body)])."""
+def parse_draft(text):
+    """Split a draft at its markers: (text before the first marker, [(id, body)])."""
     parts = MARKER.split(text.replace("\r\n", "\n"))
     return parts[0].strip(), [(parts[k], parts[k + 1].strip()) for k in range(1, len(parts) - 1, 2)]
 
 
-def _blockquote(text):
-    return "\n".join("> " + line if line.strip() else ">" for line in text.strip().split("\n"))
-
-
-def compare(model, rebuilt, order="notes"):
-    notes = Notes(model, order)
-    text = notes.text
-    preamble, chunks = parse_rebuilt(rebuilt)
+def check(model, draft):
+    notes = Notes(model)
+    preamble, chunks = parse_draft(draft)
     bodies, seen, unknown, repeated = {}, [], [], []
     for cid, body in chunks:
         if cid not in notes.nodes:
@@ -439,41 +400,30 @@ def compare(model, rebuilt, order="notes"):
 
     def note_words(nid):
         n = notes.nodes[nid]
-        return " ".join([n["label"]] + [pt["label"] + " " + pt.get("when", "") for pt in n.get("points") or []])
+        return " ".join([n["label"]] + [pt["label"] for pt in n.get("points") or []])  # `when` only places a point in time
 
-    def without_questions(s):
+    def plain(s):
         return QUESTION.sub(" ", s)
 
-    passages = {nid: [text[s:e].strip() for s, e in notes.own_passages(nid)] for nid in notes.nodes}
-    in_text = {nid: _numbers(" ".join(p)) for nid, p in passages.items()}
     in_notes = {nid: _numbers(note_words(nid)) for nid in notes.nodes}
-    in_rebuilt = {nid: _numbers(without_questions(bodies.get(nid, ""))) for nid in notes.nodes}
-    all_text, all_notes = _numbers(text), set().union(*in_notes.values()) if in_notes else set()
-    asked = {nid: [q for q in QUESTION.findall(bodies.get(nid, ""))] for nid in notes.nodes}
+    in_draft = {nid: _numbers(plain(bodies.get(nid, ""))) for nid in notes.nodes}
+    all_notes = set().union(*in_notes.values()) if in_notes else set()
+    all_original = _numbers(notes.text)
+    asked = {nid: QUESTION.findall(bodies.get(nid, "")) for nid in notes.nodes}
+    dropped = {nid: (in_notes[nid] - in_draft[nid]) if nid in bodies else set() for nid in notes.nodes}
+    invented = {nid: in_draft[nid] - all_notes - all_original for nid in notes.nodes}
 
     def nums(values):
         return ", ".join(sorted(values, key=lambda v: (len(v), v)))
 
-    findings = {}
-    totals = {"left": 0, "dropped": 0, "invented": 0, "seen": 0}
-    for nid in notes.nodes:
-        left = in_text[nid] - all_notes
-        dropped = (in_notes[nid] - in_rebuilt[nid]) if nid in bodies else set()
-        invented = in_rebuilt[nid] - all_notes - all_text
-        seen_text = (in_rebuilt[nid] & all_text) - all_notes
-        findings[nid] = (left, dropped, invented, seen_text)
-        for key, values in zip(("left", "dropped", "invented", "seen"), findings[nid]):
-            totals[key] += len(values)
-
     meta = model.get("metadata") or {}
-    rebuilt_chars = sum(_chars(without_questions(b)) for b in bodies.values())
     n_asked = sum(len(v) for v in asked.values())
-    out = [f"# Round trip{': ' + meta['title'] if meta.get('title') else ''}", "",
-           "The text written back from the notes, next to the original, chunk by chunk. Judge each",
-           "pair by meaning, not wording: is anything lost, added, turned the other way (a different",
-           "turn from the chunk before) or weighed differently? The numbers are only hints.", ""]
-    status = f"- Chunks written back: {len(seen)} of {len(notes.order)}"
-    status += f", in the order of the {order}." if not out_of_order else \
+    out = [f"# Check{': ' + meta['title'] if meta.get('title') else ''}", "",
+           "The draft against its blueprint, chunk by chunk. Read each paragraph: does it make the",
+           "chunk's message plain, carry every point, come in as its lines say, and add nothing that",
+           "neither the notes nor the original says? The numbers are only hints.", ""]
+    status = f"- Chunks written: {len(seen)} of {len(notes.order)}"
+    status += ", in the order of the notes." if not out_of_order else \
         ", in another order: " + ", ".join(notes.number[c] for c in seen) + "."
     out.append(status)
     if missing:
@@ -483,23 +433,12 @@ def compare(model, rebuilt, order="notes"):
     if repeated:
         out.append("- Chunks written more than once (joined): " + ", ".join(notes.number[c] for c in repeated) + ".")
     if preamble:
-        out.append(f"- Text before the first marker ({_chars(preamble)} characters) is not compared.")
-    out.append(f"- The writer asked {n_asked} question(s) ([?: …]).")
-    out.append(f"- Numbers: {totals['left']} in the text that the notes nowhere give; "
-               f"{totals['dropped']} in a chunk's notes that its rebuilt paragraph lacks; "
-               f"{totals['invented']} in the rebuilt text from neither the notes nor the text; "
-               f"{totals['seen']} in the rebuilt text that only the text gives (did the writer see the text?).")
-    out.append(f"- Length: {_chars(text):,} → {rebuilt_chars:,} characters.")
-
-    wrapped = [False] * len(text)
-    for n in notes.nodes.values():
-        for sp in ss.all_spans(n):
-            for p in range(sp["start"], sp["end"]):
-                wrapped[p] = True
-    gaps = [(k, s, e) for k, (s, e) in enumerate(notes.sentences, 1) if not any(wrapped[s:e])]
-    if gaps:
-        out.append(f"- Sentences no chunk wraps, which cannot come back: "
-                   + ", ".join(f"S{k}" for k, _, _ in gaps) + ".")
+        out.append(f"- Text before the first marker: {_chars(preamble)} characters (kept in the export, not checked).")
+    out.append(f"- Open questions [?: …]: {n_asked}.")
+    out.append(f"- Numbers: {sum(len(v) for v in dropped.values())} in a chunk's notes that its paragraph lacks; "
+               f"{sum(len(v) for v in invented.values())} in the draft from neither the notes nor the original.")
+    out.append(f"- Length: the original {_chars(notes.text):,} → the draft "
+               f"{sum(_chars(plain(b)) for b in bodies.values()):,} characters.")
     out.append("")
 
     for nid, num, _ in notes.order:
@@ -512,25 +451,29 @@ def compare(model, rebuilt, order="notes"):
             out += ["Brought in by: " + "; ".join(brought), ""]
         if n.get("points"):
             out += ["Points: " + " / ".join(pt["label"] for pt in n["points"]), ""]
-        out += ["**Original**", ""]
-        out += [("\n>\n> …\n>\n".join(_blockquote(p) for p in passages[nid])) if passages[nid]
+        out += ["**Draft**", "", _blockquote(bodies[nid]) if bodies.get(nid) else "(not written)", ""]
+        passages = notes.passage_texts(nid)
+        out += ["**Original**", "", "\n>\n> …\n>\n".join(_blockquote(p) for p in passages) if passages
                 else "(no passage of its own)", ""]
-        out += ["**Rebuilt**", ""]
-        out += [_blockquote(bodies[nid]) if bodies.get(nid) else "(not written back)", ""]
-        left, dropped, invented, seen_text = findings[nid]
         hints = []
-        if left:
-            hints.append(f"Numbers in the text that the notes nowhere give: {nums(left)}")
-        if dropped:
-            hints.append(f"Numbers in the notes that the rebuilt paragraph lacks: {nums(dropped)}")
-        if invented:
-            hints.append(f"Numbers in the rebuilt paragraph from neither the notes nor the text: {nums(invented)}")
-        if seen_text:
-            hints.append(f"Numbers in the rebuilt paragraph that only the text gives: {nums(seen_text)}")
-        hints += [f"The writer asked: {q}" for q in asked[nid]]
-        hints.append(f"Length: {notes.own_length(nid):,} → {_chars(without_questions(bodies.get(nid, ''))):,} characters")
+        if dropped[nid]:
+            hints.append(f"Numbers in the notes that the paragraph lacks: {nums(dropped[nid])}")
+        if invented[nid]:
+            hints.append(f"Numbers from neither the notes nor the original: {nums(invented[nid])}")
+        hints += [f"Open: {q}" for q in asked[nid]]
+        hints.append(f"Length: {notes.own_length(nid):,} → {_chars(plain(bodies.get(nid, ''))):,} characters")
         out += [f"- {h}" for h in hints] + [""]
     return "\n".join(out).rstrip() + "\n"
+
+
+# ---------------------------------------------------------------- export
+
+
+def export(draft):
+    """The draft without its markers, blank lines collapsed; and the [?: …] still open."""
+    text = MARKER.sub("", draft.replace("\r\n", "\n"))
+    text = re.sub(r"\n{3,}", "\n\n", text).strip() + "\n"
+    return text, QUESTION.findall(text)
 
 
 # ---------------------------------------------------------------- diff
@@ -678,6 +621,13 @@ def _load(path):
     return model
 
 
+def _read_draft(path):
+    draft = Path(path).read_text(encoding="utf-8")
+    if not MARKER.search(draft):
+        sys.exit(f"{path} has no chunk markers (<!-- chunk-id --> on a line of its own)")
+    return draft
+
+
 def _emit(text, path):
     if path:
         Path(path).write_text(text, encoding="utf-8")
@@ -691,17 +641,17 @@ def main(argv=None):
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("flow", help="the chunks in order, what brings each one in, and the questions")
     p.add_argument("model")
-    p.add_argument("--order", choices=ORDERS, default="notes")
     p.add_argument("-o", "--output")
-    p = sub.add_parser("brief", help="the model without the text, for a writer who has not read it")
+    p = sub.add_parser("blueprint", help="the plan of the text: messages, points, turns, weight and material")
     p.add_argument("model")
-    p.add_argument("--order", choices=ORDERS, default="notes")
-    p.add_argument("--style", help="how the text should read, e.g. its genre and register")
+    p.add_argument("--style", help="how the text should read: its reader, form, register, length")
     p.add_argument("-o", "--output")
-    p = sub.add_parser("compare", help="the rebuilt text next to the original, chunk by chunk")
+    p = sub.add_parser("check", help="the draft chunk by chunk against the blueprint")
     p.add_argument("model")
-    p.add_argument("rebuilt")
-    p.add_argument("--order", choices=ORDERS, default="notes")
+    p.add_argument("draft")
+    p.add_argument("-o", "--output")
+    p = sub.add_parser("export", help="the draft without its markers")
+    p.add_argument("draft")
     p.add_argument("-o", "--output")
     p = sub.add_parser("diff", help="what changed between two versions of a model")
     p.add_argument("before")
@@ -711,17 +661,17 @@ def main(argv=None):
 
     if args.command == "diff":
         _emit(diff(_load(args.before), _load(args.after)), args.output)
-        return 0
-    model = _load(args.model)
-    if args.command == "flow":
-        _emit(flow(model, args.order), args.output)
-    elif args.command == "brief":
-        _emit(brief(model, args.order, args.style), args.output)
+    elif args.command == "export":
+        text, open_questions = export(_read_draft(args.draft))
+        _emit(text, args.output)
+        for q in open_questions:
+            print(f"WARNING [?: {q}] is still open", file=sys.stderr)
+    elif args.command == "flow":
+        _emit(flow(_load(args.model)), args.output)
+    elif args.command == "blueprint":
+        _emit(blueprint(_load(args.model), args.style), args.output)
     else:
-        rebuilt = Path(args.rebuilt).read_text(encoding="utf-8")
-        if not MARKER.search(rebuilt):
-            sys.exit(f"{args.rebuilt} has no chunk markers (<!-- chunk-id --> on a line of its own)")
-        _emit(compare(model, rebuilt, args.order), args.output)
+        _emit(check(_load(args.model), _read_draft(args.draft)), args.output)
     return 0
 
 

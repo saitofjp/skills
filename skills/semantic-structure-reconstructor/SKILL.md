@@ -1,51 +1,43 @@
 ---
 name: semantic-structure-reconstructor
-description: Refines a Semantic Structure (the notes semantic-structure-builder makes of a text) together with the user until the relations between its chunks are clear, then writes the text back from the notes alone and lays it beside the original, chunk by chunk, to see whether the model carries the text (text → model → text). It asks first where the flow breaks (chunks nothing before them brings in, lines that rest on an inference); then a writer who has not read the text writes it back from a brief without the text's words, and what comes back lost, added, turned the other way or weighed differently becomes the next question. Use it when the user wants to review, fix or refine a semantic structure or its notes with them, make the relations between chunks clear, rebuild or rewrite a text from its notes or model, or test whether notes capture a text (a round trip). Triggers include "refine the semantic structure with me", "rebuild the text from the notes", 「意味構造を一緒に手直しして」「関係をはっきりさせて」「ノートから元の文章を再構築して」「モデルから文章を書き戻して」.
+description: Reconstructs a text from its Semantic Structure (the notes semantic-structure-builder makes of a text or a conversation), in the flow the notes make clear. First it works through the model with the user until the relations between its chunks are clear (how each chunk follows from what comes before, which lines the text only implies, what the conclusion and the key are, in what order they go). Then it uses the model as a blueprint and writes the text again, one paragraph per chunk, taking the order, the turns and the weight from the model and the facts and wording from the original, and checks that every point is carried and nothing is added. Use it when the user wants to rebuild, rewrite or restructure a text or a conversation from its semantic structure or notes, make the relations between its parts clear with them, or turn notes back into a clear text. Triggers include "reconstruct the text from the model", "rewrite this along its structure", 「意味構造から文章を再構築して」「関係をはっきりさせて書き直して」「ノートから文章に戻して」「この会話を文章に再構築して」.
 ---
 
 # Semantic Structure Reconstructor
 
-A model of a text is good enough when the text can be written back from it. This skill gets the model there together with the user, and shows how close it is. Make the relations between the chunks clear, write the text back from the model alone, lay it beside the original chunk by chunk, and turn each difference into a fix or a question.
+Reconstruct a text from its semantic structure. The model says what the text means: its chunks, what each one says, how they bear on each other, and what it all comes to. Work through it with the user until the relations are clear, then write the text again in that flow. The content stays the same, but every chunk is in its place and every turn is said.
 
 ```
-text ──builder──▶ model ──this skill──▶ text again
-                    ▲                      │
-                    └── fixes, questions ◀─┘
+text ──builder──▶ model ──refined with the user──▶ blueprint ──▶ the text, reconstructed
 ```
 
-[`semantic-structure-builder`](../semantic-structure-builder/SKILL.md) makes the model and [`semantic-structure-viewer`](../semantic-structure-viewer/SKILL.md) shows it. This skill changes the model with the user, and writes from it.
+The model is the blueprint. The order, the turns and the weight come from it; the facts and the wording come from the original. [`semantic-structure-builder`](../semantic-structure-builder/SKILL.md) makes the model and [`semantic-structure-viewer`](../semantic-structure-viewer/SKILL.md) shows it. This skill changes it with the user and writes from it. The text can be a conversation: the builder makes notes of a conversation session, and this skill turns them into a text that says what the conversation came to, in its flow.
 
-The model is the user's as much as yours. You find where it breaks and propose; the user decides. It stays a model of the text: a reading the user agrees with is still a reading, and the text does not come to say more because of it.
+The model is the user's as much as yours. You find where the flow breaks and propose; the user decides.
 
-## What makes a text come back
+## What a reconstructed text does
 
-- **A flow.** Read in order, each chunk is brought in by what comes before it: a line to an earlier chunk (a reason, a contrast, a consequence, an example), the chunk it is part of, or a `transition` when the text simply moves on (`ここから争点`). Where nothing brings a chunk in, the writer has to guess the turn, and often guesses wrong. These are the first questions.
-- **Lines the user has looked at.** A line the text does not state is the modeler's reading. Show the user the words it rests on and ask. When they agree, set `confirmed: true`; it stays `inferred`. When they pick one reading of something `uncertain`, make it `inferred` and put the reading in its `note`. When they say it is wrong, change its direction, sign, type or label, or remove it.
-- **Points that carry the message.** What a chunk says has to be in its headline and points: the numbers, conditions, timing, who and why. A writer cannot bring back what the notes leave in the text.
-- **Weight.** The conclusion, the key and the one sentence say what matters. If the rebuilt text puts the weight somewhere else, the text has not come back.
+- **It goes in the flow of the notes.** Read in order, each chunk is brought in by what comes before it: a line to an earlier chunk (a reason, a contrast, a consequence, an example), the chunk it is part of, or a `transition` when the text simply moves on (`ここから争点`). Where nothing brings a chunk in, the text cannot say why it comes there. Settle that with the user before you write.
+- **It says the turns.** A line the original states, or one the user has confirmed, is said in the text, so the reader sees why each part comes where it does. A line the original only implies, and nobody has confirmed, is carried by the order, not stated. What is `uncertain` stays open.
+- **It keeps the facts.** Every point of the notes is in it, with the numbers, dates, names and conditions exactly as the original has them. It adds nothing that neither the notes nor the original says.
+- **It puts the weight where the notes put it.** The conclusion and the key get the room and the place they need, and the key does not disappear behind the conclusion. The whole comes to the one sentence of the summary.
 
 ## The tool
 
 `scripts/reconstruct.py` in this skill's folder (Python 3, standard library only). It reads the model with `scripts/semantic_structure.py`, the contract tool the semantic skills share, and refuses a model with errors.
 
-- `flow model.json` lists the chunks in the order the text will be written back, what brings each one in, and the questions to settle with the user (Q1, Q2, …).
-- `brief model.json -o brief-1.md` writes the brief: the one sentence, then for each chunk its headline, marker, role, length in the text, what brings it in, its points and its lines, with the rules for writing at the top. It has no words of the text except those the notes use. `--style "判決文、である調"` says how the text should read; style is not meaning, and nothing checks it.
-- `compare model.json rebuilt-1.md -o compare-1.md` puts each rebuilt paragraph under its passage, with the chunk's points, the writer's `[?: …]` questions, the lengths, and the numbers one side has and the other lacks:
-  - in the text but nowhere in the notes: the notes left them out;
-  - in a chunk's notes but not in its paragraph: the writer dropped them;
-  - in the rebuilt text but in neither: the writer invented them;
-  - in the rebuilt text and only in the text: did the writer see the text?
-
-  The numbers are hints. Read the pairs.
-- `diff model.before.json model.json` lists what changed: chunks, points, lines, the one sentence, the order.
-- `--order text` on `flow`, `brief` and `compare` writes the text back in the order its passages come in the text instead of the order of the notes. Use the same order for all three.
+- `flow model.json` lists the chunks in the order of the notes, what brings each one in, and the questions to settle with the user (Q1, Q2, …).
+- `blueprint model.json --style "…" -o blueprint.md` writes the plan of the text. The rules for writing come first, then the one sentence, then each chunk: its marker, headline, role, length in the original, what brings it in, its points, its lines, and its passage of the original as the material. `--style` says whom the text is for and how it should read (its form, register and length). It goes in the blueprint, never in the model.
+- `check model.json draft.md -o check.md` puts each paragraph of the draft under its chunk's points, with its passage of the original. It lists the chunks that are missing or out of order, the numbers in a chunk's notes that its paragraph lacks, the numbers from neither the notes nor the original, the `[?: …]` still open, and the lengths. The numbers are hints. Read the paragraphs.
+- `export draft.md -o reconstructed.md` writes the text without its chunk markers, and warns about any `[?: …]` still open.
+- `diff model.before.json model.json` lists what changed in the model: chunks, points, lines, the one sentence, the order.
 
 To change the model, edit `model.json`, then run `python3 scripts/semantic_structure.py resolve model.json --source source.txt -o model.json`. It turns quotes and sentence numbers into offsets (`"原油価格"`, `{"sentences": [3, 4]}`), checks the contract, and writes nothing while there are errors.
 
 The skill uses two fields of the contract that the viewer ignores:
 
 - `transition` on a chunk: how it is brought in when no line says so.
-- `confirmed: true` on a chunk, point or line: the user has checked it and agrees. Its provenance does not change.
+- `confirmed: true` on a chunk, point or line: the user has checked it and agrees. Its provenance does not change, but the text may now say it.
 
 ## Files
 
@@ -54,56 +46,43 @@ Work in the model's folder, usually `.semantic/<YYYYMMDD>-<slug>/` from the buil
 | File | What it is |
 |---|---|
 | `model.json` | The model, refined in place. |
-| `model.before.json` | The model as it was before this skill changed it. Save it before the first change. |
-| `brief-<n>.md` | Round n: the brief the writer was given. |
-| `rebuilt-<n>.md` | Round n: the text written back, one paragraph per chunk, each after its marker `<!-- chunk-id -->`. The markers are HTML comments, so they do not show when the Markdown is rendered. |
-| `compare-<n>.md` | Round n: the original and the rebuilt text side by side. |
+| `model.before.json` | The model before this skill changed it. Save it before the first change. |
+| `blueprint.md` | The plan of the text. |
+| `draft.md` | The text as it is written: each chunk's paragraph after its marker, `<!-- chunk-id -->` on a line of its own. |
+| `check.md` | The draft checked against the blueprint. |
+| `reconstructed.md` | The reconstructed text, without markers. This is what the user gets. |
 
 ## Steps
 
-1. **Find the model.** If the user has only a text, make the notes first with `semantic-structure-builder`. Save `model.before.json`.
-2. **Show the flow and ask.** Run `flow`. Give the user the chunks in order in a few lines, then the questions.
-   - Ask three or four at a time, those that change the most first: the gaps in the flow, then the lines, then the rest.
-   - For each, give the chunks by number and headline, the words of the text that bear on it (short quotes), your proposal and the other readings. If you have a tool for multiple-choice questions, use it, with your proposal first.
-   - Do not ask what the text settles. Fix that yourself and say so.
+1. **Find the model.** If the user has only a text or a conversation, make the notes first with `semantic-structure-builder`. Save `model.before.json`. If it is not clear, ask whom the text is for and how it should read: for the original's readers or plainer, prose or with headings, how long. That becomes `--style`.
+2. **Shape the flow with the user.** Run `flow`. Give the user the chunks in order in a few lines, then the questions.
+   - Ask three or four at a time, those that change the text most first: the gaps in the flow, then the lines, then the rest.
+   - For each, give the chunks by number and headline, the words of the original that bear on it (short quotes), your proposal and the other readings. If you have a tool for multiple-choice questions, use it, with your proposal first.
+   - Settle the order too. The text follows the notes. If the user wants another order (the conclusion first, say), move the chunks in `nodes` (parts go with their parent), and see that each chunk is still brought in.
+   - Settle what to leave out. The text carries what the notes carry, so to leave something out, take it out of the notes.
+   - Do not ask what the original settles. Fix that yourself and say so.
    - Ask in the user's language. The tool's output is in English; translate as you present it.
-3. **Change the model** with the answers, `resolve`, and show what changed in the flow. A new line needs the words it rests on, or `inferred` with a `note` that says whose reading it is. Go back to 2 until the flow has no gaps, or until the user wants to see the text.
-4. **Write it back, blind.** Run `brief`, and give the brief to a writer who has not read the text. If the writer has read it, they fill the model's gaps from memory, and the test shows nothing.
-   - The best writer is a fresh subagent. Put the brief in its prompt, and nothing else (not the text, not the model file, not this conversation), and ask for the text as its reply. Save the reply as `rebuilt-<n>.md`.
-   - If you cannot start one, write it yourself from the brief alone, and say in your report that the writer had read the text, so the test is weaker.
-   - Do not correct the rebuilt text against the original. It shows what the model carries; correcting it hides that.
-5. **Compare.** Run `compare`, read every pair, and sort what differs (below). Show the user the main differences, with the words of the text and of the rebuilt text side by side, and ask about the ones that are the model's.
-6. **Go round again** from 3. Stop when every chunk comes back (its message, its points and its turn from the chunk before, in other words), when the user is content, or when what is left is not meaning. Two or three rounds are usually enough. Say what is left and why.
-
-## Reading the comparison
-
-Judge each pair by meaning, not wording. Before changing the model, decide whose difference it is: the model's, or the writer's.
-
-| What you see | Whose it is | What to do |
-|---|---|---|
-| **Lost:** the text says it, the rebuilt text does not. | The model's if the notes do not have it. The writer's if they do, unless the point is worded so that it reads as something else. | Ask the user whether it matters; if it does, add a point. Reword a point that misleads. |
-| **Added:** the rebuilt text says what the text does not. | The model's if the notes say it: a headline that overstates, an inferred line stated outright. Otherwise the writer's. | Fix the headline, the point or the line. |
-| **Turned:** a chunk follows the one before differently, a "therefore" where the text has "however". | The model's: a line is missing, points the wrong way, has the wrong sign, or has a type too vague to write from. | Make the line clear with the user. This is what the skill is for. |
-| **Weighed:** the minor made major, or the reverse. | The model's: the conclusion, the key, or the one sentence. | Ask the user what matters most. |
-| **Asked:** a `[?: …]` in the rebuilt text. | The model's. | A question for the user, or a point. |
-
-These do not count: wording, sentence length, rhythm, the order of the points inside a chunk, and what the notes leave out on purpose (case numbers, citations of evidence, boilerplate). If the user wants those back too, add them as points.
+3. **Change the model** with the answers, `resolve`, and show what changed in the flow. When the user decides a relation the original does not state, add it as `inferred` and `confirmed`, with a `note` saying it is the user's reading. Go back to 2 until `flow` has no questions left, or until the user wants to see the text.
+4. **Make the blueprint** with `blueprint`.
+5. **Write `draft.md`** from the blueprint, chunk by chunk, in order. Write it yourself: the turns depend on what the user decided. Before each chunk, read what brings it in, so that its paragraph opens with that turn. Take the facts from the material, and keep the original's sentences where they already say it well. Where you need something the notes and the material do not give, write `[?: what is missing]` and go on.
+6. **Check** with `check`, and read every paragraph against its chunk. Is the message plain? Is every point there? Does it come in as its lines say? Is the weight right, and is nothing added? Fix the draft where the writing is at fault. Where you could not write a turn, or left a `[?: …]`, the model is at fault: ask the user, fix the model, and rewrite those chunks.
+7. **Export** with `export`, and show the user the text.
 
 ## Report
 
-- The paths to `model.json` and to the last `rebuilt-<n>.md` and `compare-<n>.md`.
-- What changed in the model (`diff`), in a few lines, and which changes were the user's decisions.
-- Chunk by chunk, what still does not come back and why, or that everything does.
-- The rebuilt text itself if it is short, or else its first chunks.
+- The path to `reconstructed.md`, and the text itself: all of it if it is short, otherwise its beginning.
+- What changed in the model (`diff`), in a few lines, and which changes were the user's decisions. Name the turns the original only implied that the text now says.
+- Anything left open, and why.
 - Then offer `semantic-structure-viewer` to see the refined model.
 
 ## What not to do
 
-- **Do not rebuild the model from scratch.** Change what the questions and the comparison show. If the chunking itself is wrong, say so and offer `semantic-structure-builder`.
-- **Do not let the writer see the text**, and do not correct the rebuilt text from it.
-- **Do not make the text say more.** If the user wants something in the model that the text does not say, it goes in as `inferred`, with a `note` that it is the user's; the comparison will then show it as added, as it should. Nothing becomes `explicit` because the user said it.
+- **Do not add content.** The content stays the same, and the flow becomes clearer. Even a reason that seems obvious goes in only if the notes or the original give it.
+- **Do not put the style in the model.** Whom the text is for and how it reads are options of the blueprint.
+- **Do not make the original say more.** A relation the user decides is the user's reading. It is `inferred` and `confirmed` in the model, and the report says that the text now states it.
+- **Do not rebuild the model from scratch.** Change what the questions show. If the chunking itself is wrong, say so and offer `semantic-structure-builder`.
 
 ## Reference
 
 - [references/semantic-structure.md](references/semantic-structure.md): the contract, shared with the builder and the viewer (chunks, points, lines, summary, spans, provenance, `transition`, `confirmed`).
-- A model to try it on: the Tokyo District Court's ruling of 30 September 2026 (a voice actor against TikTok), [model](https://github.com/saitofjp/skills/blob/main/docs/semantic/tsuda-tiktok-2609.model.json). `flow` finds two chunks nothing brings in (the claim after the case, the issues after the facts) and asks about three inferences.
+- A model to try it on: the Tokyo District Court's ruling of 30 September 2026 (a voice actor against TikTok), [model](https://github.com/saitofjp/skills/blob/main/docs/semantic/tsuda-tiktok-2609.model.json). `flow` finds two chunks that nothing brings in (the claim after the case, the issues after the facts) and asks about three inferences. Reconstructed for general readers once those are settled, the ruling's 4,861 characters come back as about 2,000.

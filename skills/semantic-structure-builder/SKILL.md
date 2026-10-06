@@ -41,7 +41,7 @@ The format is [references/semantic-structure.md](references/semantic-structure.m
 
 For a conversation session, `scripts/session_transcript.py` reads its transcript (`current`, `sessions`, `collect`), shows it turn by turn (`turns`, `dialogue`) and checks that every line of an excerpt is in the dialogue word for word (`check`). See [references/conversation.md](references/conversation.md).
 
-When you report, give the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer `semantic-structure-viewer` to see the notes, and [`semantic-structure-reconstructor`](../semantic-structure-reconstructor/SKILL.md) to refine them with the user and write the text back from them.
+When you report, give the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer `semantic-structure-viewer` to see the notes, and [`semantic-structure-reconstructor`](../semantic-structure-reconstructor/SKILL.md) to refine them with the user and reconstruct the text from them.
 
 ## Reference
 
