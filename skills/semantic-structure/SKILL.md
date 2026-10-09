@@ -5,32 +5,20 @@ description: Maps what a text means as a diagram of its meanings and how they re
 
 # Semantic Structure
 
-Map what a text means: its meanings and how they bear on each other, as a diagram that someone who has not read the text can follow and check against its words. That diagram is the Semantic Structure, kept in `model.json`. Then show it next to the text as one page.
+Map what a text means: write it down the way a skilled reader makes notes from a text, and draw it as a diagram that someone who has not read the text can follow and check against its words. Each item of the notes is a chunk and each arrow between items is a line; the format is in [references/semantic-structure.md](references/semantic-structure.md). The result, the Semantic Structure, is kept in `model.json` and shown next to the text as one page. You decide how to write the notes.
 
-Make it the way a skilled reader makes notes from a text: understand what it means, then write that meaning down, with items under headings, each item a message with the points it rests on, and arrows from what leads to what the text comes to. Each item of the notes is a chunk, and each arrow drawn on them is a line; the notes with their arrows are the structure. (Linear notes are also one of the page's forms.)
+1. **Grasp the meaning first.** Read all of it, closely, then look over the whole, and say in your own words what the text is about, what it comes to and why, and what matters most in it.
+2. **Write that meaning as notes; do not copy the text.** Where the text's own large divisions sort its meaning, make them the headings of the notes. Under them, say in a few words what each part means in the whole, with the points it rests on. Who said what goes into the points. Draw the arrows toward what the text comes to.
+3. **Ground it in the text.** Every headline, point and line points at the words it rests on; what you inferred is `inferred`, with a `note` saying why.
 
-- **Grasp the meaning first.** Read all of it, closely, then look over the whole; you can take in the whole text at once, so you can do both. Say to yourself, in your own words, what the text is about, what it comes to and why, and what matters most in it.
-- **Write that meaning down as notes.** The text's own large divisions are clues to what it means: where they sort it, use them as the headings of the notes, and write under them what each part means. What you do not copy is the text's wording and its turn-taking; who said what goes into the points. A novice goes part by part, deletes what seems unneeded and copies the rest, so the notes keep the text's wording and its back-and-forth; a skilled reader writes what each part means in the whole (Brown & Day, 1983).
-- **Ground it in the text.** Point every headline, point and line at the words it rests on, and mark what you inferred. The words check the meaning; they do not decide it.
+Mark what the text concludes `role: "conclusion"`. If something else matters most to a reader, mark it `role: "key"` and say in its `note` where the text shows its weight. Say what the whole comes to in one sentence in `summary`, each phrase naming the chunks it stands for.
+
+Read the notes back as someone who has not read the text: do they tell what it means, or retell it part by part?
 
 The skill does two things:
 
 1. **Build the structure** when the user has a text and wants to see how it holds together. Report it, then offer the page.
 2. **Show the structure** when the user wants to see it. If there is no `model.json` yet, build it first; never work out the structure in the page.
-
-## What good notes look like
-
-Write them for someone who has not read the text. You are the one reading it, so you decide what the items are, what to call them and what to keep. This skill fixes the goal and the file format, not a procedure: what follows describes good notes, to check yours against, not steps to follow.
-
-- **Each chunk is one message, readable at a glance.** Its headline says the message in a few words, not the topic: "2026: oil weighs, growth continues", not "Outlook for 2026". Read in order, the headlines tell the story, so a presentation can be planned from them, one chunk per section.
-- **The chunks are the text's meanings, gathered as notes gather them.** Start from the text's own headings and sections, and keep them where they fit what it means (after the macrostructure of Kintsch & van Dijk, 1978); when its large divisions sort what it means, they are the top items of the notes. What plays one part in the whole is one chunk; what plays different parts is different chunks, even when it says much the same. The parts of one section sit under it as sub-items (`parent`), so the top of the notes stays a few items. Fit the size to the whole text: in a two-sentence text a chunk may be a phrase. A summary at the top of a report and the section that develops it are the same chunk, with two passages.
-- **The points keep what the message rests on**: the numbers, conditions, timing, actors and reasons, so nothing important is left only in the text. An exchange within a chunk, such as one side's claim and the other's reply, goes into its points, as it would in a note.
-- **The lines carry the structure.** A line is an arrow on the notes: it says what one meaning does to another (raises, is the reason for, sets the pace of, leads to), with a sign when it has one, and it runs the way the notes read, toward what the text comes to. Followed along the lines, the notes explain why the text comes to what it comes to. The order in which the text takes things up is not a line, and a connective in the text is evidence for a line, not its name. Mentioning the same thing is a clue to a relation, not the relation. A line the reader supplies is part of the structure too, marked as inferred. A chunk with no lines is a prompt to look again; background can stand alone.
-- **It says what matters most.** Mark what the text concludes (`role: "conclusion"`). What matters most to a reader is not always the conclusion: a rule laid down on the way, a finding the text singles out, a turn against what came before. Mark that chunk `role: "key"`, and say in its `note` what in the text shows its weight: the space it gets, a general statement, a "however", being said although the conclusion did not need it. Give it its weight in the summary as well. A court that dismisses a claim on one ground after setting out a rule on another is the typical case: the dismissal is the conclusion, the rule is the key. Do not make the key the conclusion, and do not judge weight by anything outside the text.
-- **It comes to one sentence.** `summary` says what the whole text comes to, the meaning you grasped first, and each phrase names the chunks it stands for.
-- **It can be checked.** Every headline, point and line points at the words it rests on. What the text states is `explicit`. What you inferred is `inferred`, with a `note` saying why. Nothing comes from outside the text.
-
-Look back over the notes as someone who has not read the text. Do they tell what it means, or retell what it says, part by part? Does the summary run through the central chunks? Has the first impression bent the reading of what comes later?
 
 ## Build the structure
 
