@@ -485,9 +485,11 @@ def validate_model(model):
             for span in all_spans(el):
                 for p in range(span["start"], span["end"]):
                     covered[p] = True
-        for k, (s, e) in enumerate(split_sentences(text), 1):
-            if not any(covered[s:e]):
-                warnings.append(f"sentence {k} is not referenced by any span: {_clip(text[s:e])!r}")
+        gaps = [f"S{k} {_clip(text[s:e], 20)!r}" for k, (s, e) in enumerate(split_sentences(text), 1)
+                if not any(covered[s:e])]
+        if gaps:
+            warnings.append(f"{len(gaps)} sentence(s) no span touches - a prompt to check for something lost, "
+                            f"not a quota: " + ", ".join(gaps))
     return errors, warnings
 
 
@@ -637,14 +639,12 @@ def outline(model):
         return (r.get("label") or r["type"]) + {"+": " (+)", "-": " (-)"}.get(r.get("polarity"), "") + prov(r)
 
     covered = _coverage(model)
-    meaningful = [p for p, ch in enumerate(text) if not ch.isspace()]
-    ratio = sum(covered[p] for p in meaningful) / max(1, len(meaningful))
     out = ["# Notes: the model read back", "",
-           "Read this without the text. The summary should say what the text comes to in one sentence;",
-           "each chunk should say what its passage means and keep what matters in it (numbers,",
-           "conditions, timing, who); the arrows should say how the chunks bear on each other.", "",
-           f"{len(nodes)} nodes, {len(model['relations'])} relations; "
-           f"{ratio:.0%} of the text is inside some span.", ""]
+           "Read this without the text. It should tell what the text means, not retell it part by part:",
+           "the summary says what the text comes to in one sentence; each chunk says one meaning and keeps",
+           "what it rests on (numbers, conditions, timing, who); the arrows say how the meanings bear on",
+           "each other, toward what the text comes to.", "",
+           f"{len(nodes)} nodes, {len(model['relations'])} relations.", ""]
 
     summary = model.get("summary")
     if summary:
@@ -672,7 +672,8 @@ def outline(model):
 
     gaps = [(k, s, e) for k, (s, e) in enumerate(sentences, 1) if not any(covered[s:e])]
     if gaps:
-        out += ["", "## Sentences no span touches", ""]
+        out += ["", "## Sentences no span touches", "",
+                "Look here only for something that matters and is missing; a sentence need not be covered.", ""]
         out += [f"- S{k}: {_clip(text[s:e], 80)}" for k, s, e in gaps]
     return "\n".join(out) + "\n"
 
