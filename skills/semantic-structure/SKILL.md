@@ -7,7 +7,7 @@ description: Maps what a text means as a diagram of its meanings and how they re
 
 Map what a text means: its meanings, one per chunk, and how they bear on each other, as a diagram that someone who has not read the text can follow and check against its words. That diagram is the Semantic Structure, kept in `model.json`. Then show it next to the text as one page.
 
-The chunks are made the way a good student makes notes from a textbook: wrap the text into chunks, and give each a headline that says its message and the points that must not be lost. Note-taking is how the meanings are found; the goal is the lines between them. (Linear notes are one of the page's forms, not the goal.)
+The chunks are made the way a skilled reader makes notes: wrap the text into chunks, and give each a headline that says its message and the points that must not be lost. A novice goes through the text from the top, deletes what seems unneeded and copies the rest, so the notes follow the paragraphs. A skilled reader looks at the whole first, gathers across paragraphs, picks the sentence that says a part's message or writes one when the text has none, and keeps a detail for what it does in the whole, not for how much it stands out (Brown & Day, 1983). Aim for the skilled reader's notes. Looking at the whole first does not mean skimming the details: read all of it, closely, and then look over the whole. You can take in the whole text at once, so you can do both. Note-taking is how the meanings are found; the goal is the lines between them. (Linear notes are one of the page's forms, not the goal.)
 
 1. **Build the structure** when the user has a text and wants to see how it holds together. Report it, then offer the page.
 2. **Show the structure** when the user wants to see it. If there is no `model.json` yet, build it first; never work out the structure in the page.
@@ -22,7 +22,19 @@ Build it for someone who has not read the text. You are the one reading it, so y
 - **It comes to one sentence.** `summary` says what the whole text comes to, and each phrase names the chunks it stands for.
 - **It can be checked.** Every headline, point and line points at the words it rests on. What the text states is `explicit`. What you inferred is `inferred`, with a `note` saying why. Nothing comes from outside the text.
 
-Chunk at the size the text needs. A paragraph-sized passage is often one chunk; a section with distinct parts is a chunk with parts (`parent`). In a two-sentence text, a chunk may be a phrase. A summary at the top of a report and the section that develops it are the same chunk, with two passages.
+What a skilled reader's notes aim at, as directions rather than rules (after the macrostructure of Kintsch & van Dijk, 1978):
+
+- **Chunks.** Cut them once you understand the whole text, as its units of meaning.
+  - A chunk is the stretch that comes together under one proposition about what it says (a macroproposition). Where the text no longer fits under the same one, the next chunk begins.
+  - Fit the size to the whole text. In a two-sentence text a chunk may be a phrase; in a long report it may be a section, with its parts as chunks under it (`parent`). A summary at the top of a report and the section that develops it are the same chunk, with two passages.
+- **Points.** The details without which the chunk's meaning, or its ties to other chunks, can no longer be followed.
+- **Lines.**
+  - They show how the chunks, together, make the meaning of the whole.
+  - Finer relations inside a chunk are left to the chunk and its points.
+  - Mentioning the same thing is a clue to a relation, not the relation.
+  - A relation the reader supplies is part of the structure too; keep it visible as one.
+  - A chunk with no lines may be one whose part in the text is not yet seen.
+- **Looking back.** Does the summary run through the central chunks? Has the first impression bent the reading of what comes later?
 
 ## Build the structure
 
