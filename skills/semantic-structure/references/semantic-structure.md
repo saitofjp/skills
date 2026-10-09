@@ -1,14 +1,12 @@
 # Semantic Structure contract (`semantic-structure/1`)
 
-The Semantic Structure is the only thing `semantic-structure-builder` and `semantic-structure-viewer` share. The builder writes it; the viewer only reads it.
+The Semantic Structure is the file the notes are kept in (`model.json`). Building the notes writes it; the view (`scripts/build_viewer.py` and `assets/viewer.html`) only reads it.
 
 It is a model of what a text means. In the terms of text comprehension, the chunks' headlines and the one sentence are the text's macrostructure, its meaning from the top down; the points keep what must not be lost from the details; the lines are how the parts hold together; the conclusion and the key say which parts weigh most. Everything is grounded in the text's words.
 
 The model is a set of **notes on a text**. The text is wrapped into chunks. Each chunk becomes a note with a headline (its message) and points (what in it must not be lost). Lines between chunks say how they bear on each other, and one sentence says what the whole comes to. Every piece points back to the words it rests on.
 
 The contract is small on purpose. It fixes what a view needs in order to draw the notes and trace them back to the text. How to chunk, what to call things, and what to keep are left to the modeler.
-
-> This file is copied verbatim into both skills. Edit the copy in `semantic-structure-builder`, then run `python3 scripts/sync_semantic_shared.py` from the repository root.
 
 ## Shape
 

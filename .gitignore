@@ -1,5 +1,5 @@
 __pycache__/
 *.pyc
 
-# working output of semantic-structure-builder / semantic-structure-viewer; committed only on request
+# working output of semantic-structure; committed only on request
 .semantic/
