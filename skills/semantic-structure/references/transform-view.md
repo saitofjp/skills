@@ -2,6 +2,14 @@
 
 What [`assets/viewer.html`](../assets/viewer.html) does. Keep this file in step with the template when either changes.
 
+## Contents
+
+- The gauge and the play: the overview below, [The gauge is continuous](#the-gauge-is-continuous), [The play](#the-play)
+- The look: [Concept](#concept), [Colors](#colors), [The field](#the-field), [The dopa theme](#the-dopa-theme)
+- What is shown: [Layers](#layers), [Forms](#forms) (and which way the structure runs), [The details card](#the-details-card)
+- How the text and the notes are linked: [Source ↔ model mapping](#source--model-mapping)
+- Controls and options: [Interaction](#interaction), [View options](#view-options)
+
 The page shows one Semantic Structure together with its text. The model is the text wrapped into chunks, with headlines, points, lines between chunks and a one-sentence summary. One control moves the page: a gauge that draws the meta-structure itself.
 
 ```
@@ -53,7 +61,7 @@ Dragging, ▶ and the play on opening always animate, even with `prefers-reduced
 
 ## The dopa theme
 
-`theme: "dopa"` (`--theme dopa`) dresses the page in the dopagaki style of [`dopagaki-generator`](../../dopagaki-generator/SKILL.md): game × pachinko × anime OP × short video. The look: a black stage in neon, the conclusion gold and the key hot pink, glowing cards and lines, scanlines and a vignette. The text keeps its plain type, so it can still be read.
+`theme: "dopa"` (`--theme dopa`) dresses the page in the dopagaki style of `dopagaki-generator`: game × pachinko × anime OP × short video. The look: a black stage in neon, the conclusion gold and the key hot pink, glowing cards and lines, scanlines and a vignette. The text keeps its plain type, so it can still be read.
 
 While ▶ plays (and in the play on opening), the play is staged as a show; a screen recording of it is a short video. Moving the knob by hand, clicking a label or pressing a key stages nothing: the show belongs to the play, starts with it and stops when it does (PAUSE, the knob taken, a click or a key). The `dopa` button in the header turns pink to violet when chosen, and light runs across it while the show plays.
 

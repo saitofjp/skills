@@ -1,12 +1,22 @@
 # Semantic Structure contract (`semantic-structure/1`)
 
-The Semantic Structure is the file the notes are kept in (`model.json`). Building the notes writes it; the view (`scripts/build_viewer.py` and `assets/viewer.html`) only reads it.
+The Semantic Structure is kept in one file (`model.json`). Building the structure writes it; the view (`scripts/build_viewer.py` and `assets/viewer.html`) only reads it.
 
 It is a model of what a text means. In the terms of text comprehension, the chunks' headlines and the one sentence are the text's macrostructure, its meaning from the top down; the points keep what must not be lost from the details; the lines are how the parts hold together; the conclusion and the key say which parts weigh most. Everything is grounded in the text's words.
 
-The model is a set of **notes on a text**. The text is wrapped into chunks. Each chunk becomes a note with a headline (its message) and points (what in it must not be lost). Lines between chunks say how they bear on each other, and one sentence says what the whole comes to. Every piece points back to the words it rests on.
+The model is a **map of a text's meanings**. The text is wrapped into chunks, one meaning each. Each chunk is written the way a student writes a note: a headline (its message) and points (what in it must not be lost). Lines between chunks say how they bear on each other, and one sentence says what the whole comes to. Every piece points back to the words it rests on.
 
-The contract is small on purpose. It fixes what a view needs in order to draw the notes and trace them back to the text. How to chunk, what to call things, and what to keep are left to the modeler.
+The contract is small on purpose. It fixes what a view needs in order to draw the structure and trace it back to the text. How to chunk, what to call things, and what to keep are left to the modeler.
+
+## Contents
+
+- [Shape](#shape): a shortened example
+- [Required fields](#required-fields)
+- [Optional fields the viewer understands](#optional-fields-the-viewer-understands): `points`, `summary`, `parent`, `role`, `polarity`, `derivedFrom`, `note`, …
+- [Provenance](#provenance): `explicit` / `inferred` / `abstracted` / `uncertain`
+- [Source spans](#source-spans), and [writing them without counting characters](#writing-spans-without-counting-characters)
+- [What a view may and may not do](#what-a-view-may-and-may-not-do)
+- [Validation](#validation): the errors and warnings
 
 ## Shape
 
