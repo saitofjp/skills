@@ -5,13 +5,11 @@ description: Maps what a text means as a diagram of its meanings and how they re
 
 # Semantic Structure
 
-Map what a text means: write it down the way a skilled reader makes notes from a text, and draw it as a diagram that someone who has not read the text can follow and check against its words. Each item of the notes is a chunk and each arrow between items is a line; the format is in [references/semantic-structure.md](references/semantic-structure.md). The result, the Semantic Structure, is kept in `model.json` and shown next to the text as one page. You decide how to write the notes.
+Structure what a text means the way notes are made: the text is broken into chunks of meaning, each an item of the notes, and the relations between items are the lines. From every item you can trace back to the words of the text it rests on. This is the Semantic Structure, kept in `model.json` and shown next to the text as one page; the format is in [references/semantic-structure.md](references/semantic-structure.md). You decide how to write the notes.
 
 1. **Grasp the meaning first.** Read all of it, closely, then look over the whole, and say in your own words what the text is about, what it comes to and why, and what matters most in it.
-2. **Group it roughly, from the whole.** From that view, sort the text into a few large groups; where the text's own large divisions sort its meaning, use them. The groups are the top chunks of the notes.
-3. **Chunk it, and check the chunks against the groups.** Within each group, say in a few words what each part means in the whole, with the points it rests on, as chunks under the group (`parent`). Do not copy the text: who said what goes into the points. Where the chunks do not fit the groups, regroup or re-cut, going back and forth until they agree.
-4. **Draw the lines from the relations.** Between chunks, say what one meaning does to another, toward what the text comes to.
-5. **Ground it in the text.** Every headline, point and line points at the words it rests on; what you inferred is `inferred`, with a `note` saying why.
+2. **Write that meaning as notes; do not copy the text.** Where the text's own large divisions sort its meaning, make them the headings of the notes. Under them, say in a few words what each part means in the whole, with the points it rests on. If the chunks do not fit the headings, fix one or the other. Who said what goes into the points. Draw the arrows toward what the text comes to.
+3. **Ground it in the text.** Every headline, point and line points at the words it rests on; what you inferred is `inferred`, with a `note` saying why.
 
 Mark what the text concludes `role: "conclusion"`. If something else matters most to a reader, mark it `role: "key"` and say in its `note` where the text shows its weight. Say what the whole comes to in one sentence in `summary`, each phrase naming the chunks it stands for.
 
