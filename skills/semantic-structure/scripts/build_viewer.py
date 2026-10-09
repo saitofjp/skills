@@ -20,7 +20,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-import semantic_structure  # noqa: E402  (shared contract tool, copied from semantic-structure-builder)
+import semantic_structure  # noqa: E402  (the contract tool, next to this script)
 
 TEMPLATE = HERE.parent / "assets" / "viewer.html"
 BLOCK = r'(<script type="application/json" id="{id}">)(.*?)(</script>)'

@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 """Semantic Structure contract tool (semantic-structure/1).
 
-Shared by semantic-structure-builder and semantic-structure-viewer. This file is
-copied verbatim into both skills; edit the builder copy and run
-scripts/sync_semantic_shared.py from the repository root.
-
 Standard library only.
 
   semantic_structure.py sentences SOURCE.txt [--json]

@@ -1,0 +1,22 @@
+[
+  {"query": "docs/minutes-0912.md の議事録、どの論点がどの決定につながったのか関係図にしてほしい", "should_trigger": true},
+  {"query": "report.pdf の第3章を意味構造にして、原文と並べて見られるようにして", "should_trigger": true},
+  {"query": "Can you map how the arguments in essay.md relate to each other and show the map next to the text?", "should_trigger": true},
+  {"query": "この会話を意味構造にして", "should_trigger": true},
+  {"query": "昨日の長いセッションで何が決まって、何がその理由だったのか、構造にして見せて", "should_trigger": true},
+  {"query": ".semantic/20261001-boj/model.json をトランスフォームビューで見せて", "should_trigger": true},
+  {"query": "この判決文 ruling.txt、結論と途中で示された規範を分けて、それぞれがどう効いているか分かるように構造化して", "should_trigger": true},
+  {"query": "I have a 6,000-word policy memo in memo.md. Break it into its main points, show how they connect, and let me plan slides from that.", "should_trigger": true},
+  {"query": "意味構造をドパで見せて。録画してショート動画にしたい", "should_trigger": true},
+  {"query": "mail.txt の長いメール、何が何の理由になってるのか図にして、根拠の原文まで辿れるようにして", "should_trigger": true},
+  {"query": "この記事を3行で要約して https://example.com/news/123", "should_trigger": false},
+  {"query": "script.txt をドパガキにして。SNS用の煽り動画を作りたい", "should_trigger": false},
+  {"query": "config.json のキーの階層構造を図にして", "should_trigger": false},
+  {"query": "Make a 10-slide deck from these bullet points for Monday's meeting: launch date, budget, hiring, risks", "should_trigger": false},
+  {"query": "このリポジトリのモジュールの依存関係を図にして", "should_trigger": false},
+  {"query": "abstract.txt の英文を日本語に翻訳して", "should_trigger": false},
+  {"query": "週次定例の議事録テンプレートを作って", "should_trigger": false},
+  {"query": "Draw a flowchart of our deployment process: build, test, stage, release", "should_trigger": false},
+  {"query": "report.pdf の表を全部スプレッドシートに抜き出して", "should_trigger": false},
+  {"query": "このメモをMarkdownの箇条書きノートに整理して: 来週の買い出し、牛乳、卵、電池", "should_trigger": false}
+]

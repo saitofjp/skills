@@ -1,0 +1,46 @@
+{
+  "skill_name": "semantic-structure",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "evals/files/library-memo.txt を読んで、意味ごとの関係図にして。",
+      "expected_output": "A valid model.json whose chunks are the memo's meanings, joined by lines that explain why the hours change, with the change marked as the conclusion, and a report that offers the page.",
+      "files": ["evals/files/library-memo.txt"],
+      "expectations": [
+        "source.txt in the output folder is the memo's text, unchanged",
+        "model.json passes `python3 scripts/semantic_structure.py validate` with 0 errors",
+        "Headlines state messages (for example 「夜間の利用者は3年で4割減」), not topics (「夜間の利用について」)",
+        "The chunk that changes the opening hours has role conclusion",
+        "Lines lead from the reasons (fewer evening users, crowded Saturday mornings, the evening cost) into the conclusion, and the evening pick-ups lead to the lockers",
+        "Every line has a type or label that says what one chunk does to the other, not a connective such as 「そこで」",
+        "The report gives the path to model.json, the outline, what is inferred or uncertain, and which chunk is the conclusion and which is the key, then offers the page"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "examples/notes.model.json を、原文と並べて見られるページにして。モデルの状態から開くように。",
+      "expected_output": "view.html built from the template with build_viewer.py at the model stage; the model is not changed.",
+      "files": ["examples/notes.model.json"],
+      "expectations": [
+        "view.html was written by `scripts/build_viewer.py` with `--stage model`, not written by hand",
+        "examples/notes.model.json is unchanged",
+        "check_viewer.cjs was run when Node and Playwright were available, and its result is reported",
+        "The reply says how to use the page: ▶ plays, the knob can be dragged, hovering links the text and the structure"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "evals/files/ruling-excerpt.txt の判決を意味構造にして、ドパで見せて",
+      "expected_output": "A valid model.json in which the dismissal is the conclusion and the rule on likeness is the key, shown as a page built with the dopa theme.",
+      "files": ["evals/files/ruling-excerpt.txt"],
+      "expectations": [
+        "model.json is built before the page and passes validation with 0 errors",
+        "The dismissal (請求棄却) chunk has role conclusion",
+        "The rule that a person's likeness is protected has role key, not conclusion, and its note says what in the text shows its weight (a general statement, the 「もっとも」 that turns away from it)",
+        "A line leads from the deletion before the suit to the conclusion as its reason",
+        "view.html was built with `scripts/build_viewer.py --theme dopa`",
+        "The report names the conclusion and the key as separate chunks"
+      ]
+    }
+  ]
+}
