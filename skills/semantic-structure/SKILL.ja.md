@@ -80,4 +80,4 @@ description: 文章が意味していることを、意味ごとの関係図、�
 - [references/conversation.md](references/conversation.md)：会話セッションを文章にするとき。英語。
 - [references/transform-view.md](references/transform-view.md)：ページ（ゲージ、層、表現、動き、dopa テーマ、原文 ↔ モデルの対応、操作、ビューオプション）。英語。
 - [examples/notes.model.json](examples/notes.model.json)：短い文章を3つの塊と3本の線にした例。テンプレートをそのまま開くとこれを表示する。[examples/minimal.model.json](examples/minimal.model.json)：1文を語の粒度でモデルにした例。
-- 実寸の例：東京地裁の判決（令和8年9月30日、声優 対 TikTok）。約5,000字を9つの塊（うち3つは1つの塊の部分）と7本の線にし、結論（請求棄却）と key（声も肖像と同じくパブリシティ権で守られうる）を分けた。[モデル](https://github.com/saitofjp/skills/blob/main/docs/semantic/tsuda-tiktok-2609.model.json)と[表示](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html)。
+- 実寸の例：東京地裁の判決（令和8年9月30日、声優 対 TikTok）。約5,000字を13の塊と11本の線にし、結論（請求棄却）と key（声も肖像と同じくパブリシティ権で守られうる）を分けた。[モデル](https://github.com/saitofjp/skills/blob/main/docs/semantic/tsuda-tiktok-2609.model.json)と[表示](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html)。
