@@ -13,7 +13,7 @@ Structure what a text means the way notes are made: the text is broken into chun
 4. **Draw the lines from the relations.** Between chunks, say what one meaning does to another, toward what the text comes to.
 5. **Ground it in the text.** Every headline, point and line points at the words it rests on; what you inferred is `inferred`, with a `note` saying why.
 
-Mark what the text concludes `role: "conclusion"`. If something else matters most to a reader, mark it `role: "key"` and say in its `note` where the text shows its weight. Say what the whole comes to in one sentence in `summary`, each phrase naming the chunks it stands for.
+Mark what the text concludes `role: "conclusion"`. If something else matters most to a reader, mark it `role: "key"` and say in its `note` where the text shows its weight. Give it its weight in the summary, and in the headline of the group it sits in. Say what the whole comes to in one sentence in `summary`, each phrase naming the chunks it stands for.
 
 Read the notes back as someone who has not read the text: do they tell what it means, or retell it part by part?
 
