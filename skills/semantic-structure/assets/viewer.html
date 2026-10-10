@@ -248,7 +248,7 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .rep.structure .card.d1 .head { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rep.structure .card.d1 .ch { min-width: 0; }
 .rep.structure .card:has(> .kids):not(.concl) { background: var(--card); background-image: radial-gradient(var(--tone) 1px, transparent 1.3px); background-size: 6px 6px; }
-.rep.structure .card.d1 { background: var(--card); }
+.rep.structure .card.d1:not(.concl) { background: var(--card); }
 /* table */
 .rep.table table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 640px; font-size: 13px; }
 .rep.table th, .rep.table td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--rule); }
