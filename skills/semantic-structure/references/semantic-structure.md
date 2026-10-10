@@ -131,4 +131,4 @@ python3 scripts/semantic_structure.py validate model.json
 
 Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`.
 
-Warnings: something that cannot be traced to the text, `uncertain` without a `note`, a duplicate relation, a summary that names no node, and sentences no span touches. An untouched sentence is a prompt to check for something lost, not a quota.
+Warnings: something that cannot be traced to the text, `uncertain` without a `note`, a duplicate relation, a summary that names no node, and, in one warning, the sentences no span touches. An untouched sentence is a prompt to check for something lost, not a quota.
