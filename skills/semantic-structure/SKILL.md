@@ -1,6 +1,6 @@
 ---
 name: semantic-structure
-description: Maps what a text means as a diagram of its meanings and how they relate, its Semantic Structure. The text is wrapped into chunks of meaning, each with a headline that says its message and the points that matter, joined by lines that say how one bears on another, every piece traced to the words it rests on. Shows the diagram beside the text as one animated HTML page that moves from the text to the structure and on to a one-sentence summary, linear notes, slides or a table. Use it whenever the user wants to see how the parts of a document or a conversation relate, structure or map it, or read a text beside its structure. With no text named, it takes this conversation or a session the user names. Triggers include "map this text", "show the semantic structure", 「意味構造を作って」「意味構造を表示して」「関係図にして」「この文章を構造化して」「この会話を意味構造にして」「意味構造をドパで見せて」.
+description: Maps what a text means as a diagram of chunks of meaning joined by lines that say how one bears on another, its Semantic Structure, every piece traced to the words it rests on. Shows it beside the text as one animated HTML page that also turns it into a one-sentence summary, notes, slides or a table. Use it whenever the user wants to see how the parts of a document or a conversation relate, or to structure or map a text; with no text named, it takes this conversation or a session the user names. Triggers include "map this text", "show the semantic structure", 「意味構造を作って」「関係図にして」「この文章を構造化して」「この会話を意味構造にして」「意味構造をドパで見せて」.
 ---
 
 # Semantic Structure
