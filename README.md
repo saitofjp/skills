@@ -10,9 +10,11 @@ Agent Skills for testing and refining products and documents.
 - **[dopagaki-generator](skills/dopagaki-generator/SKILL.md)** — Turn content into an over-the-top, auto-playing 16:9 motion presentation (single HTML) in the Japanese "dopagaki" style (Japanese video games × pachinko × Japanese anime OP × short video); screen-record it to get a social media video. Japanese version: [SKILL.ja.md](skills/dopagaki-generator/SKILL.ja.md). Examples: [日銀展望レポート ドパガキ版](https://saitofjp.github.io/skills/dopagaki/boj-outlook-2607.html), [津田健次郎 対 TikTok 判決 ドパガキ版](https://saitofjp.github.io/skills/dopagaki/tsuda-tiktok-2609.html).
 - **[semantic-structure](skills/semantic-structure/SKILL.md)** — Map what a text or a Claude Code conversation means as a diagram of chunks of meaning and the lines between them, each traced to the words it rests on, and show it beside the text as one animated HTML page that also turns it into a one-sentence summary, notes, slides or a table. Japanese version: [SKILL.ja.md](skills/semantic-structure/SKILL.ja.md). Example: [津田健次郎 対 TikTok 判決のノート](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html).
 
-Use the persona skills together: create a persona with `simulated-persona-creator`, then run it against your product with `simulated-persona-tester`.
+Use the persona skills together: create a persona with `simulated-persona-creator`, then run it against your product with `simulated-persona-tester`. Example: [AIQ のペルソナテスト](examples/aiq-personas/).
 
 ## Examples
+
+- [AIQ のペルソナテスト](examples/aiq-personas/) — made with `simulated-persona-creator` and `simulated-persona-tester` for [AIQ](https://aiqtry.com), a web app that measures how people handle an AI that is wrong on purpose. Four Persona Contracts, split by behavior rather than demographics, and one report per persona from runs against the real screens. The personas are synthetic hypotheses, not research.
 
 Live examples are published with GitHub Pages from [`docs/`](docs/): <https://saitofjp.github.io/skills/>
 
