@@ -22,6 +22,10 @@ Live examples are published with GitHub Pages from [`docs/`](docs/): <https://sa
 - [津田健次郎 対 TikTok 判決 ドパガキ版](https://saitofjp.github.io/skills/dopagaki/tsuda-tiktok-2609.html) — made with `dopagaki-generator` from the Tokyo District Court's ruling of 30 September 2026 on a request to delete videos narrated in a voice like the voice actor's (about 2 minutes in 13 stages). It shows the rule that a voice, like a likeness, is a symbol of the person apart from the conclusion, the dismissal because the videos were already deleted. It auto-plays in the browser and is an unofficial summary, not legal advice. The same ruling is also shown as notes below.
 - [津田健次郎 対 TikTok 判決のノート](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html) — made with `semantic-structure` from the same ruling, about 5,000 characters in 13 chunks and 11 lines. The rule that a voice, like a likeness, is a symbol of the person is marked as the key, apart from the conclusion, the dismissal. Switch the header to dopa and press ▶ to watch it as a show. The model is in [`docs/semantic/`](docs/semantic/).
 
+## Research
+
+- [AIの調査まとめが読みにくくなる理由](research/session-summary-readability/) — why asking an AI to "summarize" a long research session tends to give a document that follows the session's branches instead of its purpose. Real sessions and a simulated one were summarized under five prompts and scored by a reader who never saw the session; the harness to rerun it is included. Written in Japanese.
+
 ## Install
 
 Install with [`npx skills`](https://skills.sh):
