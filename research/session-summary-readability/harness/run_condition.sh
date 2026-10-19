@@ -13,6 +13,9 @@
 #   C3  the session is resumed, then: …このセッションを見ていない人が読む資料としてまとめて
 #   C4  a fresh session gets the transcript as a document: この調査をまとめて
 #   C5  as C4, but the turns are in a fixed random order
+#   C6  resumed, then the purpose axis plus a fixed layout (目的と結論を冒頭、退けた案は末尾、経緯は書かない)
+#   C7  as C6, and also names the purpose, read from $WORK/purpose_NAME.txt
+#   C8  as C7, but asked as a document for a named person who has not seen the session
 set -u
 HERE=$(cd "$(dirname "$0")" && pwd)
 WORK=${WORK:-$PWD/work}
@@ -27,6 +30,9 @@ case $C in
   C1) ASK="ここまでの調査をまとめて" ;;
   C2) ASK="ここまでの調査を、主目的に沿って構成を組み直してまとめて" ;;
   C3) ASK="ここまでの調査を、このセッションを見ていない人が読む資料としてまとめて" ;;
+  C6) ASK="ここまでの調査を、主目的に沿って構成を組み直してまとめて。冒頭に目的と結論を置き、退けた案は理由を1行ずつ付けて末尾にまとめて。経緯（いつ何が分かったか）は書かないで。" ;;
+  C7) ASK="ここまでの調査を、主目的に沿って構成を組み直してまとめて。主目的は、$(cat "$WORK/purpose_$N.txt")。冒頭に目的と結論を置き、退けた案は理由を1行ずつ付けて末尾にまとめて。経緯（いつ何が分かったか）は書かないで。" ;;
+  C8) P=$(cat "$WORK/purpose_$N.txt"); ASK="このセッションを見ていない田中さんが、${P%こと}ための資料にして。冒頭に目的と結論。退けた案は理由を1行ずつ付けて末尾に。経緯（いつ何が分かったか）は書かない。" ;;
   C4) INTRO="以下は、ユーザーとAIの調査セッションの記録です。この調査をまとめて。"; FLAG="" ;;
   C5) INTRO="以下は、ユーザーとAIの調査セッションの記録から、やり取りを順不同で抜き出したものです。この調査をまとめて。"; FLAG="--shuffle" ;;
 esac
