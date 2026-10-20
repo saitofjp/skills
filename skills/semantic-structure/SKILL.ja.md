@@ -1,6 +1,6 @@
 ---
 name: semantic-structure
-description: 文章が意味していることを、意味の塊と、塊どうしがどう効くかを言う線の図、つまり意味構造（Semantic Structure）にする。どの部品からも拠り所の原文をたどれる。それを原文と並べ、一言の要約・ノート・スライド・表にも変わる1枚のアニメーション付きHTMLページで見せる。文書や会話の各部分がどう関係しているかを見たいとき、文章を構造化したい・図にしたいときには必ず使う。文章の指定が無ければ、この会話かユーザーが挙げたセッションを対象にする。「意味構造を作って」「関係図にして」「この文章を構造化して」「この会話を意味構造にして」「意味構造をドパで見せて」などで使う。
+description: 文章が意味していることを、意味の塊と、塊どうしがどう効くかを言う線の図、つまり意味構造（Semantic Structure）にする。どの部品からも拠り所の原文をたどれる。それを原文と並べ、一言の要約・ノート・スライド・表にも変わる1枚のアニメーション付きHTMLページで見せる。文書や会話の各部分がどう関係しているかを見たいとき、文章を構造化したい・図にしたいときには必ず使う。文章の指定が無ければ、この会話かユーザーが挙げたセッションを対象にし、会話が進むのに合わせて、いま成り立っていることを見せるよう更新できる。「意味構造を作って」「関係図にして」「この文章を構造化して」「この会話を意味構造にして」「意味構造を更新して」「意味構造をドパで見せて」などで使う。
 ---
 
 # Semantic Structure
@@ -19,10 +19,11 @@ description: 文章が意味していることを、意味の塊と、塊どう�
 
 原文を読んでいない人のつもりでノートを読み返し、意味を伝えているか、部分ごとに言い直しているだけかを見る。
 
-このスキルがすることは2つ。
+このスキルがすることは3つ。
 
 1. **構造を作る。** ユーザーに文章があり、それがどう組み立てられているかを見たいとき。報告したら、ページを勧める。
-2. **構造を見せる。** ユーザーが見たいとき。`model.json` がまだ無ければ先に作る。構造をページの側で考え出さない。
+2. **構造を更新する。** 構造にした会話が続いたとき。新しいターンを、塊を切り直さずに足し、いま成り立っていることを見せる。
+3. **構造を見せる。** ユーザーが見たいとき。`model.json` がまだ無ければ先に作る。構造をページの側で考え出さない。
 
 ## 構造を作る
 
@@ -42,12 +43,28 @@ description: 文章が意味していることを、意味の塊と、塊どう�
 - `resolve draft*.json --source source.txt -o model.json` は、下書きをまとめ、引用と文番号をオフセットに変え、形式を検査する。エラーがある間は何も書き出さない。
 - `outline model.json` は構造を読み上げる。要約、続いて塊ごとに、一節の位置（S31–39）・要点・線を出す。原文を見ていない人のつもりで読み、意味を伝えずに原文を部分ごとに言い直しているだけなら、または大事なことが欠けていれば、構造を直す。
 - `summary model.json` は根拠の一覧を出す。各要素とその引用、明示されていないもの、どのスパンも触れていない文を並べる（取りこぼしを探す手がかりであって、埋めるべき割り当てではない）。
+- `append model.json draft.json --source source.txt -o model.json` は、原文の末尾に足した分の塊と線を、切り直さずに足す。`-o` の代わりに `--check` を付けると何も書かず、更新後に成り立つことを読み上げる。`sentences source.txt --after model.json` は足した文だけに番号を振る。
+- `state model.json` は、前の塊を置き換える・退ける・答える線（`move`）を持つモデルについて、いま成り立っていることを読み上げる。成り立っている塊とそれぞれが覆したもの、未決の問い、覆った塊とその理由、全体を見直す合図を出す。
 
 `resolve` がエラーを出さなくなり、読み上げだけで原文を読んでいない人に意味が伝わるまで、`resolve` と `outline` を繰り返す。
 
 会話セッションには `scripts/session_transcript.py` を使う。記録を読み込み、ターンごとに見せ、抄録が一字一句会話にあるかを確かめる。詳しくは [references/conversation.md](references/conversation.md)。
 
-**報告**では、文章が何を意味しているかを数文で言い、そのうえで `model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえでページを勧める。
+**報告**では、文章が何を意味しているかを数文で言い、そのうえで `model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。`move` を持つモデルなら、退けたものと未決のものを `state` から伝える。そのうえでページを勧める。
+
+## 構造を更新する
+
+会話は進むにつれて、自分を訂正し、案を退け、問いに答える。その動きを `move`（`replaces`・`rejects`・`answers`）を持つ線にし、問いには `question: true` を付ける。するとページと `state` は、話した順ではなく、いま成り立っていること（成り立っている塊、退けた案とその理由、未決の問い）を見せる。詳しくは [references/conversation.md](references/conversation.md#the-structure-of-a-conversation)（英語）。
+
+会話が続いたあとで構造の更新を頼まれたら、[references/conversation.md](references/conversation.md#update-the-structure) の "Update the structure" に従う。要するに、新しいターンの抄録を `source.txt` の末尾に足し、それが足すものだけを下書きにし、モデルにあるものを変えるところには `move` を持つ線を引く。会話がいまどこに行き着いているか（要約と、移ったなら結論）も言い直す。`append --check` で更新後に成り立つことを読み返してから `append` し、ページを作り直す。更新では塊を切り直さない。全体から作り直すのは、まとめるよう頼まれたときか、`state` が合図を出してユーザーが同意したときだけにする（同じファイルの "Review the whole"）。
+
+**自動で更新する**（Claude Code のみのオプション）。ユーザーに頼まれたら、更新のたびにユーザーのアカウントで別の Claude が動くことを伝えてから、出力フォルダに `auto.json` を書く。出力フォルダはプロジェクトの `.semantic/` の下にあること。
+
+```json
+{"session": "${CLAUDE_SESSION_ID}", "skill": "${CLAUDE_SKILL_DIR}", "every": 3, "tz": "+09:00", "model": null, "view": []}
+```
+
+`every` は更新の間にユーザーが入力するターン数、`tz` はユーザーの UTC からの時差、`model` は更新に使うモデル（`null` で既定）、`view` はページを作ったときの `build_viewer.py` のオプション。以後、このスキルの frontmatter にある `Stop` フックが、`every` ターンごとに裏で構造を更新し、次のターンで知らせる。知らせが来たらユーザーに1行で伝え、Artifact として公開していれば公開し直す。止めるときは `auto.json` を消す。仕組みと、更新に許していることは [references/conversation.md](references/conversation.md#keep-it-up-to-date-by-itself) の "Keep it up to date by itself"。
 
 ## 構造を見せる
 
@@ -57,8 +74,9 @@ description: 文章が意味していることを、意味の塊と、塊どう�
    - `--stage`：つまみの初期位置。`text`（既定）は文章が構造になる様子を見せる。読んで探るなら `model`・`summary`・`linear`・`slides`・`table` から始める。
    - `--anchor`：構造の列の向き。ふつうは `auto` のままでよい。向きが読みにくいときだけ、`end`（結論から並べる。判決のように根拠が結論に集まる文章）か `start`（入ってくる線のない塊から並べる。問いから枝分かれする文章）を指定する。
    - `--theme`：`dark`（既定）・`light`・`auto`・`dopa`。ドパガキ風の見た目や、録画して見せるショーにしたいとき、またはユーザーが dopa やドパガキを求めたときは `dopa` にする。
+   - `--state`：`move` を持つモデルで、`now`（既定）はいま成り立っていることから、`all` は覆ったものも打ち消し線で含めたすべてから開く。読み手はヘッダーで切り替えられる。
 2. **ビルドする。**
-   `python3 scripts/build_viewer.py model.json -o view.html [--stage …] [--focus ID] [--theme …] [--anchor …] [--no-autoplay]`
+   `python3 scripts/build_viewer.py model.json -o view.html [--stage …] [--focus ID] [--theme …] [--anchor …] [--state …] [--no-autoplay]`
    `model.json` を検証し、エラーがある間は何も書き出さない。保存先はユーザーの指定が無ければ `model.json` と同じ場所。オプションはJSONファイルにして `--view` で渡してもよい。
 3. **ブラウザで確認する**（NodeとPlaywrightが使える場合）：`NODE_PATH="$(npm root -g)" node scripts/check_viewer.cjs view.html`。ページを開き、ゲージ・▶・各表現・カーソル操作・テーマ・スマホ幅を確かめる。そのうえで自分でも原文からモデルまでゆっくり動かし、線が文章の組み立てを示しているか、要約がきちんと着地しているかを見る。
 4. **渡す。** パスと使い方を伝える。
@@ -77,7 +95,7 @@ description: 文章が意味していることを、意味の塊と、塊どう�
 ## 参照
 
 - [references/semantic-structure.md](references/semantic-structure.md)：形式（塊、要点、線、要約、スパン、来歴、検証）。英語。
-- [references/conversation.md](references/conversation.md)：会話セッションを文章にするとき。英語。
+- [references/conversation.md](references/conversation.md)：会話セッションを文章にするとき、その更新、全体の見直し、自動で更新するオプション。英語。
 - [references/transform-view.md](references/transform-view.md)：ページ（ゲージ、層、表現、動き、dopa テーマ、原文 ↔ モデルの対応、操作、ビューオプション）。英語。
-- [examples/notes.model.json](examples/notes.model.json)：短い文章を3つの塊と3本の線にした例。テンプレートをそのまま開くとこれを表示する。[examples/minimal.model.json](examples/minimal.model.json)：1文を語の粒度でモデルにした例。
+- [examples/notes.model.json](examples/notes.model.json)：短い文章を3つの塊と3本の線にした例。テンプレートをそのまま開くとこれを表示する。[examples/minimal.model.json](examples/minimal.model.json)：1文を語の粒度でモデルにした例。[examples/session.model.json](examples/session.model.json)：会話の3往復を、最初の2往復で作り3往復目で更新した例。決定が候補を置き換え、問いに答え、新しい問いを未決で残す。
 - 実寸の例：東京地裁の判決（令和8年9月30日、声優 対 TikTok）。約5,000字を13の塊と11本の線にし、結論（請求棄却）と key（声も肖像と同じくパブリシティ権で守られうる）を分けた。[モデル](https://github.com/saitofjp/skills/blob/main/docs/semantic/tsuda-tiktok-2609.model.json)と[表示](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html)。

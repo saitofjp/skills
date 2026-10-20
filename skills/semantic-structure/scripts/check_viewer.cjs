@@ -15,7 +15,9 @@
   card and the minimap sit side by side without overlapping; the theme switches between dark, light and dopa: in dark,
   the field's lines are faint and of a hue of their own, apart from the model's lines; in dopa,
   dragging the knob stages nothing, ▶ stages the play as a show (the build-up and the summary's arrival once), even when
-  the system asks for less motion, dopa is not remembered, and the show stops with the theme;
+  the system asks for less motion, dopa is not remembered, and the show stops with the theme; for a model whose lines
+  replace, reject or answer, "now" hides what is out and leaves a struck note of it on what took it out, "all" shows it
+  struck, open questions are marked, and the now / all switch keeps the stage;
   nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
 'use strict';
@@ -281,6 +283,39 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
     if (got.anchor !== want || got.cols !== cols) return fail(`${name}: expected ${want}, ${cols}; got ${got.anchor}, ${got.cols}`);
   }
   ok('the columns follow the shape of the text: a question branching out runs from the start, reasons gathering into a conclusion from it, and the view options win');
+
+  // the state: B replaces A, the conclusion C rejects B and answers the question, and takes out one point of R
+  const moved = shape([['q', '問：どこに置くか'], ['a', '案：Aに置く'], ['b', '案：Bに置く'], ['r', '条件：安く近く'], ['c', '結論：Cに置く', 'conclusion'], ['p', '問：いつ置くか']], []);
+  moved.nodes.forEach(n => { if (n.id === 'q' || n.id === 'p') n.question = true; if (n.id === 'r') n.points = [{ label: '安い', sourceSpans: [] }, { label: '近い', sourceSpans: [] }]; });
+  moved.relations = [['b', 'a', 'replaces', 'Bの方が近い'], ['c', 'b', 'rejects', 'Bは高い'], ['c', 'q', 'answers', '答える'], ['c', 'r', 'rejects', '近さは問わない', [2]]]
+    .map(([s, t, move, label, pts]) => ({ id: `${s}-${t}`, source: s, target: t, type: label, label, move, provenance: 'inferred', sourceSpans: [], ...(pts ? { targetPoints: pts } : {}) }));
+  const tmp = path.join(require('os').tmpdir(), `semantic-state-${process.pid}.html`);
+  fs.writeFileSync(tmp, withModel(moved, { stage: 'linear', autoplay: false }));
+  const sp = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  sp.on('pageerror', e => errors.push(e.message));
+  const readState = () => sp.evaluate(() => ({
+    view: window.__semanticViewer.viewState, stage: window.__semanticViewer.state.stage,
+    order: window.__semanticViewer.order.map(o => o.id).join(','),
+    gone: [...document.querySelectorAll('#rep .card.gone')].map(e => e.dataset.node).join(','),
+    open: [...document.querySelectorAll('#rep .card.open')].map(e => e.dataset.node).join(','),
+    stubs: [...document.querySelectorAll('#rep .card[data-node="c"] .pt.stub')].map(e => e.textContent).join(' | '),
+    rPoints: [...document.querySelectorAll('#rep .card[data-node="r"] .pt')].map(e => e.textContent + (e.classList.contains('gone') ? '(struck)' : '')).join(','),
+    concl: [...document.querySelectorAll('#rep .card.concl')].map(e => e.dataset.node).join(','),
+  }));
+  await sp.goto('file://' + tmp);
+  await sp.waitForFunction(() => window.__semanticViewer, null, { timeout: 15000 });
+  let got = await readState();
+  const wantNow = { view: 'now', order: 'q,r,c,p', gone: '', open: 'p', rPoints: '安い', concl: 'c',
+    stubs: '✕ 案：Aに置く — Bの方が近い | ✕ 案：Bに置く — Bは高い | ✕ 近い — 近さは問わない' };
+  for (const k in wantNow) if (got[k] !== wantNow[k]) { fs.unlinkSync(tmp); return fail(`now: ${k} is ${JSON.stringify(got[k])}, expected ${JSON.stringify(wantNow[k])}`); }
+  await sp.click('#stateCtl button[data-state-set="all"]');
+  await sp.waitForFunction(() => window.__semanticViewer && window.__semanticViewer.viewState === 'all', null, { timeout: 15000 });
+  got = await readState();
+  fs.unlinkSync(tmp);
+  const wantAll = { view: 'all', stage: 'linear', order: 'q,a,b,r,c,p', gone: 'a,b', open: 'p', rPoints: '安い,近い(struck)', concl: 'c', stubs: '' };
+  for (const k in wantAll) if (got[k] !== wantAll[k]) return fail(`all: ${k} is ${JSON.stringify(got[k])}, expected ${JSON.stringify(wantAll[k])}`);
+  await sp.close();
+  ok('now hides what is out and leaves a struck note of it, with the reason, on what took it out; all shows it struck; open questions are marked; the switch keeps the stage');
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(400);

@@ -1,0 +1,223 @@
+{
+  "version": "semantic-structure/1",
+  "sourceText": "ユーザー（10:02）\n個人開発のクイズアプリに、2人でリアルタイム対戦できる機能を入れたい。どういう作りがいい？\nClaude\n候補は3つあります。WebRTC で端末どうしを直接つなぐ、Supabase Realtime で状態を配る、Cloudflare Durable Objects で対戦ごとに部屋を持つ、です。\nサーバーを持たずに済む WebRTC が最も安く始められます。\nユーザー（10:15）\nWebRTC だと、相手が回答を書き換えるズルを防げる？ 不正対策がいちばん大事。\nClaude\n防げません。WebRTC では正解の判定がそれぞれの端末で行われるので、改造した端末が勝ちを申告できます。\n不正を防ぐには、正解の判定をサーバー側で行う必要があります。WebRTC 案は外します。\nユーザー（10:31）\nじゃあ Supabase と Cloudflare のどっちにする？ サービスはこれ以上増やしたくない。\nClaude\nすでに Supabase を使っているので、Supabase Realtime にします。判定は Edge Function で行い、結果だけを Realtime で配ります。\nDurable Objects は部屋ごとの状態を持てて有利ですが、サービスが1つ増えるので見送ります。\n残る問題は、2人の回答がほぼ同時に届いたときにどちらを先とするかです。",
+  "summary": [
+    {"text": "対戦機能は、"},
+    {"text": "不正対策を最優先に判定をサーバー側に置き、", "refs": ["cheat", "server"]},
+    {"text": "サービスを増やさないために Supabase Realtime と Edge Function で作る。", "refs": ["fewer", "decide"]},
+    {"text": "ほぼ同時の回答の扱いがまだ決まっていない。", "refs": ["tie"]}
+  ],
+  "nodes": [
+    {
+      "id": "goal",
+      "label": "2人のリアルタイム対戦をどう作るか",
+      "type": "問い",
+      "question": true,
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 12, "end": 57, "text": "個人開発のクイズアプリに、2人でリアルタイム対戦できる機能を入れたい。どういう作りがいい？"}]
+    },
+    {
+      "id": "cands",
+      "label": "候補は3つ：直接つなぐ・状態を配る・部屋を持つ",
+      "type": "候補",
+      "provenance": "explicit",
+      "sourceSpans": [
+        {
+          "start": 65,
+          "end": 194,
+          "text": "候補は3つあります。WebRTC で端末どうしを直接つなぐ、Supabase Realtime で状態を配る、Cloudflare Durable Objects で対戦ごとに部屋を持つ、です。\nサーバーを持たずに済む WebRTC が最も安く始められます。"
+        }
+      ],
+      "points": [
+        {
+          "label": "WebRTC で端末どうしを直接つなぐ：サーバー不要で最も安い",
+          "sourceSpans": [
+            {"start": 75, "end": 94, "text": "WebRTC で端末どうしを直接つなぐ"},
+            {"start": 163, "end": 193, "text": "サーバーを持たずに済む WebRTC が最も安く始められます"}
+          ]
+        },
+        {
+          "label": "Supabase Realtime で状態を配る",
+          "sourceSpans": [{"start": 95, "end": 119, "text": "Supabase Realtime で状態を配る"}]
+        },
+        {
+          "label": "Durable Objects で対戦ごとに部屋を持つ",
+          "sourceSpans": [{"start": 120, "end": 158, "text": "Cloudflare Durable Objects で対戦ごとに部屋を持つ"}]
+        }
+      ]
+    },
+    {
+      "id": "cheat",
+      "label": "不正対策がいちばん大事",
+      "type": "要件",
+      "role": "key",
+      "provenance": "explicit",
+      "note": "ユーザーが「いちばん大事」と言い、WebRTC を外す理由になった",
+      "sourceSpans": [{"start": 207, "end": 248, "text": "WebRTC だと、相手が回答を書き換えるズルを防げる？ 不正対策がいちばん大事。"}],
+      "points": [
+        {
+          "label": "ユーザー：相手が回答を書き換えるズルを防ぎたい",
+          "sourceSpans": [{"start": 217, "end": 234, "text": "相手が回答を書き換えるズルを防げる"}]
+        }
+      ]
+    },
+    {
+      "id": "server",
+      "label": "正解の判定はサーバー側で行う",
+      "type": "方針",
+      "provenance": "explicit",
+      "sourceSpans": [
+        {
+          "start": 256,
+          "end": 354,
+          "text": "防げません。WebRTC では正解の判定がそれぞれの端末で行われるので、改造した端末が勝ちを申告できます。\n不正を防ぐには、正解の判定をサーバー側で行う必要があります。WebRTC 案は外します。"
+        }
+      ],
+      "points": [
+        {
+          "label": "WebRTC では判定が端末で行われ、改造した端末が勝ちを申告できる",
+          "sourceSpans": [{"start": 262, "end": 309, "text": "WebRTC では正解の判定がそれぞれの端末で行われるので、改造した端末が勝ちを申告できます。"}]
+        }
+      ]
+    },
+    {
+      "id": "fewer",
+      "label": "サービスはこれ以上増やさない",
+      "type": "要件",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 402, "end": 418, "text": "サービスはこれ以上増やしたくない"}],
+      "update": 1
+    },
+    {
+      "id": "decide",
+      "label": "Supabase Realtime に決める：判定は Edge Function",
+      "type": "決定",
+      "role": "conclusion",
+      "provenance": "explicit",
+      "sourceSpans": [
+        {
+          "start": 427,
+          "end": 568,
+          "text": "すでに Supabase を使っているので、Supabase Realtime にします。判定は Edge Function で行い、結果だけを Realtime で配ります。\nDurable Objects は部屋ごとの状態を持てて有利ですが、サービスが1つ増えるので見送ります。"
+        }
+      ],
+      "points": [
+        {
+          "label": "すでに Supabase を使っている",
+          "sourceSpans": [{"start": 427, "end": 446, "text": "すでに Supabase を使っている"}]
+        },
+        {
+          "label": "判定は Edge Function、結果だけを Realtime で配る",
+          "sourceSpans": [{"start": 472, "end": 514, "text": "判定は Edge Function で行い、結果だけを Realtime で配ります"}]
+        },
+        {
+          "label": "Durable Objects は見送り：部屋の状態を持てるがサービスが1つ増える",
+          "sourceSpans": [
+            {
+              "start": 516,
+              "end": 568,
+              "text": "Durable Objects は部屋ごとの状態を持てて有利ですが、サービスが1つ増えるので見送ります。"
+            }
+          ]
+        }
+      ],
+      "update": 1
+    },
+    {
+      "id": "tie",
+      "label": "ほぼ同時に届いた回答の先後をどう決めるか",
+      "type": "問い",
+      "question": true,
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 569, "end": 604, "text": "残る問題は、2人の回答がほぼ同時に届いたときにどちらを先とするかです。"}],
+      "update": 1
+    }
+  ],
+  "relations": [
+    {
+      "id": "cands-goal",
+      "source": "cands",
+      "target": "goal",
+      "type": "候補を挙げる",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 65, "end": 74, "text": "候補は3つあります"}]
+    },
+    {
+      "id": "cheat-server",
+      "source": "cheat",
+      "target": "server",
+      "type": "求める",
+      "label": "不正を防ぐには",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 310, "end": 317, "text": "不正を防ぐには"}]
+    },
+    {
+      "id": "server-webrtc",
+      "source": "server",
+      "target": "cands",
+      "type": "外す",
+      "label": "端末で判定するのでズルを防げない",
+      "move": "rejects",
+      "targetPoints": [1],
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 340, "end": 353, "text": "WebRTC 案は外します"}]
+    },
+    {
+      "id": "fewer-decide",
+      "source": "fewer",
+      "target": "decide",
+      "type": "絞る",
+      "label": "増やさないので Supabase",
+      "provenance": "inferred",
+      "note": "Durable Objects を見送る理由が「サービスが1つ増える」で、ユーザーの要件と同じ",
+      "sourceSpans": [{"start": 550, "end": 567, "text": "サービスが1つ増えるので見送ります"}],
+      "update": 1
+    },
+    {
+      "id": "server-decide",
+      "source": "server",
+      "target": "decide",
+      "type": "具体化",
+      "label": "判定は Edge Function",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 472, "end": 493, "text": "判定は Edge Function で行い"}],
+      "update": 1
+    },
+    {
+      "id": "decide-cands",
+      "source": "decide",
+      "target": "cands",
+      "type": "選ぶ",
+      "label": "2案から Supabase に絞った",
+      "move": "replaces",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 449, "end": 471, "text": "Supabase Realtime にします"}],
+      "update": 1
+    },
+    {
+      "id": "decide-goal",
+      "source": "decide",
+      "target": "goal",
+      "type": "答える",
+      "move": "answers",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 449, "end": 471, "text": "Supabase Realtime にします"}],
+      "update": 1
+    },
+    {
+      "id": "decide-tie",
+      "source": "decide",
+      "target": "tie",
+      "type": "残す",
+      "label": "残る問題",
+      "provenance": "explicit",
+      "sourceSpans": [{"start": 569, "end": 574, "text": "残る問題は"}],
+      "update": 1
+    }
+  ],
+  "metadata": {
+    "title": "クイズアプリの対戦機能（作例）",
+    "language": "ja",
+    "source": "作例のために書いた模擬セッションの 10:02–10:31（ユーザーの発言3つ）。発言は全文、話者行を足した。最初の2往復で作り、3往復目を append で足した。"
+  }
+}

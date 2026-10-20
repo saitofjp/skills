@@ -41,6 +41,22 @@
         "view.html was built with `scripts/build_viewer.py --theme dopa`",
         "The report names the conclusion and the key as separate chunks"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "evals/files/session/model.json は、会話の最初の2往復（10:15まで）から作った意味構造。そのあと source.txt に 10:31 の往復を足した。新しい往復の分だけ、意味構造を更新して。",
+      "expected_output": "model.json updated with semantic_structure.py append: the existing chunks stay as they were, the decision is added as a new chunk that takes the candidates out and answers the question, the remaining problem is an open question, and the report says what holds now.",
+      "files": ["evals/files/session/model.json", "evals/files/session/source.txt"],
+      "expectations": [
+        "The model was updated with `scripts/semantic_structure.py append`, not rebuilt with resolve, and the result passes validation with 0 errors",
+        "Every chunk and line of the original model is still there with the same id, label, points and spans",
+        "A new chunk holds the decision (Supabase Realtime, with the judging in an Edge Function), and a line from it with move replaces or rejects takes the candidates chunk out, or takes out the Durable Objects point with targetPoints",
+        "A line with move answers runs from the decision to the question chunk 'goal'",
+        "The remaining problem (which of two nearly simultaneous answers comes first) is a new chunk with question: true, and `state` lists it as open",
+        "Exactly one chunk in force has role conclusion, and it is the decision",
+        "The summary is rewritten to say what holds now, not what was said in order",
+        "The report says what was added, what went out and why, and what is still open"
+      ]
     }
   ]
 }
