@@ -5,8 +5,10 @@ Standard library only.
 
   semantic_structure.py sentences SOURCE.txt [--json]
       Number the sentences of a source text (use the numbers in draft spans).
-  semantic_structure.py resolve DRAFT.json [DRAFT2.json ...] --source SOURCE.txt -o MODEL.json
+  semantic_structure.py resolve DRAFT.json [DRAFT2.json ...] --source SOURCE.txt -o MODEL.json [--base OLD.json]
       Merge drafts written in parts, turn quote spans into offsets, validate.
+      With --base, keep the previous model and lay the drafts over it (an update);
+      spans whose words have moved are found again.
       Writes nothing while there are errors.
   semantic_structure.py validate MODEL.json [--json]
       Check the contract. Exit status 1 when there are errors.
@@ -105,11 +107,13 @@ def _clip(s, width=40):
 # ---------------------------------------------------------------- resolve
 
 
-def resolve_span(span, text, sentences):
+def resolve_span(span, text, sentences, refind=False):
     """Return a span with start/end/text; draft keys (quote, sentence(s), occurrence) are consumed.
 
     Draft forms: "quote", {"quote", "sentence"|"sentences", "occurrence"}, a whole sentence
     {"sentence": n}, or a passage of whole sentences {"sentences": [first, last]}.
+    With refind (an update), a span whose words are no longer at its offsets is moved
+    to the occurrence of its words nearest its old place.
     """
     if isinstance(span, str):
         span = {"quote": span}
@@ -119,6 +123,14 @@ def resolve_span(span, text, sentences):
 
     if "start" in span or "end" in span:
         s, e = span.get("start"), span.get("end")
+        words = span.get("text")
+        if refind and isinstance(words, str) and words and (
+                type(s) is not int or type(e) is not int or text[s:e] != words or not 0 <= s < e <= len(text)):
+            hits = _find_all(text, words, 0, len(text))
+            if not hits:
+                raise ContractError(f"{_clip(words)!r} is no longer in the text; restate these spans in the draft")
+            s = min(hits, key=lambda h: abs(h - s)) if type(s) is int else hits[0]
+            e = s + len(words)
         _check_offsets(s, e, len(text))
         actual = text[s:e]
         if "text" in span and span["text"] != actual:
@@ -191,25 +203,42 @@ def _check_offsets(s, e, length):
         raise ContractError(f"offsets {s}..{e} are outside 0..{length} or empty")
 
 
-def merge_drafts(drafts):
+def _lay_over(target, key, value):
+    if value is None:
+        target.pop(key, None)
+    else:
+        target[key] = value
+
+
+def merge_drafts(drafts, base=None):
     """Merge drafts written in parts (e.g. one per section) into one; return (draft, warnings).
 
     Elements with the same id are one element: their sourceSpans, points and
     derivedFrom are combined, and for any other field the first value given wins.
+    With a base (the previous model, when updating), the drafts are laid over it
+    instead: every field a draft gives replaces the base's, and null removes it.
     """
     merged = {"nodes": [], "relations": [], "metadata": {}}
     index, warnings = {}, []
-    for n, draft in enumerate(drafts, 1):
+    layers = [(0, base)] if base is not None else []
+    for n, draft in layers + list(enumerate(drafts, 1)):
         if not isinstance(draft, dict):
             raise ContractError(f"draft {n} must be a JSON object")
+        over = base is not None and n > 0
         for key, value in draft.items():
             if key in ("nodes", "relations", "metadata"):
+                continue
+            if over:
+                _lay_over(merged, key, value)
                 continue
             if key in merged and merged[key] != value:
                 warnings.append(f"draft {n}: {key} differs from an earlier draft; kept the first")
             merged.setdefault(key, value)
         for key, value in (draft.get("metadata") or {}).items():
-            merged["metadata"].setdefault(key, value)
+            if over:
+                _lay_over(merged["metadata"], key, value)
+            else:
+                merged["metadata"].setdefault(key, value)
         for kind in ("nodes", "relations"):
             for el in draft.get(kind) or []:
                 eid = el.get("id") if isinstance(el, dict) else None
@@ -223,7 +252,9 @@ def merge_drafts(drafts):
                 if first_kind != kind:
                     raise ContractError(f"draft {n}: id {eid!r} is used for both a node and a relation")
                 for key, value in el.items():
-                    if key == "sourceSpans":
+                    if over:
+                        _lay_over(first, key, value)
+                    elif key == "sourceSpans":
                         first["sourceSpans"] = list(first.get("sourceSpans") or []) + list(value or [])
                     elif key == "points":
                         first["points"] = list(first.get("points") or []) + list(value or [])
@@ -246,7 +277,7 @@ def _dedupe_spans(spans):
     return sorted(out, key=lambda sp: (sp["start"], sp["end"]))
 
 
-def resolve_model(draft, source_text=None):
+def resolve_model(draft, source_text=None, refind=False):
     """Return (model, errors). Fills sourceText from source_text and resolves every span."""
     errors = []
     model = dict(draft)
@@ -268,7 +299,7 @@ def resolve_model(draft, source_text=None):
             resolved = []
             for k, span in enumerate(element.get("sourceSpans") or [], 1):
                 try:
-                    resolved.append(resolve_span(span, text, sentences))
+                    resolved.append(resolve_span(span, text, sentences, refind))
                 except ContractError as exc:
                     errors.append(f"{element.get('id', '?')}: span {k}: {exc}")
             element["sourceSpans"] = _dedupe_spans(resolved)
@@ -278,7 +309,7 @@ def resolve_model(draft, source_text=None):
                 spans = []
                 for k, span in enumerate(point.get("sourceSpans") or [], 1):
                     try:
-                        spans.append(resolve_span(span, text, sentences))
+                        spans.append(resolve_span(span, text, sentences, refind))
                     except ContractError as exc:
                         errors.append(f"{element.get('id', '?')}: point {n}: span {k}: {exc}")
                 point["sourceSpans"] = _dedupe_spans(spans)
@@ -724,6 +755,7 @@ def main(argv=None):
     p = sub.add_parser("resolve", help="merge drafts, turn quote spans into offsets and validate")
     p.add_argument("drafts", nargs="+")
     p.add_argument("--source", help="the source text file (sets sourceText)")
+    p.add_argument("--base", help="the previous model, when updating: the drafts are laid over it")
     p.add_argument("-o", "--output", required=True)
     p = sub.add_parser("validate", help="check a model against the contract")
     p.add_argument("model")
@@ -747,11 +779,17 @@ def main(argv=None):
 
     if args.command == "resolve":
         source = Path(args.source).read_text(encoding="utf-8") if args.source else None
+        base = None
+        if args.base:
+            if source is None:
+                sys.exit("ERROR   --base needs --source (the updated text)")
+            base = _read_json(args.base)
+            base.pop("sourceText", None)
         try:
-            draft, warnings = merge_drafts([_read_json(path) for path in args.drafts])
+            draft, warnings = merge_drafts([_read_json(path) for path in args.drafts], base)
         except ContractError as exc:
             sys.exit(f"ERROR   {exc}")
-        model, errors = resolve_model(draft, source)
+        model, errors = resolve_model(draft, source, refind=base is not None)
         if not errors:
             errors, more = validate_model(model)
             warnings += more
