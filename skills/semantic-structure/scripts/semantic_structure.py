@@ -483,11 +483,6 @@ def validate_model(model):
             cur = parents.get(cur)
         if cur is not None and cur in seen and cur == start:
             errors.append(f"node {start}: parent chain loops back to itself")
-    if not errors:
-        loop = _takeout_loop(model)
-        if loop:
-            errors.append("replaces/rejects lines loop: " + " → ".join(loop) + " - to go back to an earlier chunk, "
-                          "add a chunk for the return that replaces the one in force")
 
     if text and not errors:
         covered = [False] * len(text)
@@ -501,60 +496,6 @@ def validate_model(model):
             warnings.append(f"{len(gaps)} sentence(s) no span touches - a prompt to check for something lost, "
                             f"not a quota: " + ", ".join(gaps))
     return errors, warnings
-
-
-# ---------------------------------------------------------------- state
-
-
-def _takeout_loop(model):
-    """A loop of replaces/rejects lines (a part goes out with its parent), as a list of ids, or None."""
-    step = {}
-    for n in model["nodes"]:
-        if n.get("parent"):
-            step.setdefault(n["parent"], []).append(n["id"])
-    for r in model["relations"]:
-        if r.get("move") in ("replaces", "rejects"):
-            step.setdefault(r["source"], []).append(r["target"])
-    color, path = {}, []
-
-    def visit(v):
-        color[v] = 1
-        path.append(v)
-        for w in step.get(v, []):
-            if color.get(w) == 1:
-                return path[path.index(w):] + [w]
-            if not color.get(w):
-                found = visit(w)
-                if found:
-                    return found
-        path.pop()
-        color[v] = 2
-        return None
-
-    for n in model["nodes"]:
-        if not color.get(n["id"]):
-            found = visit(n["id"])
-            if found:
-                return found
-    return None
-
-
-def model_state(model):
-    """(out, open): the chunks that are out, and the questions still open.
-
-    A chunk is out once a replaces or rejects line comes into it, and its parts go with it; it stays out.
-    A question (question: true) is open while no chunk in force answers it.
-    """
-    nodes = {n["id"]: n for n in model["nodes"]}
-    taken = {r["target"] for r in model["relations"] if r.get("move") in ("replaces", "rejects")}
-
-    def is_out(nid, seen=()):
-        return nid in taken or (nodes[nid].get("parent") in nodes and nid not in seen
-                                and is_out(nodes[nid]["parent"], seen + (nid,)))
-
-    out = {nid for nid in nodes if is_out(nid)}
-    answered = {r["target"] for r in model["relations"] if r.get("move") == "answers" and r["source"] not in out}
-    return out, [nid for nid, n in nodes.items() if n.get("question") is True and nid not in out and nid not in answered]
 
 
 # ---------------------------------------------------------------- summary
@@ -700,10 +641,7 @@ def outline(model):
         return "" if el.get("provenance", "explicit") == "explicit" else f" [{el['provenance']}]"
 
     def word(r):
-        move = f" [{r['move']}]" if r.get("move") else ""
-        return (r.get("label") or r["type"]) + {"+": " (+)", "-": " (-)"}.get(r.get("polarity"), "") + move + prov(r)
-
-    gone, open_questions = model_state(model)
+        return (r.get("label") or r["type"]) + {"+": " (+)", "-": " (-)"}.get(r.get("polarity"), "") + prov(r)
 
     covered = _coverage(model)
     out = ["# Notes: the model read back", "",
@@ -711,8 +649,7 @@ def outline(model):
            "the summary says what the text comes to in one sentence; each chunk says one meaning and keeps",
            "what it rests on (numbers, conditions, timing, who); the arrows say how the meanings bear on",
            "each other, toward what the text comes to.", "",
-           f"{len(nodes)} nodes, {len(model['relations'])} relations."
-           + (" ✕ marks a chunk that is out, ? an open question." if gone or open_questions else ""), ""]
+           f"{len(nodes)} nodes, {len(model['relations'])} relations.", ""]
 
     summary = model.get("summary")
     if summary:
@@ -727,7 +664,6 @@ def outline(model):
         pad = "    " * depth
         where = _sentence_list(n.get("sourceSpans") or [], sentences) or "no words of its own"
         star = "★ " if n.get("role") == "conclusion" else "◆ " if n.get("role") == "key" else ""
-        star = ("✕ " if nid in gone else "? " if nid in open_questions else "") + star
         out.append(f"{pad}{star}{num} {n['label']}{prov(n)}  ({where})")
         for pt in n.get("points") or []:
             when = f"{pt['when']}: " if pt.get("when") else ""

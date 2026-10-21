@@ -90,7 +90,7 @@ A conversation, a thread or a document grown by additions overturns its own earl
 
 - A chunk is **out** once a `replaces` or `rejects` line comes into it, and its parts go with it. It stays out: to go back to it, add a chunk for the return that replaces the one in force.
 - A question (`question: true`) is **open** while no chunk in force answers it.
-- What holds now is the chunks in force, what was set aside with its reason (the line's `label`), and the open questions. The viewer shows that by default; `outline` marks what is out ✕ and what is open ?.
+- What holds now is the chunks in force, what was set aside with its reason (the line's `label`), and the open questions. The viewer shows that by default.
 
 ## Provenance
 
@@ -140,6 +140,6 @@ Sentence numbers come from `semantic_structure.py sentences`. Spans that already
 python3 scripts/semantic_structure.py validate model.json
 ```
 
-Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`, a `move` other than the three, a `question` that is not `true` or `false`, `replaces` / `rejects` lines that loop.
+Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`, a `move` other than the three, a `question` that is not `true` or `false`.
 
 Warnings: something that cannot be traced to the text, `uncertain` without a `note`, a duplicate relation, a summary that names no node, and, in one warning, the sentences no span touches. An untouched sentence is a prompt to check for something lost, not a quota.
