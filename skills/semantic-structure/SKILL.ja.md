@@ -45,7 +45,7 @@ description: 文章が意味していることを、意味の塊と、塊どう�
 
 `resolve` がエラーを出さなくなり、読み上げだけで原文を読んでいない人に意味が伝わるまで、`resolve` と `outline` を繰り返す。
 
-会話セッションには `scripts/session_transcript.py` を使う。記録を読み込み、ターンごとに見せ、抄録が一字一句会話にあるかを確かめる。詳しくは [references/conversation.md](references/conversation.md)。会話が続いて構造の更新を頼まれたら、新しいターンを `source.txt` の末尾に足し、それが足すものだけを新しい下書きにして、すべての下書きを `resolve` し直す。すでにある塊は切り直さない（同じファイルの "Update the structure"）。
+会話セッションには `scripts/session_transcript.py` を使う。記録を読み込み、ターンごとに見せ、抄録が一字一句会話にあるかを確かめる。詳しくは [references/conversation.md](references/conversation.md)。塊は全体の意味をつかんだうえで切るので、少し変わっただけでも全体を見直すことになる。続いていく会話では、更新を頼まれたら軽く更新する。新しいターンを `source.txt` の末尾に足し、それが足すものだけを新しい下書きにして、すべての下書きを `resolve` し直す。すでにある塊はそのままにする。その代わり、塊は全体から切った場合からずれていくので、何度か更新したら全体から作り直すことを勧める（同じファイルの "Update the structure"）。
 
 **報告**では、文章が何を意味しているかを数文で言い、そのうえで `model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえでページを勧める。
 

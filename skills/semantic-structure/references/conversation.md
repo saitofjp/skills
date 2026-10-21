@@ -67,7 +67,9 @@ What it leaves out:
 
 ## Update the structure
 
-When the session goes on and the user asks to update its structure, add to it with the same tools; never re-cut what is there.
+Chunks are cut from an understanding of the whole text, so even a small addition would call for looking over all of them again. A session goes on and keeps adding to itself. When the user asks to update its structure, update it lightly instead: add only what the new turns bring, and leave the chunks that are there as they are.
+
+The cost is that the chunks drift from how they would be cut from the whole: an early chunk keeps the part it played when it was cut. So after a few updates, offer to rebuild from the whole.
 
 1. Collect the session again. `check WORK source.txt` lists the user's messages the source does not have yet: the new turns.
 2. Add their excerpt at the end of `source.txt`, as above. The spans are offsets and the sentence numbers do not change, so nothing already resolved moves.
@@ -75,7 +77,7 @@ When the session goes on and the user asks to update its structure, add to it wi
 4. The summary and the conclusion belong to the whole: write the summary anew in the new draft and take it out of the earlier one, and move `role` if the session now ends up somewhere else.
 5. `resolve` all the drafts again. If a quote in an earlier draft now occurs twice, add its sentence number there.
 
-Rebuild from the whole only when the user asks to sum up, or when the question has moved and the chunks no longer fit. For a session past about ten thousand characters, a rebuild may take a new excerpt that keeps only what the conclusion, the open questions and the reasons for what was set aside rest on.
+Rebuild from the whole at once when the user asks to sum up or the question has moved. For a session past about ten thousand characters, a rebuild may take a new excerpt that keeps only what the conclusion, the open questions and the reasons for what was set aside rest on.
 
 ## Care
 

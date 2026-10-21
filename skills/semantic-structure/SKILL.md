@@ -43,7 +43,7 @@ Read [references/semantic-structure.md](references/semantic-structure.md), the f
 
 Repeat `resolve` and `outline` until `resolve` reports no errors and the outline tells someone who has not read the text what it means.
 
-For a conversation session, `scripts/session_transcript.py` reads its transcript, shows it turn by turn and checks the excerpt word for word; see [references/conversation.md](references/conversation.md). When the session goes on and the user asks to update the structure, add the new turns at the end of `source.txt`, write a new draft with only what they add, and `resolve` all the drafts again; never re-cut what is there ("Update the structure" in the same file).
+For a conversation session, `scripts/session_transcript.py` reads its transcript, shows it turn by turn and checks the excerpt word for word; see [references/conversation.md](references/conversation.md). Chunks are cut from an understanding of the whole, so any change would mean looking over all of them; for a session that goes on, update lightly instead when the user asks: add the new turns at the end of `source.txt`, write a new draft with only what they add, and `resolve` all the drafts again, leaving the chunks that are there as they are. The chunks then drift from how the whole would cut them, so after a few updates, offer to rebuild from the whole ("Update the structure" in the same file).
 
 **Report** what the text means in a few sentences, then the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer the page.
 
