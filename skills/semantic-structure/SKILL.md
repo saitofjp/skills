@@ -43,7 +43,7 @@ Read [references/semantic-structure.md](references/semantic-structure.md), the f
 
 Repeat `resolve` and `outline` until `resolve` reports no errors and the outline tells someone who has not read the text what it means.
 
-For a conversation session, `scripts/session_transcript.py` reads its transcript, shows it turn by turn and checks the excerpt word for word; see [references/conversation.md](references/conversation.md). When a session overturns what it said earlier, give the lines `move` (`replaces`, `rejects`, `answers`) and open questions `question: true`, so the page shows what holds now. When the session goes on and the user asks to update the structure, add the new turns at the end of `source.txt`, write a new draft with only what they add, and `resolve` all the drafts again; never re-cut what is there ("Update the structure" in the same file).
+For a conversation session, `scripts/session_transcript.py` reads its transcript, shows it turn by turn and checks the excerpt word for word; see [references/conversation.md](references/conversation.md). When the session goes on and the user asks to update the structure, add the new turns at the end of `source.txt`, write a new draft with only what they add, and `resolve` all the drafts again; never re-cut what is there ("Update the structure" in the same file).
 
 **Report** what the text means in a few sentences, then the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer the page.
 
@@ -55,7 +55,6 @@ The page is a fixed template, [assets/viewer.html](assets/viewer.html), filled w
    - `--stage`: where the knob starts. `text` (default) shows how the text becomes a structure; `model`, `summary`, `linear`, `slides` or `table` start there for reading and exploring.
    - `--anchor`: which way the structure runs. Leave it at `auto`. Set `end` (from the conclusion, for reasons gathering into it, such as a ruling) or `start` (from the chunks no line comes into, for a text branching out from a question) only when the picture reads the wrong way.
    - `--theme`: `dark` (default), `light`, `auto` or `dopa`. Use `dopa` for the dopagaki look, for a show to screen-record, or when the user asks for dopa or dopagaki.
-   - `--state`: for lines with `move`, `now` (default) shows what holds now; `all` shows what is out, struck.
 2. **Build.**
    `python3 scripts/build_viewer.py model.json -o view.html [--stage …] [--focus ID] [--theme …] [--anchor …] [--no-autoplay]`
    It validates `model.json` and writes nothing while it has errors. Save next to `model.json` unless the user names another place. Options can also come as a JSON file with `--view`.

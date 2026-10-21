@@ -25,7 +25,6 @@ from pathlib import Path
 
 VERSION = "semantic-structure/1"
 PROVENANCE = ("explicit", "inferred", "abstracted", "uncertain")
-MOVES = ("replaces", "rejects", "answers")      # what a line does to its target as the text moves on
 
 _SENTENCE_END = set("。．！？!?")
 _CLOSERS = set("」』）)】〕］]\"'”’")
@@ -401,10 +400,6 @@ def validate_model(model):
                         warnings.append(f"{where} ({point['label']!r}) has no sourceSpans - point at the words that state it")
         if "polarity" in el and (kind != "relation" or el["polarity"] not in ("+", "-")):
             errors.append(f"{name}: polarity is for relations and must be \"+\" or \"-\"")
-        if "move" in el and (kind != "relation" or el["move"] not in MOVES):
-            errors.append(f"{name}: move is for relations and must be one of {', '.join(MOVES)}")
-        if "question" in el and (kind != "node" or not isinstance(el["question"], bool)):
-            errors.append(f"{name}: question is for nodes and must be true or false")
         if "role" in el and not isinstance(el["role"], str):
             errors.append(f"{name}: role must be a string")
         elif el.get("role") == "key" and not el.get("note"):

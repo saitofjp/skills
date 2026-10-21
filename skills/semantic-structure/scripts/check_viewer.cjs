@@ -15,8 +15,8 @@
   card and the minimap sit side by side without overlapping; the theme switches between dark, light and dopa: in dark,
   the field's lines are faint and of a hue of their own, apart from the model's lines; in dopa,
   dragging the knob stages nothing, ▶ stages the play as a show (the build-up and the summary's arrival once), even when
-  the system asks for less motion, dopa is not remembered, and the show stops with the theme; for lines with move,
-  state "now" hides what is out and "all" shows it struck; nothing overflows a phone-width screen. Exits 1 on the first failure.
+  the system asks for less motion, dopa is not remembered, and the show stops with the theme;
+  nothing overflows a phone-width screen. Exits 1 on the first failure.
 */
 'use strict';
 const fs = require('fs');
@@ -281,30 +281,6 @@ if (!file) { console.error('usage: node check_viewer.cjs view.html'); process.ex
     if (got.anchor !== want || got.cols !== cols) return fail(`${name}: expected ${want}, ${cols}; got ${got.anchor}, ${got.cols}`);
   }
   ok('the columns follow the shape of the text: a question branching out runs from the start, reasons gathering into a conclusion from it, and the view options win');
-
-  // what holds now: B replaces A; the conclusion C rejects B and answers Q; P is still open
-  const moved = shape([['q', '問：どこに置くか'], ['a', '案：Aに置く'], ['b', '案：Bに置く'], ['c', '結論：Cに置く', 'conclusion'], ['p', '問：いつ置くか']], []);
-  moved.nodes.forEach(n => { if (n.id === 'q' || n.id === 'p') n.question = true; });
-  moved.relations = [['b', 'a', 'replaces', 'Bの方が近い'], ['c', 'b', 'rejects', 'Bは高い'], ['c', 'q', 'answers', '答える']]
-    .map(([s, t, move, label]) => ({ id: `${s}-${t}`, source: s, target: t, type: label, label, move, provenance: 'inferred', sourceSpans: [] }));
-  for (const [state, want] of [
-    ['now', { order: 'q,c,p', gone: '', open: 'p', stubs: '✕ 案：Bに置く — Bは高い' }],
-    ['all', { order: 'q,a,b,c,p', gone: 'a,b', open: 'p', stubs: '' }],
-  ]) {
-    const p = await browser.newPage({ viewport: { width: 1280, height: 800 } });
-    p.on('pageerror', e => errors.push(e.message));
-    await p.setContent(withModel(moved, { state, stage: 'linear', autoplay: false }));
-    await p.waitForFunction(() => window.__semanticViewer, null, { timeout: 15000 });
-    const got = await p.evaluate(() => ({
-      order: window.__semanticViewer.order.map(o => o.id).join(','),
-      gone: [...document.querySelectorAll('#rep .card.gone')].map(e => e.dataset.node).join(','),
-      open: [...document.querySelectorAll('#rep .card.open')].map(e => e.dataset.node).join(','),
-      stubs: [...document.querySelectorAll('#rep .pt.stub')].map(e => e.textContent).join(' | '),
-    }));
-    await p.close();
-    for (const k in want) if (got[k] !== want[k]) return fail(`state ${state}: ${k} is ${JSON.stringify(got[k])}, expected ${JSON.stringify(want[k])}`);
-  }
-  ok('state now hides what is out and keeps a struck line for it, with the reason, on what took it out; all shows it struck; open questions are marked');
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.waitForTimeout(400);

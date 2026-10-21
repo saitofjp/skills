@@ -13,7 +13,6 @@ The contract is small on purpose. It fixes what a view needs in order to draw th
 - [Shape](#shape): a shortened example
 - [Required fields](#required-fields)
 - [Optional fields the viewer understands](#optional-fields-the-viewer-understands): `points`, `summary`, `parent`, `role`, `polarity`, `derivedFrom`, `note`, …
-- [What holds now](#what-holds-now): `move` and `question`, for a text that overturns its earlier parts
 - [Provenance](#provenance): `explicit` / `inferred` / `abstracted` / `uncertain`
 - [Source spans](#source-spans), and [writing them without counting characters](#writing-spans-without-counting-characters)
 - [What a view may and may not do](#what-a-view-may-and-may-not-do)
@@ -79,18 +78,8 @@ There is no type vocabulary.
 | `directed` | Relation | `false` when direction carries no meaning. Default `true`. |
 | `derivedFrom` | Node, Relation | Ids of the elements this one was inferred or abstracted from. The viewer walks an inference back to the text through it. |
 | `note` | Node, Relation, Point | Why: how it was inferred, what the competing readings are. |
-| `move` | Relation | `"replaces"`, `"rejects"` or `"answers"`: what the line does to its target as the text moves on. See [What holds now](#what-holds-now). |
-| `question` | Node | `true`: the chunk asks a question. |
 
 Any other field is allowed. The viewer ignores fields it does not know.
-
-## What holds now
-
-A conversation, a thread or a document grown by additions overturns its own earlier parts. The lines say it; no chunk records its state.
-
-- A chunk is **out** once a `replaces` or `rejects` line comes into it, and its parts go with it. It stays out: to go back to it, add a chunk for the return that replaces the one in force.
-- A question (`question: true`) is **open** while no chunk in force answers it.
-- What holds now is the chunks in force, what was set aside with its reason (the line's `label`), and the open questions. The viewer shows that by default.
 
 ## Provenance
 
@@ -140,6 +129,6 @@ Sentence numbers come from `semantic_structure.py sentences`. Spans that already
 python3 scripts/semantic_structure.py validate model.json
 ```
 
-Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`, a `move` other than the three, a `question` that is not `true` or `false`.
+Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`.
 
 Warnings: something that cannot be traced to the text, `uncertain` without a `note`, a duplicate relation, a summary that names no node, and, in one warning, the sentences no span touches. An untouched sentence is a prompt to check for something lost, not a quota.

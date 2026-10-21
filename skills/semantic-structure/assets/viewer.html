@@ -219,14 +219,6 @@ body[data-stop="text"] .seg.c { cursor: text; }
 .card.key { border: 2.5px solid var(--ink); border-left: 7px solid var(--ink); }
 .card.key > .kicker, .slide.key > .kicker { color: var(--ink); opacity: 1; }
 .card.prov-inferred, .card.prov-uncertain { border-style: dashed; border-left-style: solid; }
-/* what holds now: out (only with state "all") is faded and struck; "now" leaves a struck line for it on what took it out */
-.card.gone, .rep.table tr.gone, .slide.gone, .chip.gone { opacity: .5; }
-.card.gone .card.gone { opacity: 1; }
-.card.gone > .ch .head, .rep.table tr.gone .head, .slide.gone .head, .chip.gone span { text-decoration: line-through; }
-.pt.stub { color: var(--muted); }
-.card.concl .pt.stub, .slide.concl .pt.stub { color: var(--band-fg); opacity: .7; }
-.card.open { border-left: 5px double var(--ink-2); }
-.card.open > .kicker, .slide.open > .kicker { color: var(--ink); }
 .card.prov-abstracted { border-style: dotted; border-left-style: solid; }
 .card.reading { border-color: var(--ink-2); }
 .card.f0 { border-color: var(--focus); box-shadow: 0 0 0 3px var(--focus); }
@@ -394,7 +386,6 @@ body:not(.narrow) header { padding-right: 436px; }
 #mmSvg .mm-box.unit > rect { fill: var(--frame); stroke: var(--ink-2); stroke-width: 1.2; }
 #mmSvg .mm-box.concl > rect { fill: var(--band); stroke: var(--band); stroke-width: 1.6; }
 #mmSvg .mm-box.key > rect { stroke: var(--ink); stroke-width: 2.4; }
-#mmSvg .mm-box.gone > rect { opacity: .45; stroke-dasharray: 2 2; }
 #mmSvg .mm-box text { font: 700 8px/1 var(--mono); fill: var(--muted); pointer-events: none; }
 #mmSvg .mm-box.concl text { fill: var(--band-fg); }
 #mmSvg .mm-box.inview > rect { stroke: var(--ink); }
@@ -841,7 +832,7 @@ const I18N = {
     hintModel: 'The model. Drag the knob into a branch for its forms; the model then stays small in the corner, and text, form and model point at each other.', hintChunks: 'The text wrapped into chunks, passage by passage; on the right, the chunks in the text\'s order. Keep dragging to rise to the model, where they merge and take their places.', hintText: 'Drag the knob on the gauge (top right) to the right: the text is wrapped into chunks, the chunks become a model, and the model one sentence. ▶ plays it to the summary.',
     kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS', textOrder: 'IN TEXT ORDER',
     explicit: 'explicit — stated in the text', inferred: 'inferred — follows from the text, not stated', abstracted: 'abstracted — a grouping made while modeling', uncertain: 'uncertain — more than one reading',
-    problems: 'Some parts of the model could not be shown', replaced: 'REPLACED', rejected: 'REJECTED', open: 'OPEN',
+    problems: 'Some parts of the model could not be shown',
   },
   ja: {
     focusAxis: 'フォーカス', formAxis: '表現', stopText: '原文', stopChunks: '塊', stopModel: 'モデル',
@@ -854,7 +845,7 @@ const I18N = {
     hintModel: 'モデルの層。ゲージの枝へつまみを動かすと、線形・表・要約に変わる。表現のときは右下にモデルが小さく残り、原文・表現・モデルの3つがつながる。', hintChunks: '本文を一節ずつ塊に巻いた層。右は原文の順に並んだ塊の一覧。さらに右へ動かすと、塊がまとまって持ち場につき、モデルになる。', hintText: '右上のゲージのつまみを右へ動かすと、本文が塊に巻かれ、塊がモデルに、モデルが一言の要約になる。▶ で要約まで再生。',
     kWrap: 'WRAP', kForm: 'BUILD', kLink: 'LINK', kRep: 'FORM', chunksN: 'CHUNKS · 塊', textOrder: '原文の順',
     explicit: 'explicit — 原文に明示', inferred: 'inferred — 原文から推論（明示はない）', abstracted: 'abstracted — モデル化でまとめたもの', uncertain: 'uncertain — 複数の読みがありうる',
-    problems: 'モデルの一部を表示できませんでした', replaced: '置き換えた', rejected: '退けた', open: '未決',
+    problems: 'モデルの一部を表示できませんでした',
   },
 };
 const T = I18N[LANG] || I18N.en;
@@ -873,41 +864,6 @@ function readSpans(raw, owner) {
 }
 const prov = v => PROV.includes(v) ? v : 'explicit';
 
-/* ---- what holds now, from the lines with move (replaces, rejects, answers) ----
-   A chunk is out once a replaces or rejects line comes into it, and its parts go with it. A question is open while nothing
-   in force answers it. With state "now" (the default when there are such lines) what is out is hidden, and the chunk in
-   force that took it out keeps a struck line for it with the reason; "all" shows it struck. */
-const MOVES = ['replaces', 'rejects', 'answers'];
-const STUB = Symbol('stub');
-const STATE = (() => {
-  const raws = (Array.isArray(model.nodes) ? model.nodes : []).filter(n => n && typeof n.id === 'string');
-  const lines = (Array.isArray(model.relations) ? model.relations : []).filter(r => r && MOVES.includes(r.move));
-  const byId = new Map(raws.map(n => [n.id, n]));
-  const takers = new Map();
-  lines.forEach(r => { if (r.move !== 'answers' && byId.has(r.source)) takers.set(r.target, (takers.get(r.target) || []).concat(r)); });
-  const isOut = (id, seen = new Set()) => takers.has(id) || (byId.has(byId.get(id).parent) && !seen.has(id) && isOut(byId.get(id).parent, seen.add(id)));
-  const out = new Set(raws.map(n => n.id).filter(id => isOut(id)));
-  const answered = new Set(lines.filter(r => r.move === 'answers' && !out.has(r.source)).map(r => r.target));
-  const open = new Set(raws.filter(n => n.question === true && !out.has(n.id) && !answered.has(n.id)).map(n => n.id));
-  const view = lines.length ? (viewOpt.state === 'all' ? 'all' : 'now') : null;
-  if (view === 'now') {
-    const stubs = new Map();
-    takers.forEach((rs, id) => {
-      const r = rs.find(x => !out.has(x.source));
-      if (!r || out.has(byId.get(id).parent)) return;
-      const why = r.label || r.type || '', what = String(byId.get(id).label ?? id);
-      stubs.set(r.source, (stubs.get(r.source) || []).concat({ label: `✕ ${what}${why ? ' — ' + why : ''}`, sourceSpans: r.sourceSpans,
-        provenance: r.provenance, note: r.note, [STUB]: { what, why } }));
-    });
-    model = Object.assign({}, model, {
-      nodes: raws.filter(n => !out.has(n.id)).map(n => Object.assign({}, n, { points: (Array.isArray(n.points) ? n.points : []).concat(stubs.get(n.id) || []) })),
-      relations: (Array.isArray(model.relations) ? model.relations : []).filter(r => r && !out.has(r.source) && !out.has(r.target)),
-      summary: (Array.isArray(model.summary) ? model.summary : []).map(p => p && Array.isArray(p.refs) ? Object.assign({}, p, { refs: p.refs.filter(id => !out.has(id)) }) : p),
-    });
-  }
-  return { out, open, view, moveOf: id => (takers.get(id) || [{ move: '' }])[0].move };
-})();
-
 const nodes = new Map();
 const nodeList = [];
 const elsById = new Map();
@@ -918,15 +874,12 @@ const elsById = new Map();
     prov: prov(raw.provenance), spans: readSpans(raw, raw.id), role: raw.role, note: typeof raw.note === 'string' ? raw.note : '',
     derivedFrom: Array.isArray(raw.derivedFrom) ? raw.derivedFrom.filter(x => typeof x === 'string') : [],
     parentId: typeof raw.parent === 'string' ? raw.parent : null, parent: null, children: [], points: [], rels: [],
-    gone: STATE.out.has(raw.id) ? STATE.moveOf(raw.id) || 'with' : null, open: STATE.open.has(raw.id),
   };
-  if (n.gone) n.role = null;      // what is out is no longer the conclusion or the key
   const pts = Array.isArray(raw.points) ? raw.points : [];
   pts.forEach((p, k) => {
     if (!p || typeof p.label !== 'string') return;
     n.points.push({ kind: 'point', node: n, k: n.points.length, label: p.label, when: typeof p.when === 'string' ? p.when : '',
-      prov: p.provenance ? prov(p.provenance) : n.prov, spans: readSpans(p, `${n.id} point ${k + 1}`), note: typeof p.note === 'string' ? p.note : '',
-      stub: p[STUB] || null });
+      prov: p.provenance ? prov(p.provenance) : n.prov, spans: readSpans(p, `${n.id} point ${k + 1}`), note: typeof p.note === 'string' ? p.note : '' });
   });
   nodes.set(n.id, n); nodeList.push(n); elsById.set(n.id, n);
 });
@@ -940,7 +893,6 @@ const rels = [];
     prov: prov(raw.provenance), polarity: raw.polarity === '+' || raw.polarity === '-' ? raw.polarity : null, directed: raw.directed !== false,
     spans: readSpans(raw, raw.id), note: typeof raw.note === 'string' ? raw.note : '',
     derivedFrom: Array.isArray(raw.derivedFrom) ? raw.derivedFrom.filter(x => typeof x === 'string') : [],
-    move: MOVES.includes(raw.move) ? raw.move : null,
   };
   rels.push(r); elsById.set(r.id, r);
   s.rels.push(r); if (t !== s) t.rels.push(r);
@@ -1158,16 +1110,12 @@ function layoutText() { measureBoxes(); drawMarks(); }
    5. L2: the model's forms — structure, linear, table, summary
    ===================================================================== */
 function pointEl(p, noWhen) {
-  return h('li', { class: p.stub ? 'pt stub' : 'pt', 'data-key': `pt:${p.node.id}:${p.k}`, 'data-node': p.node.id, 'data-pt': p.k },
-    p.when && !noWhen ? h('span', { class: 'when' }, p.when) : null,
-    ...(p.stub ? ['✕ ', h('s', {}, p.stub.what), p.stub.why ? ' — ' + p.stub.why : ''] : [p.label]));
+  return h('li', { class: 'pt', 'data-key': `pt:${p.node.id}:${p.k}`, 'data-node': p.node.id, 'data-pt': p.k },
+    p.when && !noWhen ? h('span', { class: 'when' }, p.when) : null, p.label);
 }
-// the conclusion is what the text concludes; the key is what matters most to a reader when that is something else;
-// ✕ out (only with state "all"), ? an open question
-const roleCls = n => (n.role === 'conclusion' ? ' concl' : n.role === 'key' ? ' key' : '') + (n.gone ? ' gone' : '') + (n.open ? ' open' : '');
-const kickOf = n => [n.role === 'conclusion' ? T.conclusion : n.role === 'key' ? '◆ ' + T.key : '',
-  n.gone === 'replaces' ? '✕ ' + T.replaced : n.gone === 'rejects' ? '✕ ' + T.rejected : '', n.open ? '? ' + T.open : '', n.type].filter(Boolean).join(' · ');
-const MOVE_MARK = { replaces: '↻ ', rejects: '✕ ', answers: '✓ ' };
+// the conclusion is what the text concludes; the key is what matters most to a reader when that is something else
+const roleCls = n => n.role === 'conclusion' ? ' concl' : n.role === 'key' ? ' key' : '';
+const kickOf = n => [n.role === 'conclusion' ? T.conclusion : n.role === 'key' ? '◆ ' + T.key : '', n.type].filter(Boolean).join(' · ');
 function cardEl(n, withPoints) {
   const kick = kickOf(n);
   const c = h('div', { class: `card box d${Math.min(n.depth, 1)} prov-${n.prov}${roleCls(n)}`, 'data-key': `card:${n.id}`, 'data-node': n.id },
@@ -1250,7 +1198,7 @@ function renderSummary() {
   const covered = n => refd.has(n.id) || (n.parent ? covered(n.parent) : false);
   const rest = order.filter(n => !covered(n) && (!n.parent || covered(n.parent)));
   if (rest.length) repEl.append(h('div', { class: 'rest' }, h('span', { class: 'rest-label' }, T.other),
-    ...rest.map(n => h('span', { class: 'chip box' + roleCls(n), 'data-key': `card:${n.id}`, 'data-node': n.id }, h('b', { class: 'num' }, n.num), h('span', {}, n.label)))));
+    ...rest.map(n => h('span', { class: 'chip box', 'data-key': `card:${n.id}`, 'data-node': n.id }, h('b', { class: 'num' }, n.num), h('span', {}, n.label)))));
   // invisible anchors: where each chunk lands in the sentence
   const rr = repEl.getBoundingClientRect();
   const seen = new Set();
@@ -1408,7 +1356,7 @@ function drawLinks(grow = new Set()) {
     }
     const sg = r.polarity === '+' ? '＋ ' : r.polarity === '-' ? '− ' : '';
     const lbl = svgEl('g', { class: 'lbl', transform: `translate(${lx},${ly})` }, g);
-    const t = svgEl('text', {}, lbl); t.textContent = (MOVE_MARK[r.move] || '') + sg + r.label;
+    const t = svgEl('text', {}, lbl); t.textContent = sg + r.label;
     const w = Math.min(240, t.getComputedTextLength() + 16);
     lbl.insertBefore(svgEl('rect', { x: -w / 2, y: -10, width: w, height: 20, rx: 10 }), t);
     if (growing) {
@@ -2430,7 +2378,7 @@ function quote(sp) { const s = slice(sp.start, sp.end).replace(/\s+/g, ' '); ret
 function titleOf(x) {
   if (x.kind === 'node') return `${x.num}  ${x.label}`;
   if (x.kind === 'point') return `${x.node.num}  ${x.when ? x.when + '：' : ''}${x.label}`;
-  if (x.kind === 'rel') { const sg = x.polarity === '+' ? '（＋）' : x.polarity === '-' ? '（−）' : ''; return `${x.source.num} → ${x.target.num}  ${MOVE_MARK[x.move] || ''}${x.label}${sg}`; }
+  if (x.kind === 'rel') { const sg = x.polarity === '+' ? '（＋）' : x.polarity === '-' ? '（−）' : ''; return `${x.source.num} → ${x.target.num}  ${x.label}${sg}`; }
   if (x.kind === 'phrase') return `「${x.text}」`;
   return '';
 }
@@ -2853,7 +2801,7 @@ if (AUTOPLAY) {
 
 window.__semanticViewer = {
   get state() { return { stage: S.stage, stop: S.stop, rep: S.rep, u: sess ? sess.u : null, seg: sess ? sess.a + '-' + sess.b : null, moving: !!sess, playing, hover: S.hover ? keyOf(S.hover) : null }; },
-  problems, order: order.map(n => ({ id: n.id, num: n.num })), autoplay: AUTOPLAY, anchor: ANCHOR.side, viewState: STATE.view,
+  problems, order: order.map(n => ({ id: n.id, num: n.num })), autoplay: AUTOPLAY, anchor: ANCHOR.side,
   goTo: (st, o) => goTo(st, o),
   scrub: (a, b, u) => { if (!sess || sess.a !== a || sess.b !== b) { if (sess) endSeg(0); beginSeg(a, b); } frame(u); },
   release: () => release(),

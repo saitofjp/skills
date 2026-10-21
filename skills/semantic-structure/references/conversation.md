@@ -48,14 +48,14 @@ What it leaves out:
 
 ## The structure of a conversation
 
-- A chunk is usually one exchange: a question and what it settled. A long answer with distinct parts can be a chunk with parts. Several short turns on one point can be one chunk. Options the session weighs are a chunk each, so that each can be set aside on its own; a question still open is a chunk with `question: true`.
+- A chunk is usually one exchange: a question and what it settled. A long answer with distinct parts can be a chunk with parts. Several short turns on one point can be one chunk. Options the session weighs are a chunk each, so that each can be set aside on its own; a question still open is a chunk of its own.
 - The headline says what the exchange settled, not what was asked: 「K は多めに：K=8 が実力とピークの交差点」, not 「K について」.
 - A point says who said it when that matters, such as a decision, a push-back or a choice: 「ユーザー：比率Kの負荷は払わなくていい」.
 - Lines carry the moves of the dialogue:
   - a question that challenges an earlier answer;
-  - a correction ("I was wrong"): `move: "replaces"`;
-  - an option set aside: `move: "rejects"`, labelled with why;
-  - a decision that settles an open question: `move: "answers"`;
+  - a correction ("I was wrong");
+  - an option set aside, labelled with why;
+  - a decision that settles an open question;
   - something split off for later, such as a new issue.
 
   The order of the turns alone is not a line. A line that rests only on the order is `inferred`.
@@ -65,19 +65,17 @@ What it leaves out:
 
   Say in its `note` which turns show its weight.
 
-  A chunk that a `replaces` or `rejects` line comes into is out, and the page hides it by default, showing what holds now; see [semantic-structure.md](semantic-structure.md#what-holds-now).
-
 ## Update the structure
 
 When the session goes on and the user asks to update its structure, add to it with the same tools; never re-cut what is there.
 
 1. Collect the session again. `check WORK source.txt` lists the user's messages the source does not have yet: the new turns.
 2. Add their excerpt at the end of `source.txt`, as above. The spans are offsets and the sentence numbers do not change, so nothing already resolved moves.
-3. Write a new draft with only what the new turns add: their chunks, and lines to the old chunks, with `move` where they replace, reject or answer one.
+3. Write a new draft with only what the new turns add: their chunks, and lines to the old chunks they bear on, such as a correction, an option set aside or an answer.
 4. The summary and the conclusion belong to the whole: write the summary anew in the new draft and take it out of the earlier one, and move `role` if the session now ends up somewhere else.
 5. `resolve` all the drafts again. If a quote in an earlier draft now occurs twice, add its sentence number there.
 
-Rebuild from the whole only when the user asks to sum up, or when the question has moved and the chunks no longer fit. For a session past about ten thousand characters, a rebuild may take a new excerpt that keeps only what the chunks in force, the open questions and the reasons for what was set aside rest on.
+Rebuild from the whole only when the user asks to sum up, or when the question has moved and the chunks no longer fit. For a session past about ten thousand characters, a rebuild may take a new excerpt that keeps only what the conclusion, the open questions and the reasons for what was set aside rest on.
 
 ## Care
 

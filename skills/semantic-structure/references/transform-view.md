@@ -142,8 +142,6 @@ Without a conclusion, `end` runs from the chunks lines go into and none come out
 | Inverted card | `role: "conclusion"` |
 | Heavy frame, ◆ KEY (注目) | `role: "key"`: what matters most to a reader when that is not the conclusion |
 | Dashed border or line | `inferred` / `uncertain`. Dotted means `abstracted`. |
-| Struck line among the points, `✕ ~~what~~ — why` | With `state: "now"`: a chunk this one took out, which is hidden, and the reason. With `"all"`, the chunk itself is faded and struck. |
-| Double rule on the left, `? 未決` | An open question |
 
 In the dopa theme the meanings stay and the colours change: cyan is the focus, red `+`, blue `−`, violet the basis; the conclusion is a gold card and the key has a hot pink frame.
 
@@ -185,5 +183,4 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | `follow` | `false` stops the right side from following the text |
 | `autoplay` | `false` stops the page from playing by itself when it opens (default `true`) |
 | `anchor` | Which way the structure's columns run: `"auto"` (default), `"end"` (from the conclusion, on the right), `"start"` (from the chunks no line comes into, on the left). See [Forms](#forms). |
-| `state` | For a model whose lines have `move`: `"now"` (default) hides what is out ([What holds now](semantic-structure.md#what-holds-now)) and drops its lines and summary refs; `"all"` shows it faded and struck, and no longer as the conclusion or key. Line labels start with ↻ replaces, ✕ rejects, ✓ answers. |
 | `lang` | `"ja"` / `"en"`. Defaults to `metadata.language`, then to the script of the text. |

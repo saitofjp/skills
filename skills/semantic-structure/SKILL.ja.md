@@ -45,7 +45,7 @@ description: 文章が意味していることを、意味の塊と、塊どう�
 
 `resolve` がエラーを出さなくなり、読み上げだけで原文を読んでいない人に意味が伝わるまで、`resolve` と `outline` を繰り返す。
 
-会話セッションには `scripts/session_transcript.py` を使う。記録を読み込み、ターンごとに見せ、抄録が一字一句会話にあるかを確かめる。詳しくは [references/conversation.md](references/conversation.md)。会話が前に言ったことを覆すときは、線に `move`（`replaces`・`rejects`・`answers`）を、未決の問いに `question: true` を付け、ページがいま成り立っていることを見せるようにする。会話が続いて構造の更新を頼まれたら、新しいターンを `source.txt` の末尾に足し、それが足すものだけを新しい下書きにして、すべての下書きを `resolve` し直す。すでにある塊は切り直さない（同じファイルの "Update the structure"）。
+会話セッションには `scripts/session_transcript.py` を使う。記録を読み込み、ターンごとに見せ、抄録が一字一句会話にあるかを確かめる。詳しくは [references/conversation.md](references/conversation.md)。会話が続いて構造の更新を頼まれたら、新しいターンを `source.txt` の末尾に足し、それが足すものだけを新しい下書きにして、すべての下書きを `resolve` し直す。すでにある塊は切り直さない（同じファイルの "Update the structure"）。
 
 **報告**では、文章が何を意味しているかを数文で言い、そのうえで `model.json` のパス、読み上げ（outline）、そして `inferred` と `uncertain` の一覧を渡し、ユーザーが確かめられるようにする。どの塊が結論で、どの塊が key か、key の重みが原文のどこに表れているかも伝える。結論と key が同じ塊なら、そう言う。そのうえでページを勧める。
 
@@ -57,7 +57,6 @@ description: 文章が意味していることを、意味の塊と、塊どう�
    - `--stage`：つまみの初期位置。`text`（既定）は文章が構造になる様子を見せる。読んで探るなら `model`・`summary`・`linear`・`slides`・`table` から始める。
    - `--anchor`：構造の列の向き。ふつうは `auto` のままでよい。向きが読みにくいときだけ、`end`（結論から並べる。判決のように根拠が結論に集まる文章）か `start`（入ってくる線のない塊から並べる。問いから枝分かれする文章）を指定する。
    - `--theme`：`dark`（既定）・`light`・`auto`・`dopa`。ドパガキ風の見た目や、録画して見せるショーにしたいとき、またはユーザーが dopa やドパガキを求めたときは `dopa` にする。
-   - `--state`：`move` を持つ線があるとき、`now`（既定）はいま成り立っていることを、`all` は覆ったものも打ち消し線で見せる。
 2. **ビルドする。**
    `python3 scripts/build_viewer.py model.json -o view.html [--stage …] [--focus ID] [--theme …] [--anchor …] [--no-autoplay]`
    `model.json` を検証し、エラーがある間は何も書き出さない。保存先はユーザーの指定が無ければ `model.json` と同じ場所。オプションはJSONファイルにして `--view` で渡してもよい。
