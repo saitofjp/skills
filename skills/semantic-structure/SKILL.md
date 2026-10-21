@@ -47,6 +47,18 @@ For a conversation session, `scripts/session_transcript.py` reads its transcript
 
 **Report** what the text means in a few sentences, then the path to `model.json`, the outline, and what is `inferred` or `uncertain` so the user can check it. Say which chunk is the conclusion and which is the key, and what in the text shows the key's weight; if they are the same chunk, say so. Then offer the page.
 
+## Update the structure
+
+Use this when the text has been updated: a conversation went on, a document was revised. So that updating stays light even when it happens often, do not rebuild every time.
+
+- In an update, basically make only what was appended or changed into new chunks.
+- Leave the existing chunks as they are (role and summary may change with the diff).
+- When you can, hand the update to a subagent at low effort.
+
+`resolve diff.json --base model.json --source source.txt -o model.json` keeps the previous model and lays diff.json over it: an element with an existing id changes only the fields it gives (`null` removes one), and a span whose words have moved is found again.
+
+As a result, the chunks' roles drift from the whole. After several updates, rebuild from the whole.
+
 ## Show the structure
 
 The page is a fixed template, [assets/viewer.html](assets/viewer.html), filled with `model.json` by `scripts/build_viewer.py`. On the page, a gauge moves from the text through the chunks to the model, where the chunks take their places and the lines grow between them, and on to its forms. Read [references/transform-view.md](references/transform-view.md) when the user asks how a part of the page works, or before you change the template.

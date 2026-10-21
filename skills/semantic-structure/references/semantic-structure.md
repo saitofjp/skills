@@ -115,7 +115,7 @@ Write drafts with quotes and sentence numbers, and let `semantic_structure.py re
 "sourceSpans": [{ "quote": "原油価格", "occurrence": 2 }]    // its 2nd occurrence
 ```
 
-Sentence numbers come from `semantic_structure.py sentences`. Spans that already have `start`/`end` are checked, not moved. A long text can be drafted in several files; elements with the same id are merged (spans, points and `derivedFrom` are combined; for other fields the first value wins).
+Sentence numbers come from `semantic_structure.py sentences`. Spans that already have `start`/`end` are checked, not moved. A long text can be drafted in several files; elements with the same id are merged (spans, points and `derivedFrom` are combined; for other fields the first value wins). An update (`resolve --base`) lays the drafts over the previous model instead: a field a draft gives replaces the old one, and a span whose words no longer sit at its offsets is moved to their occurrence nearest its old place, or is an error when the words are gone.
 
 ## What a view may and may not do
 
