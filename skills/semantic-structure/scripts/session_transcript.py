@@ -18,13 +18,11 @@ Commands (standard library only):
   session_transcript.py collect WORK FILE... | -
       Read transcripts or list_events pages into WORK/records.jsonl (deduplicated,
       so pages may be added in any order). Prints has_more / first_id per page.
-  session_transcript.py turns WORK [--tz +09:00] [--after source.txt]
+  session_transcript.py turns WORK [--tz +09:00]
       One line per turn: time, the user's message, how much Claude wrote.
-  session_transcript.py dialogue WORK [--tz +09:00] [--tools] [--after source.txt] [-o FILE]
+  session_transcript.py dialogue WORK [--tz +09:00] [--tools] [-o FILE]
       The dialogue to read and copy from: what the user typed and Claude's text,
       with markdown markup removed (**, `, heading #, link URLs).
-      --after shows only the turns after the last one source.txt quotes: what an
-      update of its structure has to read.
   session_transcript.py check WORK source.txt [--speaker REGEX]
       Check that every line of source.txt, other than speaker lines, appears word
       for word in the dialogue, and list the user's messages it leaves out.
@@ -226,32 +224,6 @@ def text_of(r):
     return "\n".join(t for k, t in r["parts"] if k == "text")
 
 
-def last_quoted(turns, source, speaker=DEFAULT_SPEAKER):
-    """Index of the last turn that some line of the source (8 characters or more, not a speaker line) comes from."""
-    pattern = re.compile(speaker)
-    lines = [l.strip() for l in source.split("\n")]
-    lines = [l for l in lines if len(l) >= 8 and not pattern.fullmatch(l)]
-    last = None
-    for i, t in enumerate(turns):
-        said = [r for r in ([t["user"]] if t["user"] else []) + t["items"] if not r["system"]]
-        text = "\n".join(norm(text_of(r)) for r in said)
-        if any(l in text for l in lines):
-            last = i
-    return last
-
-
-def turns_after(turns, source_path, tz):
-    """(first index to show, a line saying where the source leaves off) for --after."""
-    if not source_path:
-        return 0, None
-    i = last_quoted(turns, open(source_path, encoding="utf-8").read())
-    if i is None:
-        return 0, "%s quotes none of these turns; showing all of them" % source_path
-    typed = sum(1 for t in turns[i + 1:] if t["user"])
-    return i + 1, "%s quotes turns up to T%d (%s); %d turn(s) after it, %d typed by the user" % (
-        source_path, i, clock(turns[i]["ts"], tz), len(turns) - i - 1, typed)
-
-
 def norm(text):
     text = re.sub(r"\[([^\]]+)\]\((?:https?://|/)[^)]*\)", r"\1", text)
     text = text.replace("**", "").replace("`", "")
@@ -323,13 +295,7 @@ def cmd_turns(a):
     recs = load(a.work)
     print("%d records, %s – %s" % (len(recs), clock(recs[0]["ts"], tz, "%Y-%m-%d %H:%M"), clock(recs[-1]["ts"], tz, "%Y-%m-%d %H:%M")))
     total = 0
-    turns = turns_of(recs)
-    first, where = turns_after(turns, a.after, tz)
-    if where:
-        print(where)
-    for i, t in enumerate(turns):
-        if i < first:
-            continue
+    for i, t in enumerate(turns_of(recs)):
         u = t["user"]
         texts = [text_of(r) for r in t["items"] if r["role"] == "assistant" and text_of(r)]
         inserted = sum(1 for r in t["items"] if r["role"] == "user")
@@ -344,13 +310,7 @@ def cmd_turns(a):
 def cmd_dialogue(a):
     tz = tzinfo(a.tz)
     out = []
-    turns = turns_of(load(a.work))
-    first, where = turns_after(turns, a.after, tz)
-    if where:
-        sys.stderr.write(where + "\n")
-    for i, t in enumerate(turns):
-        if i < first:
-            continue
+    for i, t in enumerate(turns_of(load(a.work))):
         u = t["user"]
         if u is not None:
             out.append("\n=== T%d USER %s\n%s" % (i, clock(t["ts"], tz), norm(text_of(u))))
@@ -407,12 +367,10 @@ def main():
     s = sub.add_parser("turns")
     s.add_argument("work")
     s.add_argument("--tz", default="+00:00")
-    s.add_argument("--after", metavar="SOURCE", help="only the turns after the last one SOURCE quotes")
     s = sub.add_parser("dialogue")
     s.add_argument("work")
     s.add_argument("--tz", default="+00:00")
     s.add_argument("--tools", action="store_true", help="also show one line per tool call")
-    s.add_argument("--after", metavar="SOURCE", help="only the turns after the last one SOURCE quotes")
     s.add_argument("-o", "--output")
     s = sub.add_parser("check")
     s.add_argument("work")

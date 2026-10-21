@@ -12,9 +12,8 @@ The contract is small on purpose. It fixes what a view needs in order to draw th
 
 - [Shape](#shape): a shortened example
 - [Required fields](#required-fields)
-- [Optional fields the viewer understands](#optional-fields-the-viewer-understands): `points`, `summary`, `parent`, `role`, `polarity`, `derivedFrom`, `note`, `move`, …
-- [State: what holds now](#state-what-holds-now): what is out, what is open, for a text whose later parts overturn earlier ones
-- [A text that grows](#a-text-that-grows): adding to the end without re-cutting
+- [Optional fields the viewer understands](#optional-fields-the-viewer-understands): `points`, `summary`, `parent`, `role`, `polarity`, `derivedFrom`, `note`, …
+- [What holds now](#what-holds-now): `move` and `question`, for a text that overturns its earlier parts
 - [Provenance](#provenance): `explicit` / `inferred` / `abstracted` / `uncertain`
 - [Source spans](#source-spans), and [writing them without counting characters](#writing-spans-without-counting-characters)
 - [What a view may and may not do](#what-a-view-may-and-may-not-do)
@@ -80,12 +79,18 @@ There is no type vocabulary.
 | `directed` | Relation | `false` when direction carries no meaning. Default `true`. |
 | `derivedFrom` | Node, Relation | Ids of the elements this one was inferred or abstracted from. The viewer walks an inference back to the text through it. |
 | `note` | Node, Relation, Point | Why: how it was inferred, what the competing readings are. |
-| `move` | Relation | What the line does to its target as the text moves on: `"replaces"` (the source takes the target's place), `"rejects"` (the source rules the target out), `"answers"` (the source answers the target, a question). `type` stays free text. See [State](#state-what-holds-now). |
-| `targetPoints` | Relation | On a `replaces` or `rejects` line: the numbers (from 1) of the target's points that fall, when only they do. The chunk stays. |
-| `question` | Node | `true`: the chunk asks a question. It is open until a chunk in force answers it. |
-| `update` | Node, Relation | Which update added it (1, 2, …). Written by `semantic_structure.py append`. |
+| `move` | Relation | `"replaces"`, `"rejects"` or `"answers"`: what the line does to its target as the text moves on. See [What holds now](#what-holds-now). |
+| `question` | Node | `true`: the chunk asks a question. |
 
 Any other field is allowed. The viewer ignores fields it does not know.
+
+## What holds now
+
+A conversation, a thread or a document grown by additions overturns its own earlier parts. The lines say it; no chunk records its state.
+
+- A chunk is **out** once a `replaces` or `rejects` line comes into it, and its parts go with it. It stays out: to go back to it, add a chunk for the return that replaces the one in force.
+- A question (`question: true`) is **open** while no chunk in force answers it.
+- What holds now is the chunks in force, what was set aside with its reason (the line's `label`), and the open questions. The viewer shows that by default; `outline` marks what is out ✕ and what is open ?.
 
 ## Provenance
 
@@ -97,27 +102,6 @@ Any other field is allowed. The viewer ignores fields it does not know.
 | `uncertain` | The text allows more than one reading. | `sourceSpans` of the ambiguous words; `note` gives the readings. |
 
 When torn between `explicit` and `inferred`, choose `inferred`. The text's own hedging (「〜とみられる」) is not uncertainty in the model.
-
-## State: what holds now
-
-Most texts are read as a whole. Some move on and overturn their own earlier parts: a conversation corrects itself, sets options aside and answers its questions; a thread or a document grown by additions does the same. For these, the lines with `move` say what holds now, and a view or a tool computes it from them; nothing in a chunk records it.
-
-- A chunk is **out** once a `replaces` or `rejects` line comes into it, and its parts go out with it. It stays out even if what took it out goes out later; to go back to it, a chunk for the return replaces the one in force.
-- A line with `targetPoints` takes out only those points of its target.
-- Every other chunk is **in force**.
-- A chunk with `question: true` is **open** while no chunk in force answers it. If its answer goes out, it is open again, unless what replaced the answer answers it too.
-- Lines that take chunks out, together with the parts that go with their parent, must not loop.
-
-What holds now is the chunks in force, what was set aside with the reasons (the `label` of the lines that took it out), and the open questions. `semantic_structure.py state` reads it back, and the viewer opens on it (`state: "now"`), hiding what is out.
-
-## A text that grows
-
-A text that grows at its end, such as a conversation that goes on, can be added to without re-cutting: `semantic_structure.py append model.json draft.json --source source.txt -o model.json` (with `--check` in place of `-o`, it writes nothing and reads back what would hold).
-
-- The source must be the model's `sourceText` with new text at its end, so every span stays where it is.
-- The draft adds chunks and lines; an id the model has is an error, except a node entry with only `id` and `role`, which moves a role (`null` takes it off). The draft's `summary` replaces the model's; its `metadata` is merged over the model's.
-- Quotes are looked up in the added text only; `sentence` and `sentences` point anywhere.
-- What it adds is marked with `update`.
 
 ## Source spans
 
@@ -148,7 +132,6 @@ Sentence numbers come from `semantic_structure.py sentences`. Spans that already
 
 - A view never derives meaning from `sourceText`. It displays the text and highlights spans.
 - A view never changes the model. Presentation choices live in a separate view config.
-- A view may show only what holds now, computed from `move` as [State](#state-what-holds-now) says, as long as it can show everything.
 - A view tolerates missing optional fields, empty spans and unknown fields.
 
 ## Validation
@@ -157,6 +140,6 @@ Sentence numbers come from `semantic_structure.py sentences`. Spans that already
 python3 scripts/semantic_structure.py validate model.json
 ```
 
-Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`, a `move` other than the three, `targetPoints` off a `replaces` or `rejects` line or naming a point the target does not have, a `question` that is not `true` or `false`, an `update` that is not a positive integer, lines that take chunks out in a loop.
+Errors: a bad shape, duplicate ids, a relation endpoint that is not a node, an unknown provenance, an offset out of range or not matching its `text`, an unresolved draft span, `explicit` without spans, `abstracted` without `derivedFrom`, an unknown id in `derivedFrom` or `summary`, a `parent` that is not a node or that loops, a point without a label, a `polarity` other than `+` / `-`, a `move` other than the three, a `question` that is not `true` or `false`, `replaces` / `rejects` lines that loop.
 
-Warnings: something that cannot be traced to the text, `uncertain` without a `note`, a duplicate relation, a summary that names no node, an `answers` line into a chunk not marked `question`, a conclusion or key that is out, a summary that names a chunk that is out, and, in one warning, the sentences no span touches. An untouched sentence is a prompt to check for something lost, not a quota.
+Warnings: something that cannot be traced to the text, `uncertain` without a `note`, a duplicate relation, a summary that names no node, and, in one warning, the sentences no span touches. An untouched sentence is a prompt to check for something lost, not a quota.

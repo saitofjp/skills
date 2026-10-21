@@ -6,7 +6,7 @@ What [`assets/viewer.html`](../assets/viewer.html) does. Keep this file in step 
 
 - The gauge and the play: the overview below, [The gauge is continuous](#the-gauge-is-continuous), [The play](#the-play)
 - The look: [Concept](#concept), [Colors](#colors), [The field](#the-field), [The dopa theme](#the-dopa-theme)
-- What is shown: [Layers](#layers), [Forms](#forms) (and which way the structure runs), [The details card](#the-details-card), [Now and all](#now-and-all) (what holds now, for a text that overturns itself)
+- What is shown: [Layers](#layers), [Forms](#forms) (and which way the structure runs), [The details card](#the-details-card)
 - How the text and the notes are linked: [Source ↔ model mapping](#source--model-mapping)
 - Controls and options: [Interaction](#interaction), [View options](#view-options)
 
@@ -101,15 +101,6 @@ The details of what is in focus are docked along the bottom of the model's side,
 - **Where.** At the chunks and the model, it spans the bottom of the model's side. At a form, it sits to the left of the minimap, at least as tall as it. Where the side is too narrow for both, the minimap shrinks first, then the card goes above it. On a phone it sits just above the HUD. It hides while the knob moves.
 - **Inside.** The headline, then its provenance and note, then its passages, points, lines, parts and evidence in columns that fill the card's width. It is for reading, with no buttons.
 
-## Now and all
-
-For a model whose lines carry `move` (`replaces`, `rejects`, `answers`), the page computes what holds now as [the contract](semantic-structure.md#state-what-holds-now) says, and the header gets a `now` / `all` switch. It is built from the model as the page opens, so every layer, form, the minimap, the field and the gauge's figures agree.
-
-- **now** (the default; `state: "now"`, `--state now`): what is out is not shown. On the chunk in force that took it out (or, when that is out too, the chunk in force that took that out), a struck line is left in its place among the points: `✕ ~~what fell~~ — why`, the why being the label of the line that took it out, and its words in the text being that line's. A point that fell (`targetPoints`) leaves the same line and is gone from its chunk. Lines into or out of what is out are not drawn, and the summary's phrases lose the chunks that are out. In the text, the passages of what is out are no longer wrapped.
-- **all** (`state: "all"`, `--state all`): everything, with what is out faded and its headline struck, its kicker saying `✕ 置き換えた` / `✕ 退けた` (`REPLACED` / `REJECTED`), and the points that fell struck. What is out is no longer the conclusion or the key.
-- In both: an open question's kicker says `? 未決` (`? OPEN`) and its card has a double rule on the left; the chunks the latest update added say `NEW`; a line's label starts with `↻` (replaces), `✕` (rejects) or `✓` (answers).
-- **Switching** reloads the page as `#state=…&stage=…`: at the stage the reader was at, and without the play on opening. A model without `move` has no switch.
-
 ## Forms
 
 | Form | What it shows |
@@ -151,7 +142,7 @@ Without a conclusion, `end` runs from the chunks lines go into and none come out
 | Inverted card | `role: "conclusion"` |
 | Heavy frame, ◆ KEY (注目) | `role: "key"`: what matters most to a reader when that is not the conclusion |
 | Dashed border or line | `inferred` / `uncertain`. Dotted means `abstracted`. |
-| Faded, headline struck | Out (only in `all`); a struck point fell. In `now`, a struck line among the points is what this chunk took out |
+| Struck line among the points, `✕ ~~what~~ — why` | With `state: "now"`: a chunk this one took out, which is hidden, and the reason. With `"all"`, the chunk itself is faded and struck. |
 | Double rule on the left, `? 未決` | An open question |
 
 In the dopa theme the meanings stay and the colours change: cyan is the focus, red `+`, blue `−`, violet the basis; the conclusion is a gold card and the key has a hot pink frame.
@@ -182,7 +173,6 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | Click | Bring the other side to it at once: a word scrolls the model to its note, a note scrolls the text to its words. Nothing is pinned. |
 | Move off, or Esc | Clear the focus |
 | Double click a card | Go down to its passage |
-| now / all (header, for a model with `move`) | What holds now, or everything with what is out struck. Reloads the page at the same stage |
 | light / dark / dopa (header) | Switch the theme. Dark is the default; a choice of light or dark is remembered in the browser. dopa is not remembered; its show plays with ▶. |
 
 ## View options
@@ -195,5 +185,5 @@ Its assembly follows the knob: shattered into triangles at L0, half assembled at
 | `follow` | `false` stops the right side from following the text |
 | `autoplay` | `false` stops the page from playing by itself when it opens (default `true`) |
 | `anchor` | Which way the structure's columns run: `"auto"` (default), `"end"` (from the conclusion, on the right), `"start"` (from the chunks no line comes into, on the left). See [Forms](#forms). |
-| `state` | For a model with `move`: `"now"` (default), what holds now; `"all"`, everything with what is out struck. See [Now and all](#now-and-all). |
+| `state` | For a model whose lines have `move`: `"now"` (default) hides what is out ([What holds now](semantic-structure.md#what-holds-now)) and drops its lines and summary refs; `"all"` shows it faded and struck, and no longer as the conclusion or key. Line labels start with ↻ replaces, ✕ rejects, ✓ answers. |
 | `lang` | `"ja"` / `"en"`. Defaults to `metadata.language`, then to the script of the text. |

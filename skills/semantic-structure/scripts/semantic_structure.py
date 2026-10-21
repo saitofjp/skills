@@ -3,25 +3,17 @@
 
 Standard library only.
 
-  semantic_structure.py sentences SOURCE.txt [--json] [--after MODEL.json]
+  semantic_structure.py sentences SOURCE.txt [--json]
       Number the sentences of a source text (use the numbers in draft spans).
-      --after shows only the sentences added since MODEL.json was built.
   semantic_structure.py resolve DRAFT.json [DRAFT2.json ...] --source SOURCE.txt -o MODEL.json
       Merge drafts written in parts, turn quote spans into offsets, validate.
       Writes nothing while there are errors.
-  semantic_structure.py append MODEL.json DRAFT.json [...] --source SOURCE.txt (-o MODEL.json | --check)
-      Add chunks and lines for text added at the end of the source, without
-      re-cutting what is there. Quotes are looked up in the added text.
-      --check writes nothing and reads back what would hold after it.
   semantic_structure.py validate MODEL.json [--json]
       Check the contract. Exit status 1 when there are errors.
   semantic_structure.py outline MODEL.json
       Read the notes back: the summary, then every chunk with its points and the
       relations to other chunks, in the order of the notes. It should explain the
       text to someone who has not read it.
-  semantic_structure.py state MODEL.json
-      What holds now: the chunks in force with what each overturned, the open
-      questions, what is out and why, and the signs that a full review is due.
   semantic_structure.py summary MODEL.json
       A Markdown overview for checking the evidence against the text.
 """
@@ -34,8 +26,6 @@ from pathlib import Path
 VERSION = "semantic-structure/1"
 PROVENANCE = ("explicit", "inferred", "abstracted", "uncertain")
 MOVES = ("replaces", "rejects", "answers")      # what a line does to its target as the text moves on
-OVERTURN = ("replaces", "rejects")
-LONG_TEXT = 10000                                # about what fits in one model
 
 _SENTENCE_END = set("。．！？!?")
 _CLOSERS = set("」』）)】〕］]\"'”’")
@@ -116,12 +106,11 @@ def _clip(s, width=40):
 # ---------------------------------------------------------------- resolve
 
 
-def resolve_span(span, text, sentences, added=0):
+def resolve_span(span, text, sentences):
     """Return a span with start/end/text; draft keys (quote, sentence(s), occurrence) are consumed.
 
     Draft forms: "quote", {"quote", "sentence"|"sentences", "occurrence"}, a whole sentence
     {"sentence": n}, or a passage of whole sentences {"sentences": [first, last]}.
-    A quote without sentence numbers is looked up from offset `added` on: in an update, the added text.
     """
     if isinstance(span, str):
         span = {"quote": span}
@@ -146,7 +135,7 @@ def resolve_span(span, text, sentences, added=0):
         return {"start": s, "end": e, "text": text[s:e], **extra}
     if not isinstance(quote, str) or not quote:
         raise ContractError("a span needs start/end, a non-empty quote, or sentence numbers")
-    lo, hi, where = within or (added, len(text), "the added text" if added else "the text")
+    lo, hi, where = within or (0, len(text), "the text")
     sentence = span.get("sentence")
     hits = _find_all(text, quote, lo, hi)
     occurrence = span.get("occurrence")
@@ -159,8 +148,7 @@ def resolve_span(span, text, sentences, added=0):
     elif len(hits) == 1:
         start = hits[0]
     elif not hits:
-        hint = _not_found_hint(quote, text, sentences, sentence if within else (None if not added else 0))
-        raise ContractError(f"{quote!r} not found in {where}{hint}")
+        raise ContractError(f"{quote!r} not found in {where}{_not_found_hint(quote, text, sentences, sentence)}")
     else:
         found_in = sorted({_sentence_of(h, sentences) for h in hits} - {None})
         raise ContractError(
@@ -187,11 +175,8 @@ def _sentence_range(span, sentences):
 
 
 def _not_found_hint(quote, text, sentences, sentence):
-    """`sentence` is the sentence the quote was looked for in, 0 for the added text, None for the whole text."""
     if sentence is not None:
         elsewhere = sorted({_sentence_of(h, sentences) for h in _find_all(text, quote, 0, len(text))} - {None})
-        if elsewhere and sentence == 0:
-            return f'; it occurs in the earlier text, sentence(s) {elsewhere}: add "sentence" to point there'
         if elsewhere:
             return f"; it occurs in sentence(s) {elsewhere}"
     squeeze = lambda s: "".join(s.split())
@@ -262,11 +247,8 @@ def _dedupe_spans(spans):
     return sorted(out, key=lambda sp: (sp["start"], sp["end"]))
 
 
-def resolve_model(draft, source_text=None, added=0):
-    """Return (model, errors). Fills sourceText from source_text and resolves every span.
-
-    `added` is where the text added in an update starts; quotes are looked up from there on.
-    """
+def resolve_model(draft, source_text=None):
+    """Return (model, errors). Fills sourceText from source_text and resolves every span."""
     errors = []
     model = dict(draft)
     if source_text is not None:
@@ -287,7 +269,7 @@ def resolve_model(draft, source_text=None, added=0):
             resolved = []
             for k, span in enumerate(element.get("sourceSpans") or [], 1):
                 try:
-                    resolved.append(resolve_span(span, text, sentences, added))
+                    resolved.append(resolve_span(span, text, sentences))
                 except ContractError as exc:
                     errors.append(f"{element.get('id', '?')}: span {k}: {exc}")
             element["sourceSpans"] = _dedupe_spans(resolved)
@@ -297,7 +279,7 @@ def resolve_model(draft, source_text=None, added=0):
                 spans = []
                 for k, span in enumerate(point.get("sourceSpans") or [], 1):
                     try:
-                        spans.append(resolve_span(span, text, sentences, added))
+                        spans.append(resolve_span(span, text, sentences))
                     except ContractError as exc:
                         errors.append(f"{element.get('id', '?')}: point {n}: span {k}: {exc}")
                 point["sourceSpans"] = _dedupe_spans(spans)
@@ -384,7 +366,6 @@ def validate_model(model):
             kinds[eid] = kind
             elements.append((kind, el))
 
-    node_by_id = {el["id"]: el for kind, el in elements if kind == "node"}
     seen_edges = {}
     for kind, el in elements:
         eid = el["id"]
@@ -422,19 +403,8 @@ def validate_model(model):
             errors.append(f"{name}: polarity is for relations and must be \"+\" or \"-\"")
         if "move" in el and (kind != "relation" or el["move"] not in MOVES):
             errors.append(f"{name}: move is for relations and must be one of {', '.join(MOVES)}")
-        if "targetPoints" in el:
-            picked = el["targetPoints"]
-            target = node_by_id.get(el.get("target"), {})
-            count = len(target.get("points") or []) if isinstance(target.get("points"), list) else 0
-            if kind != "relation" or el.get("move") not in OVERTURN:
-                errors.append(f"{name}: targetPoints is for replaces and rejects lines")
-            elif (not isinstance(picked, list) or not picked or len(set(map(repr, picked))) != len(picked)
-                  or not all(type(k) is int and 1 <= k <= count for k in picked)):
-                errors.append(f"{name}: targetPoints must list numbers of the target's points, 1 to {count}")
         if "question" in el and (kind != "node" or not isinstance(el["question"], bool)):
             errors.append(f"{name}: question is for nodes and must be true or false")
-        if "update" in el and (type(el["update"]) is not int or el["update"] < 1):
-            errors.append(f"{name}: update must be a positive integer (append writes it)")
         if "role" in el and not isinstance(el["role"], str):
             errors.append(f"{name}: role must be a string")
         elif el.get("role") == "key" and not el.get("note"):
@@ -469,8 +439,6 @@ def validate_model(model):
                     errors.append(f"{name}: {end} {ref!r} must be a node id ({what})")
             if el.get("source") == el.get("target"):
                 warnings.append(f"{name}: source and target are the same node")
-            if el.get("move") == "answers" and node_by_id.get(el.get("target"), {}).get("question") is not True:
-                warnings.append(f"{name}: answers {el.get('target')!r}, which is not marked question: true")
             if "directed" in el and not isinstance(el["directed"], bool):
                 errors.append(f"{name}: directed must be true or false")
             key = (el.get("source"), el.get("target"), el.get("type"))
@@ -515,23 +483,11 @@ def validate_model(model):
             cur = parents.get(cur)
         if cur is not None and cur in seen and cur == start:
             errors.append(f"node {start}: parent chain loops back to itself")
-
     if not errors:
-        loop = _overturn_loop(model)
+        loop = _takeout_loop(model)
         if loop:
-            errors.append("replaces/rejects lines loop: " + " → ".join(loop) + " - a chunk cannot be taken out by "
-                          "what it takes out; to go back to an earlier chunk, add a chunk for the return that "
-                          "replaces the one in force")
-    if not errors and any(isinstance(r, dict) and r.get("move") for r in lists["relations"]):
-        st = model_state(model)
-        for nid in list(st["out"]) + list(st["outWith"]):
-            if node_by_id[nid].get("role") in ("conclusion", "key"):
-                warnings.append(f"node {nid}: marked {node_by_id[nid]['role']} but it is out; "
-                                "mark what holds now (append can move a role)")
-        for k, part in enumerate(summary or [], 1):
-            gone = [r for r in part.get("refs") or [] if r in st["out"] or r in st["outWith"]]
-            if gone:
-                warnings.append(f"summary part {k} refers to {', '.join(gone)}, which is out; say what holds now")
+            errors.append("replaces/rejects lines loop: " + " → ".join(loop) + " - to go back to an earlier chunk, "
+                          "add a chunk for the return that replaces the one in force")
 
     if text and not errors:
         covered = [False] * len(text)
@@ -550,19 +506,14 @@ def validate_model(model):
 # ---------------------------------------------------------------- state
 
 
-def _takes_out(r):
-    """A replaces or rejects line that takes out its whole target (not only some of its points)."""
-    return r.get("move") in OVERTURN and not r.get("targetPoints")
-
-
-def _overturn_loop(model):
-    """A loop of lines that take chunks out (with parts falling with their parent), as a list of ids, or None."""
+def _takeout_loop(model):
+    """A loop of replaces/rejects lines (a part goes out with its parent), as a list of ids, or None."""
     step = {}
     for n in model["nodes"]:
         if n.get("parent"):
             step.setdefault(n["parent"], []).append(n["id"])
     for r in model["relations"]:
-        if _takes_out(r):
+        if r.get("move") in ("replaces", "rejects"):
             step.setdefault(r["source"], []).append(r["target"])
     color, path = {}, []
 
@@ -589,213 +540,21 @@ def _overturn_loop(model):
 
 
 def model_state(model):
-    """What holds now, from the lines that move the text on (`move`: replaces, rejects, answers).
+    """(out, open): the chunks that are out, and the questions still open.
 
-    A chunk is out once a replaces or rejects line comes into it, and its parts go with it. It stays out
-    even if what took it out is out later: to go back to it, a chunk for the return replaces the one in
-    force. A line with targetPoints takes out only those points. A question is open while no chunk in
-    force answers it. Returns
-      out       {node id: [ids of the lines that took it out]}
-      outWith   {node id: the id of the out chunk it is part of}
-      outPoints {node id in force: {point index from 0: [line ids]}}
-      inForce   [node ids, in model order]
-      open      [ids of the questions in force that nothing in force answers]
+    A chunk is out once a replaces or rejects line comes into it, and its parts go with it; it stays out.
+    A question (question: true) is open while no chunk in force answers it.
     """
     nodes = {n["id"]: n for n in model["nodes"]}
-    out, out_points = {}, {}
-    for r in model["relations"]:
-        if r.get("move") not in OVERTURN:
-            continue
-        if r.get("targetPoints"):
-            for k in r["targetPoints"]:
-                out_points.setdefault(r["target"], {}).setdefault(k - 1, []).append(r["id"])
-        else:
-            out.setdefault(r["target"], []).append(r["id"])
-    out_with = {}
-    for nid, n in nodes.items():
-        if nid in out:
-            continue
-        seen, up = set(), n.get("parent")
-        while up in nodes and up not in seen:
-            if up in out:
-                out_with[nid] = up
-                break
-            seen.add(up)
-            up = nodes[up].get("parent")
-    gone = set(out) | set(out_with)
-    in_force = [nid for nid in nodes if nid not in gone]
-    answered = {r["target"] for r in model["relations"] if r.get("move") == "answers" and r["source"] not in gone}
-    return {
-        "out": out,
-        "outWith": out_with,
-        "outPoints": {nid: pts for nid, pts in out_points.items() if nid not in gone},
-        "inForce": in_force,
-        "open": [nid for nid in in_force if nodes[nid].get("question") is True and nid not in answered],
-    }
+    taken = {r["target"] for r in model["relations"] if r.get("move") in ("replaces", "rejects")}
 
+    def is_out(nid, seen=()):
+        return nid in taken or (nodes[nid].get("parent") in nodes and nid not in seen
+                                and is_out(nodes[nid]["parent"], seen + (nid,)))
 
-def review_signs(model, st=None):
-    """Signs that the structure no longer fits what holds now and should be rebuilt from the whole."""
-    st = st or model_state(model)
-    nodes = {n["id"]: n for n in model["nodes"]}
-    gone = set(st["out"]) | set(st["outWith"])
-    signs = []
-    moved = [nid for nid in st["out"] if nodes[nid].get("question") is True]
-    if moved:
-        signs.append("the question moved: " + "; ".join(f"{nodes[q]['label']!r} is out" for q in moved))
-    last = max((n.get("update", 0) for n in model["nodes"] if type(n.get("update")) is int), default=0)
-    if last:
-        added = {nid for nid, n in nodes.items() if n.get("update") == last}
-        earlier = set(nodes) - added
-        touches = any((r["source"] in added) != (r["target"] in added) for r in model["relations"]
-                      if r["source"] in nodes and r["target"] in nodes)
-        touches = touches or any(nodes[nid].get("parent") in earlier for nid in added)
-        if added and earlier and not touches:
-            signs.append(f"update {last} added {len(added)} chunk(s) with no line to the earlier ones: "
-                         "the session may have moved to another question")
-    if len(nodes) >= 4 and len(gone) * 2 > len(nodes):
-        signs.append(f"{len(gone)} of {len(nodes)} chunks are out: the chunks follow the history more than what holds now")
-    for nid, pts in st["outPoints"].items():
-        total = len(nodes[nid].get("points") or [])
-        if len(pts) >= 2 and len(pts) * 2 >= total:
-            signs.append(f"{len(pts)} of the {total} points of {nodes[nid]['label']!r} are out: the chunk no longer fits")
-    if len(model["sourceText"]) > LONG_TEXT:
-        signs.append(f"the text is {len(model['sourceText']):,} characters, over about {LONG_TEXT:,}")
-    return signs
-
-
-def state_report(model):
-    st = model_state(model)
-    nodes = {n["id"]: n for n in model["nodes"]}
-    gone = set(st["out"]) | set(st["outWith"])
-    order = note_order(model)
-    number = {nid: num for nid, num, _ in order}
-    outgoing = {}
-    for r in model["relations"]:
-        outgoing.setdefault(r["source"], []).append(r)
-    last = max((n.get("update", 0) for n in model["nodes"] if type(n.get("update")) is int), default=0)
-
-    def name(nid):
-        return f"{number[nid]} {nodes[nid]['label']}"
-
-    def took(r):
-        what = name(r["target"])
-        if r.get("targetPoints"):
-            pts = nodes[r["target"]].get("points") or []
-            what += ": " + " / ".join(pts[k - 1]["label"] for k in r["targetPoints"])
-        return f"{what} ({r.get('label') or r['type']})"
-
-    out = ["# State: what holds now", "",
-           "Read this as someone who will act on it: what holds, what was set aside and why, what is still open.", "",
-           f"{len(st['inForce'])} of {len(nodes)} chunks in force, {len(st['open'])} open question(s), {len(gone)} out.", ""]
-    if model.get("summary"):
-        out += ["## Summary", "", "".join(part["text"] for part in model["summary"]), ""]
-    out += ["## In force", ""]
-    for nid, num, depth in order:
-        if nid in gone:
-            continue
-        n, pad = nodes[nid], "    " * depth
-        mark = ("★ " if n.get("role") == "conclusion" else "◆ " if n.get("role") == "key" else "") \
-            + ("? " if nid in st["open"] else "")
-        new = "  [new]" if last and n.get("update") == last else ""
-        out.append(f"{pad}{mark}{num} {n['label']}{new}")
-        struck = st["outPoints"].get(nid, {})
-        for k, pt in enumerate(n.get("points") or []):
-            out.append(f"{pad}    - {'✕ ' if k in struck else ''}{pt['label']}")
-        for r in outgoing.get(nid, []):
-            if r.get("move") in OVERTURN:
-                out.append(f"{pad}    ✕ {r['move']} {took(r)}")
-            elif r.get("move") == "answers":
-                out.append(f"{pad}    ✓ answers {name(r['target'])}")
-    if st["open"]:
-        out += ["", "## Open questions", ""] + [f"- {name(q)}" for q in st["open"]]
-    if gone:
-        out += ["", "## Out", ""]
-        rels = {r["id"]: r for r in model["relations"]}
-        for nid, num, _ in order:
-            if nid in st["out"]:
-                done = {"replaces": "replaced", "rejects": "rejected"}
-                by = "; ".join(f"{done[rels[rid]['move']]} by {name(rels[rid]['source'])} ({rels[rid].get('label') or rels[rid]['type']})"
-                               for rid in st["out"][nid])
-                out.append(f"- ✕ {name(nid)}: {by}")
-            elif nid in st["outWith"]:
-                out.append(f"- ✕ {name(nid)}: with {name(st['outWith'][nid])}")
-    signs = review_signs(model, st)
-    out += ["", "## Review", ""]
-    out += [f"- {s}" for s in signs] if signs else ["No sign that a full review is due."]
-    if signs:
-        out += ["", "Rebuild from the whole when the user agrees, or when they ask to sum up."]
-    return "\n".join(out) + "\n"
-
-
-# ---------------------------------------------------------------- append
-
-
-def append_model(model, drafts, source_text):
-    """Return (model, errors, warnings, report): the model with the drafts' new chunks and lines added.
-
-    The source must be the model's text with text added at its end, so the spans already there stay
-    put. Nothing in the model is re-cut: an id it already has is an error, except a node entry with
-    only `id` and `role`, which moves a role (null removes it). The drafts' summary replaces the
-    model's, and their metadata is merged over it. Every element added gets `update`: the count of updates.
-    """
-    old = model["sourceText"]
-    text = normalize_text(source_text)
-    if not text.startswith(old):
-        return model, ["the source must be the model's text with new text added at its end; "
-                       "to change the text before it, rebuild with resolve"], [], ""
-    try:
-        draft, warnings = merge_drafts(drafts)
-    except ContractError as exc:
-        return model, [str(exc)], [], ""
-    errors = []
-    kinds = {el["id"]: kind for kind in ("nodes", "relations") for el in model[kind]}
-    fresh, roles = {"nodes": [], "relations": []}, []
-    for kind in ("nodes", "relations"):
-        for el in draft[kind]:
-            eid = el.get("id") if isinstance(el, dict) else None
-            if eid not in kinds:
-                fresh[kind].append(el)
-            elif kind == "nodes" and kinds[eid] == "nodes" and set(el) == {"id", "role"}:
-                roles.append((eid, el["role"]))
-            else:
-                errors.append(f"{eid}: already in the model. append adds chunks and lines and never changes them "
-                              "(a node entry with only id and role moves a role); to re-cut, rebuild with resolve")
-    added, errs = resolve_model({**fresh, "metadata": {}}, text, added=len(old))
-    errors += errs
-    update = 1 + max((el.get("update", 0) for kind in ("nodes", "relations") for el in model[kind]
-                      if type(el.get("update")) is int), default=0)
-    result = json.loads(json.dumps(model, ensure_ascii=False))
-    result["sourceText"] = text
-    for kind in ("nodes", "relations"):
-        for el in added[kind]:
-            if isinstance(el, dict):
-                el["update"] = update
-            result[kind].append(el)
-    by_id = {n["id"]: n for n in result["nodes"]}
-    for eid, role in roles:
-        if role is None:
-            by_id[eid].pop("role", None)
-        else:
-            by_id[eid]["role"] = role
-    if "summary" in draft:
-        result["summary"] = draft["summary"]
-    elif result.get("summary"):
-        warnings.append("the summary is the one from before this update; say what the whole comes to now")
-    result.setdefault("metadata", {}).update(draft.get("metadata") or {})
-    for key, value in draft.items():
-        if key not in ("nodes", "relations", "metadata", "summary", "sourceText", "version"):
-            result[key] = value
-    if not errors:
-        more_errors, more = validate_model(result)
-        errors += more_errors
-        warnings += more
-    n_nodes, n_rels = len(fresh["nodes"]), len(fresh["relations"])
-    report = (f"update {update}: {len(text) - len(old):,} characters of text added; "
-              f"{n_nodes} chunk(s) and {n_rels} line(s) added" + (f"; {len(roles)} role(s) moved" if roles else ""))
-    if not (n_nodes or n_rels or roles or len(text) > len(old)):
-        warnings.append("nothing was added")
-    return result, errors, warnings, report
+    out = {nid for nid in nodes if is_out(nid)}
+    answered = {r["target"] for r in model["relations"] if r.get("move") == "answers" and r["source"] not in out}
+    return out, [nid for nid, n in nodes.items() if n.get("question") is True and nid not in out and nid not in answered]
 
 
 # ---------------------------------------------------------------- summary
@@ -865,7 +624,7 @@ def summarize(model):
         src = by_id.get(r["source"], {}).get("label", r["source"])
         tgt = by_id.get(r["target"], {}).get("label", r["target"])
         arrow = "—" if r.get("directed", True) is False else "→"
-        word = (r.get("label") or r["type"]) + (f" [{r['move']}]" if r.get("move") else "")
+        word = r.get("label") or r["type"]
         out.append(f"| {cell(r['id'])} | {cell(src)} —{cell(word)}{arrow} {cell(tgt)} | {r['provenance']} | {cell(quotes(r))} |")
     review = [el for el in nodes + relations if el["provenance"] != "explicit"]
     if review:
@@ -944,8 +703,8 @@ def outline(model):
         move = f" [{r['move']}]" if r.get("move") else ""
         return (r.get("label") or r["type"]) + {"+": " (+)", "-": " (-)"}.get(r.get("polarity"), "") + move + prov(r)
 
-    st = model_state(model)
-    gone = set(st["out"]) | set(st["outWith"])
+    gone, open_questions = model_state(model)
+
     covered = _coverage(model)
     out = ["# Notes: the model read back", "",
            "Read this without the text. It should tell what the text means, not retell it part by part:",
@@ -953,7 +712,7 @@ def outline(model):
            "what it rests on (numbers, conditions, timing, who); the arrows say how the meanings bear on",
            "each other, toward what the text comes to.", "",
            f"{len(nodes)} nodes, {len(model['relations'])} relations."
-           + (f" ✕ marks what is out, ? an open question; `state` reads back only what holds now." if gone or st["open"] else ""), ""]
+           + (" ✕ marks a chunk that is out, ? an open question." if gone or open_questions else ""), ""]
 
     summary = model.get("summary")
     if summary:
@@ -968,12 +727,11 @@ def outline(model):
         pad = "    " * depth
         where = _sentence_list(n.get("sourceSpans") or [], sentences) or "no words of its own"
         star = "★ " if n.get("role") == "conclusion" else "◆ " if n.get("role") == "key" else ""
-        star = ("✕ " if nid in gone else "? " if nid in st["open"] else "") + star
+        star = ("✕ " if nid in gone else "? " if nid in open_questions else "") + star
         out.append(f"{pad}{star}{num} {n['label']}{prov(n)}  ({where})")
-        for k, pt in enumerate(n.get("points") or []):
+        for pt in n.get("points") or []:
             when = f"{pt['when']}: " if pt.get("when") else ""
-            struck = "✕ " if k in st["outPoints"].get(nid, {}) else ""
-            out.append(f"{pad}    - {struck}{when}{pt['label']}{prov(pt)}")
+            out.append(f"{pad}    - {when}{pt['label']}{prov(pt)}")
         for r in incoming.get(nid, []):
             arrow = "—" if r.get("directed", True) is False else "←"
             out.append(f"{pad}    {arrow} {number[r['source']]} {nodes[r['source']]['label']}: {word(r)}")
@@ -1032,24 +790,14 @@ def main(argv=None):
     p = sub.add_parser("sentences", help="number the sentences of a source text")
     p.add_argument("source")
     p.add_argument("--json", action="store_true")
-    p.add_argument("--after", metavar="MODEL", help="show only the sentences added since MODEL was built")
     p = sub.add_parser("resolve", help="merge drafts, turn quote spans into offsets and validate")
     p.add_argument("drafts", nargs="+")
     p.add_argument("--source", help="the source text file (sets sourceText)")
     p.add_argument("-o", "--output", required=True)
-    p = sub.add_parser("append", help="add chunks and lines for text added at the end of the source")
-    p.add_argument("model")
-    p.add_argument("drafts", nargs="+")
-    p.add_argument("--source", required=True, help="the source text: the model's text with the new text at its end")
-    out = p.add_mutually_exclusive_group(required=True)
-    out.add_argument("-o", "--output")
-    out.add_argument("--check", action="store_true", help="write nothing; read back what would hold after the update")
     p = sub.add_parser("validate", help="check a model against the contract")
     p.add_argument("model")
     p.add_argument("--json", action="store_true")
     p = sub.add_parser("outline", help="read the notes back: summary, chunks, points, relations")
-    p.add_argument("model")
-    p = sub.add_parser("state", help="what holds now, what is out and why, the open questions, and whether to review")
     p.add_argument("model")
     p = sub.add_parser("summary", help="print a Markdown overview of a model")
     p.add_argument("model")
@@ -1057,17 +805,12 @@ def main(argv=None):
 
     if args.command == "sentences":
         text = normalize_text(Path(args.source).read_text(encoding="utf-8"))
-        ranges = list(enumerate(split_sentences(text), 1))
-        if args.after:
-            built = _read_json(args.after).get("sourceText") or ""
-            if not text.startswith(built):
-                sys.exit(f"{args.source} does not start with the text {args.after} was built on")
-            ranges = [(k, (s, e)) for k, (s, e) in ranges if s >= len(built)]
+        ranges = split_sentences(text)
         if args.json:
             print(json.dumps([{"sentence": k, "start": s, "end": e, "text": text[s:e]}
-                              for k, (s, e) in ranges], ensure_ascii=False, indent=2))
+                              for k, (s, e) in enumerate(ranges, 1)], ensure_ascii=False, indent=2))
         else:
-            for k, (s, e) in ranges:
+            for k, (s, e) in enumerate(ranges, 1):
                 print(f"{k:>3} [{s}:{e}] {text[s:e]}")
         return 0
 
@@ -1089,27 +832,6 @@ def main(argv=None):
         print(f"wrote {args.output}")
         return 0
 
-    if args.command == "append":
-        model = _read_json(args.model)
-        errors, warnings = validate_model(model)
-        if errors:
-            _report(errors, warnings)
-            print(f"{args.model} has errors; {args.output} not written")
-            return 1
-        drafts = [_read_json(path) for path in args.drafts]
-        model, errors, warnings, report = append_model(model, drafts, Path(args.source).read_text(encoding="utf-8"))
-        _report(errors, warnings)
-        if errors:
-            print("nothing written" if args.check else f"{args.output} not written")
-            return 1
-        if args.check:
-            print(f"{report}; nothing written\n")
-            sys.stdout.write(state_report(model))
-            return 0
-        Path(args.output).write_text(dumps(model) + "\n", encoding="utf-8")
-        print(f"{report}\nwrote {args.output}")
-        return 0
-
     model = _read_json(args.model)
     errors, warnings = validate_model(model)
     if args.command == "validate":
@@ -1118,7 +840,7 @@ def main(argv=None):
     if errors:
         _report(errors, warnings)
         return 1
-    sys.stdout.write({"outline": outline, "state": state_report, "summary": summarize}[args.command](model))
+    sys.stdout.write(outline(model) if args.command == "outline" else summarize(model))
     return 0
 
 
