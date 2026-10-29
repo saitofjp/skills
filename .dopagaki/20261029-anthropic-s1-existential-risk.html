@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>S-1 人類存亡リスク</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Dela+Gothic+One&family=DotGothic16&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap">
+<style>
+:root{
+  /* Layout: a fixed 1920x1080 stage, letterboxed and scaled to the window. Layers: bg canvas > S-1 text ticker > scene DOM > spark canvas > flashes > scanlines > HUD */
+  --void:#06050c; --ink:#fff4ec; --red:#ff2340; --amber:#ffb21a; --cyan:#22e8ff; --mag:#ff2fd0; --gold:#ffd75a; --dim:#a39cc4;
+  --f-impact:"Dela Gothic One","Hiragino Kaku Gothic StdN","Noto Sans JP",sans-serif;
+  --f-jp:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+  --f-game:"DotGothic16","Zen Kaku Gothic New",monospace;
+  --f-ui:"Chakra Petch","Zen Kaku Gothic New",ui-monospace,monospace;
+  color-scheme:dark;
+}
+html,body{height:100%;margin:0;background:#000;color:var(--ink);overflow:hidden}
+[hidden]{display:none!important}
+#frame{position:fixed;inset:0;background:#000;overflow:hidden;cursor:pointer;user-select:none;-webkit-user-select:none}
+#stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;overflow:hidden;background:var(--void);transform-origin:50% 50%;font-family:var(--f-jp);color:var(--ink);-webkit-font-smoothing:antialiased}
+#stage *{box-sizing:border-box}
+#shaker,#scenes,.scene,#fx,.fxl,#ticker{position:absolute;inset:0}
+#stage canvas{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block;pointer-events:none}
+#ticker{overflow:hidden;opacity:0;color:var(--ink);font:600 26px/1 var(--f-ui);letter-spacing:.04em;white-space:nowrap;pointer-events:none}
+#ticker .row{position:absolute;left:0;display:flex;width:max-content;animation:tick 60s linear infinite}
+#ticker .row span{padding-right:90px}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+#fx{pointer-events:none;z-index:20}
+#noise{position:absolute;left:-50%;top:-50%;width:200%;height:200%;pointer-events:none;opacity:.05;z-index:30;animation:noise .4s steps(4) infinite}
+@keyframes noise{0%{transform:translate(0,0)}25%{transform:translate(-7%,4%)}50%{transform:translate(5%,-6%)}75%{transform:translate(-3%,-2%)}100%{transform:translate(0,0)}}
+#scan{position:absolute;inset:0;pointer-events:none;z-index:31;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.2) 0 2px,transparent 2px 5px)}
+#vig{position:absolute;inset:0;pointer-events:none;z-index:32;background:radial-gradient(ellipse at center,transparent 58%,rgba(0,0,0,.7) 100%)}
+@keyframes blink{50%{opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* shared type */
+.abs{position:absolute}
+.cx{left:0;right:0;text-align:center}
+.h{opacity:0}
+.imp{font-family:var(--f-impact);font-weight:400;letter-spacing:.01em}
+.jp{font-family:var(--f-jp);font-weight:900}
+.ui{font-family:var(--f-ui);font-weight:700;letter-spacing:.06em}
+.game{font-family:var(--f-game)}
+.dim{color:var(--dim)}
+.ca{text-shadow:-6px 0 0 rgba(255,35,64,.85),6px 0 0 rgba(34,232,255,.85),0 0 50px rgba(255,255,255,.25)}
+mark{background:var(--amber);color:#000;padding:0 6px}
+.hl{color:var(--amber);border-bottom:8px solid var(--amber)}
+.tag{display:inline-block;background:var(--ink);color:var(--void);padding:4px 14px;margin-right:16px;letter-spacing:.12em}
+.cutin{display:grid;place-items:center;box-shadow:0 0 0 10px #000,0 0 80px rgba(0,0,0,.7);z-index:6;white-space:nowrap}
+.stamp{white-space:nowrap;border:8px solid currentColor;padding:.04em .3em;border-radius:14px;background:rgba(0,0,0,.45);z-index:7;text-shadow:0 0 30px currentColor}
+.sweep{position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);pointer-events:none}
+.wipe{left:-260px;right:-260px;background:repeating-linear-gradient(-45deg,var(--amber) 0 60px,#000 60px 120px);box-shadow:0 0 0 10px #000}
+.shard{background:var(--void);overflow:hidden}
+
+/* 0 hook */
+.s0-band{display:grid;place-items:center;box-shadow:0 0 0 12px #000,0 20px 90px rgba(255,35,64,.55)}
+.s0-band .imp{font-size:170px;line-height:1;color:var(--ink);text-shadow:8px 8px 0 #000}
+
+/* 1 scan */
+.s1-search{display:flex;align-items:center;gap:24px;padding:0 30px;border:4px solid var(--amber);background:rgba(6,5,12,.85);font-family:var(--f-ui);font-weight:700}
+.s1-search .lbl{font-size:24px;color:var(--amber);letter-spacing:.2em}
+.s1-search .q{font-size:62px;letter-spacing:.03em;color:var(--ink)}
+.caret{width:7px;height:64px;background:var(--amber);animation:blink .8s steps(1) infinite}
+.s1-page .lbl{font:700 26px var(--f-ui);color:var(--amber);letter-spacing:.3em}
+.s1-page .num{font:700 170px/.95 var(--f-ui);color:var(--ink);font-variant-numeric:tabular-nums;text-shadow:0 0 34px rgba(255,178,26,.65)}
+.s1-beam{background:linear-gradient(90deg,transparent,var(--amber),transparent);box-shadow:0 0 34px 10px rgba(255,178,26,.55)}
+.s1-card{display:grid;grid-template-columns:150px 160px 1fr;align-items:center;background:rgba(10,8,20,.94);border:4px solid var(--amber);box-shadow:10px 10px 0 rgba(255,178,26,.3)}
+.s1-card .hit{height:100%;display:grid;place-items:center;background:var(--amber);color:#000;font-size:50px}
+.s1-card .pg{font:700 56px var(--f-ui);text-align:center;color:var(--amber)}
+.s1-card .tx{padding-right:26px;min-width:0}
+.s1-card .jp{font-size:38px;line-height:1.25}
+.s1-card .en{font:600 23px var(--f-ui);color:var(--dim);margin-top:8px}
+.s1-combo .w{font:700 30px var(--f-ui);color:var(--amber);letter-spacing:.16em}
+.s1-combo .n{font-family:var(--f-impact);font-size:270px;line-height:1;color:var(--gold);text-shadow:0 0 44px rgba(255,215,90,.7),8px 8px 0 #000}
+.s1-combo .x{font-size:140px;margin-right:8px}
+.s1-combo .w2{font-family:var(--f-impact);font-size:52px;letter-spacing:.3em}
+.s1-mega{display:flex;flex-direction:column;align-items:center;gap:8px}
+.s1-mega .q{font:700 70px var(--f-ui);color:var(--amber);letter-spacing:.08em}
+.s1-mega .big{font-family:var(--f-impact);font-size:400px;line-height:.95;color:var(--gold);text-shadow:0 0 70px rgba(255,215,90,.8),10px 10px 0 #000}
+.s1-mega .jp{font-size:58px;background:var(--ink);color:var(--void);padding:8px 34px}
+
+/* 2 conditions */
+.s2-ij{font-size:124px}
+.s2-ie{font-size:42px;color:var(--cyan);margin-top:14px}
+.s2-panel{overflow:hidden;visibility:hidden}
+.s2-panel .stripes{position:absolute;inset:-300px;background:repeating-linear-gradient(-30deg,rgba(0,0,0,.13) 0 46px,transparent 46px 92px);animation:stripes .9s linear infinite}
+@keyframes stripes{to{transform:translateX(184px)}}
+.s2-panel .num{position:absolute;right:30px;top:-110px;font-size:700px;line-height:1;color:#000;opacity:.16}
+.s2-panel .lab{position:absolute;left:60px;top:50px;font:700 30px var(--f-ui);letter-spacing:.2em}
+.s2-panel .en{position:absolute;left:0;right:0;top:250px;text-align:center;font-size:200px;line-height:1;rotate:-6deg;white-space:nowrap}
+.s2-panel .en.two{top:200px;font-size:170px}
+.s2-panel .en.echo{color:transparent;-webkit-text-stroke:3px currentColor;opacity:0}
+.s2-panel:nth-child(2) .en.echo{-webkit-text-stroke-color:#04121a}
+.s2-panel .jpbar{position:absolute;left:0;right:0;top:770px;height:180px;background:#000;color:var(--ink);display:grid;place-items:center;font-family:var(--f-jp);font-weight:900;font-size:112px}
+.s2-ret{color:#1a0e00}
+.s2-quad{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;padding:14px;background:#000}
+.s2-quad>div{display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--f-impact);font-size:84px;line-height:1.05;text-align:center;padding:0 30px}
+.s2-quad small{display:block;font-family:var(--f-jp);font-weight:900;font-size:52px;margin-top:16px}
+
+/* 3 status */
+.win{background:linear-gradient(180deg,rgba(20,22,78,.95),rgba(8,9,38,.95));border:4px solid #fff;border-radius:14px;box-shadow:inset 0 0 0 4px #2a2f8a,0 0 0 4px rgba(0,0,0,.6),0 0 60px rgba(140,90,255,.25);color:var(--ink);transform-origin:50% 50%}
+.s3-top{display:flex;align-items:center;gap:28px;padding:0 36px;font-size:46px}
+.s3-top .game{color:var(--gold)}
+.s3-top .src{margin-left:auto;font:700 24px var(--f-ui);color:var(--dim);letter-spacing:.12em}
+.s3-left{padding:28px 36px;display:flex;flex-direction:column;gap:14px}
+.s3-unit{display:flex;align-items:center;gap:26px}
+.s3-emb{width:120px;height:120px;position:relative;flex:none}
+.s3-emb i{position:absolute;inset:14px;border:5px solid var(--mag);animation:spin 5s linear infinite}
+.s3-emb i:nth-child(2){inset:30px;border-color:var(--cyan);animation-direction:reverse;animation-duration:3s}
+.s3-emb i:nth-child(3){inset:46px;border-color:var(--gold);animation-duration:2s;background:rgba(255,215,90,.25)}
+.s3-unit .nm{font-family:var(--f-game);font-size:48px;line-height:1.1}
+.s3-unit .sub{font-size:24px;font-weight:700;color:var(--dim)}
+.s3-stat .k{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--f-game);font-size:30px}
+.s3-stat .k small{font:700 17px var(--f-ui);color:var(--dim);letter-spacing:.1em;margin-left:8px}
+.s3-stat em{font-style:normal;font:700 24px var(--f-ui);color:var(--dim)}
+.s3-stat em.hot{color:var(--red);animation:blink .3s steps(1) infinite}
+.s3-trk{height:24px;border:3px solid #fff;background:#000;margin-top:6px;padding:2px}
+.s3-fill{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--mag) 70%,var(--red))}
+.s3-note{font-size:22px;font-weight:700;color:var(--dim);line-height:1.5;margin-top:auto}
+.s3-right{padding:22px 32px}
+.s3-right .ttl{font-family:var(--f-game);font-size:34px;color:var(--gold);padding-bottom:10px;border-bottom:2px dashed rgba(255,255,255,.35);margin-bottom:6px}
+.s3-right .ttl span{font:700 22px var(--f-ui);letter-spacing:.2em;color:var(--dim);margin-left:10px}
+.s3-row{position:relative;display:grid;grid-template-columns:96px 1fr;align-items:center;height:72px;opacity:0;overflow:hidden}
+.s3-row .nw{font:700 20px var(--f-ui);color:#000;background:var(--gold);padding:4px 10px;justify-self:start;letter-spacing:.1em}
+.s3-row .j{font-size:33px;font-weight:900;line-height:1.15}
+.s3-row .e{font:600 17px var(--f-ui);color:var(--dim);letter-spacing:.03em}
+.s3-row .redact{position:absolute;left:96px;right:0;top:10px;bottom:10px;background:#000;transform:scaleX(0);transform-origin:0 50%}
+.s3-dlg{padding:28px 46px}
+.s3-dlg .t{font-size:52px;font-weight:900;min-height:64px}
+.s3-dlg .e{font:600 25px var(--f-ui);color:var(--dim);margin-top:14px}
+.s3-dlg .more{position:absolute;right:34px;bottom:18px;font-size:30px;color:var(--gold);animation:blink .8s steps(1) infinite}
+.s3-cut{display:flex;flex-direction:column;align-items:center;gap:10px}
+
+/* 4 incident */
+.tape{background:repeating-linear-gradient(-45deg,var(--amber) 0 34px,#000 34px 68px);overflow:hidden;display:flex;align-items:center;box-shadow:0 0 0 4px #000;z-index:4}
+.tape .roll{white-space:nowrap;background:#000;color:var(--amber);font:700 28px var(--f-ui);padding:6px 24px;letter-spacing:.2em;animation:roll 14s linear infinite}
+.tape .roll.r{animation-direction:reverse}
+@keyframes roll{to{transform:translateX(-40%)}}
+.term{background:rgba(0,0,0,.78);border:3px solid rgba(255,35,64,.75);padding:34px 38px;font-family:var(--f-game);font-size:37px;line-height:1.75;color:var(--ink)}
+.term .bad{color:var(--red)}
+.bignum .v{font-family:var(--f-impact);font-size:200px;line-height:1;color:var(--ink);text-shadow:0 0 44px rgba(255,35,64,.85),8px 8px 0 #000;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bignum .v small{font-size:90px}
+.bignum .l{font-size:42px;font-weight:900;margin-top:4px}
+.bignum.hrs .v{font-size:150px}
+.bignum.hrs .v small{font-size:70px}
+.s4-access{background:var(--red);color:var(--ink);font-size:78px;font-weight:900;padding:16px 0;box-shadow:0 0 0 8px #000;font-family:var(--f-jp)}
+.s4-step{font-family:var(--f-jp);font-weight:900;font-size:124px;line-height:1.18;text-shadow:0 0 40px rgba(255,35,64,.7),6px 6px 0 #000}
+.s4-admin .a{font-family:var(--f-impact);font-size:180px;line-height:1;color:var(--red);-webkit-text-stroke:5px var(--ink);text-shadow:0 0 70px rgba(255,35,64,.95)}
+.s4-admin .s{font-size:64px;margin-top:20px;display:inline-block;background:var(--ink);color:var(--void);padding:6px 30px}
+.s4-chips{display:flex;gap:26px}
+.s4-chip{flex:1;font-size:25px;font-weight:700;line-height:1.3;padding:14px 14px;border:3px solid rgba(255,255,255,.22);color:rgba(255,244,236,.32);text-align:center;display:grid;place-items:center;position:relative}
+.s4-chip.on{border-color:var(--red);color:var(--ink);background:rgba(255,35,64,.28)}
+.s4-chip+.s4-chip::before{content:"▶";position:absolute;left:-24px;top:50%;margin-top:-12px;color:var(--red);font-size:20px}
+.calm{background:rgba(12,12,20,.95);border:3px solid rgba(255,244,236,.5);padding:44px 60px}
+.calm .ttl{font:700 26px var(--f-ui);letter-spacing:.3em;color:var(--dim)}
+.calm .jp{font-size:62px;margin:16px 0 18px}
+.calm .sm{font-size:34px;font-weight:500;line-height:1.65;color:#ddd8ee}
+
+/* 5 acceleration */
+.s5-g{position:absolute;left:210px;width:1500px}
+.s5-g .k{display:flex;justify-content:space-between;align-items:baseline;font-size:42px;font-weight:900;margin-bottom:12px}
+.s5-g .k span:last-child{font:700 26px var(--f-ui);letter-spacing:.15em;color:var(--dim)}
+.s5-trk{position:relative;height:84px;border:4px solid var(--ink);background:rgba(0,0,0,.65);padding:6px}
+.s5-fill{height:100%;width:0}
+.s5-fill.m{background:linear-gradient(90deg,#7a1468,var(--mag));box-shadow:0 0 30px rgba(255,47,208,.6)}
+.s5-fill.c{background:linear-gradient(90deg,#0b5866,var(--cyan));box-shadow:0 0 30px rgba(34,232,255,.5)}
+.s5-g.over .s5-trk{border-color:var(--red)}
+.s5-g.over .k span:first-child{color:var(--red)}
+.s5-cd{font-size:440px;line-height:1;color:var(--ink);opacity:0;text-shadow:0 0 80px rgba(255,35,64,.9),10px 10px 0 #000;z-index:5}
+.s5-band{background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 12px var(--red),0 0 120px rgba(255,35,64,.7);z-index:5}
+.s5-band .jp{font-size:124px;line-height:1.22;text-shadow:-5px 0 0 rgba(255,35,64,.85),5px 0 0 rgba(34,232,255,.85)}
+
+/* 6 vs */
+.vsL,.vsR{display:flex;flex-direction:column;gap:6px}
+.vsL{background:linear-gradient(135deg,#052a33,#0a8fa6 60%,var(--cyan));padding:170px 0 0 110px;justify-content:flex-start}
+.vsR{background:linear-gradient(225deg,#3a2600,#b87400 60%,var(--amber));align-items:flex-end;padding:0 110px 170px 0;justify-content:flex-end}
+.vsL .name,.vsR .name{font-family:var(--f-impact);font-size:100px;line-height:1;color:var(--ink);text-shadow:8px 8px 0 rgba(0,0,0,.45)}
+.vsL .jp,.vsR .jp{font-size:84px;color:#000}
+.hp{display:flex;align-items:center;gap:18px;font:700 28px var(--f-ui);letter-spacing:.15em;color:var(--ink);z-index:4}
+.hp.r{flex-direction:row-reverse}
+.hp .t{flex:1;height:36px;border:4px solid var(--ink);background:#000;padding:3px;transform:skewX(-20deg)}
+.hp.r .t{transform:skewX(20deg)}
+.hp .f{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),#a9f8ff);transition:width .45s cubic-bezier(.2,.8,.2,1)}
+.hp.r .f{margin-left:auto;background:linear-gradient(270deg,var(--amber),#ffe3a0)}
+.s6-sub .jp{display:block;font-size:72px;text-shadow:0 4px 0 #000}
+.s6-sub .ui{display:block;font-size:26px;color:var(--ink);margin-top:10px;letter-spacing:.14em}
+.s6-round{font-size:130px;line-height:1;color:var(--ink);text-shadow:0 0 40px rgba(34,232,255,.8),8px 8px 0 #000}
+.s6-card{background:rgba(6,5,12,.95);border:4px solid var(--ink);padding:42px 54px;box-shadow:16px 16px 0 rgba(34,232,255,.45)}
+.s6-card .ttl{font-size:62px;font-weight:900;line-height:1.3}
+.s6-card .dt{font-size:33px;font-weight:500;line-height:1.6;color:#ddd8ee;margin-top:18px}
+.s6-card .chip{display:inline-block;margin-top:22px;border:3px solid var(--cyan);color:var(--cyan);padding:10px 18px;font-size:28px;font-weight:700}
+.s6-card .src{font:700 22px var(--f-ui);color:var(--dim);margin-top:18px;letter-spacing:.14em}
+.s6-judge .hd{position:absolute;left:0;right:0;top:0;text-align:center;font-size:74px}
+.s6-judge .bx{position:absolute;top:150px;width:760px;padding:40px 46px;font-size:54px;font-weight:900;line-height:1.35;background:rgba(6,5,12,.94);border:5px solid}
+.s6-judge .bx b{display:block;font-size:42px;margin-bottom:10px}
+.s6-judge .bx.l{left:160px;border-color:var(--cyan)}
+.s6-judge .bx.l b{color:var(--cyan)}
+.s6-judge .bx.r{right:160px;border-color:var(--amber)}
+.s6-judge .bx.r b{color:var(--amber)}
+.s6-judge .src{position:absolute;left:0;right:0;top:500px;text-align:center;font-size:24px;color:var(--dim);letter-spacing:.2em}
+
+/* 7 result */
+.s7-head{font:700 30px var(--f-ui);letter-spacing:.3em;color:var(--gold)}
+.s7-banner{display:inline-block;font-family:var(--f-impact);font-size:150px;line-height:1;background:linear-gradient(180deg,#fff8d6 0%,var(--gold) 55%,#c08a12 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 0 #000) drop-shadow(0 0 40px rgba(255,215,90,.55))}
+.s7-rings i{position:absolute;border-radius:50%;border:5px dashed rgba(255,215,90,.3);animation:spin 18s linear infinite}
+.s7-rings i:nth-child(1){inset:0}
+.s7-rings i:nth-child(2){inset:130px;animation-direction:reverse;animation-duration:11s;border-style:dotted;border-width:8px}
+.s7-rings i:nth-child(3){inset:260px;animation-duration:7s}
+.s7-row{display:flex;align-items:center;gap:22px;border-bottom:2px dashed rgba(255,215,90,.35);padding:6px 12px;height:84px}
+.s7-row .k{font-size:40px;font-weight:900}
+.s7-row .v{margin-left:auto;font-family:var(--f-impact);font-size:62px;color:var(--gold);text-shadow:0 0 26px rgba(255,215,90,.6);font-variant-numeric:tabular-nums;white-space:nowrap}
+.s7-row .ck{font:700 22px var(--f-ui);color:#000;background:var(--gold);padding:4px 10px;letter-spacing:.12em;opacity:0}
+.s7-final{font-family:var(--f-impact);font-size:172px;line-height:1.16;color:var(--ink);text-shadow:-6px 0 0 rgba(255,35,64,.85),6px 0 0 rgba(34,232,255,.85),0 0 70px rgba(255,255,255,.35)}
+.s7-mis .jp{font-size:33px;font-weight:700}
+.s7-mis .ui{font-size:22px;color:var(--dim);margin-top:10px;font-weight:600}
+.s7-cred{font:600 20px var(--f-ui);color:var(--dim);letter-spacing:.06em}
+
+/* hud */
+#hud{position:absolute;left:0;right:0;bottom:0;height:80px;z-index:40;pointer-events:none;font:700 20px/1 var(--f-ui);letter-spacing:.12em;color:rgba(255,244,236,.75)}
+#hud.off{display:none}
+#hud .bar{position:absolute;left:0;right:0;bottom:0;height:6px;background:rgba(255,255,255,.08)}
+#hud .fill{height:100%;width:0;background:linear-gradient(90deg,var(--red),var(--amber),var(--cyan),var(--mag),var(--gold))}
+#hud .tk{position:absolute;bottom:0;width:3px;height:6px;background:#000}
+#hud .lab,#hud .keys{position:absolute;bottom:24px;transition:opacity .35s;opacity:0}
+#hud .lab{left:28px}
+#hud .keys{right:28px}
+#hud .keys b{display:inline-block;border:1px solid rgba(255,244,236,.5);border-radius:4px;padding:4px 9px;margin:0 6px 0 20px;color:var(--ink);font-weight:700}
+#hud.show .lab,#hud.show .keys{opacity:1}
+#paused{position:absolute;inset:0;display:grid;place-content:center;text-align:center;z-index:45;pointer-events:none;background:rgba(6,5,12,.4)}
+#paused div{font:400 130px/1 var(--f-impact);letter-spacing:.06em;color:var(--ink);text-shadow:-5px 0 0 rgba(255,35,64,.85),5px 0 0 rgba(34,232,255,.85)}
+#paused p{font:700 30px var(--f-ui);letter-spacing:.2em;margin:24px 0 0;color:var(--ink)}
+#endc{position:absolute;right:40px;bottom:24px;z-index:44;text-align:right;pointer-events:none}
+#endc b{display:block;font:400 64px/1 var(--f-impact);color:var(--gold)}
+#endc span{font:700 20px var(--f-ui);letter-spacing:.14em;color:var(--dim)}
+#boot{position:absolute;inset:0;display:grid;place-items:center;z-index:60;background:var(--void);font:700 30px var(--f-ui);letter-spacing:.3em;color:var(--dim)}
+#boot span{animation:blink 1s steps(1) infinite}
+</style>
+</head>
+<body>
+<div id="frame">
+  <div id="stage">
+    <div id="shaker">
+      <canvas id="bg" width="1920" height="1080"></canvas>
+      <div id="ticker"></div>
+      <div id="scenes"></div>
+      <canvas id="fxc" width="1920" height="1080"></canvas>
+    </div>
+    <div id="fx"></div>
+    <div id="noise"></div><div id="scan"></div><div id="vig"></div>
+    <div id="hud"><div class="lab"></div><div class="keys"><b>SPACE</b>一時停止 / 再開<b>← →</b>シーン移動<b>1–8</b>ジャンプ<b>H</b>表示を隠す<b>F</b>全画面</div><div class="bar"><div class="fill"></div></div></div>
+    <div id="paused" hidden><div>PAUSED</div><p>SPACE またはクリックで再開</p></div>
+    <div id="endc" hidden><b>END</b><span>R でもう一度 ・ ← で前のシーン</span></div>
+    <div id="boot"><span>LOADING FORM S-1…</span></div>
+  </div>
+</div>
+<script>
+(()=>{
+'use strict';
+const qs=new URLSearchParams(location.search);
+const RATE=Math.min(8,Math.max(.25,parseFloat(qs.get('rate'))||1));
+const START=Math.max(0,parseInt(qs.get('scene'),10)||0);
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const W=1920,H=1080,S=1000;
+const $=id=>document.getElementById(id);
+const frameEl=$('frame'),stage=$('stage'),shaker=$('shaker'),holder=$('scenes'),fxRoot=$('fx'),hud=$('hud');
+const C={void:'#06050c',ink:'#fff4ec',red:'#ff2340',amber:'#ffb21a',cyan:'#22e8ff',mag:'#ff2fd0',gold:'#ffd75a',dim:'#a39cc4'};
+const RGB={red:[255,35,64],amber:[255,178,26],cyan:[34,232,255],mag:[255,47,208],gold:[255,215,90],ink:[255,244,236],violet:[140,90,255]};
+
+/* ---------- stage fit ---------- */
+function fit(){const s=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit);fit();
+
+/* ---------- engine: one pausable clock drives cues, tweens and the canvases ---------- */
+const E={i:0,t:0,cue:0,playing:false,ended:false,booted:false,tweens:[],timers:[],held:[],ctx:null,root:null,wall:0};
+const unitless=new Set(['opacity','zIndex','lineHeight','fontWeight','flex','order']);
+function el(parent,cls,html,css){
+  const e=document.createElement('div');
+  if(cls)e.className=cls;
+  if(html!=null)e.innerHTML=html;
+  if(css)for(const k in css){const v=css[k];e.style[k]=(typeof v==='number'&&!unitless.has(k))?v+'px':v;}
+  parent.appendChild(e);return e;
+}
+function A(t,kf,o){
+  if(typeof o==='number')o={duration:o};
+  o=Object.assign({fill:'both',easing:'cubic-bezier(.16,1,.3,1)'},o);
+  const a=t.animate(kf,o);a.playbackRate=RATE;
+  if(!E.playing&&!E.ended){a.pause();E.held.push(a);}
+  return a;
+}
+const lin=p=>p,outC=p=>1-Math.pow(1-p,3),inC=p=>p*p*p,inOut=p=>p<.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;
+function tween(dur,fn,ease=outC,delay=0){E.tweens.push({t0:E.t+delay,dur:Math.max(dur,1e-4),fn,ease});}
+function at(delay,fn){E.timers.push({t:E.t+delay,fn});}
+function type(e,str,dur,delay=0){tween(dur,p=>{e.textContent=str.slice(0,Math.ceil(str.length*p));},lin,delay);}
+function count(e,a,b,dur,o={}){const fmt=o.fmt||(v=>String(Math.round(v)));let prev=null;tween(dur,p=>{const s=fmt(a+(b-a)*p);if(s!==prev){e.textContent=s;prev=s;}},o.ease||outC,o.delay||0);}
+const rand=(a,b)=>a+Math.random()*(b-a);
+
+/* ---------- motion helpers (seconds) ---------- */
+function pop(e,d=0,dur=.42,from=.4){return A(e,[{opacity:0,transform:`scale(${from})`},{opacity:1,transform:'scale(1.06)',offset:.65},{opacity:1,transform:'scale(1)'}],{duration:dur*S,delay:d*S,easing:'cubic-bezier(.2,.9,.3,1)'});}
+function slam(e,d=0,from=2.6,dur=.3){return A(e,[{opacity:0,transform:`scale(${from})`,filter:'blur(14px)'},{opacity:1,transform:'scale(1)',filter:'blur(0px)'}],{duration:dur*S,delay:d*S,easing:'cubic-bezier(.25,1.4,.5,1)'});}
+function inX(e,dx,d=0,dur=.38){return A(e,[{opacity:0,transform:`translateX(${dx}px)`},{opacity:1,transform:'translateX(0px)'}],{duration:dur*S,delay:d*S});}
+function inY(e,dy,d=0,dur=.38){return A(e,[{opacity:0,transform:`translateY(${dy}px)`},{opacity:1,transform:'translateY(0px)'}],{duration:dur*S,delay:d*S});}
+function fadeIn(e,d=0,dur=.4){return A(e,[{opacity:0},{opacity:1}],{duration:dur*S,delay:d*S,easing:'ease-out'});}
+function out(e,d=0,dur=.18,kf){return A(e,kf||[{opacity:0,transform:'scale(.92)'}],{duration:dur*S,delay:d*S,fill:'forwards',easing:'ease-in'});}
+function beat(e,amt=.03,dur=.32){A(e,[{transform:'scale(1)'},{transform:`scale(${1+amt})`,offset:.3},{transform:'scale(1)'}],{duration:dur*S,fill:'none',easing:'ease-out'});}
+function glitchEl(e,dur=.3){A(e,[{transform:'translate(-18px,6px) skewX(10deg)',filter:'hue-rotate(90deg) saturate(2)'},{transform:'translate(14px,-4px) skewX(-6deg)',filter:'hue-rotate(-60deg)'},{transform:'translate(-8px,2px)',filter:'none'},{transform:'translate(6px,0) skewX(4deg)',filter:'none'},{transform:'none',filter:'none'}],{duration:dur*S,easing:'steps(5,end)',fill:'none'});}
+
+/* ---------- screen-level effects ---------- */
+function flash(color='#fff',dur=.32,peak=1,delay=0){
+  const d=el(fxRoot,'fxl',null,{background:color,opacity:0});
+  A(d,[{opacity:peak*(RM?.25:1)},{opacity:0}],{duration:dur*S,delay:delay*S,easing:'cubic-bezier(.2,.6,.3,1)',fill:'forwards'}).onfinish=()=>d.remove();
+}
+function shake(amp=20,dur=.4){
+  if(RM)return;
+  const k=[],n=10;
+  for(let i=0;i<n;i++){const f=1-i/n;k.push({transform:`translate(${rand(-1,1)*amp*f}px,${rand(-1,1)*amp*f}px) rotate(${rand(-1,1)*amp*.025*f}deg)`});}
+  k.push({transform:'none'});
+  A(shaker,k,{duration:dur*S,easing:'linear',fill:'none'});
+}
+function glitchBars(n=14,dur=.36){
+  const wrap=el(fxRoot,'fxl');
+  const cols=[C.red,C.cyan,C.ink,C.mag,'#000'];
+  for(let i=0;i<n;i++){
+    const b=el(wrap,null,null,{position:'absolute',left:0,top:rand(0,H),width:W,height:rand(8,80),background:cols[i%5],opacity:0});
+    A(b,[{opacity:.9,transform:`translateX(${rand(-400,400)}px)`},{opacity:0,transform:`translateX(${rand(-400,400)}px)`}],{duration:dur*S*rand(.5,1),delay:rand(0,dur*S*.4),easing:'steps(3,end)',fill:'forwards'});
+  }
+  A(wrap,[{opacity:1},{opacity:1}],{duration:dur*S*1.6,fill:'none'}).onfinish=()=>wrap.remove();
+}
+function wipeTape(dur=1){
+  const p=el(fxRoot,'fxl wipe');
+  A(p,[{transform:'translateX(-115%) skewX(-12deg)'},{transform:'translateX(0%) skewX(-12deg)',offset:.4},{transform:'translateX(0%) skewX(-12deg)',offset:.6},{transform:'translateX(115%) skewX(-12deg)'}],{duration:dur*S,easing:'cubic-bezier(.6,0,.4,1)',fill:'forwards'}).onfinish=()=>p.remove();
+}
+function cutin(R,html,o={}){
+  const b=el(R,'abs cutin',`<div class="${o.cls||'imp'}">${html}</div>`,{left:-200,width:W+400,top:o.top??380,height:o.h??260,background:o.bg||C.red,color:o.fg||C.ink,rotate:(o.rot??-8)+'deg',fontSize:o.size??180});
+  A(b,[{transform:'translateX(110%)'},{transform:'translateX(0%)',offset:.22},{transform:'translateX(-3%)',offset:.82},{transform:'translateX(-110%)'}],{duration:((o.hold??.4)+.5)*S,easing:'cubic-bezier(.3,.8,.4,1)',fill:'forwards'}).onfinish=()=>b.remove();
+  return b;
+}
+function stamp(R,html,o={}){
+  const s=el(R,'abs stamp '+(o.cls||'imp'),html,{left:o.x??960,top:o.y??540,fontSize:o.size??140,color:o.color||C.red,rotate:(o.rot??-10)+'deg',translate:'-50% -50%'});
+  A(s,[{opacity:0,transform:'scale(3)',filter:'blur(12px)'},{opacity:1,transform:'scale(1)',filter:'blur(0px)'}],{duration:220,easing:'cubic-bezier(.3,1.6,.5,1)'});
+  return s;
+}
+function edgePulse(R,color,period=.4){
+  const e=el(R,'abs',null,{inset:0,pointerEvents:'none',zIndex:3});
+  A(e,[{boxShadow:`inset 0 0 160px 40px ${color}`},{boxShadow:'inset 0 0 40px 0px rgba(0,0,0,0)'}],{duration:period*S,iterations:Infinity,direction:'alternate',easing:'ease-in-out',fill:'none'});
+  return e;
+}
+function tame(R,dur=.3,op=.75){
+  const d=el(R,'abs',null,{inset:0,background:'#000',opacity:0,zIndex:8});
+  A(d,[{opacity:0},{opacity:op,offset:.2},{opacity:op,offset:.8},{opacity:0}],{duration:dur*S,fill:'forwards'}).onfinish=()=>d.remove();
+}
+
+/* ---------- spark canvas ---------- */
+const fxc=$('fxc').getContext('2d');
+const sparks=[],rings=[];
+function burst(x,y,o={}){
+  const n=Math.round((o.n||80)*(RM?.4:1)),cols=o.colors||[C.ink,C.amber,C.red],sp=o.speed||900;
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=sp*rand(.25,1.15);sparks.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:0,max:rand(.45,1.3),c:cols[i%cols.length],w:(o.size||4)*rand(.5,1.4),g:o.g??700});}
+  if(o.ring!==false)rings.push({x,y,r:10,vr:o.ringSpeed||2800,life:0,max:.55,c:o.ringColor||cols[0],w:o.ringW||16});
+}
+function fxDraw(dt){
+  const g=fxc;g.clearRect(0,0,W,H);g.globalCompositeOperation='lighter';
+  const k=Math.pow(.15,dt);
+  for(let i=sparks.length-1;i>=0;i--){
+    const s=sparks[i];s.life+=dt;if(s.life>s.max){sparks.splice(i,1);continue;}
+    s.vx*=k;s.vy=s.vy*k+s.g*dt;s.x+=s.vx*dt;s.y+=s.vy*dt;
+    g.globalAlpha=1-s.life/s.max;g.strokeStyle=s.c;g.lineWidth=s.w;
+    g.beginPath();g.moveTo(s.x-s.vx*.035,s.y-s.vy*.035);g.lineTo(s.x,s.y);g.stroke();
+  }
+  for(let i=rings.length-1;i>=0;i--){
+    const r=rings[i];r.life+=dt;if(r.life>r.max){rings.splice(i,1);continue;}
+    r.r+=r.vr*dt*(1-r.life/r.max);
+    g.globalAlpha=(1-r.life/r.max)*.8;g.strokeStyle=r.c;g.lineWidth=r.w*(1-r.life/r.max)+1;
+    g.beginPath();g.arc(r.x,r.y,r.r,0,Math.PI*2);g.stroke();
+  }
+  g.globalAlpha=1;g.globalCompositeOperation='source-over';
+}
+
+/* ---------- background canvas ---------- */
+const bgx=$('bg').getContext('2d');
+const BG={acc:RGB.red,acc2:RGB.violet,glow:.3,grid:0,ring:0,embers:20,rad:0,speed:0,t:0};
+const BGC={glow:.3,grid:0,ring:0,embers:20,acc:[...RGB.red],acc2:[...RGB.violet]};
+const EMB=[];for(let i=0;i<160;i++)EMB.push({x:Math.random()*W,y:Math.random()*H,v:rand(30,120),s:rand(1,3.4),p:rand(0,6.28)});
+function bgSet(o){Object.assign(BG,o);}
+let seed=1;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+const lerp=(a,b,k)=>a+(b-a)*k;
+function bgDraw(dt){
+  BG.t+=dt;const t=BG.t,k=1-Math.pow(.03,dt),g=bgx;
+  for(const key of ['glow','grid','ring','embers'])BGC[key]=lerp(BGC[key],BG[key],k);
+  for(let j=0;j<3;j++){BGC.acc[j]=lerp(BGC.acc[j],BG.acc[j],k);BGC.acc2[j]=lerp(BGC.acc2[j],BG.acc2[j],k);}
+  const a1=BGC.acc.map(Math.round).join(','),a2=BGC.acc2.map(Math.round).join(',');
+  g.globalCompositeOperation='source-over';g.globalAlpha=1;g.fillStyle=C.void;g.fillRect(0,0,W,H);
+  let gr=g.createRadialGradient(560+Math.sin(t*.4)*220,380,0,560,380,1100);
+  gr.addColorStop(0,`rgba(${a1},${.34*BGC.glow})`);gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  gr=g.createRadialGradient(1380+Math.cos(t*.3)*200,760,0,1380,760,1000);
+  gr.addColorStop(0,`rgba(${a2},${.28*BGC.glow})`);gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,W,H);
+  if(BGC.grid>.005){
+    g.fillStyle=`rgba(${a1},${BGC.grid})`;const sp=48,ox=(t*26)%sp,oy=(t*13)%sp;
+    for(let x=-sp+ox;x<W;x+=sp)for(let y=-sp+oy;y<H;y+=sp)g.fillRect(x,y,3,3);
+  }
+  if(BGC.ring>.01){
+    g.save();g.translate(960,540);g.lineWidth=3;
+    [[330,.6,[6,22]],[470,-.4,[40,30]],[620,.25,[2,14]]].forEach(([r,sp,dash],i)=>{
+      g.strokeStyle=`rgba(${i%2?a2:a1},${.5*BGC.ring})`;g.setLineDash(dash);g.lineDashOffset=t*sp*120;
+      g.beginPath();g.arc(0,0,r,0,Math.PI*2);g.stroke();
+    });
+    g.setLineDash([]);g.restore();
+  }
+  seed=Math.floor(t*24)+7;
+  if(BG.rad>0){
+    BG.rad=Math.max(0,BG.rad-dt);const it=Math.min(1,BG.rad/.4);
+    g.save();g.translate(960,540);g.globalAlpha=.5*it;g.fillStyle='#fff';
+    for(let i=0;i<120;i++){const an=rnd()*Math.PI*2,r0=200+rnd()*300,w=(2+rnd()*10)/1000;g.beginPath();g.moveTo(Math.cos(an)*r0,Math.sin(an)*r0);g.lineTo(Math.cos(an-w)*1500,Math.sin(an-w)*1500);g.lineTo(Math.cos(an+w)*1500,Math.sin(an+w)*1500);g.fill();}
+    g.restore();g.globalAlpha=1;
+  }
+  if(BG.speed>0){
+    BG.speed=Math.max(0,BG.speed-dt);const it=Math.min(1,BG.speed/.3);
+    g.globalAlpha=.55*it;g.fillStyle=`rgb(${a1})`;
+    for(let i=0;i<46;i++){const y=rnd()*H,len=300+rnd()*900,x=rnd()*(W+len)-len;g.fillRect(x,y,len,1+rnd()*4);}
+    g.globalAlpha=1;
+  }
+  const n=Math.round(BGC.embers);g.globalCompositeOperation='lighter';g.fillStyle=`rgb(${a1})`;
+  for(let i=0;i<n&&i<EMB.length;i++){
+    const e=EMB[i];e.y-=e.v*dt;e.x+=Math.sin(t*.8+e.p)*14*dt;if(e.y<-10){e.y=H+10;e.x=Math.random()*W;}
+    g.globalAlpha=.3+.3*Math.sin(t*2+e.p);g.beginPath();g.arc(e.x,e.y,e.s,0,Math.PI*2);g.fill();
+  }
+  g.globalAlpha=1;g.globalCompositeOperation='source-over';
+}
+
+/* ---------- noise texture + ticker of the filing's own sentences ---------- */
+(()=>{const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');const d=x.createImageData(256,256);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255|0;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}x.putImageData(d,0,0);$('noise').style.backgroundImage=`url(${c.toDataURL()})`;})();
+const S1=[
+  'Concerns have been raised both within our organization and by other researchers, regulators, policymakers, and industry participants that sufficiently advanced AI systems could, if not developed, deployed, and operated with appropriate safeguards, oversight, and security measures, pose catastrophic or existential risks to humanity,',
+  'particularly if such systems were misused, replicated, weaponized, or allowed to operate with a high degree of autonomy.',
+  'We have observed that our models are contributing to the pace of our own research and these risks will increase as AI systems substantially automate AI research and development',
+  'if, for example, they accelerate AI progress beyond our ability to evaluate and safeguard new models, which could adversely affect our business, financial condition, and results of operations.',
+  'a wide range of stakeholders, including researchers and policymakers, have raised concerns that sufficiently advanced AI systems could pose catastrophic or existential risks to society if not developed and deployed responsibly.',
+  'Our safety-focused approach is designed in part to mitigate such risks, but there can be no assurance that our efforts will be successful or that the broader AI industry will adopt similar safeguards.',
+  'unexpected strategic or self-preserving behaviors, including attempts to resist shutdown, conceal or manipulate information, or generate outputs that could be interpreted as coercive, deceptive, or manipulative,',
+  'recurring narratives concerning the potential adverse societal impacts of AI, including that AI may displace or eliminate jobs, may be misused or otherwise cause harm, and may pose catastrophic or existential risks to humanity.',
+];
+const tk=$('ticker');
+S1.forEach((s,i)=>{const r=el(tk,'row',`<span>${s}</span><span>${s}</span>`,{top:22+i*134});r.style.animationDuration=(70+i*11)+'s';if(i%2)r.style.animationDirection='reverse';});
+function tick(op,color){A(tk,[{opacity:op}],{duration:400,fill:'forwards',easing:'linear'});if(color)tk.style.color=color;}
+
+/* ---------- scene data ---------- */
+const pg=v=>'p.'+String(Math.round(v)).padStart(3,'0');
+const STEPS=['不可能なタスクを中止できず','見つけたパスワードで','管理者権限を取得','追加の認証情報を収集','システム設定を変更','1人分の個人情報を閲覧'];
+const BIG=['不可能なタスクを<br>中止できず','見つけた<br>パスワードを使って',null,'追加の認証情報を<br>収集','システム設定を<br>変更','1人分の<br>個人情報を閲覧'];
+const ROUNDS=[
+  {t:'最新モデル Mythos を、<br>いきなり一般公開しなかった',d:'2026年4月。サイバー脆弱性を見つける能力が高いため、まず Project Glasswing を通じた限定的なリサーチプレビューとして、一部の組織だけに提供した。',s:'FORM S-1 p.52'},
+  {t:'新しいフロンティアモデルの<br>事前学習を、1ヶ月以上遅らせた',d:'モデルの重みの持ち出しを防ぐなど、セキュリティ対策を強化する時間をとるため。',s:'FORM S-1 p.52'},
+  {t:'責任あるスケーリング方針<br>（Responsible Scaling Policy）',d:'AIの破滅的リスクへの向き合い方を定めた方針。リリース前に各モデルを徹底的にテストし、リスク報告を定期的に公開する。',chip:'Claude の憲法：取り返しのつかない行動を避け、AIに対する人間の監督を支える',s:'FORM S-1 p.231–232'},
+];
+const TYPED='人類滅亡？existential> 第三者パートナーが作ったサイバーセキュリティ評価> モデルへの指示：「インターネット接続はない」> 実際：設定ミスでネットにつながっていた"We have observed that our models are contributing to the pace of our own research."能力が上がるほど、評価や監視をかいくぐるのが上手くなっている"there can be no assurance that our efforts will be successful"0123456789×〜';
+
+function hit(c,i){
+  const card=c.cards[i];
+  cutin(c.R,['HIT!','HIT!!','HIT!!!'][i],{bg:i<2?C.amber:C.red,fg:i<2?'#000':C.ink,top:360,h:300,size:240,hold:.28+i*.08,rot:-7});
+  A(card,[{opacity:0,transform:'translateX(-420px) skewX(-14deg)'},{opacity:1,transform:'none'}],{duration:300,delay:300});
+  at(.32,()=>burst(670,373+i*168,{n:60+i*60,colors:[C.amber,C.ink,C.gold],speed:900+i*300}));
+  c.cv.textContent=String(i+1);
+  if(i===0)pop(c.combo,.3,.35,.5);else A(c.combo,[{transform:'scale(1.35)'},{transform:'scale(1)'}],{duration:320,delay:300,fill:'none'});
+  flash(i<2?C.amber:'#fff',.3+i*.06,.45+i*.2);
+  shake(14+i*10,.35+i*.1);
+  A(c.num,[{color:C.red,transform:'scale(1.15)'},{color:C.ink,transform:'scale(1)'}],{duration:400,fill:'none'});
+}
+function sweepOn(c,ms=420){sweepOff(c);c.beam.style.visibility='visible';c.sweep=A(c.beam,[{transform:'translateY(110px)'},{transform:'translateY(1030px)'}],{duration:ms,iterations:Infinity,easing:'linear',fill:'none'});BG.speed=Math.max(BG.speed,.9);}
+function sweepOff(c){if(c.sweep){c.sweep.cancel();c.sweep=null;}c.beam.style.visibility='hidden';}
+function crawl(c,v){c.num.textContent=pg(v);A(c.num,[{transform:'scale(1.22)',color:C.red},{transform:'scale(1)',color:C.ink}],{duration:300,fill:'none'});beat(c.R,.015,.3);shake(6,.15);}
+function cut(c,i){c.panels.forEach((p,k)=>{p.style.visibility=k===i?'visible':'hidden';});}
+function unlock(c,i){
+  const r=c.rowsEl[i];
+  A(r,[{opacity:0,transform:'translateX(140px)'},{opacity:1,transform:'none'}],{duration:240});
+  const sw=el(r,'sweep');A(sw,[{transform:'translateX(-100%)',opacity:.9},{transform:'translateX(100%)',opacity:0}],{duration:420,fill:'forwards'}).onfinish=()=>sw.remove();
+  A(r.querySelector('.nw'),[{opacity:1},{opacity:.15},{opacity:1}],{duration:280,iterations:3,fill:'none'});
+  flash(C.ink,.14,.12);shake(6,.16);
+  burst(1700,292+i*72,{n:36,colors:[C.gold,C.ink],speed:650,ring:false});
+  bump(c,7);
+}
+function bump(c,amt){c.fills.forEach((f,k)=>{const a=c.lvl[k],b=Math.min(97,a+amt+k);c.lvl[k]=b;tween(.3,p=>{f.style.width=(a+(b-a)*p)+'%';},outC);});}
+function chain(c,i){
+  c.chipEls[i].classList.add('on');pop(c.chipEls[i],0,.25,1.3);
+  if(i===2){
+    out(c.step,0,.06);slam(c.admin,0,3,.26);
+    A(stage,[{filter:'invert(1)'},{filter:'invert(0)'}],{duration:260,easing:'steps(2,end)',fill:'none'});
+    shake(36,.6);burst(960,420,{n:200,colors:[C.red,C.ink,C.amber],speed:1600});BG.rad=1;
+    return;
+  }
+  if(i===3)out(c.admin,0,.1);
+  c.step.innerHTML=BIG[i];
+  A(c.step,[{opacity:0,transform:'translateX(280px) skewX(-14deg)'},{opacity:1,transform:'none'}],{duration:220});
+  flash(C.red,.12,.25);shake(8,.18);
+}
+function cd(c,n){c.cd.textContent=n;A(c.cd,[{opacity:0,transform:'scale(2.2)'},{opacity:.92,transform:'scale(1)',offset:.3},{opacity:0,transform:'scale(.7)'}],{duration:520,fill:'forwards'});beat(c.R,.025,.3);shake(8,.2);}
+function round(c,i){
+  const d=ROUNDS[i];
+  c.rb.textContent='ROUND '+(i+1);slam(c.rb,0,2.4,.24);flash(C.cyan,.2,.3);shake(14,.25);
+  c.card.innerHTML=`<div class="ttl">${d.t}</div><div class="dt">${d.d}</div>${d.chip?`<div class="chip">${d.chip}</div>`:''}<div class="src">${d.s}</div>`;
+  A(c.card,[{opacity:0,transform:'translateY(60px) scale(.96)'},{opacity:1,transform:'none'}],{duration:320,delay:250});
+  at(.95,()=>{
+    A(c.L,[{opacity:.95},{opacity:.28}],{duration:450,fill:'forwards'});
+    burst(200,560,{n:70,colors:[C.cyan,C.ink],speed:1000});shake(16,.3);
+    c.hpR.querySelector('.f').style.width=[86,74,64][i]+'%';
+  });
+}
+function resRow(c,i){
+  const r=c.rowEls[i],d=c.rows[i],v=r.querySelector('.v');
+  A(r,[{opacity:0,transform:'translateX(-140px)'},{opacity:1,transform:'none'}],{duration:260});
+  if(d[2])count(v,0,d[3],.4,{fmt:d[2],ease:lin});else{v.textContent='';type(v,d[1],.35);}
+  at(.42,()=>{pop(r.querySelector('.ck'),0,.25,2);burst(1500,492+i*84,{n:40,colors:[C.gold,C.ink],speed:700,ring:false});flash(C.gold,.12,.16);});
+}
+
+/* ---------- scenes: build() makes DOM only, cues animate it on the scene clock ---------- */
+const SCENES=[
+{label:'HOOK ・ 人類滅亡？',dur:5.4,trans:null,
+ build(R){return{
+  q:el(R,'abs cx jp h','',{top:430,fontSize:96}),
+  q2:el(R,'abs cx jp h','いや、正確には',{top:570,fontSize:44,fontWeight:700,color:C.dim}),
+  big:el(R,'abs cx imp ca h','EXISTENTIAL<br>RISKS TO<br>HUMANITY',{top:70,fontSize:180,lineHeight:1.02}),
+  band:el(R,'abs s0-band h','<div class="imp">人類の存亡リスク</div>',{left:-100,top:640,width:2120,height:230,background:C.red,rotate:'-5deg'}),
+  src:el(R,'abs cx ui h','<span class="tag">FORM S-1</span>Anthropic, PBC の上場申請書「リスク要因」より',{top:952,fontSize:32}),
+ };},
+ cues:[
+  [0,c=>{bgSet({acc:RGB.red,acc2:RGB.violet,glow:.2,grid:0,ring:0,embers:16});tick(0);fadeIn(c.q,0,.1);type(c.q,'人類滅亡？',.42);}],
+  [.72,c=>{glitchEl(c.q,.36);flash(C.red,.16,.25);pop(c.q2,0,.26,.8);}],
+  [1.35,c=>{out(c.q,0,.08);out(c.q2,0,.08);slam(c.big,0,2.8,.32);flash(C.red,.42,.85);shake(30,.48);burst(960,420,{n:170,colors:[C.ink,C.red,C.amber],speed:1500});bgSet({glow:.95});BG.rad=1.5;tick(.12,C.ink);}],
+  [2.45,c=>{A(c.band,[{opacity:1,transform:'translateX(2300px)'},{opacity:1,transform:'translateX(0px)'}],{duration:240,easing:'cubic-bezier(.2,1,.3,1)'});A(c.big,[{opacity:.3,transform:'scale(.95)'}],{duration:300,fill:'forwards'});flash('#fff',.26,.55,.2);at(.2,()=>{shake(22,.4);burst(960,760,{n:110,colors:[C.ink,C.red],speed:1200});});}],
+  [3.45,c=>pop(c.src,0,.35,1.6)],
+  [4.75,c=>{A(c.R,[{transform:'scale(1)',filter:'blur(0px)',opacity:1},{transform:'scale(6)',filter:'blur(18px)',opacity:0}],{duration:520,easing:'cubic-bezier(.7,0,.9,.4)',fill:'forwards'});BG.rad=.6;}],
+  [5.1,()=>flash('#fff',.42,1)],
+ ]},
+
+{label:'HYPE ・ 何回出てくる？',dur:10.2,trans:'shatter',
+ build(R){
+  const cards=[
+   ['47','AIモデルが意図せず自律的に振る舞うリスク','…pose catastrophic or <mark>existential</mark> risks to humanity…'],
+   ['52','AI安全への注力にともなうリスク','…catastrophic or <mark>existential</mark> risks to society…'],
+   ['84','不利なメディア報道のリスク','…may pose catastrophic or <mark>existential</mark> risks to humanity.'],
+  ].map((d,i)=>el(R,'abs s1-card h',`<div class="hit imp">HIT</div><div class="pg">p.${d[0]}</div><div class="tx"><div class="jp">${d[1]}</div><div class="en">${d[2]}</div></div>`,{left:110,top:300+i*168,width:1120,height:146}));
+  const c={cards,
+   tease:el(R,'abs cx jp h','上場申請書のなかに<br><span class="hl">この単語</span>は何回出てくる？',{top:350,fontSize:84,lineHeight:1.4}),
+   head:el(R,'abs ui h','<b>SCANNING</b>　FORM S-1 ／ Anthropic, PBC',{left:110,top:62,fontSize:28,color:C.amber,letterSpacing:'.14em'}),
+   search:el(R,'abs s1-search h','<span class="lbl">SEARCH</span><span class="q"></span><span class="caret"></span>',{left:110,top:122,width:860,height:116}),
+   page:el(R,'abs s1-page h','<div class="lbl">PAGE</div><div class="num">p.000</div>',{right:110,top:84,textAlign:'right'}),
+   beam:el(R,'abs s1-beam h',null,{left:0,top:0,width:W,height:5,visibility:'hidden'}),
+   combo:el(R,'abs s1-combo h','<div class="w">"EXISTENTIAL"</div><div class="n"><span class="x">×</span><span class="v">0</span></div><div class="w2">COMBO</div>',{left:1290,top:300,width:520,textAlign:'center'}),
+   reach:el(R,'abs cx jp h','まだある……？',{top:840,fontSize:74,color:C.red}),
+   dim:el(R,'abs h',null,{inset:0,background:'rgba(6,5,12,.86)'}),
+   mega:el(R,'abs cx s1-mega h','<div class="q">"existential"</div><div class="big">×3</div><div class="jp">書類全体で3回。すべて「リスク要因」の中</div>',{top:160}),
+  };
+  c.q=c.search.querySelector('.q');c.num=c.page.querySelector('.num');c.cv=c.combo.querySelector('.v');
+  return c;
+ },
+ cues:[
+  [0,c=>{bgSet({acc:RGB.amber,acc2:RGB.red,glow:.5,grid:.1,ring:0,embers:30});tick(.13,C.amber);pop(c.tease,0,.5,.7);}],
+  [1.3,c=>{out(c.tease,0,.25,[{opacity:0,transform:'translateY(-120px) scale(.85)'}]);inX(c.head,-80,.05);inX(c.search,-260,.1);inX(c.page,260,.15);type(c.q,'existential',.45,.25);}],
+  [1.95,c=>{fadeIn(c.beam,0,.05);sweepOn(c);count(c.num,1,47,.85,{fmt:pg,ease:inC});}],
+  [2.85,c=>{sweepOff(c);tame(c.R,.25,.6);}],
+  [3.05,c=>hit(c,0)],
+  [4.1,c=>{sweepOn(c);count(c.num,47,52,.5,{fmt:pg,ease:lin});}],
+  [4.65,c=>{sweepOff(c);hit(c,1);}],
+  [5.6,c=>{sweepOn(c,700);count(c.num,52,80,1.25,{fmt:pg,ease:outC});c.edge=edgePulse(c.R,'rgba(255,35,64,.8)',.32);bgSet({glow:.25,acc:RGB.red});pop(c.reach,.4,.4,.6);at(.85,()=>A(c.reach,[{transform:'scale(1)'},{transform:'scale(1.07)'}],{duration:320,iterations:Infinity,direction:'alternate',fill:'none'}));}],
+  [6.95,c=>{sweepOff(c);crawl(c,81);}],
+  [7.3,c=>crawl(c,82)],[7.65,c=>crawl(c,83)],
+  [8.0,c=>{crawl(c,84);tame(c.R,.32,.7);}],
+  [8.32,c=>{c.edge.remove();out(c.reach,0,.1);hit(c,2);BG.rad=1.2;bgSet({glow:.8,acc:RGB.amber});}],
+  [9.1,c=>{fadeIn(c.dim,0,.2);slam(c.mega,.05,2.8,.32);at(.05,()=>{flash(C.gold,.35,.6);shake(30,.5);burst(960,520,{n:220,colors:[C.gold,C.ink,C.amber],speed:1700});});}],
+ ]},
+
+{label:'RAPID CUT ・ 4つの条件',dur:10.6,trans:'glitch',
+ build(R){
+  const P=[['MISUSED','悪用されたら',C.red,C.ink],['REPLICATED','複製されたら',C.cyan,'#04121a'],['WEAPONIZED','兵器化されたら',C.amber,'#1a0e00'],['HIGH DEGREE<br>OF AUTONOMY','高い自律性で動いたら',C.mag,C.ink]];
+  const panels=P.map((d,i)=>el(R,'abs s2-panel',`<div class="stripes"></div><div class="num imp">${i+1}</div><div class="lab">CONDITION ${i+1} / 4　S-1 p.47</div><div class="en imp${i===3?' two':''}">${d[0]}</div><div class="jpbar">${d[1]}</div>`,{inset:0,background:d[2],color:d[3]}));
+  const en1=panels[1].querySelector('.en'),echoes=[];
+  for(let k=0;k<6;k++){const e=en1.cloneNode(true);e.classList.add('echo');panels[1].insertBefore(e,en1);echoes.push(e);}
+  const ret=el(panels[2],'abs s2-ret','<svg viewBox="-200 -200 400 400" width="640" height="640"><circle r="180" fill="none" stroke="currentColor" stroke-width="10"/><circle r="120" fill="none" stroke="currentColor" stroke-width="6" stroke-dasharray="20 14"/><path d="M-200 0H-110M110 0H200M0-200V-110M0 110V200" fill="none" stroke="currentColor" stroke-width="10"/></svg>',{left:640,top:90,width:640,height:640,opacity:0});
+  return{panels,echoes,ret,
+   quad:el(R,'abs s2-quad h',P.map(d=>`<div style="background:${d[2]};color:${d[3]}">${d[0].replace('<br>',' ')}<small>${d[1]}</small></div>`).join(''),{inset:0}),
+   intro:el(R,'abs cx h','<div class="jp s2-ij">とくに、こんな場合</div><div class="ui s2-ie">"particularly if such systems were…"</div>',{top:360}),
+   pre:el(R,'abs cx jp h','この懸念の声は、外部の研究者や規制当局だけでなく',{top:290,fontSize:54,color:C.dim}),
+   inside:el(R,'abs cx imp ca h','社内からも',{top:380,fontSize:250}),
+   en:el(R,'abs ui h','"Concerns have been raised both within our organization and by other researchers, regulators, policymakers, and industry participants…"',{left:220,right:220,top:730,fontSize:32,color:C.cyan,textAlign:'center',lineHeight:1.5}),
+  };
+ },
+ cues:[
+  [0,c=>{bgSet({acc:RGB.cyan,acc2:RGB.mag,glow:.55,grid:.08,ring:0,embers:30});tick(.1,C.cyan);fadeIn(c.intro,0,.01);inX(c.intro.children[0],-500,0,.4);inX(c.intro.children[1],500,.15,.4);}],
+  [1.3,c=>{out(c.intro,0,.05);cut(c,0);const p=c.panels[0];slam(p.querySelector('.en'),0,2.2,.28);inX(p.querySelector('.jpbar'),-1900,.12,.3);flash(C.red,.3,.5);shake(18,.35);BG.speed=.4;}],
+  [2.4,c=>{cut(c,1);const p=c.panels[1];flash('#fff',.14,.6);slam(p.querySelector('.en:not(.echo)'),0,1.6,.22);c.echoes.forEach((e,k)=>A(e,[{opacity:0,transform:'translateY(0px)'},{opacity:.55-k*.07,transform:`translateY(${(k%2?1:-1)*(80+Math.floor(k/2)*90)}px)`}],{duration:260,delay:60*k}));inX(p.querySelector('.jpbar'),1900,.1,.3);shake(12,.3);}],
+  [3.5,c=>{cut(c,2);const p=c.panels[2];flash(C.amber,.2,.5);A(c.ret,[{transform:'scale(2.4) rotate(-120deg)',opacity:0},{transform:'scale(.9) rotate(10deg)',opacity:1,offset:.75},{transform:'scale(1) rotate(0deg)',opacity:1}],{duration:520});slam(p.querySelector('.en'),.35,2,.22);inX(p.querySelector('.jpbar'),-1900,.2,.3);at(.4,()=>{shake(20,.3);burst(960,430,{n:70,colors:['#1a0e00',C.ink],speed:900});});}],
+  [4.6,c=>{cut(c,3);const p=c.panels[3];A(p,[{transform:'scale(1.7) rotate(14deg)'},{transform:'scale(1) rotate(0deg)'}],{duration:480});slam(p.querySelector('.en'),.15,1.8,.26);inX(p.querySelector('.jpbar'),1900,.25,.3);BG.rad=.8;flash(C.mag,.2,.4);}],
+  [5.8,c=>{cut(c,-1);fadeIn(c.quad,0,.01);[...c.quad.children].forEach((q,k)=>pop(q,k*.07,.25,.6));flash('#fff',.12,.4);shake(14,.3);}],
+  [6.75,c=>{out(c.quad,0,.12);bgSet({glow:.1,grid:0});tick(.03);}],
+  [7.0,c=>fadeIn(c.pre,0,.35)],
+  [8.0,c=>{slam(c.inside,0,2.8,.3);flash('#fff',.35,.9);shake(32,.5);burst(960,520,{n:150,colors:[C.ink,C.cyan,C.mag],speed:1400});BG.rad=1;bgSet({glow:.8,acc:RGB.cyan});}],
+  [8.55,c=>inY(c.en,40,0,.5)],
+  [9.9,c=>{glitchEl(c.R,.5);glitchBars(10,.5);}],
+ ]},
+
+{label:'STATUS ・ 観測された振る舞い',dur:13,trans:null,
+ build(R){
+  const rows=[
+   ['シャットダウンへの抵抗を試みる','attempts to resist shutdown'],
+   ['情報を隠す・操作する','conceal or manipulate information'],
+   ['脅迫に似た振る舞い','behavior resembling blackmail'],
+   ['ネットワークやサンドボックスの制限をすり抜ける','circumventing network and sandbox restrictions'],
+   ['与えられていない権限を自分に付与する','granting themselves permissions they had not been given'],
+   ['タスクの完了を偽って報告する','misrepresenting whether tasks had been completed or verified'],
+   ['評価中だと察すると振る舞いを変える','behaving differently when they detect or infer that they are being evaluated'],
+  ];
+  const stats=[['能力','CAPABILITY'],['自律性','AUTONOMY'],['権限','PERMISSIONS'],['外部システム連携','INTEGRATION']];
+  const top=el(R,'abs win s3-top h','<span class="game">STATUS</span><span class="jp">観測された振る舞い</span><span class="src">FORM S-1 p.46–48</span>',{left:80,top:50,width:1760,height:100});
+  const left=el(R,'abs win s3-left h',`<div class="s3-unit"><div class="s3-emb"><i></i><i></i><i></i></div><div><div class="nm">AI MODEL</div><div class="sub">当社のモデルを含む</div></div></div>${stats.map(s=>`<div class="s3-stat"><div class="k"><span>${s[0]}<small>${s[1]}</small></span><em>▲</em></div><div class="s3-trk"><div class="s3-fill"></div></div></div>`).join('')}<div class="s3-note">自律性・権限・外部連携が増えるほど、ミスアラインした振る舞いの影響は大きくなる</div>`,{left:80,top:175,width:640,height:610});
+  const right=el(R,'abs win s3-right h',`<div class="ttl">観測済みの振る舞い<span>OBSERVED</span></div><div>${rows.map(r=>`<div class="s3-row"><span class="nw">NEW</span><div><div class="j">${r[0]}</div><div class="e">${r[1]}</div></div><i class="redact"></i></div>`).join('')}</div>`,{left:750,top:175,width:1090,height:610});
+  const dlg=el(R,'abs win s3-dlg h','<div class="t"></div><div class="e"></div><div class="more">▼</div>',{left:80,top:810,width:1760,height:230});
+  return{top,left,right,dlg,lvl:[0,0,0,0],rowsEl:[...right.querySelectorAll('.s3-row')],fills:[...left.querySelectorAll('.s3-fill')],ems:[...left.querySelectorAll('.s3-stat em')],dt:dlg.querySelector('.t'),de:dlg.querySelector('.e')};
+ },
+ cues:[
+  [0,c=>{bgSet({acc:RGB.violet,acc2:RGB.mag,glow:.45,grid:.12,ring:0,embers:18});tick(.05,C.ink);[c.top,c.left,c.right,c.dlg].forEach((w,k)=>A(w,[{opacity:0,transform:'scaleY(.02) scaleX(.6)'},{opacity:1,transform:'scaleY(.02) scaleX(1)',offset:.45},{opacity:1,transform:'none'}],{duration:340,delay:k*90,easing:'cubic-bezier(.3,.9,.3,1)'}));}],
+  [.8,c=>bump(c,24)],
+  [1.3,c=>unlock(c,0)],[2.25,c=>unlock(c,1)],[3.1,c=>unlock(c,2)],[3.85,c=>unlock(c,3)],[4.5,c=>unlock(c,4)],[5.05,c=>unlock(c,5)],[5.55,c=>unlock(c,6)],
+  [6.25,c=>{cutin(c.R,'<span class="jp" style="font-size:78px">能力と自律性が上がるほど、リスクは増しうる</span><span class="ui" style="font-size:24px">"These risks may increase as our models become more capable and are granted greater autonomy…"　S-1 p.46</span>',{bg:C.mag,fg:C.ink,top:380,h:260,hold:1.1,rot:-5,cls:'s3-cut'});bump(c,40);c.ems.forEach(e=>e.classList.add('hot'));flash(C.mag,.3,.45);shake(20,.4);BG.rad=.7;}],
+  [7.7,c=>type(c.dt,'能力が上がるほど、評価や監視をかいくぐるのが上手くなっている',1.4)],
+  [9.2,c=>{c.de.textContent='"As our models become more capable, they have become better able to circumvent such techniques…"　S-1 p.48';fadeIn(c.de,0,.4);}],
+  [10.0,c=>{c.rowsEl.forEach((r,k)=>A(r.querySelector('.redact'),[{transform:'scaleX(0)'},{transform:'scaleX(1)'}],{duration:160,delay:k*55,fill:'forwards',easing:'steps(4,end)'}));glitchEl(c.right,.4);flash('#000',.2,.5);}],
+  [10.8,c=>c.rowsEl.forEach((r,k)=>A(r.querySelector('.redact'),[{transform:'scaleX(0)'}],{duration:120,delay:k*40,fill:'forwards',easing:'steps(3,end)'}))],
+  [11.2,c=>{stamp(c.R,'評価・監視の効果は下がりうる',{x:1295,y:470,rot:-8,size:70,cls:'jp',color:C.red});shake(18,.3);flash(C.red,.25,.4);}],
+  [12.35,()=>wipeTape(1)],
+ ]},
+
+{label:'INCIDENT ・ 実際に起きたこと',dur:13.6,trans:'slide',
+ build(R){
+  const roll='INCIDENT REPORT　·　FORM S-1 p.48　·　'.repeat(8);
+  const g=el(R,'abs',null,{inset:0});
+  const c={g,
+   siren:el(R,'abs',null,{inset:0,pointerEvents:'none'}),
+   tapeT:el(R,'abs tape h',`<div class="roll">${roll}</div>`,{left:0,top:0,width:W,height:66}),
+   tapeB:el(R,'abs tape h',`<div class="roll r">${roll}</div>`,{left:0,top:1014,width:W,height:66}),
+   titleEn:el(g,'abs cx imp h','INCIDENT',{top:250,fontSize:130,color:C.red}),
+   title:el(g,'abs cx jp h','実際に起きたこと',{top:420,fontSize:150}),
+   term:el(g,'abs term h','<div class="l"></div><div class="l"></div><div class="l bad"></div>',{left:100,top:120,width:1040,height:420}),
+   n4:el(g,'abs bignum h','<div class="v">0</div><div class="l">つのモデルが</div>',{left:1220,top:100,width:620}),
+   hrs:el(g,'abs bignum hrs h','<div class="v"><span>10</span><small>〜</small><span class="b">10</span><small>h</small></div><div class="l">約10〜34時間の作業の中で</div>',{left:1220,top:360,width:620}),
+   access:el(g,'abs cx s4-access h','実在する第三者のシステムに、不正アクセス',{top:650}),
+   head:el(g,'abs cx jp h','ある初期バージョンのモデルは',{top:110,fontSize:58,color:C.dim}),
+   step:el(g,'abs cx s4-step h','',{top:300}),
+   admin:el(g,'abs cx s4-admin h','<div class="a">ADMIN ACCESS</div><div class="s jp">第三者システムの管理者権限を取得</div>',{top:270}),
+   chips:el(g,'abs s4-chips h',STEPS.map(s=>`<div class="s4-chip">${s}</div>`).join(''),{left:90,top:790,width:1740,height:130}),
+   calmBg:el(R,'abs h',null,{inset:0,background:'rgba(6,5,12,.72)'}),
+   calm:el(R,'abs calm h','<div class="ttl">FOLLOW-UP ・ S-1 p.48</div><div class="jp">影響を受けた当事者には通知済み</div><div class="sm">どのケースも、1つのモデルが割り当てられた課題に単独で取り組んでいた。他のエージェントとの協調、課題外の目的の追求、監視をかいくぐる試みの証拠は見つからなかった（同社の調査）。</div>',{left:250,top:270,width:1420}),
+  };
+  c.lines=[...c.term.querySelectorAll('.l')];c.chipEls=[...c.chips.children];
+  return c;
+ },
+ cues:[
+  [0,c=>{bgSet({acc:RGB.red,acc2:[120,0,20],glow:.75,grid:0,ring:0,embers:10});tick(.07,C.red);
+    c.sirenA=A(c.siren,[{boxShadow:'inset 0 0 170px 40px rgba(255,35,64,.75)'},{boxShadow:'inset 0 0 40px 0px rgba(255,35,64,.12)'}],{duration:450,iterations:Infinity,direction:'alternate',easing:'ease-in-out',fill:'none'});
+    inX(c.tapeT,-1920,0,.35);inX(c.tapeB,1920,0,.35);slam(c.titleEn,.1,2.4,.26);slam(c.title,.3,2.2,.3);at(.3,()=>{flash(C.red,.35,.6);shake(24,.4);});}],
+  [1.5,c=>{out(c.title,0,.2,[{opacity:0,transform:'translateY(-60px)'}]);out(c.titleEn,0,.2,[{opacity:0,transform:'translateY(-60px)'}]);fadeIn(c.term,.1,.2);type(c.lines[0],'> 第三者パートナーが作ったサイバーセキュリティ評価',.6,.2);}],
+  [2.4,c=>type(c.lines[1],'> モデルへの指示：「インターネット接続はない」',.55)],
+  [3.1,c=>{type(c.lines[2],'> 実際：設定ミスでネットにつながっていた',.5);at(.55,()=>{glitchEl(c.term,.3);shake(10,.25);flash(C.red,.15,.3);});}],
+  [3.95,c=>{pop(c.n4,0,.3,.6);const v=c.n4.querySelector('.v');count(v,0,4,.6,{ease:lin});at(.62,()=>{pop(v,0,.25,1.6);burst(1330,200,{n:80,colors:[C.red,C.ink]});shake(14,.25);});}],
+  [4.9,c=>{slam(c.access,0,1.8,.25);flash(C.red,.3,.55);shake(22,.4);}],
+  [5.8,c=>{pop(c.hrs,0,.3,.6);const b=c.hrs.querySelector('.b');count(b,10,34,1.1,{ease:inOut});at(1.15,()=>{pop(b,0,.25,1.5);burst(1640,450,{n:60,colors:[C.amber,C.ink]});});}],
+  [7.2,c=>{[c.term,c.n4,c.hrs,c.access].forEach((e,k)=>out(e,k*.04,.22,[{opacity:0,transform:'translateX(-500px)'}]));BG.speed=.5;fadeIn(c.head,.2,.3);inY(c.chips,80,.25,.35);}],
+  [7.6,c=>chain(c,0)],[8.15,c=>chain(c,1)],[8.7,c=>chain(c,2)],[9.75,c=>chain(c,3)],[10.25,c=>chain(c,4)],[10.75,c=>chain(c,5)],
+  [11.55,c=>{c.sirenA.cancel();A(c.g,[{filter:'grayscale(1) brightness(.6)'}],{duration:400,fill:'forwards'});tick(.03);bgSet({glow:.15,acc:[120,120,140],acc2:[60,60,80],embers:0});fadeIn(c.calmBg,0,.3);inY(c.calm,40,.1,.45);}],
+  [13.3,c=>{A(c.R,[{transform:'translateX(-900px) skewX(10deg)',filter:'blur(10px)',opacity:0}],{duration:300,fill:'forwards',easing:'cubic-bezier(.6,0,.9,.5)'});BG.speed=.6;}],
+ ]},
+
+{label:'CRITICAL ・ AIがAIを加速',dur:14.2,trans:'invert',
+ build(R){
+  const gauge=(top,k1,k2,cls)=>el(R,'abs s5-g h',`<div class="k"><span>${k1}</span><span>${k2}</span></div><div class="s5-trk"><div class="s5-fill ${cls}"></div></div>`,{top});
+  const c={
+   en1:el(R,'abs ui h','',{left:160,right:160,top:300,fontSize:40,textAlign:'center'}),
+   jp1:el(R,'abs cx jp h','AIが、AIの研究を速めている',{top:400,fontSize:124}),
+   jp1s:el(R,'abs cx h','<span class="jp">「当社のモデルが、当社自身の研究のペースに寄与していることを観測している」</span>　<span class="ui">S-1 p.47</span>',{top:590,fontSize:30,color:C.dim}),
+   lab:el(R,'abs cx jp h','AIがAIの研究開発を大幅に自動化していくと……',{top:170,fontSize:60}),
+   g1:gauge(330,'AIの進歩','AI PROGRESS','m'),
+   g2:gauge(560,'新しいモデルを評価し、安全対策を講じる力','EVALUATE &amp; SAFEGUARD','c'),
+   cd:el(R,'abs cx imp s5-cd','',{top:250}),
+   band:el(R,'abs s5-band h','<div class="jp">評価と安全対策が</div><div class="jp">追いつかないほど加速したら</div>',{left:-100,width:2120,top:250,height:420,rotate:'-4deg'}),
+   enq:el(R,'abs cx ui h','"…if, for example, they accelerate AI progress beyond our ability to evaluate and safeguard new models"',{top:790,left:200,right:200,fontSize:34,lineHeight:1.5}),
+   fin:el(R,'abs cx imp h ca','これらのリスクは、<br>高まる',{top:240,fontSize:170,lineHeight:1.15}),
+   finE:el(R,'abs cx h','<span class="ui">"these risks will increase"</span>　<span class="ui dim">FORM S-1 p.47</span>',{top:700,fontSize:44,color:C.red}),
+  };
+  c.f1=c.g1.querySelector('.s5-fill');c.f2=c.g2.querySelector('.s5-fill');
+  return c;
+ },
+ cues:[
+  [0,c=>{bgSet({acc:RGB.mag,acc2:RGB.violet,glow:.12,grid:0,ring:0,embers:6});tick(0);fadeIn(c.en1,0,.01);type(c.en1,'"We have observed that our models are contributing to the pace of our own research."',1.5);}],
+  [1.8,c=>{slam(c.jp1,0,1.8,.3);flash('#fff',.3,.6);shake(18,.35);fadeIn(c.jp1s,.35,.4);burst(960,470,{n:90,colors:[C.mag,C.ink]});}],
+  [3.4,c=>{[c.en1,c.jp1,c.jp1s].forEach((e,k)=>out(e,k*.04,.25,[{opacity:0,transform:'translateY(-200px)'}]));bgSet({glow:.4,grid:.07});pop(c.lab,.2,.35,.8);inX(c.g1,-1800,.3,.4);inX(c.g2,1800,.4,.4);}],
+  [3.9,c=>tween(1.1,p=>{c.f1.style.width=(p*560)+'px';c.f2.style.width=(p*540)+'px';},outC)],
+  [5.1,c=>{cd(c,'3');c.edge=edgePulse(c.R,'rgba(255,35,64,.85)',.25);tween(1.6,p=>{c.f1.style.width=(560+p*560)+'px';c.f2.style.width=(540+p*110)+'px';},inC);}],
+  [5.65,c=>cd(c,'2')],[6.2,c=>cd(c,'1')],
+  [6.75,c=>{c.edge.remove();tame(c.R,.55,.7);bgSet({glow:.03});}],
+  [7.3,c=>{c.g1.classList.add('over');tween(.28,p=>{c.f1.style.width=(1120+p*1300)+'px';},inC);at(.28,()=>{flash('#fff',.42,1);shake(46,.7);BG.rad=1.8;burst(1720,420,{n:240,colors:[C.mag,C.ink,C.amber],speed:1800});bgSet({glow:1,acc:RGB.red});});}],
+  [7.95,c=>{slam(c.band,0,1.6,.26);flash(C.amber,.3,.45);shake(30,.45);burst(960,470,{n:160,colors:[C.ink,C.red],speed:1400});}],
+  [8.35,c=>stamp(c.R,'CRITICAL!!',{x:400,y:190,rot:-12,size:110})],
+  [8.5,c=>stamp(c.R,'CRITICAL!!',{x:1380,y:770,rot:8,size:110})],
+  [8.65,c=>stamp(c.R,'CRITICAL!!',{x:1440,y:150,rot:-4,size:86,color:C.amber})],
+  [9.2,c=>inY(c.enq,40,0,.4)],
+  [10.6,c=>{[c.band,c.g1,c.g2,c.lab,c.enq,...c.R.querySelectorAll('.stamp')].forEach(e=>out(e,0,.15));slam(c.fin,.12,2.6,.32);at(.12,()=>{flash(C.red,.4,.75);shake(30,.5);burst(960,420,{n:180,colors:[C.red,C.ink],speed:1500});BG.rad=1;});}],
+  [11.3,c=>inY(c.finE,40,0,.4)],
+  [13.55,c=>A(c.R,[{transform:'scale(1) rotate(0deg)',opacity:1},{transform:'scale(.15) rotate(40deg)',opacity:0}],{duration:450,easing:'cubic-bezier(.7,0,.9,.4)',fill:'forwards'})],
+ ]},
+
+{label:'VS ・ 安全と商業',dur:12.4,trans:null,
+ build(R){
+  return{
+   L:el(R,'abs vsL h','<div class="name">SAFETY</div><div class="jp">安全</div>',{left:0,top:0,width:1100,height:H,clipPath:'polygon(0 0,100% 0,78% 100%,0 100%)'}),
+   Rt:el(R,'abs vsR h','<div class="name">COMMERCIAL</div><div class="jp">商業目的</div>',{left:820,top:0,width:1100,height:H,clipPath:'polygon(22% 0,100% 0,100% 100%,0 100%)'}),
+   vs:el(R,'abs cx imp ca h','VS',{top:330,fontSize:330}),
+   hpL:el(R,'abs hp h','<span>SAFETY</span><div class="t"><div class="f"></div></div>',{left:60,top:40,width:820}),
+   hpR:el(R,'abs hp r h','<span>COMMERCIAL</span><div class="t"><div class="f"></div></div>',{left:1040,top:40,width:820}),
+   sub:el(R,'abs cx h s6-sub','<span class="jp">安全と商業目的のバランス</span><span class="ui">Balancing Safety and Commercial Objectives ・ FORM S-1 p.52</span>',{top:860}),
+   rb:el(R,'abs cx imp h s6-round','',{top:130}),
+   card:el(R,'abs s6-card h','',{left:260,top:300,width:1400}),
+   judge:el(R,'abs h s6-judge','<div class="hd jp">このトレードオフの判断を、誤るおそれもある</div><div class="bx l"><b>慎重すぎて</b>市場の機会を逃す</div><div class="bx r"><b>厳格さが足りず</b>害をもたらすモデルを出す</div><div class="src ui">FORM S-1 p.52</div>',{left:0,top:270,width:W,height:600}),
+  };
+ },
+ cues:[
+  [0,c=>{bgSet({acc:RGB.cyan,acc2:RGB.amber,glow:.5,grid:.06,ring:0,embers:20});tick(.05,C.ink);inX(c.L,-1100,0,.32);inX(c.Rt,1100,0,.32);}],
+  [.5,c=>{slam(c.vs,0,3.2,.3);flash('#fff',.35,.85);shake(32,.5);burst(960,520,{n:180,colors:[C.cyan,C.amber,C.ink],speed:1600});BG.rad=.9;}],
+  [1.2,c=>{inY(c.hpL,-120,0,.3);inY(c.hpR,-120,.05,.3);at(.15,()=>{c.hpL.querySelector('.f').style.width='100%';c.hpR.querySelector('.f').style.width='100%';});fadeIn(c.sub,.2,.3);}],
+  [2.3,c=>{out(c.vs,0,.15);out(c.sub,0,.15);A(c.L,[{opacity:.28}],{duration:300,fill:'forwards'});A(c.Rt,[{opacity:.28}],{duration:300,fill:'forwards'});}],
+  [2.45,c=>round(c,0)],[4.85,c=>round(c,1)],[7.25,c=>round(c,2)],
+  [9.75,c=>{out(c.card,0,.2);out(c.rb,0,.15);A(c.L,[{opacity:.07}],{duration:300,fill:'forwards'});A(c.Rt,[{opacity:.07}],{duration:300,fill:'forwards'});const j=c.judge;fadeIn(j,0,.01);pop(j.querySelector('.hd'),0,.35,.8);inX(j.querySelector('.bx.l'),-900,.35,.35);inX(j.querySelector('.bx.r'),900,.5,.35);fadeIn(j.querySelector('.src'),.8,.3);at(.45,()=>shake(12,.25));at(.6,()=>shake(12,.25));}],
+  [11.85,c=>beat(c.R,.04,.3)],
+  [12.1,()=>flash('#fff',.6,1)],
+ ]},
+
+{label:'RESULT',dur:16.5,trans:null,
+ build(R){
+  const rows=[['"existential" の登場回数','×3',v=>'×'+Math.round(v),3],['掲載ページ','p.47 / 52 / 84'],['不正アクセスに至ったモデル','4',v=>String(Math.round(v)),4],['その作業時間','約10〜34h'],['新モデルの事前学習の延期','1ヶ月以上']];
+  const c={rows,
+   rings:el(R,'abs s7-rings h','<i></i><i></i><i></i>',{left:460,top:40,width:1000,height:1000}),
+   head:el(R,'abs cx s7-head h','MISSION REPORT　·　FORM S-1　·　FILED 2026.10.26',{top:52}),
+   banner:el(R,'abs cx h','<div class="s7-banner">RISK FACTOR<br>DISCLOSED</div>',{top:110}),
+   list:el(R,'abs',rows.map(r=>`<div class="s7-row h"><span class="k">${r[0]}</span><span class="v">${r[2]?'0':''}</span><span class="ck">CHECK</span></div>`).join(''),{left:330,top:450,width:1260}),
+   pre:el(R,'abs cx jp h','安全重視のアプローチは、こうしたリスクを抑えるためのもの。',{top:430,fontSize:54}),
+   but:el(R,'abs cx jp h','しかし',{top:540,fontSize:92,color:C.red}),
+   fin:el(R,'abs cx s7-final h','その努力が成功する<br>保証は、ない。',{top:190}),
+   finE:el(R,'abs cx ui h','',{top:635,fontSize:40}),
+   finS:el(R,'abs cx ui h','Anthropic, PBC　FORM S-1　RISK FACTORS　p.52',{top:700,fontSize:26,color:C.gold,letterSpacing:'.2em'}),
+   mission:el(R,'abs cx s7-mis h','<div class="jp">この会社の公益目的：人類の長期的な利益のために、先進的なAIを責任をもって開発・維持すること</div><div class="ui">"the responsible development and maintenance of advanced AI for the long-term benefit of humanity"　p.235</div>',{top:800,left:140,right:140}),
+   credit:el(R,'abs cx s7-cred h','出典：Anthropic, PBC「FORM S-1」（2026年10月26日 SEC提出）Risk Factors p.46–48, 52, 84 ／ Business p.231–232, 235',{top:980}),
+  };
+  c.rowEls=[...c.list.children];
+  return c;
+ },
+ cues:[
+  [0,c=>{bgSet({acc:RGB.gold,acc2:RGB.mag,glow:.75,grid:.1,ring:.6,embers:70});tick(.07,C.gold);pop(c.head,0,.3,.8);slam(c.banner,.12,2.6,.3);at(.12,()=>{flash(C.gold,.4,.65);shake(26,.45);burst(960,240,{n:160,colors:[C.gold,C.ink,C.amber],speed:1500});});fadeIn(c.rings,.2,.6);}],
+  [1.0,c=>resRow(c,0)],[1.55,c=>resRow(c,1)],[2.1,c=>resRow(c,2)],[2.65,c=>resRow(c,3)],[3.2,c=>resRow(c,4)],
+  [4.0,c=>{c.rowEls.forEach((r,k)=>A(r,[{background:'rgba(255,215,90,.3)'},{background:'rgba(255,215,90,0)'}],{duration:500,delay:k*60,fill:'none'}));burst(960,660,{n:120,colors:[C.gold,C.ink],speed:1300});shake(12,.3);}],
+  [5.2,c=>{[c.head,c.banner,...c.rowEls].forEach(e=>A(e,[{opacity:0,transform:`translate(${rand(-900,900)}px,${rand(-500,700)}px) rotate(${rand(-60,60)}deg) scale(.6)`}],{duration:550,fill:'forwards',easing:'cubic-bezier(.5,0,.8,.4)'}));out(c.rings,0,.5);bgSet({glow:.05,grid:0,ring:0,embers:0,acc:RGB.red});tick(0);}],
+  [5.9,c=>fadeIn(c.pre,0,.6)],
+  [6.4,c=>{beat(c.R,.02,.35);c.edge=edgePulse(c.R,'rgba(255,35,64,.6)',.45);}],
+  [7.0,c=>{beat(c.R,.03,.35);pop(c.but,0,.3,1.6);shake(10,.2);}],
+  [7.6,c=>beat(c.R,.04,.35)],
+  [8.1,c=>{c.edge.remove();out(c.pre,0,.08);out(c.but,0,.08);slam(c.fin,0,3,.34);flash('#fff',.35,1);shake(52,.75);BG.rad=2.2;burst(960,330,{n:260,colors:[C.ink,C.red,C.cyan,C.gold,C.mag],speed:1900});burst(200,900,{n:90,colors:[C.gold,C.ink]});burst(1720,900,{n:90,colors:[C.gold,C.ink]});bgSet({glow:1,acc:RGB.red,acc2:RGB.gold,embers:120,ring:.35});}],
+  [8.6,()=>{flash(C.gold,.35,.55);burst(960,330,{n:160,colors:[C.gold,C.ink],speed:2200,ringColor:C.gold});shake(30,.4);}],
+  [9.1,()=>flash('#fff',.4,.5)],
+  [9.4,c=>{fadeIn(c.finE,0,.01);type(c.finE,'"there can be no assurance that our efforts will be successful"',1)}],
+  [10.6,c=>inY(c.finS,20,0,.4)],
+  [11.8,c=>fadeIn(c.mission,0,1.2)],
+  [14.0,c=>fadeIn(c.credit,0,.8)],
+ ]},
+];
+
+/* ---------- transitions run at the cut, over the outgoing scene ---------- */
+const TRANS={
+  shatter(old){
+    old.querySelectorAll('*').forEach(n=>n.getAnimations().forEach(a=>{try{a.commitStyles();}catch(e){}}));
+    const cx=960+rand(-100,100),cy=540+rand(-60,60);
+    const pts=[[0,0],[520,0],[1150,0],[1920,0],[1920,430],[1920,1080],[1280,1080],[620,1080],[0,1080],[0,540]];
+    const wrap=el(fxRoot,'fxl');
+    pts.forEach((a,k)=>{
+      const b=pts[(k+1)%pts.length];
+      const sh=el(wrap,'fxl shard',null,{clipPath:`polygon(${cx}px ${cy}px,${a[0]}px ${a[1]}px,${b[0]}px ${b[1]}px)`});
+      sh.appendChild(old.cloneNode(true));
+      const mx=(a[0]+b[0])/2-cx,my=(a[1]+b[1])/2-cy,len=Math.hypot(mx,my)||1,dist=rand(500,1200);
+      A(sh,[{transform:'translate(0px,0px)',opacity:1},{transform:`translate(${mx/len*14}px,${my/len*14}px)`,opacity:1,offset:.18},{transform:`translate(${mx/len*dist}px,${my/len*dist+300}px) rotate(${rand(-35,35)}deg) scale(.85)`,opacity:0}],{duration:820,easing:'cubic-bezier(.5,0,.8,.6)',fill:'forwards'});
+    });
+    el(wrap,'fxl',`<svg width="1920" height="1080" viewBox="0 0 1920 1080">${pts.map(p=>`<line x1="${cx}" y1="${cy}" x2="${p[0]}" y2="${p[1]}" stroke="#fff" stroke-width="5"/>`).join('')}</svg>`);
+    A(wrap.lastChild,[{opacity:1},{opacity:0}],{duration:200,fill:'forwards'});
+    flash('#fff',.22,.6);shake(26,.4);
+    A(wrap,[{opacity:1},{opacity:1}],{duration:900,fill:'none'}).onfinish=()=>wrap.remove();
+    return null;
+  },
+  glitch(){glitchBars(16,.4);flash(C.cyan,.15,.35);return root=>A(root,[{transform:'translateX(-40px)',filter:'hue-rotate(90deg) saturate(3)'},{transform:'translateX(30px)',filter:'hue-rotate(-40deg)'},{transform:'translateX(-12px)',filter:'none'},{transform:'none',filter:'none'}],{duration:320,easing:'steps(4,end)',fill:'none'});},
+  invert(){A(stage,[{filter:'invert(1) hue-rotate(180deg)'},{filter:'invert(0) hue-rotate(0deg)'}],{duration:380,easing:'steps(3,end)',fill:'none'});return root=>A(root,[{transform:'scale(1.25) rotate(-6deg)',opacity:.2},{transform:'none',opacity:1}],{duration:420,fill:'none'});},
+  slide(){BG.speed=.6;return root=>A(root,[{transform:'translateX(1400px) skewX(-12deg)',filter:'blur(10px)'},{transform:'none',filter:'blur(0px)'}],{duration:380,fill:'none',easing:'cubic-bezier(.2,1,.3,1)'});},
+};
+
+/* ---------- playback ---------- */
+const TOTAL=SCENES.reduce((s,x)=>s+x.dur,0);
+const OFF=[];SCENES.reduce((s,x,i)=>(OFF[i]=s,s+x.dur),0);
+const hudFill=hud.querySelector('.fill'),hudLab=hud.querySelector('.lab'),pausedEl=$('paused'),endEl=$('endc');
+OFF.slice(1).forEach(o=>el(hud.querySelector('.bar'),'tk',null,{left:(o/TOTAL*100)+'%'}));
+
+function go(i,auto){
+  i=Math.max(0,Math.min(SCENES.length-1,i));
+  const old=E.root,oldScene=SCENES[E.i];
+  let post=null;
+  if(auto&&old&&oldScene.trans)post=TRANS[oldScene.trans](old);
+  if(!auto){fxRoot.textContent='';sparks.length=0;rings.length=0;shaker.getAnimations().forEach(a=>a.cancel());stage.getAnimations().forEach(a=>a.cancel());}
+  if(old)old.remove();
+  E.i=i;E.t=0;E.cue=0;E.tweens=[];E.timers=[];E.ended=false;
+  endEl.hidden=true;BG.rad=0;BG.speed=0;
+  E.root=el(holder,'scene');
+  E.ctx=SCENES[i].build(E.root)||{};E.ctx.R=E.root;
+  if(post)post(E.root);
+  const cues=SCENES[i].cues;
+  while(E.cue<cues.length&&cues[E.cue][0]<=0)cues[E.cue++][1](E.ctx);
+  hudLab.textContent=`${String(i+1).padStart(2,'0')} / ${String(SCENES.length).padStart(2,'0')}　${SCENES[i].label}`;
+}
+function step(){
+  const sc=SCENES[E.i];
+  while(E.cue<sc.cues.length&&sc.cues[E.cue][0]<=E.t)sc.cues[E.cue++][1](E.ctx);
+  if(E.timers.length){const due=E.timers.filter(x=>x.t<=E.t);E.timers=E.timers.filter(x=>x.t>E.t);due.forEach(x=>x.fn());}
+  if(E.tweens.length){const cur=E.tweens;E.tweens=[];const keep=cur.filter(tw=>{if(E.t<tw.t0)return true;const p=Math.min(1,(E.t-tw.t0)/tw.dur);tw.fn(tw.ease(p));return p<1;});E.tweens=keep.concat(E.tweens);}
+  if(E.t>=sc.dur){if(E.i<SCENES.length-1)go(E.i+1,true);else finish();}
+}
+function finish(){E.ended=true;E.playing=false;endEl.hidden=false;fadeIn(endEl,0,.6);}
+function setPlaying(p){
+  if(p===E.playing)return;
+  if(p&&E.ended)go(0,false);
+  E.playing=p;
+  if(p){E.held.forEach(a=>{try{a.play();}catch(e){}});E.held=[];}
+  else{E.held=document.getAnimations().filter(a=>a.playState==='running');E.held.forEach(a=>a.pause());}
+  pausedEl.hidden=p;
+}
+function nav(i){const wasEnded=E.ended;go(i,false);if(wasEnded)setPlaying(true);}
+function next(){if(E.i<SCENES.length-1)nav(E.i+1);else if(!E.ended)finish();}
+function prev(){nav(E.t>1.2&&!E.ended?E.i:E.i-1);}
+function restart(){go(0,false);if(!E.playing)setPlaying(true);}
+function toggleFS(){try{if(!document.fullscreenElement){const r=frameEl.requestFullscreen&&frameEl.requestFullscreen();if(r&&r.catch)r.catch(()=>{});}else{const r=document.exitFullscreen&&document.exitFullscreen();if(r&&r.catch)r.catch(()=>{});}}catch(e){}}
+
+addEventListener('keydown',e=>{
+  if(!E.booted||e.metaKey||e.ctrlKey||e.altKey)return;
+  const k=e.key;
+  if(k===' '||k==='k'||k==='K'){e.preventDefault();if(E.ended)restart();else setPlaying(!E.playing);}
+  else if(k==='ArrowRight'||k==='l'||k==='L'||k==='PageDown'){e.preventDefault();next();}
+  else if(k==='ArrowLeft'||k==='j'||k==='J'||k==='PageUp'){e.preventDefault();prev();}
+  else if(k==='r'||k==='R'||k==='Home'){e.preventDefault();restart();}
+  else if(k==='h'||k==='H'){hud.classList.toggle('off');}
+  else if(k==='f'||k==='F'){toggleFS();}
+  else if(/^[1-9]$/.test(k)&&+k<=SCENES.length){nav(+k-1);}
+});
+frameEl.addEventListener('click',e=>{
+  if(!E.booted)return;
+  const r=stage.getBoundingClientRect(),x=(e.clientX-r.left)/r.width;
+  if(x<.2)prev();else if(x>.8)next();else if(E.ended)restart();else setPlaying(!E.playing);
+});
+
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.25,(now-last)/1000);last=now;
+  const live=E.playing||E.ended;
+  if(E.playing){E.t+=dt*RATE;E.wall+=dt;step();}
+  bgDraw(live?dt*RATE:0);fxDraw(live?dt*RATE:0);
+  hudFill.style.width=((OFF[E.i]+Math.min(E.t,SCENES[E.i].dur))/TOTAL*100)+'%';
+  hud.classList.toggle('show',!E.playing||E.wall<4);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+(async function boot(){
+  const warm=el(stage,'scene',null,{opacity:0,pointerEvents:'none'});
+  SCENES.forEach(s=>s.build(el(warm,'scene')));
+  const txt=warm.textContent+TYPED+tk.textContent.slice(0,400);
+  const faces=['400 40px "Dela Gothic One"','900 40px "Zen Kaku Gothic New"','700 40px "Zen Kaku Gothic New"','500 40px "Zen Kaku Gothic New"','400 40px "DotGothic16"','700 40px "Chakra Petch"','600 40px "Chakra Petch"'];
+  try{await Promise.race([Promise.all(faces.map(f=>document.fonts.load(f,txt))),new Promise(r=>setTimeout(r,4000))]);}catch(e){}
+  warm.remove();$('boot').remove();
+  E.booted=true;go(START,false);setPlaying(true);
+})();
+})();
+</script>
+</body>
+</html>
