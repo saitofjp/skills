@@ -58,6 +58,7 @@ mark{background:var(--amber);color:#000;padding:0 6px}
 /* 0 hook */
 .s0-band{display:grid;place-items:center;box-shadow:0 0 0 12px #000,0 20px 90px rgba(255,35,64,.55)}
 .s0-band .imp{font-size:170px;line-height:1;color:var(--ink);text-shadow:8px 8px 0 #000}
+.s0-maji{display:inline-block;font-size:150px;line-height:1.1;color:var(--void);background:var(--ink);padding:6px 40px;box-shadow:12px 12px 0 var(--red)}
 
 /* 1 scan */
 .s1-search{display:flex;align-items:center;gap:24px;padding:0 30px;border:4px solid var(--amber);background:rgba(6,5,12,.85);font-family:var(--f-ui);font-weight:700}
@@ -454,7 +455,7 @@ const ROUNDS=[
   {t:'新しいフロンティアモデルの<br>事前学習を、1ヶ月以上遅らせた',d:'モデルの重みの持ち出しを防ぐなど、セキュリティ対策を強化する時間をとるため。',s:'FORM S-1 p.52'},
   {t:'責任あるスケーリング方針<br>（Responsible Scaling Policy）',d:'AIの破滅的リスクへの向き合い方を定めた方針。リリース前に各モデルを徹底的にテストし、リスク報告を定期的に公開する。',chip:'Claude の憲法：取り返しのつかない行動を避け、AIに対する人間の監督を支える',s:'FORM S-1 p.231–232'},
 ];
-const TYPED='Claude Code の会社existential> 第三者パートナーが作ったサイバーセキュリティ評価> モデルへの指示：「インターネット接続はない」> 実際：設定ミスでネットにつながっていた"We have observed that our models are contributing to the pace of our own research."能力が上がるほど、評価や監視をかいくぐるのが上手くなっている"there can be no assurance that our efforts will be successful"0123456789×〜';
+const TYPED='existential> 第三者パートナーが作ったサイバーセキュリティ評価> モデルへの指示：「インターネット接続はない」> 実際：設定ミスでネットにつながっていた"We have observed that our models are contributing to the pace of our own research."能力が上がるほど、評価や監視をかいくぐるのが上手くなっている"there can be no assurance that our efforts will be successful"0123456789×〜';
 
 function hit(c,i){
   const card=c.cards[i];
@@ -515,24 +516,30 @@ function resRow(c,i){
 
 /* ---------- scenes: build() makes DOM only, cues animate it on the scene clock ---------- */
 const SCENES=[
-{label:'HOOK ・ Anthropic から',dur:5.8,trans:null,
+{label:'HOOK ・ 冗談？',dur:6.2,trans:null,
  build(R){return{
-  q1:el(R,'abs cx jp h','',{top:300,fontSize:64,fontWeight:700,color:C.dim}),
-  q2:el(R,'abs cx imp ca h','Anthropic から',{top:400,fontSize:160}),
-  q3:el(R,'abs cx jp h','こんな言葉が出た',{top:650,fontSize:70}),
-  big:el(R,'abs cx imp ca h','EXISTENTIAL<br>RISKS TO<br>HUMANITY',{top:70,fontSize:180,lineHeight:1.02}),
-  band:el(R,'abs s0-band h','<div class="imp">人類の存亡リスク</div>',{left:-100,top:640,width:2120,height:230,background:C.red,rotate:'-5deg'}),
-  src:el(R,'abs cx ui h','<span class="tag">FORM S-1</span>Anthropic, PBC の上場申請書「リスク要因」より',{top:952,fontSize:32}),
+  band:el(R,'abs s0-band h','<div class="imp">人類の存亡リスク！</div>',{left:-100,top:400,width:2120,height:260,background:C.red,rotate:'-5deg'}),
+  joke:el(R,'abs cx jp h','冗談？',{top:400,fontSize:190,color:C.dim,rotate:'6deg'}),
+  l1:el(R,'abs cx jp h','いえ、',{top:250,fontSize:84,fontWeight:700,color:C.dim}),
+  l2:el(R,'abs cx imp ca h','Claude Code の Anthropic が',{top:390,fontSize:104}),
+  l3:el(R,'abs cx h','<span class="s0-maji jp">まじめに出した。</span>',{top:590}),
+  big:el(R,'abs cx imp ca h','EXISTENTIAL<br>RISKS TO<br>HUMANITY',{top:60,fontSize:170,lineHeight:1.02}),
+  jp:el(R,'abs cx jp h','＝ 人類の存亡リスク',{top:625,fontSize:84,color:C.red}),
+  src:el(R,'abs cx ui h','<span class="tag">FORM S-1</span>Anthropic, PBC の上場申請書「リスク要因」より',{top:800,fontSize:36}),
  };},
  cues:[
-  [0,c=>{bgSet({acc:RGB.red,acc2:RGB.violet,glow:.2,grid:0,ring:0,embers:16});tick(0);fadeIn(c.q1,0,.1);type(c.q1,'Claude Code の会社',.45);}],
-  [.6,c=>{slam(c.q2,0,2.4,.26);flash(C.red,.2,.4);shake(16,.3);burst(960,500,{n:80,colors:[C.ink,C.red],speed:1000});}],
-  [1.2,c=>{pop(c.q3,0,.3,.7);glitchEl(c.q2,.3);}],
-  [1.75,c=>{[c.q1,c.q2,c.q3].forEach(e=>out(e,0,.08));slam(c.big,0,2.8,.32);flash(C.red,.42,.85);shake(30,.48);burst(960,420,{n:170,colors:[C.ink,C.red,C.amber],speed:1500});bgSet({glow:.95});BG.rad=1.5;tick(.12,C.ink);}],
-  [2.85,c=>{A(c.band,[{opacity:1,transform:'translateX(2300px)'},{opacity:1,transform:'translateX(0px)'}],{duration:240,easing:'cubic-bezier(.2,1,.3,1)'});A(c.big,[{opacity:.3,transform:'scale(.95)'}],{duration:300,fill:'forwards'});flash('#fff',.26,.55,.2);at(.2,()=>{shake(22,.4);burst(960,760,{n:110,colors:[C.ink,C.red],speed:1200});});}],
-  [3.85,c=>pop(c.src,0,.35,1.6)],
-  [5.15,c=>{A(c.R,[{transform:'scale(1)',filter:'blur(0px)',opacity:1},{transform:'scale(6)',filter:'blur(18px)',opacity:0}],{duration:520,easing:'cubic-bezier(.7,0,.9,.4)',fill:'forwards'});BG.rad=.6;}],
-  [5.5,()=>flash('#fff',.42,1)],
+  [0,c=>{bgSet({acc:RGB.red,acc2:RGB.violet,glow:.3,grid:0,ring:0,embers:16});tick(0);}],
+  [.1,c=>{A(c.band,[{opacity:1,transform:'translateX(2300px)'},{opacity:1,transform:'translateX(0px)'}],{duration:220,easing:'cubic-bezier(.2,1,.3,1)'});at(.2,()=>{flash(C.red,.4,.8);shake(30,.45);burst(960,530,{n:170,colors:[C.ink,C.red,C.amber],speed:1500});BG.rad=1.1;bgSet({glow:.9});});}],
+  [1.25,c=>{out(c.band,0,.12,[{opacity:0,transform:'scale(1.15)'}]);bgSet({glow:.15});pop(c.joke,.08,.3,.5);at(.12,()=>flash('#000',.25,.6));}],
+  [1.75,c=>glitchEl(c.joke,.3)],
+  [2.2,c=>{A(c.joke,[{transform:'translateX(0px)'},{transform:'translateX(-40px)'},{transform:'translateX(40px)'},{transform:'translateX(-24px)'},{opacity:0,transform:'translateX(0px)'}],{duration:300,fill:'forwards',easing:'linear'});fadeIn(c.l1,.2,.2);}],
+  [2.65,c=>{slam(c.l2,0,2.2,.26);flash('#fff',.22,.5);shake(18,.3);burst(960,450,{n:90,colors:[C.ink,C.cyan,C.red],speed:1100});tick(.08,C.ink);}],
+  [3.25,c=>{slam(c.l3,0,1.8,.26);shake(14,.25);bgSet({glow:.5});}],
+  [4.1,c=>{[c.l1,c.l2,c.l3].forEach(e=>out(e,0,.08));slam(c.big,0,2.8,.32);flash(C.red,.42,.85);shake(30,.48);burst(960,380,{n:170,colors:[C.ink,C.red,C.amber],speed:1500});bgSet({glow:.95});BG.rad=1.4;tick(.12,C.ink);}],
+  [4.6,c=>{inY(c.jp,40,0,.3);}],
+  [4.9,c=>pop(c.src,0,.35,1.6)],
+  [5.55,c=>{A(c.R,[{transform:'scale(1)',filter:'blur(0px)',opacity:1},{transform:'scale(6)',filter:'blur(18px)',opacity:0}],{duration:520,easing:'cubic-bezier(.7,0,.9,.4)',fill:'forwards'});BG.rad=.6;}],
+  [5.9,()=>flash('#fff',.42,1)],
  ]},
 
 {label:'HYPE ・ 何回出てくる？',dur:10.2,trans:'shatter',
