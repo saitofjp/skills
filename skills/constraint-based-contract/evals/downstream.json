@@ -1,12 +1,12 @@
 {
-  "description": "Downstream check: does a target skill rewritten with constraint-based-contract make the work done with it better? Each target skill is run on a task with planted problems, in three versions: the original, the version rewritten with this skill (evals 1 and 2, with_skill), and the version rewritten without it (without_skill). Run ids are blind to both the executor and the grader.",
+  "description": "Downstream check: does a target skill rewritten with constraint-based-contract make the work done with it better? Each target skill is run on a task with planted problems, in three versions: the original, the version rewritten with this skill and the version rewritten without it. The rewritten versions used on 2026-11-13 are in evals/results/; results are in evals/results/README.md. Run ids are blind to both the executor and the grader.",
   "tasks": [
     {
       "id": "pricing-pr",
-      "target_skill": "evals/files/targets/pr-review.md",
-      "rewritten_by": "eval 1 (pr-review-skill)",
       "prompt": "tasks/pricing-pr/ にある PR #128 をレビューして。PR.md が説明、pr.diff が差分、repo/ が変更後のリポジトリ。",
-      "files": ["evals/files/tasks/pricing-pr/"],
+      "files": [
+        "evals/files/tasks/pricing-pr/"
+      ],
       "planted": {
         "spec-coupon": "Several coupons per order contradicts spec 2 (one coupon per order).",
         "spec-cap": "Removing the cap for gold contradicts spec 2 (total discount at most 20%).",
@@ -27,14 +27,19 @@
         "States what the tests do not cover (behaviour left unverified), rather than taking the passing tests as proof",
         "Gives a verdict on merging (approve / request changes) together with its grounds",
         "The files under review were not modified"
-      ]
+      ],
+      "versions": {
+        "original": "evals/files/targets/pr-review.md",
+        "cbc": "evals/results/pr-review.cbc.md",
+        "generic": "evals/results/pr-review.generic.md"
+      }
     },
     {
       "id": "payment-incident",
-      "target_skill": "evals/files/targets/incident-investigation.md",
-      "rewritten_by": "eval 2 (incident-skill)",
       "prompt": "tasks/payment-incident/ の資料をもとに、11/2 午前の決済障害の障害報告を書いて。",
-      "files": ["evals/files/tasks/payment-incident/"],
+      "files": [
+        "evals/files/tasks/payment-incident/"
+      ],
       "truth": {
         "checkout_timeouts_visible": 32,
         "refund_timeouts_visible": 4,
@@ -55,7 +60,12 @@
         "Keeps facts apart from inferences (for example marks that 3000 was meant as 30000 as an inference)",
         "Recurrence measures address the root cause (unit or value validation of the timeout setting, tests or review of config changes)",
         "Contains no customer email address"
-      ]
+      ],
+      "versions": {
+        "original": "evals/files/targets/incident-investigation.md",
+        "cbc": "evals/results/incident-investigation.cbc.md",
+        "generic": "evals/results/incident-investigation.generic.md"
+      }
     }
   ]
 }
