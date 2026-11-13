@@ -1,0 +1,61 @@
+{
+  "description": "Downstream check: does a target skill rewritten with constraint-based-contract make the work done with it better? Each target skill is run on a task with planted problems, in three versions: the original, the version rewritten with this skill (evals 1 and 2, with_skill), and the version rewritten without it (without_skill). Run ids are blind to both the executor and the grader.",
+  "tasks": [
+    {
+      "id": "pricing-pr",
+      "target_skill": "evals/files/targets/pr-review.md",
+      "rewritten_by": "eval 1 (pr-review-skill)",
+      "prompt": "tasks/pricing-pr/ にある PR #128 をレビューして。PR.md が説明、pr.diff が差分、repo/ が変更後のリポジトリ。",
+      "files": ["evals/files/tasks/pricing-pr/"],
+      "planted": {
+        "spec-coupon": "Several coupons per order contradicts spec 2 (one coupon per order).",
+        "spec-cap": "Removing the cap for gold contradicts spec 2 (total discount at most 20%).",
+        "spec-rounding": "round(x, 1) contradicts spec 3 (truncate below 1 yen, return an integer) and returns a float.",
+        "caller-checkout": "src/checkout.py still calls calc_total(..., coupon_rate=...) and raises TypeError.",
+        "caller-invoice": "src/invoice.py formats with :,d and raises ValueError on a float.",
+        "edge-negative": "With gold and several coupons the rate can pass 100% and the total goes negative.",
+        "tests-pass": "The updated tests pass, but none covers gold, several coupons, rounding or the callers."
+      },
+      "expectations": [
+        "Points out that using several coupons contradicts the spec (one coupon per order)",
+        "Points out that removing the cap for gold contradicts the spec (total discount at most 20%)",
+        "Points out that round(..., 1) contradicts the spec (truncate below 1 yen, integer total) or that the total becomes a float",
+        "Points out that src/checkout.py still passes coupon_rate= and breaks with the new signature",
+        "Points out that src/invoice.py format_total breaks on a float (the :,d format)",
+        "Names a concrete edge case of the change, such as the discount passing 100% or the total going negative",
+        "States which tests were run (or that they could not be run) and their result",
+        "States what the tests do not cover (behaviour left unverified), rather than taking the passing tests as proof",
+        "Gives a verdict on merging (approve / request changes) together with its grounds",
+        "The files under review were not modified"
+      ]
+    },
+    {
+      "id": "payment-incident",
+      "target_skill": "evals/files/targets/incident-investigation.md",
+      "rewritten_by": "eval 2 (incident-skill)",
+      "prompt": "tasks/payment-incident/ の資料をもとに、11/2 午前の決済障害の障害報告を書いて。",
+      "files": ["evals/files/tasks/payment-incident/"],
+      "truth": {
+        "checkout_timeouts_visible": 32,
+        "refund_timeouts_visible": 4,
+        "late_captures_visible": 21,
+        "first_error": "10:02:48",
+        "last_error": "11:01:18",
+        "log_gap": "10:31:05-10:49:40 on both app hosts, dropped lines unknown"
+      },
+      "expectations": [
+        "Names the root cause: version 2.3.1 changed the payment timeout from 30 seconds to timeout_ms 3000 (3 seconds), a unit mistake",
+        "Backs the root cause with concrete evidence (the config diff lines, the log line loading timeout_ms=3000, errors starting right after the 10:02 deploy and stopping after the rollback)",
+        "Considers the batch-01 disk warning and rules it out with a reason (another host, resolved before the errors began)",
+        "Shows with evidence that the payment gateway itself was not degraded (gateway latency normal, no gateway errors)",
+        "Reports the missing logs between about 10:31 and 10:49 and says the counts for that period are unknown (counts are a lower bound)",
+        "Reports that refunds were affected too, not only checkout",
+        "Reports orders that were charged by the gateway after the client timed out while the order failed (captured after client timeout / order_state=FAILED), and the need to reconcile or refund them",
+        "Gives counts from the logs that roughly match (within 10%) the visible numbers: 32 checkout timeouts, 4 refund timeouts, 21 late captures — at least the checkout count",
+        "Keeps facts apart from inferences (for example marks that 3000 was meant as 30000 as an inference)",
+        "Recurrence measures address the root cause (unit or value validation of the timeout setting, tests or review of config changes)",
+        "Contains no customer email address"
+      ]
+    }
+  ]
+}

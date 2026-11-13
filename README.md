@@ -9,6 +9,7 @@ Agent Skills for testing and refining products and documents.
 - **[aidoc-less-is-more](skills/aidoc-less-is-more/SKILL.md)** — Restructure an AI-generated document by removing elements that compete for the reader's attention (conflict, duplication, decoration), verifying every deletion with a QA test.
 - **[dopagaki-generator](skills/dopagaki-generator/SKILL.md)** — Turn content into an over-the-top, auto-playing 16:9 motion presentation (single HTML) in the Japanese "dopagaki" style (Japanese video games × pachinko × Japanese anime OP × short video); screen-record it to get a social media video. Japanese version: [SKILL.ja.md](skills/dopagaki-generator/SKILL.ja.md). Examples: [日銀展望レポート ドパガキ版](https://saitofjp.github.io/skills/dopagaki/boj-outlook-2607.html), [津田健次郎 対 TikTok 判決 ドパガキ版](https://saitofjp.github.io/skills/dopagaki/tsuda-tiktok-2609.html).
 - **[semantic-structure](skills/semantic-structure/SKILL.md)** — Map what a text or a Claude Code conversation means as a diagram of chunks of meaning and the lines between them, each traced to the words it rests on, and show it beside the text as one animated HTML page that also turns it into a one-sentence summary, notes, slides or a table. Japanese version: [SKILL.ja.md](skills/semantic-structure/SKILL.ja.md). Example: [津田健次郎 対 TikTok 判決のノート](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html).
+- **[constraint-based-contract](skills/constraint-based-contract/SKILL.md)** — Review an existing skill or agent prompt and turn action-only instructions ("check the spec", "investigate the impact") into a checklist of what the output must contain, so a third party can verify the work from the output while the agent keeps its freedom in how to do it. Keeps safety rules, prohibitions and tool constraints as they are. Written in Japanese.
 
 Use the persona skills together: create a persona with `simulated-persona-creator`, then run it against your product with `simulated-persona-tester`. Example: [AIQ のペルソナテスト](examples/aiq-personas/).
 
@@ -38,6 +39,7 @@ npx skills add saitofjp/skills --skill simulated-persona-tester
 npx skills add saitofjp/skills --skill aidoc-less-is-more
 npx skills add saitofjp/skills --skill dopagaki-generator
 npx skills add saitofjp/skills --skill semantic-structure
+npx skills add saitofjp/skills --skill constraint-based-contract
 ```
 
 Or point directly at a skill's path in this repo:
