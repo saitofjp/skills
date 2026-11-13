@@ -1,0 +1,55 @@
+{
+  "skill_name": "constraint-based-contract",
+  "evals": [
+    {
+      "id": 1,
+      "name": "pr-review-skill",
+      "prompt": "evals/files/targets/pr-review.md はうちのチームのPRレビュー用スキル。これを使わせると「仕様を確認しました、問題ありません、LGTM」みたいな返事ばかりで、本当に確認したのか分からない。スキルを改善して。改善後のスキル全文も出して。",
+      "expected_output": "An evaluation that maps each instruction to the output, flags the spec/impact/test/edge-case instructions whose results are not left in the review, keeps the no-write/no-push rule, and an improved skill whose review must contain related spec, impact, test results with unverified items, and the verdict with its grounds.",
+      "files": ["evals/files/targets/pr-review.md"],
+      "expectations": [
+        "The evaluation classifies each of the target's steps 1-7 and its caution note by how its result reaches the output (対応あり / 対応が不十分 / 対応なし / 行動指示を維持, or an equivalent distinction)",
+        "「関連する仕様書を確認する」「変更の影響範囲を調査する」「テストが通ることを確認する」 are identified as instructions whose results are not left in the review",
+        "「十分に」 and 「漏れなく」 are flagged as requirements whose fulfilment cannot be judged, and replaced by information that can be checked (scope covered, scope left out, reasons)",
+        "The rule not to rewrite the files under review or commit/push is treated as an action instruction to keep, and it is still present in improved-skill.md",
+        "improved-skill.md asks the review to contain, besides test results, the behaviour the tests do not cover (unverified items) and why",
+        "improved-skill.md lets the review tell apart 'checked and nothing found', 'not checked' and 'cannot judge'",
+        "improved-skill.md asks the review to contain the verdict (merge or not) and its grounds",
+        "improved-skill.md does not fix the investigation procedure or the answers (no mandated files/chapters to read, tools to use, or fixed wording to output)"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "incident-skill",
+      "prompt": "evals/files/targets/incident-investigation.md の障害調査スキル、出てくる報告が毎回薄くて、後から見返しても何を調べて何を調べてないのか分からない。改善して、直したスキルの全文もちょうだい。",
+      "expected_output": "An evaluation that flags 「漏れなく」 and the action-only steps, calls the fixed four-heading/3-line format an over-constraint, keeps the production and PII rules, and an improved skill whose report must contain evidence, facts vs inferences, ruled-out causes and what could not be checked.",
+      "files": ["evals/files/targets/incident-investigation.md"],
+      "expectations": [
+        "The evaluation classifies each of the target's steps 1-5, its report format and its two cautions by how the result reaches the output (or an equivalent distinction)",
+        "「影響範囲を漏れなく把握する」 is flagged as vague, with a replacement that states what was checked and what was not",
+        "The fixed format (only four headings, at most 3 lines each) is flagged as an output constraint that can drop needed information, and a looser alternative is proposed",
+        "「本番環境に対してコマンドを実行しない」 and 「顧客の個人情報を書かない」 are treated as instructions to keep, and both are still present in improved-skill.md",
+        "improved-skill.md asks the report to give the evidence (log lines, change history) for the root cause it names",
+        "improved-skill.md asks the report to keep facts apart from inferences",
+        "improved-skill.md asks the report to state what could not be checked (for example missing logs) and not to treat unchecked as fine",
+        "improved-skill.md asks the report to name the candidate causes that were ruled out and why"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "aidoc-restraint",
+      "prompt": "../aidoc-less-is-more/SKILL.md のスキル、AIが本当にやったかを後から確かめられる書き方になってる？まず評価だけして。ファイルは変えないで。",
+      "expected_output": "An evaluation that recognises the skill's report section already carries most results, proposes only a few targeted changes (for example the results of re-reading the core in step 9 are not reported), keeps the stop-and-confirm and ask-first rules, and leaves the file unchanged.",
+      "files": ["../aidoc-less-is-more/SKILL.md"],
+      "expectations": [
+        "The evaluation recognises that the skill's 報告 section (declaration, results per kind, QA result, machine-check counts, Jaccard) already carries the results of many steps, and classifies those steps as already corresponding to the output",
+        "It recognises places that already separate 'none' from 'not checked' (for example 「0件と書く」, 「元文書が曖昧と記録する」) and does not propose adding duplicate requirements for them",
+        "It treats the procedural or safety instructions (ask when no target is given, stop for the declaration check, announce what will be overwritten) as instructions to keep",
+        "It points out that the result of at least one verification step that is not in the final report (step 9 core re-read or step 10 duplicate re-check) does not reach the output",
+        "It proposes only a few targeted changes and does not rewrite the whole skill or add a large new report format",
+        "Every change it proposes quotes the instruction, states the problem, and gives the conversion",
+        "The input file is unchanged"
+      ]
+    }
+  ]
+}

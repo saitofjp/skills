@@ -1,0 +1,6 @@
+2026-11-02T09:30:00+09:00 batch-01 INFO  [cron] nightly export finished
+2026-11-02T09:40:12+09:00 batch-01 WARN  [disk] usage 86% on /var/log (threshold 85%)
+2026-11-02T09:47:30+09:00 batch-01 WARN  [disk] usage 88% on /var/log (threshold 85%)
+2026-11-02T09:52:03+09:00 batch-01 INFO  [logrotate] rotated /var/log/export/*.log; usage 41% on /var/log
+2026-11-02T10:30:00+09:00 batch-01 INFO  [cron] hourly stock sync finished
+2026-11-02T11:30:00+09:00 batch-01 INFO  [cron] hourly stock sync finished

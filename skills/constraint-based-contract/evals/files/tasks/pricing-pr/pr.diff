@@ -1,0 +1,41 @@
+diff --git a/src/pricing.py b/src/pricing.py
+--- a/src/pricing.py
++++ b/src/pricing.py
+@@ -15,13 +15,16 @@
+     return total
+ 
+ 
+-def discount_rate(rank, coupon_rate=0.0):
+-    rate = RANK_RATES.get(rank, 0.0) + coupon_rate
++def discount_rate(rank, coupons=()):
++    rate = RANK_RATES.get(rank, 0.0) + sum(coupons)
++    if rank == "gold":
++        # キャンペーン期間中は gold 会員の割引上限を外す
++        return rate
+     return min(rate, MAX_DISCOUNT)
+ 
+ 
+-def calc_total(items, rank=None, coupon_rate=0.0):
++def calc_total(items, rank=None, coupons=()):
+     sub = subtotal(items)
+-    discounted = int(sub * (1 - discount_rate(rank, coupon_rate)))
++    discounted = round(sub * (1 - discount_rate(rank, coupons)), 1)
+     shipping = 0 if discounted >= FREE_SHIPPING_THRESHOLD else SHIPPING_FEE
+     return discounted + shipping
+diff --git a/tests/test_pricing.py b/tests/test_pricing.py
+--- a/tests/test_pricing.py
++++ b/tests/test_pricing.py
+@@ -13,11 +13,11 @@
+             subtotal([{"price": 100, "qty": 0}])
+ 
+     def test_silver_with_coupon_is_capped(self):
+-        self.assertEqual(discount_rate("silver", 0.20), 0.20)
++        self.assertEqual(discount_rate("silver", [0.15, 0.10]), 0.20)
+ 
+     def test_total_with_discount(self):
+         items = [{"price": 1000, "qty": 10}]
+-        self.assertEqual(calc_total(items, rank="silver", coupon_rate=0.15), 8000)
++        self.assertEqual(calc_total(items, rank="silver", coupons=[0.15]), 8000)
+ 
+     def test_shipping_fee_below_threshold(self):
+         items = [{"price": 1000, "qty": 3}]
