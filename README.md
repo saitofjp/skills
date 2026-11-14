@@ -9,6 +9,7 @@ Agent Skills for testing and refining products and documents.
 - **[aidoc-less-is-more](skills/aidoc-less-is-more/SKILL.md)** — Restructure an AI-generated document by removing elements that compete for the reader's attention (conflict, duplication, decoration), verifying every deletion with a QA test.
 - **[dopagaki-generator](skills/dopagaki-generator/SKILL.md)** — Turn content into an over-the-top, auto-playing 16:9 motion presentation (single HTML) in the Japanese "dopagaki" style (Japanese video games × pachinko × Japanese anime OP × short video); screen-record it to get a social media video. Japanese version: [SKILL.ja.md](skills/dopagaki-generator/SKILL.ja.md). Examples: [日銀展望レポート ドパガキ版](https://saitofjp.github.io/skills/dopagaki/boj-outlook-2607.html), [津田健次郎 対 TikTok 判決 ドパガキ版](https://saitofjp.github.io/skills/dopagaki/tsuda-tiktok-2609.html).
 - **[semantic-structure](skills/semantic-structure/SKILL.md)** — Map what a text or a Claude Code conversation means as a diagram of chunks of meaning and the lines between them, each traced to the words it rests on, and show it beside the text as one animated HTML page that also turns it into a one-sentence summary, notes, slides or a table. Japanese version: [SKILL.ja.md](skills/semantic-structure/SKILL.ja.md). Example: [津田健次郎 対 TikTok 判決のノート](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html).
+- **[design-architecture-review](skills/design-architecture-review/SKILL.md)** — Review a change the way a senior engineer does, from above rather than line by line: recover the design the code implies, then judge the change against its stated intent, its non-functional requirements, security as design (where trust changes and where the controls live) and the changes likely to come. Japanese version: [SKILL.ja.md](skills/design-architecture-review/SKILL.ja.md).
 
 Use the persona skills together: create a persona with `simulated-persona-creator`, then run it against your product with `simulated-persona-tester`. Example: [AIQ のペルソナテスト](examples/aiq-personas/).
 
@@ -38,6 +39,7 @@ npx skills add saitofjp/skills --skill simulated-persona-tester
 npx skills add saitofjp/skills --skill aidoc-less-is-more
 npx skills add saitofjp/skills --skill dopagaki-generator
 npx skills add saitofjp/skills --skill semantic-structure
+npx skills add saitofjp/skills --skill design-architecture-review
 ```
 
 Or point directly at a skill's path in this repo:
