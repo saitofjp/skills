@@ -1,9 +1,9 @@
 ---
-name: design-architecture-review
-description: Reviews a change the way a senior engineer does, from above rather than line by line. Recovers the design the code implies, then judges the change against it - whether it achieves the intent its author stated, its non-functional requirements (the architecture), security as a matter of design (where trust changes and where the controls live), and how easily the next changes will break it. Use it when the user asks for a design or architecture review, a senior-level or big-picture review of a PR, branch or diff, a security review of the design rather than the code, or wants to know whether a feature will hold up as the system grows. Triggers include "review the design", "architecture review", 「設計レビューして」「アーキテクチャレビューして」「シニア目線でレビューして」「この機能、今後の拡張で壊れない？」「設計としてのセキュリティを見て」.
+name: birds-eye-review
+description: Reviews a change from a bird's-eye view, the way a senior engineer does, rather than line by line. Recovers the design the code implies, then judges the change against it - whether it achieves the intent its author stated, its non-functional requirements (the architecture), security as a matter of design (where trust changes and where the controls live), and how easily the next changes will break it. Use it when the user asks for a design or architecture review, a senior-level or big-picture review of a PR, branch or diff, a security review of the design rather than the code, or wants to know whether a feature will hold up as the system grows. Triggers include "bird's-eye review", "review the design", "architecture review", 「俯瞰してレビューして」「設計レビューして」「アーキテクチャレビューして」「シニア目線でレビューして」「この機能、今後の拡張で壊れない？」「設計としてのセキュリティを見て」.
 ---
 
-# Design Architecture Review
+# Bird's-Eye Review
 
 A line-level review asks whether the code does what it says. This review asks whether what it says has the right shape: whether the design carries the feature's intent and its non-functional requirements, whether its security is designed in rather than patched on, and whether it will survive the changes that are coming. A senior engineer reads a change from above, with the whole system and its future in view. This review takes that view.
 
