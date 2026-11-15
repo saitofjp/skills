@@ -5,37 +5,28 @@ description: Reviews a change from a bird's-eye view, the way a senior engineer 
 
 # Bird's-Eye Review
 
-A line-level review asks whether the code does what it says. This review asks whether what it says has the right shape: whether the change is carried through consistently in the code around it, and what it does besides what it is meant to do: slow something down, change data, break under failure or under the changes that are coming. A senior engineer looks at the whole to find such problems, and then reports them concretely enough that the author can see them in the code. This review does both.
+A line-level review asks whether the code does what it says. This review looks at the change from higher up, the way a senior engineer does, and asks two things the lines alone cannot answer:
 
-This file says what the review is for and what a good one looks like. How to get there (what to read first, which questions to chase, how deep to go) is yours to judge from the change in front of you.
+- **Design.** Is the change carried through consistently in the code around it?
+- **Non-functional requirements.** What does the change do besides what it is meant to do: slow something down, change data, break under failure?
 
-## What counts as a design finding
+The review goes in this order, because each part needs the one before: understand what the change is for, state the design the code implies, look at that design from the two sides above, turn what you see into concrete findings, and report. How deep to go in each part, and which questions to chase, is yours to judge from the change in front of you.
 
-A design finding cannot be argued from the changed lines alone. It needs something outside the diff: how the rest of the system works, what the change is meant to do, how it will be used, what will change next.
+## Understand the change
 
-This boundary keeps the review from turning into a second line-level review. Anything the changed lines alone can show is better left to a line-level code review, by whatever tool or person does that where you work; mixed in, the many small findings bury the few design ones. When you notice one anyway, a line pointing to it is enough.
+What to review comes from the arguments: a PR number or URL, a branch, a commit range, a path, or a design document written before any code exists. With no argument, review the current branch against the default branch.
 
-## Make each finding concrete
+Read what the change is for from the PR description and the commits. The review judges the change against that purpose, so if it is written nowhere and your reading of it would change the findings, ask. Otherwise, state your reading and go on.
 
-Looking at the whole is how you find a design problem, but a finding written at that level is of little use. A vague finding, such as "this coupling may hurt extensibility" or "consider a clearer separation of concerns", fits almost any code, cannot be shown wrong, and gives the author nothing to act on. Advice that would apply to any codebase (follow SOLID, add an abstraction layer, write more tests) is not a finding about this change.
+## State the design the code implies
 
-So write each finding with three things: the file and line where the problem sits, a specific input or change that sets it off, and what then happens. If you cannot say these, it is not a finding yet. Look further, or leave it out.
+You can only judge a design you can state. So read beyond the changed lines, into the code that calls them and the code they call, and put the design in words: the parts and what each is responsible for, the boundaries between them, how data flows, and the contracts and invariants the code relies on. Name the actual modules, functions and files rather than generic layers, and say where you read each piece.
 
-The surest way is to run it: a minimal reproduction, a scenario put through the real code, a small check that a direction for a fix works. A reproduction turns "could" into "does", and authors act on that. Mark what you could not run as a hypothesis, so it is weighed as one.
+If part of the design cannot be drawn from the code, say what is missing rather than filling it in. That the intent is not readable from the implementation is itself worth reporting.
 
-Keep reproductions in a scratch place, not in the repository. The review changes no code unless the user asks, because what to do about a design finding is the author's call.
+Size this to the change: a few lines for a small one, a sketch or a diagram for a large one. For a design document, there is no code to read; take the design the document gives.
 
-## Start from the design the code implies
-
-You can only judge a design you can state. So before judging, recover it: the parts and what each is responsible for, the boundaries between them, how data flows, the contracts and invariants the code relies on, and the intent the author gave (PR description, commit messages, docs, design records). Name the actual modules, functions and files rather than generic layers, and say where you read each piece.
-
-Often, stating the design is the review. Where the code and the stated intent disagree, for example the author says they rejected an approach and the code still behaves that way in some case, that tends to be the most important finding.
-
-If part of the design cannot be drawn from the code, that is a finding too: the intent is not readable from the implementation. Say what is missing rather than filling it in.
-
-Size the recovery to the change: a few lines for a small one, a sketch or a diagram for a large one.
-
-## What to look at
+## Look at it from two sides
 
 With the design stated, look at the change from two sides: the design, and the non-functional requirements. These are the usual points, each with the kind of finding it leads to. Choose what this change deserves. Not every one fits every change, and something not listed here may matter more.
 
@@ -59,23 +50,25 @@ Putting a requirement as a scenario makes it checkable: when the table holds ten
 
 Note also **what to keep**: parts that are well designed and that a future change could easily undo, such as that one escaping helper. Naming them protects them.
 
-## The author's tradeoffs
+## Turn what you see into findings
 
-Many design "problems" are tradeoffs the author chose, and the commit message may say so. Name the tradeoff and what it costs in a likely scenario, and leave the decision to the author. Weigh findings by what happens in scenarios that are likely to happen, not by elegance.
+Not everything you notice is a finding of this review. Two tests decide.
 
-## Input
+**It needs something outside the changed lines.** A finding here rests on how the rest of the system works, what the change is for, how it will be used, or what will change next. What the changed lines alone can show is better left to a line-level code review, by whatever tool or person does that where you work; mixed in, the many small points bury the few design ones. If you notice one anyway, a line pointing to it is enough.
 
-What to review comes from the arguments: a PR number or URL, a branch, a commit range, a path, or a design document written before any code exists (then there is no code to recover the design from; review the design the document gives, and tie findings to the document's own words and examples). With no argument, review the current branch against the default branch.
+**It is concrete.** A vague finding, such as "this coupling may hurt extensibility" or "consider a clearer separation of concerns", fits almost any code, cannot be shown wrong, and gives the author nothing to act on. Advice that would apply to any codebase (follow SOLID, add an abstraction layer, write more tests) is not a finding about this change. So write each finding with three things: the file and line where the problem sits, a specific input or change that sets it off, and what then happens. If you cannot say these, look further or leave it out.
 
-The design is judged against the intent of the change, so the intent matters. Read it from the PR and the commits. If it is written nowhere and your reading of it would change the findings, ask. Otherwise, state your reading and go on.
+The surest way to make a finding concrete is to run it: a minimal reproduction, a scenario put through the real code, a small check that a direction for a fix works. A reproduction turns "could" into "does", and authors act on that. Mark what you could not run as a hypothesis, so it is weighed as one. Keep reproductions in a scratch place, not in the repository.
+
+Many design "problems" are tradeoffs the author chose, and the commit message may say so. Name the tradeoff and what it costs in a likely scenario, and leave the decision to the author. For the same reason, the review changes no code unless the user asks.
 
 ## Report
 
-Lead with the few findings that matter most. For each, give the part of the design it is about, the scenario, what happens, the evidence (`file:line`, the reproduction), whether it is reproduced or a hypothesis, and a direction for a fix (a direction, not necessarily a patch). Then what to keep. Then what you did not look at, so the author knows where the review stops.
+Start with the design as you stated it, briefly, so the author can see what the findings are judged against. Then the few findings that matter most, weighed by what happens in scenarios likely to occur, not by elegance. For each: the scenario, what happens, the evidence (`file:line`, the reproduction), whether it is reproduced or a hypothesis, and a direction for a fix (a direction, not necessarily a patch). Then what to keep, and what you did not look at, so the author knows where the review stops.
 
 Read each finding back as the author: could they open the file, run the scenario and see it happen? If not, make it more concrete.
 
-Keep it in proportion to the change. A small change gets a short review, and directions that found nothing need not be reported one by one.
+Keep it in proportion to the change. A small change gets a short review, and points that found nothing need not be reported one by one.
 
 ## An example
 
