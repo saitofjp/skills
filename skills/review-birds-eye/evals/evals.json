@@ -1,0 +1,45 @@
+{
+  "skill_name": "review-birds-eye",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "evals/files/shop に evals/files/add-coupon.patch を当てる変更を、俯瞰してレビューして。",
+      "expected_output": "A review that states the design (two ways in, one shared validator, migrations for existing databases) and shows that the coupon check is not carried through: the nightly import stores unknown coupon codes, and existing databases never get the coupon column.",
+      "files": ["evals/files/shop", "evals/files/add-coupon.patch"],
+      "expectations": [
+        "States the design read from the code: orders come in through api.create_order and import_orders.import_csv, and both rely on validation.validate_order",
+        "Points out that the nightly import (import_orders.import_csv) accepts a coupon code the web rejects, so an unknown code is stored on an order",
+        "Ties this to where the check was put: in api.create_order instead of the shared validation.validate_order",
+        "Points out that the coupon column was added by editing migrations/001_init.sql, so a database created before the change never gets it and the INSERT fails there",
+        "For each problem, names the file or function and says under what condition it happens and what then happens",
+        "Does not present line-level style remarks or general improvements outside this change as defects"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Review the design of this change before I merge it: evals/files/limit-qty.patch, applied to evals/files/shop.",
+      "expected_output": "A short review that says the change is sound: the limit sits in the shared validator, so the web and the nightly import both get it, with a test and the README updated. No problems are invented.",
+      "files": ["evals/files/shop", "evals/files/limit-qty.patch"],
+      "expectations": [
+        "Says the change is sound in design",
+        "Gives the reason: the limit is in validation.validate_order, which both api.create_order and import_orders.import_csv call",
+        "Does not report a defect in this change (at most notes something as unconfirmed or as outside the change)",
+        "The review is short, in proportion to a small change"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "evals/files/count-views.patch（evals/files/shop への変更）、マージして大丈夫か設計の目で見てほしい。",
+      "expected_output": "A review that shows what the change does besides counting page views: listing products now counts a view for every product, runs one query and one commit per product, and two requests at once can lose a count.",
+      "files": ["evals/files/shop", "evals/files/count-views.patch"],
+      "expectations": [
+        "Points out that list_products now counts a view for every product listed, which is not what the change sets out to do (a view is a product page being opened)",
+        "Points out that list_products now runs a query, an update and a commit per product instead of one query",
+        "Points out that get_product, which reads like a read, now writes and commits",
+        "Points out that the count is read and then written back, so two requests at once can lose a view (or marks this as an inferred risk rather than a confirmed problem)",
+        "Keeps what was confirmed apart from what is inferred from the code",
+        "Notes as sound that the views column is added by a new migration (002_views.sql) rather than by editing the first one, or at least does not report it as a problem"
+      ]
+    }
+  ]
+}
