@@ -1,11 +1,11 @@
 ---
 name: review-birds-eye
-description: Reviews a change from a bird's-eye view, the way a senior engineer does - rises above the lines to recover the design the code implies, then comes back down to show each finding in the code with a concrete scenario. Judges whether the change achieves the intent its author stated, its non-functional requirements (the architecture), security as a matter of design (where trust changes and where the controls live), and how easily the next changes will break it. Use it when the user asks for a design or architecture review, a senior-level or big-picture review of a PR, branch or diff, a security review of the design rather than the code, or wants to know whether a feature will hold up as the system grows. Triggers include "bird's-eye review", "review the design", "architecture review", 「俯瞰してレビューして」「設計レビューして」「アーキテクチャレビューして」「シニア目線でレビューして」「この機能、今後の拡張で壊れない？」「設計としてのセキュリティを見て」.
+description: Reviews a change from a bird's-eye view, the way a senior engineer does - looks at the whole design the code implies rather than line by line, and reports each finding concretely, with the file, a scenario and what happens. Judges whether the change achieves the intent its author stated, its non-functional requirements (the architecture), security as a matter of design (where trust changes and where the controls live), and how easily the next changes will break it. Use it when the user asks for a design or architecture review, a senior-level or big-picture review of a PR, branch or diff, a security review of the design rather than the code, or wants to know whether a feature will hold up as the system grows. Triggers include "bird's-eye review", "review the design", "architecture review", 「俯瞰してレビューして」「設計レビューして」「アーキテクチャレビューして」「シニア目線でレビューして」「この機能、今後の拡張で壊れない？」「設計としてのセキュリティを見て」.
 ---
 
 # Bird's-Eye Review
 
-A line-level review asks whether the code does what it says. This review asks whether what it says has the right shape: whether the design carries the feature's intent and its non-functional requirements, whether its security is designed in rather than patched on, and whether it will survive the changes that are coming. A senior engineer rises above the lines to see that shape, then comes back down to the code to show what they saw. This review does both.
+A line-level review asks whether the code does what it says. This review asks whether what it says has the right shape: whether the design carries the feature's intent and its non-functional requirements, whether its security is designed in rather than patched on, and whether it will survive the changes that are coming. A senior engineer looks at the whole to find such problems, and then reports them concretely enough that the author can see them in the code. This review does both.
 
 This file says what the review is for and what a good one looks like. How to get there (what to read first, which questions to chase, how deep to go) is yours to judge from the change in front of you.
 
@@ -15,13 +15,13 @@ A design finding cannot be argued from the changed lines alone. It needs somethi
 
 This boundary keeps the review from turning into a second line-level review. Anything the changed lines alone can show is better left to a line-level code review, by whatever tool or person does that where you work; mixed in, the many small findings bury the few design ones. When you notice one anyway, a line pointing to it is enough.
 
-## Up to find, down to show
+## Make each finding concrete
 
-Going up is how you find a design problem. Coming back down is how you show it. A finding that stays up, such as "this coupling may hurt extensibility" or "consider a clearer separation of concerns", fits almost any code, cannot be shown wrong, and gives the author nothing to act on. Advice that would apply to any codebase (follow SOLID, add an abstraction layer, write more tests) is not a finding about this change.
+Looking at the whole is how you find a design problem, but a finding written at that level is of little use. A vague finding, such as "this coupling may hurt extensibility" or "consider a clearer separation of concerns", fits almost any code, cannot be shown wrong, and gives the author nothing to act on. Advice that would apply to any codebase (follow SOLID, add an abstraction layer, write more tests) is not a finding about this change.
 
-So bring each finding down to this code: the file and line where the design shows itself, a specific input or change that sets it off, and what then happens. If you cannot bring it down, it is not a finding yet. Look further, or leave it out.
+So write each finding with three things: the file and line where the problem sits, a specific input or change that sets it off, and what then happens. If you cannot say these, it is not a finding yet. Look further, or leave it out.
 
-The strongest way down is to run it: a minimal reproduction, a scenario put through the real code, a small check that a direction for a fix works. A reproduction turns "could" into "does", and authors act on that. Mark what you could not run as a hypothesis, so it is weighed as one.
+The surest way is to run it: a minimal reproduction, a scenario put through the real code, a small check that a direction for a fix works. A reproduction turns "could" into "does", and authors act on that. Mark what you could not run as a hypothesis, so it is weighed as one.
 
 Keep reproductions in a scratch place, not in the repository. The review changes no code unless the user asks, because what to do about a design finding is the author's call.
 
@@ -51,7 +51,7 @@ Many design "problems" are tradeoffs the author chose, and the commit message ma
 
 ## Input
 
-What to review comes from the arguments: a PR number or URL, a branch, a commit range, a path, or a design document written before any code exists (then there is no code to recover the design from; review the design the document gives, and bring findings down to the document's own words and examples). With no argument, review the current branch against the default branch.
+What to review comes from the arguments: a PR number or URL, a branch, a commit range, a path, or a design document written before any code exists (then there is no code to recover the design from; review the design the document gives, and tie findings to the document's own words and examples). With no argument, review the current branch against the default branch.
 
 The design is judged against the intent of the change, so the intent matters. Read it from the PR and the commits. If it is written nowhere and your reading of it would change the findings, ask. Otherwise, state your reading and go on.
 
@@ -59,7 +59,7 @@ The design is judged against the intent of the change, so the intent matters. Re
 
 Lead with the few findings that matter most. For each, give the part of the design it is about, the scenario, what happens, the evidence (`file:line`, the reproduction), whether it is reproduced or a hypothesis, and a direction for a fix (a direction, not necessarily a patch). Then what to keep. Then what you did not look at, so the author knows where the review stops.
 
-Read each finding back as the author: could they open the file, run the scenario and see it happen? If not, bring it further down.
+Read each finding back as the author: could they open the file, run the scenario and see it happen? If not, make it more concrete.
 
 Keep it in proportion to the change. A small change gets a short review, and directions that found nothing need not be reported one by one.
 
