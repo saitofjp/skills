@@ -1,5 +1,5 @@
 ---
-name: birds-eye-review
+name: review-birds-eye
 description: Reviews a change from a bird's-eye view, the way a senior engineer does, rather than line by line. Recovers the design the code implies, then judges the change against it - whether it achieves the intent its author stated, its non-functional requirements (the architecture), security as a matter of design (where trust changes and where the controls live), and how easily the next changes will break it. Use it when the user asks for a design or architecture review, a senior-level or big-picture review of a PR, branch or diff, a security review of the design rather than the code, or wants to know whether a feature will hold up as the system grows. Triggers include "bird's-eye review", "review the design", "architecture review", 「俯瞰してレビューして」「設計レビューして」「アーキテクチャレビューして」「シニア目線でレビューして」「この機能、今後の拡張で壊れない？」「設計としてのセキュリティを見て」.
 ---
 
@@ -13,7 +13,7 @@ This file says what the review is for and what a good one looks like. How to get
 
 A design finding cannot be argued from the changed lines alone. It needs something outside the diff: how the rest of the system works, what the change is meant to do, how it will be used, what will change next.
 
-This boundary keeps the review from turning into a second line-level review. Anything the changed lines alone can show is better left to `/code-review` or `/security-review`; mixed in, the many small findings bury the few design ones. When you notice one anyway, a line pointing to it is enough.
+This boundary keeps the review from turning into a second line-level review. Anything the changed lines alone can show is better left to a line-level code review, by whatever tool or person does that where you work; mixed in, the many small findings bury the few design ones. When you notice one anyway, a line pointing to it is enough.
 
 ## Start from the design the code implies
 
@@ -61,10 +61,10 @@ Keep it in proportion to the change. A small change gets a short review, and dir
 
 This shows the level to aim for, not a form to copy.
 
-The update feature of the `semantic-structure` skill in this repository (`resolve --base`, PR #39) lays a new draft over the previous model and finds quotes that have moved again by their nearest occurrence. Its commit message says a version without positions was rejected because, when the same words are added earlier in the text, it silently points somewhere else. Recovering the design and following likely changes found:
+A tool keeps a model of a text, each piece of which points at the words it rests on by their position in the text. A change added an update: when the text is revised, a new draft is laid over the previous model (`--base`), and quotes that have moved are found again by their nearest occurrence. The commit message says a version without positions was rejected because, when the same words are added earlier in the text, it silently points somewhere else. Recovering the design and following likely changes found:
 
-- The previous source text is dropped before the quotes are found again, so "nearest" is a guess. When a revision adds a sentence with the same words just before the old place, a chunk silently moves to that new sentence, with no error. The case the author said they rejected is still there. (Intent and design; reproduced; mapping offsets through a diff of the old and new text puts the chunk back.)
-- With `--base`, an update drafted in parts, which the skill recommends for long texts, lets the second part replace the first part's spans instead of adding to them. (How the feature combines with an existing one; reproduced.)
-- An update can add and change chunks but cannot remove a chunk whose text was deleted. (An operation the design cannot do; reproduced.)
+- The previous source text is dropped before the quotes are found again, so "nearest" is a guess. When a revision adds a sentence with the same words just before the old place, a piece silently moves to that new sentence, with no error. The case the author said they rejected is still there. (Intent and design; reproduced; mapping offsets through a diff of the old and new text puts the piece back.)
+- With `--base`, an update drafted in parts, which the tool's docs recommend for long texts, lets the second part replace the first part's spans instead of adding to them. (How the feature combines with an existing one; reproduced.)
+- An update can add and change pieces but cannot remove a piece whose text was deleted. (An operation the design cannot do; reproduced.)
 
 None of these can be argued from the changed lines alone.
