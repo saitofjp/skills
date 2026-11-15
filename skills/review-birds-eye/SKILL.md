@@ -1,6 +1,6 @@
 ---
 name: review-birds-eye
-description: Reviews a change from a bird's-eye view, the way a senior engineer does - reads from the code up to the design it implies, and judges whether the change is sound in its design (is it carried through consistently in the related code, does it sit in the right place, will the next changes break it) and in its non-functional requirements (side effects such as slowdowns or unintended data changes, compatibility, failure, concurrency, operation, security as design). Use it when the user asks for a design or architecture review, a senior-level or big-picture review of a PR, branch or diff, a security review of the design rather than the code, or wants to know whether a feature will hold up as the system grows. Triggers include "bird's-eye review", "review the design", "architecture review", 「俯瞰してレビューして」「設計レビューして」「アーキテクチャレビューして」「シニア目線でレビューして」「この機能、今後の拡張で壊れない？」「設計としてのセキュリティを見て」.
+description: Reviews a change from a bird's-eye view, the way a senior engineer does. Reads from the code up to its design and judges whether the change is sound in design (carried through consistently in the related code) and in non-functional requirements (side effects, security as design). Use it for a design, architecture or big-picture review of a PR, branch or diff. Triggers include "bird's-eye review", "review the design", 「俯瞰してレビューして」「設計レビューして」「シニア目線でレビューして」.
 ---
 
 # Bird's-Eye Review
