@@ -26,6 +26,18 @@ If part of the design cannot be drawn from the code, say so rather than filling 
 
 Size this to the change: a few lines for a small one, a sketch or a diagram for a large one.
 
+## Trace what the change affects
+
+Starting from the changed code, trace what it affects, according to the kind of change.
+
+- The code that uses it, and the code it uses.
+- Other entry points and paths that handle the same concept or data.
+- Boundaries: APIs, the database, data formats, contracts.
+- Tests, configuration, documentation, operational jobs.
+- The related lifecycle: create, update, delete, retry, cancel.
+
+Do not check all of these mechanically; choose the places where this change could break consistency.
+
 ## Look at it from two sides
 
 These are the usual points, each with an example. Choose what this change deserves. Not every one fits every change, and something not listed here may matter more.
@@ -48,4 +60,23 @@ These are the usual points, each with an example. Choose what this change deserv
 
 ## Tell the author
 
-Say what design you read from the code, then whether the change is sound from the two sides. Where it is not, point at the place and say what happens there. Where it is sound, say so; a short review is a fine result.
+Say what design you read from the code, then whether the change is sound from the two sides. Where it is sound, say so; a short review is a fine result.
+
+## Grounds and confidence
+
+Keep the facts in the code apart from the judgments you draw from them.
+
+When you point out a problem, show these as far as you can:
+
+- Place: the file or function.
+- Expectation: the behavior or contract that should hold.
+- Condition: when the problem occurs.
+- Impact: what actually happens.
+- Grounds: what in the code makes you think so.
+- Fix: how it can be resolved.
+
+Do not mix problems you actually confirmed with risks you infer from the code. Where the grounds are thin, do not assert; treat it as unconfirmed.
+
+Judge how much a point matters by its impact on the system and its users, not by how the code looks or by preference.
+
+Do not treat general improvements beyond the scope of the change, or matters of taste, as defects.
