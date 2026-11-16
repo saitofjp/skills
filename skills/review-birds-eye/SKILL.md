@@ -1,6 +1,6 @@
 ---
 name: review-birds-eye
-description: Reviews a change from a bird's-eye view, the way a senior engineer does. Reads from the code up to its design and judges whether the change is sound in design (carried through consistently in the related code) and in non-functional requirements (side effects, security as design). Use it for a design, architecture or big-picture review of a PR, branch or diff. Triggers include "bird's-eye review", "review the design", 「俯瞰してレビューして」「設計レビューして」「シニア目線でレビューして」.
+description: Reviews a change from a bird's-eye view, the way a senior engineer does. Reads from the code up to its design and judges whether the change is sound in design (carried through consistently in the related code) and in non-functional requirements (side effects such as slowdowns or unintended data changes, security as design). Use it for a design, architecture or big-picture review of a PR, branch, diff or design document, or to check a change for side effects. Triggers include "bird's-eye review", "review the design", 「俯瞰してレビューして」「設計レビューして」「シニア目線でレビューして」「副作用がないか見て」.
 ---
 
 # Bird's-Eye Review
@@ -61,6 +61,8 @@ These are the usual points, each with an example. Choose what this change deserv
 ## Tell the author
 
 Say what design you read from the code, then whether the change is sound from the two sides. Where it is sound, say so; a short review is a fine result.
+
+The points above are for looking, not a form to fill in, so do not go through them one by one in the review. Write what you found; the points that turned out fine would only bury it. When nothing is wrong, a few lines on why the change holds are enough.
 
 ## Grounds and confidence
 
