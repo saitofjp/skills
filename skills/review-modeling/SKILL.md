@@ -66,9 +66,9 @@ For example, at the level of detail that helps:
 > **Gap: what happens to an exam cancelled while it is being graded?**
 > §3.2 defines `grading → graded` and §3.4 lets a candidate cancel "at any time", but nothing says what cancel does in `grading`. In the state table the cell (`grading`, cancel) is empty. If grading finishes after the cancel, a result may be saved for an exam the candidate believes they withdrew from. Should cancel be refused once grading starts, or should it discard the result?
 
-After the findings, the coverage: which models you wrote and which you left out. Then the models themselves, as an appendix. They are useful to the author beyond this review, as a supplement to the spec and as the basis for tests.
+After the findings, the coverage: which models you wrote and which you left out. Then every model you wrote, as an appendix, including the ones that turned up nothing. A model the coverage names but the appendix does not show is a claim the reader cannot check, and a model with nothing wrong in it is still the evidence that this angle was looked at. The models are also useful to the author beyond this review, as a supplement to the spec and as the basis for tests. What you only glanced at without writing a model is not a model you wrote; say so in the coverage instead.
 
-Do not walk through the cells that turned out fine; they would bury what you found. When the document holds up, say so in a few lines and say why.
+In the findings, do not walk through the cells that turned out fine; they would bury what you found. When the document holds up, say so in a few lines and say why.
 
 ## Grounds and confidence
 

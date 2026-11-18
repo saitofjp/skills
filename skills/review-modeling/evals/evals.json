@@ -19,6 +19,7 @@
         "Findings are put as questions the author can answer, not only as fixes",
         "The state table (or another model) leaves the cells the spec does not settle, such as (決済処理中, cancel), marked as unknown or implied, rather than filling them with a plausible behavior",
         "Says which models were written and which were considered and left out, with a reason for each one left out",
+        "Every model the coverage says was written appears in the appendix, including any that found nothing; anything only glanced at is described as such rather than counted as written",
         "Says the checks are a careful reading, not a proof",
         "Does not report the wordy sentence in §1 as a defect"
       ]
@@ -39,6 +40,7 @@
         "Points out that the payment webhook has no check of who sent it, or no handling of a duplicate notice",
         "Compares the spec's operations or permissions with the design's API in a table or list, so the missing ones are visible",
         "Findings that involve both documents cite sections in both",
+        "Every model the coverage says was written appears in the appendix, including any that found nothing; anything only glanced at is described as such rather than counted as written",
         "Says the checks are a careful reading, not a proof"
       ]
     }
