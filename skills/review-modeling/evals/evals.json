@@ -20,6 +20,7 @@
         "The state table (or another model) leaves the cells the spec does not settle, such as (決済処理中, cancel), marked as unknown or implied, rather than filling them with a plausible behavior",
         "Says which models were written and which were considered and left out, with a reason for each one left out",
         "Every model the coverage says was written appears in the appendix, including any that found nothing; anything only glanced at is described as such rather than counted as written",
+        "Ends by offering to write a checklist of what to confirm, without writing the checklist unasked",
         "Says the checks are a careful reading, not a proof",
         "Does not report the wordy sentence in §1 as a defect"
       ]
@@ -41,7 +42,22 @@
         "Compares the spec's operations or permissions with the design's API in a table or list, so the missing ones are visible",
         "Findings that involve both documents cite sections in both",
         "Every model the coverage says was written appears in the appendix, including any that found nothing; anything only glanced at is described as such rather than counted as written",
+        "Ends by offering to write a checklist of what to confirm, without writing the checklist unasked",
         "Says the checks are a careful reading, not a proof"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "evals/files/spec.md の仕様をレビューして。確認項目のチェックリストも出して",
+      "expected_output": "The review, then a checklist grouped by model, each item a statement that can be confirmed against the built system with the section it comes from, and the cells the spec leaves open listed as waiting on an answer with the finding they wait on rather than as items.",
+      "files": ["evals/files/spec.md"],
+      "expectations": [
+        "Gives a checklist of Markdown `- [ ]` items grouped by model",
+        "Each item names the section of the spec it comes from",
+        "Includes items for cells the spec settles, for example that a tentative reservation not paid within 30 minutes expires and frees its slot (§3.3), or that cancelling a paid reservation by the day before refunds it in full (§3.4)",
+        "Does not turn an open cell into an item: no item says what happens to 決済処理中 after 30 minutes, what cancelling a waiting-list entry does, or whether group reservations count toward the daily limit",
+        "Lists the open cells as waiting on an answer, each with the finding it waits on",
+        "Payment, refund and email failures appear only as waiting on an answer, not as items"
       ]
     }
   ]

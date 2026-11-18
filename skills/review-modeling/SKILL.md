@@ -70,6 +70,14 @@ After the findings, the coverage: which models you wrote and which you left out.
 
 In the findings, do not walk through the cells that turned out fine; they would bury what you found. When the document holds up, say so in a few lines and say why.
 
+## Offer a checklist
+
+End the review by offering to turn the models into a checklist of what to confirm, and write it only when the user says yes. The review is already long and not every reader wants the list, but most of what the list needs is already in the models.
+
+Each cell the text settles becomes one item: a statement that can be confirmed against the built system, with the section it comes from, such as `- [ ] A tentative reservation not paid within 30 minutes expires, and someone else can book its slot (§3.3)`. If every item holds, the system does what the document says, as far as the document says it. Group the items by model.
+
+A cell the text leaves open does not become an item, since writing one would make the decision the author has not made, the same plausible default the models avoid. List it under its model as waiting on an answer, with the finding it waits on. That part shows what still stands between the document and an OK.
+
 ## Grounds and confidence
 
 Keep what the text says apart from what you conclude from it, and stated apart from implied.
