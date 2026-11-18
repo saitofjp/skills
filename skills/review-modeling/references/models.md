@@ -7,6 +7,7 @@ Each entry says when a document calls for the model, how to write it, where it t
 - Behavior: [State transitions](#state-transitions), [Scenarios](#scenarios), [Screen flow](#screen-flow)
 - Data: [Domain model and rules](#domain-model-and-rules), [Terms](#terms)
 - Access and trust: [Permission matrix](#permission-matrix), [Data flow and trust boundaries](#data-flow-and-trust-boundaries)
+- Building it: [Structure](#structure), [Data ownership](#data-ownership), [Interface contracts](#interface-contracts), [Migration and compatibility](#migration-and-compatibility)
 - Running it: [Failure](#failure), [Concurrency and ordering](#concurrency-and-ordering), [Capacity](#capacity), [Operation](#operation)
 - [Checks across models](#checks-across-models)
 
@@ -66,6 +67,38 @@ Each entry says when a document calls for the model, how to write it, where it t
 - **Check.** Each crossing of a trust line: what validates or controls it, and whether any path goes around it. STRIDE is a useful prompt for what could go wrong at each crossing.
 - **Yields.** Security test cases and a threat list.
 
+## Structure
+
+- **Signs.** A section or diagram of the system's parts; services, apps, databases, queues, workers, batch jobs; "A calls B", "sends to"; other systems the system talks to.
+- **Write it as.** The first two levels of the C4 model. The context: the people and outside systems around the system, and what passes between them. The containers: each part that runs or is deployed on its own, and each data store, with what it is responsible for. For each relationship, its direction, whether it is synchronous or asynchronous, and what it carries. Tables of parts and relationships, or a Mermaid `flowchart`. Go down to components only where the document does; the code level is too fine for a document review.
+- **Fails to write when.** Something the document says the system does belongs to no part (who sends the reminder, where the nightly job runs); a part is named without what it does; which side starts a call is unstated; a part shows up in the processing sections but not in the structure; two diagrams at different levels disagree.
+- **Check.** Each thing the system must do has exactly one part that owns it; calls that go round in a cycle; a chain of synchronous calls where one slow or stopped part stalls the rest; a part that two others rely on with nothing said about what happens when it is down.
+- **Yields.** The map that the failure, trust and capacity models are laid on, and the places to put contract tests.
+
+## Data ownership
+
+- **Signs.** Several services, jobs or handlers that touch the same data; a shared database; copies, caches, search indexes, syncing, "reflect", "keep in step".
+- **Write it as.** A CRUD matrix: the parts that act on data as rows (services, or, inside one service, API operations, jobs and handlers, whichever level the document is written at), the entities as columns, and a column of its own for any field that carries state, such as a status. Each cell C, R, U, D or blank. Then, for each entity, which part is its source of truth and where copies of it are kept.
+- **Fails to write when.** Which part changes a piece of data is unstated; a copy exists without saying how it is kept in step or which side wins; nothing says how long data is kept or what deletes it.
+- **Check.** Two or more writers to the same entity or field with nothing that puts them in order (each pair is a race or a lost update waiting to happen); an entity that nothing creates, or nothing deletes; a part that reads or writes another part's store directly; a copy that can fall behind its source while something relies on it being current.
+- **Yields.** The source of truth for each entity, retention rules, and the race tests to write first.
+
+## Interface contracts
+
+- **Signs.** API tables, endpoints, events and messages, webhooks, files exchanged with other systems, "public API", versions.
+- **Write it as.** One row per operation or message: who calls it, the input, the output, each error and how it reaches the caller, whether calling it twice is safe (idempotency), what authorization it checks, and how it can change without breaking its callers. For events and messages, add who publishes and who consumes, the order they arrive in, and how often they are delivered (at least once, at most once).
+- **Fails to write when.** Only the success response is described; errors are not named, or are just "returns an error"; whether a retry is safe is unstated; who may call it is unstated, or rests on trusting the caller (a webhook that does not check who sent it); a list has no limit or paging; a change to an existing interface says nothing about its current callers.
+- **Check.** Every operation the system needs has an interface, and every interface serves something the system needs; every error has an outcome for the caller and for the user; every state-changing call that something can retry (a client after a timeout, a queue, a webhook sender) is safe to repeat; the delivery guarantee of each message matches what its consumer can handle.
+- **Yields.** Contract tests, and the error cases for the scenarios.
+
+## Migration and compatibility
+
+- **Signs.** A change to a system that is already running: "replace", "migrate", "switch over", "split", "deprecate", schema changes, new required fields or rules, a rollout plan, existing data or existing users.
+- **Write it as.** The current state, the target, and the steps between, each with what runs during it (old, new, or both), where writes go, and how to go back. Then a compatibility table: the old and new versions of clients, servers, schemas and message formats that can meet during the rollout, each combination marked works, breaks or unstated.
+- **Fails to write when.** Only the end state is described; how existing data gets into the new shape is unstated; how long old and new run side by side is unstated; a step has no way back, or going back after the new side has taken writes is unstated; what happens to requests in flight at the switch is unstated.
+- **Check.** Every combination that can meet during the rollout works (a new client against an old server mid-release; an old reader on rows the new writer wrote); writes made during a step are not lost by the next one; existing data satisfies every new rule; each step can be undone, or the point of no return is named; a migration that fails halfway leaves something that can be resumed or reversed.
+- **Yields.** The rollout and rollback plan, and migration tests on data shaped like the existing data.
+
 ## Failure
 
 - **Signs.** Other services, payment, email, background jobs, anything that takes several steps.
@@ -103,9 +136,12 @@ Each entry says when a document calls for the model, how to write it, where it t
 A gap between two views is invisible from either one, so these are often where the important findings are.
 
 - Events in the state transitions ↔ actions in the scenarios and the screen flow.
-- Operations in the permission matrix ↔ operations in the API or design ↔ state-changing events.
+- Operations in the permission matrix ↔ the interface contracts ↔ state-changing events.
 - Every state-changing event ↔ the domain rules it must keep.
-- Every external call in a sequence ↔ a row in the failure model.
-- Every crossing of a trust line ↔ a control, and that control ↔ the permission matrix.
+- Every external call in a sequence, and every relationship to another part in the structure ↔ a row in the failure model.
+- Every crossing of a trust line ↔ a control, and that control ↔ the permission matrix and the authorization in the interface contracts.
+- Every field with more than one writer in the data ownership ↔ the concurrency model.
+- Every thing the spec asks the system to do ↔ a part in the structure that owns it.
+- Every new rule in the domain model ↔ the existing data, when the document changes a running system.
 - Every entity and state ↔ the same name in the terms.
 - Spec models ↔ design models, when both documents are given.

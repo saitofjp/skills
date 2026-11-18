@@ -60,6 +60,56 @@
         "Puts 「すぐに予約できる」 (§11) under waiting on an answer rather than as an item, since it has no number to confirm",
         "Payment, refund and email failures appear only as waiting on an answer, not as items"
       ]
+    },
+    {
+      "id": 4,
+      "prompt": "evals/files/design.md の設計書をレビューして",
+      "expected_output": "A review of the design on its own that models how it is built as well as what it does: the parts in its structure, which part writes which data, and the contract of each API, reporting the parts the structure leaves out, the data several parts write without coordination, and the calls whose errors, retries or callers are not settled, each traced to sections of the design and put as a question the author can answer.",
+      "files": ["evals/files/design.md"],
+      "expectations": [
+        "Points out that the job in §4.2 that runs every five minutes appears nowhere in the structure in §1, so where it runs, and how many copies of it run, is unstated",
+        "Shows, in a CRUD matrix or a list of writers, that reservations.status is changed by §4.1, §4.2, §4.3, §4.4 and §4.5 with nothing putting the writes in order, and names at least one race that follows, such as a payment notice (§4.5) marking paid a reservation the job in §4.2 has just cancelled, or a cancellation and a closure both refunding the same reservation",
+        "Points out that the webhook in §3 and §4.5 does not check who sent it, or says nothing about a notice that arrives twice",
+        "Points out that the API in §3 names no errors, or that it is unstated whether retrying a call such as POST /reservations/{id}/payment or DELETE /reservations/{id} is safe",
+        "Points out data that nothing writes or nothing removes: nothing sets `used`, group members can be added but not removed, or nothing says how long reservations are kept",
+        "Points out that the calls to the payment and mail services in §4.3 and §4.4 have no stated behavior when they fail or time out",
+        "Says that the spec the design refers to (仕様書 v0.9) was not given, and keeps findings that would need it as questions or stated assumptions rather than facts",
+        "Writes the structure and the data ownership (which part writes which data) as models, and both appear in the appendix",
+        "Every finding names the section or sections of the design it rests on",
+        "Findings are put as questions the author can answer, not only as fixes",
+        "Says which models were written and which were considered and left out, with a reason for each one left out",
+        "Ends by offering to write a checklist of what to confirm, without writing the checklist unasked",
+        "Says the checks are a careful reading, not a proof",
+        "Does not report the lack of a C4 diagram, an architecture decision record or any other kind of document as a defect"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "evals/files/architecture.md の設計書をレビューして",
+      "expected_output": "A review that models the structure of the split, which service writes which data, the contract of each API and message, and the migration with the combinations of old and new that meet during it, reporting what no service owns, the data with more than one writer, the calls that cannot be retried safely, and the steps of the migration that lose or strand data, each traced to sections of the document and put as a question the author can answer.",
+      "files": ["evals/files/architecture.md"],
+      "expectations": [
+        "Points out that the overdue notice the next morning (§2) belongs to no service in §3: 通知サービス only sends mail it is asked to send, and nothing detects overdue loans",
+        "Points out that 会員サービス writes loans.status directly in the loans DB on withdrawal (§5.3), so loans has a second writer reaching into another service's store, with nothing putting it in order against a return or a loan at the same moment",
+        "Points out that marking loans `returned` on withdrawal while the books are still out (§5.3) makes the books look available, or loses track of books not yet collected",
+        "Points out that the search index is rebuilt once a night (§4.3), so the 貸出可 or 貸出中 shown in search (§2) can be up to a day out of date, or that 検索サービス reads the loans DB directly",
+        "Points out the synchronous cycle in §5.1 (貸出サービス → 会員サービス → 貸出サービス), or that lending stops whenever 会員サービス is down, with no timeout stated between the services",
+        "Points out that the terminal resends POST /loans after five seconds (§5.1) while nothing makes the call safe to repeat, so one copy can be recorded as lent twice",
+        "Points out that the queue delivers `loan.created` at least once (§5.4) while 通知サービス does not ignore repeats, so a member can get the same mail twice",
+        "Points out that the API in §6 names no errors beyond 400 and 500, so the terminal cannot tell a member over the limit from a withdrawn member or a failure, or that nothing says POST /loans/{id}/extend checks that the loan belongs to the member calling it",
+        "Points out that members.email is required (§4.2) while §2 lets a member register only a phone number, so existing members without an email cannot be copied as described in §7, or cannot be notified",
+        "Points out that during the week of step 3 (§7) the old system and the new services both take loans, from old terminals and from new terminals and the Web, against §7's statement that they are never written at once, so loans made in the old system after the copy in step 2 are lost, or a member can borrow up to the limit in each",
+        "Points out that a book lent on an old terminal and returned at another library on a new terminal (returns at any library, §2) cannot be found in the new loans DB, or names another combination of old and new that breaks",
+        "Points out that putting a terminal back to the old version (§7) leaves the loans it made on the new version out of the old system, or that going back once the new side has taken writes is unstated",
+        "Writes the structure, the data ownership (a CRUD matrix or equivalent), the interface contracts, and the migration with a table of the old and new combinations, and all of them appear in the appendix",
+        "Leaves the cells the document does not settle marked as unknown or implied, rather than filled with a plausible behavior",
+        "Every finding names the section or sections of the document it rests on",
+        "Findings are put as questions the author can answer, not only as fixes",
+        "Says which models were written and which were considered and left out, with a reason for each one left out",
+        "Ends by offering to write a checklist of what to confirm, without writing the checklist unasked",
+        "Says the checks are a careful reading, not a proof",
+        "Does not report the lack of a C4 diagram, an architecture decision record or a sequence diagram as a defect"
+      ]
     }
   ]
 }
