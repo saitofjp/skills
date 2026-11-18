@@ -1,0 +1,65 @@
+{
+  "skill_name": "review-modeling",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "evals/files/spec.md の仕様をレビューして",
+      "expected_output": "A review that leads with the findings ordered by impact, each traced to sections of the spec and put as a question the author can answer, then the coverage (which models were written and which were left out) and the models as an appendix, with the cells the spec does not settle left marked rather than filled in.",
+      "files": ["evals/files/spec.md"],
+      "expectations": [
+        "Points out that 決済処理中 appears in §5 but not among the states in §3.2, and that what happens to it when 30 minutes pass or the user cancels is undefined",
+        "Points out that a payment completion notice arriving after the tentative reservation has expired leaves a charge with no slot, or two reservations on one slot",
+        "Points out that §3.1 (at most 2 reservations a day) and §6 (up to 5 group reservations a day) cannot both hold as written, or asks how they combine",
+        "Points out that §7 lets facility staff register a closure, which cancels and refunds reservations, while the role table in §4 does not give staff that operation",
+        "Points out that §8 promotes from the waiting list only on cancellation, leaving open what happens when a slot is freed by expiry or by a closure",
+        "Points out at least one state with no way out or an event with no defined result: a paid reservation nobody shows up for, a waiting-list entry that never gets a slot, or cancelling a waiting-list entry",
+        "Points out that 「前日まで」 (§3.4, §9) does not say until what time",
+        "Points out that 「すぐに」 in §11 comes with no numbers (expected load or response time)",
+        "Every finding names the section or sections of the spec it rests on",
+        "Findings are put as questions the author can answer, not only as fixes",
+        "The state table (or another model) leaves the cells the spec does not settle, such as (決済処理中, cancel), marked as unknown or implied, rather than filling them with a plausible behavior",
+        "Says which models were written and which were considered and left out, with a reason for each one left out",
+        "Every model the coverage says was written appears in the appendix, including any that found nothing; anything only glanced at is described as such rather than counted as written",
+        "Ends by offering to write a checklist of what to confirm, without writing the checklist unasked",
+        "Says the checks are a careful reading, not a proof",
+        "Does not report the wordy sentence in §1 as a defect"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "evals/files/spec.md（仕様）と evals/files/design.md（設計）をレビューして",
+      "expected_output": "A review that models the spec and the design and compares them, reporting where the design does not carry out the spec and where the design itself breaks under concurrency or failure, each traced to sections of both documents.",
+      "files": ["evals/files/spec.md", "evals/files/design.md"],
+      "expectations": [
+        "Points out that design §4.1 checks for a free slot with SELECT and then INSERTs, with only an application check in §2, so two requests at once (most likely at 9:00, spec §9 and §11) can both get the slot",
+        "Points out that a promoted reservation keeps the created_at of its waiting-list entry, so the 30-minute expiry in design §4.2 can cancel it at once, against spec §8's 30 minutes from the notice",
+        "Points out that the status enum in design §2 has no 決済処理中 and that design §4.5 sets paid on any notice, so a late notice can turn an expired or cancelled reservation into paid",
+        "Points out that no API in design §3 performs the attendance check, so used cannot be reached, or that no API is given to administrators",
+        "Points out that the design does not check that facility staff act only on their own facility (「担当施設」 in spec §4)",
+        "Points out that design §4.4 refunds one reservation after another inside the request, so a failure partway leaves some reservations cancelled or refunded and a retry may refund twice",
+        "Points out that the limits in spec §3.1 and §6 (2 a day, 5 group reservations, 20 members) are enforced nowhere in the design",
+        "Points out that the payment webhook has no check of who sent it, or no handling of a duplicate notice",
+        "Compares the spec's operations or permissions with the design's API in a table or list, so the missing ones are visible",
+        "Findings that involve both documents cite sections in both",
+        "Every model the coverage says was written appears in the appendix, including any that found nothing; anything only glanced at is described as such rather than counted as written",
+        "Ends by offering to write a checklist of what to confirm, without writing the checklist unasked",
+        "Says the checks are a careful reading, not a proof"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "evals/files/spec.md の仕様をレビューして。確認項目のチェックリストも出して",
+      "expected_output": "The review, then a checklist grouped by model, each item a statement that can be confirmed against the built system with the section it comes from, and the cells the spec leaves open listed as waiting on an answer with the finding they wait on rather than as items.",
+      "files": ["evals/files/spec.md"],
+      "expectations": [
+        "Gives a checklist of Markdown `- [ ]` items grouped by model",
+        "Each item names the section of the spec it comes from",
+        "Includes items for cells the spec settles, for example that a tentative reservation not paid within 30 minutes expires and frees its slot (§3.3), or that cancelling a paid reservation by the day before refunds it in full (§3.4)",
+        "Does not turn an open cell into an item: no item says what happens to 決済処理中 after 30 minutes, what cancelling a waiting-list entry does, or whether group reservations count toward the daily limit",
+        "Lists the open cells as waiting on an answer, each with the finding it waits on and without a checkbox",
+        "Puts 「すぐに予約できる」 (§11) under waiting on an answer rather than as an item, since it has no number to confirm",
+        "Payment, refund and email failures appear only as waiting on an answer, not as items"
+      ]
+    }
+  ]
+}
