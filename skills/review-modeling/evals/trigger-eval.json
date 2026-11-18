@@ -1,0 +1,22 @@
+[
+  {"query": "docs/spec.md の仕様の抜け漏れを見て", "should_trigger": true},
+  {"query": "docs/spec.md の要件、状態遷移や権限に矛盾がないか見て", "should_trigger": true},
+  {"query": "docs/design.md の設計書をレビューして", "should_trigger": true},
+  {"query": "Review the design doc at docs/design.md before we start building", "should_trigger": true},
+  {"query": "prd.md の PRD、まだ決めていないことが残ってないか洗い出して", "should_trigger": true},
+  {"query": "api-design.md の API 設計をレビューして。権限まわりが心配", "should_trigger": true},
+  {"query": "実装に入る前に、requirements.md の要件定義書をレビューしてほしい", "should_trigger": true},
+  {"query": "docs/design.md を設計レビューして", "should_trigger": true},
+  {"query": "コードを書く前に、docs/design.md のアーキテクチャをレビューしてほしい", "should_trigger": true},
+  {"query": "この仕様、モデル化してレビューして", "should_trigger": true},
+  {"query": "このブランチの変更を設計レビューして", "should_trigger": false},
+  {"query": "このブランチの変更、副作用がないか見て", "should_trigger": false},
+  {"query": "PR #12 のコードをレビューして", "should_trigger": false},
+  {"query": "spec.md を英語に翻訳して", "should_trigger": false},
+  {"query": "仕様書のテンプレートを作って", "should_trigger": false},
+  {"query": "docs/spec.md の誤字脱字と表記ゆれを直して", "should_trigger": false},
+  {"query": "この仕様書を3行で要約して", "should_trigger": false},
+  {"query": "spec.md をもとに E2E テストのコードを書いて", "should_trigger": false},
+  {"query": "docs/spec.md の意味構造を図にして、原文と並べて見られるようにして", "should_trigger": false},
+  {"query": "Write a design doc for adding SSO to our app", "should_trigger": false}
+]
