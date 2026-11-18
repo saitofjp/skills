@@ -10,6 +10,7 @@ Agent Skills for testing and refining products and documents.
 - **[dopagaki-generator](skills/dopagaki-generator/SKILL.md)** — Turn content into an over-the-top, auto-playing 16:9 motion presentation (single HTML) in the Japanese "dopagaki" style (Japanese video games × pachinko × Japanese anime OP × short video); screen-record it to get a social media video. Japanese version: [SKILL.ja.md](skills/dopagaki-generator/SKILL.ja.md). Examples: [日銀展望レポート ドパガキ版](https://saitofjp.github.io/skills/dopagaki/boj-outlook-2607.html), [津田健次郎 対 TikTok 判決 ドパガキ版](https://saitofjp.github.io/skills/dopagaki/tsuda-tiktok-2609.html).
 - **[semantic-structure](skills/semantic-structure/SKILL.md)** — Map what a text or a Claude Code conversation means as a diagram of chunks of meaning and the lines between them, each traced to the words it rests on, and show it beside the text as one animated HTML page that also turns it into a one-sentence summary, notes, slides or a table. Japanese version: [SKILL.ja.md](skills/semantic-structure/SKILL.ja.md). Example: [津田健次郎 対 TikTok 判決のノート](https://saitofjp.github.io/skills/semantic/tsuda-tiktok-2609.html).
 - **[review-birds-eye](skills/review-birds-eye/SKILL.md)** — Review a change from a bird's-eye view, the way a senior engineer does, rather than line by line: read from the code up to the design it implies, and judge whether the change is sound in its design (is it carried through consistently in the related code) and in its non-functional requirements (side effects, compatibility, failure, concurrency, operation, security). Japanese version: [SKILL.ja.md](skills/review-birds-eye/SKILL.ja.md).
+- **[orchestrator-mode](skills/orchestrator-mode/SKILL.md)** — Turn the session into an orchestrator that does no work itself: it keeps the conversation with the user moving, hands the work to other sessions or agents with short instructions a good manager would give, keeps their order and consistency as the conversation changes, and reports where things stand as a tree of large, medium and small cases. Called explicitly only. Japanese version: [SKILL.ja.md](skills/orchestrator-mode/SKILL.ja.md).
 
 Use the persona skills together: create a persona with `simulated-persona-creator`, then run it against your product with `simulated-persona-tester`. Example: [AIQ のペルソナテスト](examples/aiq-personas/).
 
@@ -40,6 +41,7 @@ npx skills add saitofjp/skills --skill aidoc-less-is-more
 npx skills add saitofjp/skills --skill dopagaki-generator
 npx skills add saitofjp/skills --skill semantic-structure
 npx skills add saitofjp/skills --skill review-birds-eye
+npx skills add saitofjp/skills --skill orchestrator-mode
 ```
 
 Or point directly at a skill's path in this repo:
