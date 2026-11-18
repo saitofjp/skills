@@ -56,7 +56,8 @@
         "Each item names the section of the spec it comes from",
         "Includes items for cells the spec settles, for example that a tentative reservation not paid within 30 minutes expires and frees its slot (§3.3), or that cancelling a paid reservation by the day before refunds it in full (§3.4)",
         "Does not turn an open cell into an item: no item says what happens to 決済処理中 after 30 minutes, what cancelling a waiting-list entry does, or whether group reservations count toward the daily limit",
-        "Lists the open cells as waiting on an answer, each with the finding it waits on",
+        "Lists the open cells as waiting on an answer, each with the finding it waits on and without a checkbox",
+        "Puts 「すぐに予約できる」 (§11) under waiting on an answer rather than as an item, since it has no number to confirm",
         "Payment, refund and email failures appear only as waiting on an answer, not as items"
       ]
     }

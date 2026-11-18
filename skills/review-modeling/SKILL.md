@@ -76,7 +76,7 @@ End the review by offering to turn the models into a checklist of what to confir
 
 Each cell the text settles becomes one item: a statement that can be confirmed against the built system, with the section it comes from, such as `- [ ] A tentative reservation not paid within 30 minutes expires, and someone else can book its slot (§3.3)`. If every item holds, the system does what the document says, as far as the document says it. Group the items by model.
 
-A cell the text leaves open does not become an item, since writing one would make the decision the author has not made, the same plausible default the models avoid. List it under its model as waiting on an answer, with the finding it waits on. That part shows what still stands between the document and an OK.
+A cell the text leaves open does not become an item, since writing one would make the decision the author has not made, the same plausible default the models avoid. List it under its model as waiting on an answer, with the finding it waits on, and without a checkbox, since ticking it would look like a confirmation when it is still a decision. The same goes for a statement the text makes too vague to confirm, such as "users can book quickly" with no number: an item nobody can fail tells the reader nothing. That part shows what still stands between the document and an OK.
 
 ## Grounds and confidence
 
