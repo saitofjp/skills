@@ -9,6 +9,8 @@
   {"query": "docs/design.md を設計レビューして", "should_trigger": true},
   {"query": "コードを書く前に、docs/design.md のアーキテクチャをレビューしてほしい", "should_trigger": true},
   {"query": "この仕様、モデル化してレビューして", "should_trigger": true},
+  {"query": "docs/architecture.md の構成、サービス間の依存やデータの持ち主に無理がないか見て", "should_trigger": true},
+  {"query": "migration-plan.md の移行計画をレビューして。切り替えの途中で壊れないか心配", "should_trigger": true},
   {"query": "このブランチの変更を設計レビューして", "should_trigger": false},
   {"query": "このブランチの変更、副作用がないか見て", "should_trigger": false},
   {"query": "PR #12 のコードをレビューして", "should_trigger": false},
@@ -18,5 +20,6 @@
   {"query": "この仕様書を3行で要約して", "should_trigger": false},
   {"query": "spec.md をもとに E2E テストのコードを書いて", "should_trigger": false},
   {"query": "docs/spec.md の意味構造を図にして、原文と並べて見られるようにして", "should_trigger": false},
-  {"query": "Write a design doc for adding SSO to our app", "should_trigger": false}
+  {"query": "Write a design doc for adding SSO to our app", "should_trigger": false},
+  {"query": "C4 モデルでうちのシステムの構成図を描いて", "should_trigger": false}
 ]
