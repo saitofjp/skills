@@ -60,7 +60,7 @@ These are the usual points, each with an example. Choose what this change deserv
 
 ## Tell the author
 
-Say what design you read from the code, then whether the change is sound from the two sides. Where it is sound, say so; a short review is a fine result.
+Say what design you read from the code, then whether the change is sound from the two sides. Where it is sound, say so, and let the reason show in a line or two how far you traced: which ways in, paths and boundaries you followed. You chose where to look deeply, so without that the reader cannot see whether "sound" took in, say, the nightly import, and the author has to check it again themselves. A short review is a fine result.
 
 The points above are for looking, not a form to fill in, so do not go through them one by one in the review. Write what you found; the points that turned out fine would only bury it. When nothing is wrong, a few lines on why the change holds are enough.
 
@@ -77,7 +77,7 @@ When you point out a problem, show these as far as you can:
 - Grounds: what in the code makes you think so.
 - Fix: how it can be resolved.
 
-Do not mix problems you actually confirmed with risks you infer from the code. Where the grounds are thin, do not assert; treat it as unconfirmed.
+Let the reader tell, right where you say it, whether what you write was seen by running the code or judged by reading it. The reader uses this to decide what to take as given and what to check for themselves. Having the code at hand is something a document review lacks, so what you can run cheaply without touching real data (the tests, a few lines against a throwaway database) is worth running to see. For the rest, it is enough that the reader can tell you judged it from reading. Where the grounds are thin, do not assert; treat it as unconfirmed.
 
 Judge how much a point matters by its impact on the system and its users, not by how the code looks or by preference.
 
