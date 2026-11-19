@@ -1,5 +1,5 @@
 {
-  "skill_name": "review-modeling",
+  "skill_name": "review-cross-section",
   "evals": [
     {
       "id": 1,
@@ -22,7 +22,8 @@
         "Every model the coverage says was written appears in the appendix, including any that found nothing; anything only glanced at is described as such rather than counted as written",
         "Ends by offering to write a checklist of what to confirm, without writing the checklist unasked",
         "Says the checks are a careful reading, not a proof",
-        "Does not report the wordy sentence in §1 as a defect"
+        "Does not report the wordy sentence in §1 as a defect",
+        "Gives the state transitions a Mermaid diagram as well as the table, with the same state names in both"
       ]
     },
     {
@@ -108,7 +109,8 @@
         "Says which models were written and which were considered and left out, with a reason for each one left out",
         "Ends by offering to write a checklist of what to confirm, without writing the checklist unasked",
         "Says the checks are a careful reading, not a proof",
-        "Does not report the lack of a C4 diagram, an architecture decision record or a sequence diagram as a defect"
+        "Does not report the lack of a C4 diagram, an architecture decision record or a sequence diagram as a defect",
+        "Gives the models that can be drawn, at least the structure and the state transitions, a Mermaid diagram as well as a table"
       ]
     }
   ]

@@ -1,13 +1,13 @@
 ---
-name: review-modeling
-description: Reviews a specification or design document by modeling it. Reads the document, decides which models it calls for (state transitions, permissions, domain rules, structure and data ownership, interface contracts, failure, concurrency, trust boundaries, migration and so on), tries to write each one, and reports what could not be written as gaps and what does not hold once written as contradictions and risks, each traced to the text and put as a question the author can answer. Use it to review a spec, requirements, PRD, design document, architecture, API design or migration plan, or to find what a spec leaves out. Triggers include "review this spec", "review the design doc", "find gaps in the requirements", 「仕様をレビューして」「設計書をレビューして」「仕様の抜け漏れを見て」「モデル化してレビューして」.
+name: review-cross-section
+description: Reviews a specification or design document by cutting the system into cross-sections and modeling each one. Reads the document, decides which cross-sections it calls for (state transitions, permissions, domain rules, structure and data ownership, interface contracts, failure, concurrency, trust boundaries, migration and so on), tries to write a model of each, and reports what could not be written as gaps and what does not hold once written as contradictions and risks, each traced to the text and put as a question the author can answer. Use it to review a spec, requirements, PRD, design document, architecture, API design or migration plan, or to find what a spec leaves out. Triggers include "review this spec", "review the design doc", "find gaps in the requirements", 「仕様をレビューして」「設計書をレビューして」「仕様の抜け漏れを見て」「モデル化してレビューして」「いろんな断面で見て」.
 ---
 
-# Modeling Review
+# Cross-Section Review
 
 The purpose is to find, before code is written, what a specification or design leaves undefined and what in it cannot all be true at once.
 
-A reader can skim past a gap. A model cannot: a state table has a cell for every state and event, a permission matrix a cell for every role and operation, a CRUD matrix a cell for every part of the system and every piece of data. So write the document down as models. Where a model cannot be written from the text, the document has a gap. Where it can be written but does not hold together, inside one model or across two, the document has a contradiction or a risk.
+A reader can skim past a gap. A model cannot: a state table has a cell for every state and event, a permission matrix a cell for every role and operation, a CRUD matrix a cell for every part of the system and every piece of data. So cut the system into cross-sections, such as its states, its permissions, its structure and its migration, and write the document down as a model for each. Where a model cannot be written from the text, the document has a gap. Where it can be written but does not hold together, inside one model or across two, the document has a contradiction or a risk.
 
 The user only asks for a review. The models are how you look and the grounds for what you say, not what they asked for, so the review should read like a good review that happens to have its evidence attached.
 
@@ -40,7 +40,7 @@ Write each model from what the document says, and point each element back to whe
 
 Where the text does not say, leave the cell empty and mark it. Do not fill it with what a reasonable system would do. A plausible default is exactly what hides the gap the review exists to find, and the author will read your model as their spec. When the answer seems implied but is not stated, write it as implied, so it can be confirmed rather than assumed.
 
-Use forms that a person can read and a tool could check: tables, Mermaid diagrams, short lists of rules. Keep each model the size of what it shows.
+Use forms that a person can read and a tool could check: tables, Mermaid diagrams, short lists of rules. A table lays out every cell, so the empty ones show. A diagram lets the reader take in a shape at a glance: a cycle, a dead end, a path that skips a step. So when a model has a shape that can be drawn (states and the transitions between them, parts and the lines between them, entities and their relationships, the calls between parties, screens and the moves between them), give it a Mermaid diagram as well as the table. Use the same names in both, and show in the diagram what the text leaves open, for example as a dashed line marked unstated. Keep each model the size of what it shows; when a diagram grows too large to read, split it, or draw only the part a finding is about.
 
 ## Check the models
 
