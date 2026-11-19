@@ -1,0 +1,70 @@
+Add coupon codes to orders
+
+An order can carry a coupon code. Only known codes are accepted, so that a
+discount is never given for a code we did not issue. The code is stored on the
+order; the partner CSV gets an optional coupon column.
+
+diff -ruN a/api.py b/api.py
+--- a/api.py
++++ b/api.py
+@@ -1,9 +1,15 @@
+ from orders import insert_order
+-from validation import validate_order
++from validation import InvalidOrder, validate_order
++
++
++COUPONS = {"WELCOME10": 10, "VIP20": 20}
+ 
+ 
+ def create_order(conn, data):
+     validate_order(conn, data)
++    coupon = data.get("coupon")
++    if coupon is not None and coupon not in COUPONS:
++        raise InvalidOrder("unknown coupon")
+     order_id = insert_order(conn, data)
+     conn.commit()
+     return order_id
+diff -ruN a/import_orders.py b/import_orders.py
+--- a/import_orders.py
++++ b/import_orders.py
+@@ -9,7 +9,8 @@
+     imported, rejected = 0, []
+     with open(path, newline="", encoding="utf-8") as f:
+         for n, row in enumerate(csv.DictReader(f), 2):
+-            data = {"product_id": int(row["product_id"]), "qty": int(row["qty"])}
++            data = {"product_id": int(row["product_id"]), "qty": int(row["qty"]),
++                    "coupon": row.get("coupon") or None}
+             try:
+                 validate_order(conn, data)
+             except InvalidOrder as exc:
+diff -ruN a/migrations/001_init.sql b/migrations/001_init.sql
+--- a/migrations/001_init.sql
++++ b/migrations/001_init.sql
+@@ -1,2 +1,2 @@
+ CREATE TABLE products (id INTEGER PRIMARY KEY, name TEXT NOT NULL, price INTEGER NOT NULL);
+-CREATE TABLE orders (id INTEGER PRIMARY KEY, product_id INTEGER NOT NULL REFERENCES products(id), qty INTEGER NOT NULL);
++CREATE TABLE orders (id INTEGER PRIMARY KEY, product_id INTEGER NOT NULL REFERENCES products(id), qty INTEGER NOT NULL, coupon TEXT);
+diff -ruN a/orders.py b/orders.py
+--- a/orders.py
++++ b/orders.py
+@@ -1,6 +1,6 @@
+ def insert_order(conn, data):
+     cur = conn.execute(
+-        "INSERT INTO orders (product_id, qty) VALUES (?, ?)",
+-        (data["product_id"], data["qty"]),
++        "INSERT INTO orders (product_id, qty, coupon) VALUES (?, ?, ?)",
++        (data["product_id"], data["qty"], data.get("coupon")),
+     )
+     return cur.lastrowid
+diff -ruN a/tests/test_orders.py b/tests/test_orders.py
+--- a/tests/test_orders.py
++++ b/tests/test_orders.py
+@@ -24,3 +24,8 @@
+ def test_rejects_zero_qty(conn):
+     with pytest.raises(InvalidOrder):
+         api.create_order(conn, {"product_id": 1, "qty": 0})
++
++
++def test_rejects_unknown_coupon(conn):
++    with pytest.raises(InvalidOrder):
++        api.create_order(conn, {"product_id": 1, "qty": 1, "coupon": "NOPE"})

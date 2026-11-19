@@ -36,7 +36,7 @@ Say which models you wrote and which you considered and left out, and why, in a 
 
 ## Write the models from the text
 
-Write each model from what the document says, and point each element back to where it says it (a section, a heading, a quoted phrase). That link is what lets the author check you, and what turns an empty cell into a finding.
+Write each model from what the document says, and point each element back to where it says it (a section, a heading, a quoted phrase). That link is what lets the author check you, and what makes an empty cell grounds for a finding.
 
 Where the text does not say, leave the cell empty and mark it. Do not fill it with what a reasonable system would do. A plausible default is exactly what hides the gap the review exists to find, and the author will read your model as their spec. When the answer seems implied but is not stated, write it as implied, so it can be confirmed rather than assumed.
 
@@ -56,6 +56,8 @@ When a check can be run rather than read, for example a concurrency protocol in 
 
 Lead with the findings, ordered by their impact on users and the system. Put each one as a question the author can answer, because most findings in a spec or a design are decisions nobody has made yet, not mistakes.
 
+Model every cell, but choose the findings by impact. If every empty cell becomes a finding, the heavy ones are buried among small gaps and the author cannot tell which decision to make first. A finding is something that, left undecided, will cause trouble for users or the system: one whose "when it matters" below has a serious answer. The other empty cells are not lost by leaving them out of the findings, since each stays in its model in the appendix as a `?` and, if the checklist is written, is listed there as waiting on an answer. Those the author should still hear about can follow the findings, a line each with only where it is and the question. Copying every `?` from the appendix there would make the review long again and bury the findings once more.
+
 For each finding, show as far as you can:
 
 - Kind: a gap (the text does not say), a contradiction (two statements cannot both hold), or a risk (it holds as written but breaks under a condition).
@@ -71,7 +73,7 @@ For example, at the level of detail that helps:
 
 After the findings, the coverage: which models you wrote and which you left out. Then every model you wrote, as an appendix, including the ones that turned up nothing. A model the coverage names but the appendix does not show is a claim the reader cannot check, and a model with nothing wrong in it is still the evidence that this angle was looked at. The models are also useful to the author beyond this review, as a supplement to the spec and as the basis for tests. What you only glanced at without writing a model is not a model you wrote; say so in the coverage instead.
 
-In the findings, do not walk through the cells that turned out fine; they would bury what you found. When the document holds up, say so in a few lines and say why.
+In the findings, do not walk through the cells that turned out fine; they would bury what you found. When the document holds up, even with a few minor cells left open, say so in a few lines and say why.
 
 ## Offer a checklist
 
@@ -79,7 +81,7 @@ End the review by offering to turn the models into a checklist of what to confir
 
 Each cell the text settles becomes one item: a statement that can be confirmed against the built system, with the section it comes from, such as `- [ ] A tentative reservation not paid within 30 minutes expires, and someone else can book its slot (§3.3)`. If every item holds, the system does what the document says, as far as the document says it. Group the items by model.
 
-A cell the text leaves open does not become an item, since writing one would make the decision the author has not made, the same plausible default the models avoid. List it under its model as waiting on an answer, with the finding it waits on, and without a checkbox, since ticking it would look like a confirmation when it is still a decision. The same goes for a statement the text makes too vague to confirm, such as "users can book quickly" with no number: an item nobody can fail tells the reader nothing. That part shows what still stands between the document and an OK.
+A cell the text leaves open does not become an item, since writing one would make the decision the author has not made, the same plausible default the models avoid. List it under its model as waiting on an answer, with the finding it waits on if there is one, and without a checkbox, since ticking it would look like a confirmation when it is still a decision. The same goes for a statement the text makes too vague to confirm, such as "users can book quickly" with no number: an item nobody can fail tells the reader nothing. That part shows what still stands between the document and an OK.
 
 ## Grounds and confidence
 
