@@ -1,4 +1,4 @@
-# Models for a Modeling Review
+# Models for a Cross-Section Review
 
 Each entry says when a document calls for the model, how to write it, where it typically fails to write (the gaps it finds), what to check once it is written, and what else it yields. Choose the ones the document calls for; this is not a list to go through, and a document may call for a model not listed here.
 

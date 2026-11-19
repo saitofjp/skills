@@ -1,13 +1,13 @@
 ---
-name: review-modeling
-description: Reviews a specification or design document by modeling it. Reads the document, decides which models it calls for (state transitions, permissions, domain rules, structure and data ownership, interface contracts, failure, concurrency, trust boundaries, migration and so on), tries to write each one, and reports what could not be written as gaps and what does not hold once written as contradictions and risks, each traced to the text and put as a question the author can answer. Use it to review a spec, requirements, PRD, design document, architecture, API design or migration plan, or to find what a spec leaves out. Triggers include "review this spec", "review the design doc", "find gaps in the requirements", 「仕様をレビューして」「設計書をレビューして」「仕様の抜け漏れを見て」「モデル化してレビューして」.
+name: review-cross-section
+description: Reviews a specification or design document by cutting the system into cross-sections and modeling each one. Reads the document, decides which cross-sections it calls for (state transitions, permissions, domain rules, structure and data ownership, interface contracts, failure, concurrency, trust boundaries, migration and so on), tries to write a model of each, and reports what could not be written as gaps and what does not hold once written as contradictions and risks, each traced to the text and put as a question the author can answer. Use it to review a spec, requirements, PRD, design document, architecture, API design or migration plan, or to find what a spec leaves out. Triggers include "review this spec", "review the design doc", "find gaps in the requirements", 「仕様をレビューして」「設計書をレビューして」「仕様の抜け漏れを見て」「モデル化してレビューして」「いろんな断面で見て」.
 ---
 
-# Modeling Review
+# Cross-Section Review
 
 The purpose is to find, before code is written, what a specification or design leaves undefined and what in it cannot all be true at once.
 
-A reader can skim past a gap. A model cannot: a state table has a cell for every state and event, a permission matrix a cell for every role and operation, a CRUD matrix a cell for every part of the system and every piece of data. So write the document down as models. Where a model cannot be written from the text, the document has a gap. Where it can be written but does not hold together, inside one model or across two, the document has a contradiction or a risk.
+A reader can skim past a gap. A model cannot: a state table has a cell for every state and event, a permission matrix a cell for every role and operation, a CRUD matrix a cell for every part of the system and every piece of data. So cut the system into cross-sections, such as its states, its permissions, its structure and its migration, and write the document down as a model for each. Where a model cannot be written from the text, the document has a gap. Where it can be written but does not hold together, inside one model or across two, the document has a contradiction or a risk.
 
 The user only asks for a review. The models are how you look and the grounds for what you say, not what they asked for, so the review should read like a good review that happens to have its evidence attached.
 

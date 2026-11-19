@@ -1,6 +1,6 @@
-# 作例: モデル化レビュー
+# 作例: 断面レビュー
 
-> Sample output of `review-modeling` (in Japanese): reviews of made-up documents with planted defects. The first reviews a specification and design document and includes the checklist it offers at the end; the second reviews a design that splits a system into services and migrates to them.
+> Sample output of `review-cross-section` (in Japanese): reviews of made-up documents with planted defects. The first reviews a specification and design document and includes the checklist it offers at the end; the second reviews a design that splits a system into services and migrates to them.
 
 - [作例1: 施設予約システムの仕様・設計レビュー](#作例1-施設予約システムの仕様設計レビュー)
 - [作例2: 図書館の貸出システムのサービス分割設計のレビュー](#作例2-図書館の貸出システムのサービス分割設計のレビュー)
@@ -9,8 +9,8 @@
 
 題材は、このスキルの evals のために書いた**架空の**仕様書と設計書（市民スポーツ施設の予約システム）である。実在のシステムではない。状態遷移、権限、ドメインのルール、障害、並行性のそれぞれに、欠陥をわざと仕込んである。
 
-- 仕様書: [spec.md](../../skills/review-modeling/evals/files/spec.md)
-- 設計書: [design.md](../../skills/review-modeling/evals/files/design.md)
+- 仕様書: [spec.md](../../skills/review-cross-section/evals/files/spec.md)
+- 設計書: [design.md](../../skills/review-cross-section/evals/files/design.md)
 - レビュー結果: [review.md](review.md)
 - 確認項目のチェックリスト: [checklist.md](checklist.md)
 
@@ -50,7 +50,7 @@
 
 題材は、構成系のモデルを足したときの evals のために書いた**架空の**設計書である。市立図書館の貸出システムを、貸出、会員、検索、通知の四つのサービスに分け、旧システムから移行する。実在のシステムではない。持ち主のいない業務、二つのサービスからの書き込み、同期の呼び出しの輪、再送で二重になる貸出、移行の途中で旧と新の両方に書き込まれることなどを、わざと仕込んである。
 
-- 設計書: [architecture.md](../../skills/review-modeling/evals/files/architecture.md)
+- 設計書: [architecture.md](../../skills/review-cross-section/evals/files/architecture.md)
 - レビュー結果: [architecture-review.md](architecture-review.md)
 
 [architecture-review.md](architecture-review.md) は、「architecture.md の設計書をレビューして」と頼んだときの出力で、手を加えていない。
@@ -77,4 +77,4 @@
 
 この文書では、仕込んだ欠陥はスキルなしでもほとんど見つかった。違いは主に形と、モデルの揃い方である。変更前のスキルも、文書が明らかに求めるデータの持ち主と移行のモデルは自分で書いた。
 
-構成系のモデルを足した効果がはっきり出たのは、構成を前面に出していない [design.md](../../skills/review-modeling/evals/files/design.md) を単体でレビューしたときだった。§4.2 のバッチが §1 の構成に出てこないことを指摘し、構成と CRUD のモデルを書いたのは変更後だけで、採点は変更後 13/14、変更前 12/14、スキルなし 7/14 だった。仕様と設計を突き合わせる作例1と同じ頼み方も変更後で走らせ、13項目すべてを満たした。
+構成系のモデルを足した効果がはっきり出たのは、構成を前面に出していない [design.md](../../skills/review-cross-section/evals/files/design.md) を単体でレビューしたときだった。§4.2 のバッチが §1 の構成に出てこないことを指摘し、構成と CRUD のモデルを書いたのは変更後だけで、採点は変更後 13/14、変更前 12/14、スキルなし 7/14 だった。仕様と設計を突き合わせる作例1と同じ頼み方も変更後で走らせ、13項目すべてを満たした。

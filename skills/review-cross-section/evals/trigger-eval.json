@@ -11,6 +11,7 @@
   {"query": "この仕様、モデル化してレビューして", "should_trigger": true},
   {"query": "docs/architecture.md の構成、サービス間の依存やデータの持ち主に無理がないか見て", "should_trigger": true},
   {"query": "migration-plan.md の移行計画をレビューして。切り替えの途中で壊れないか心配", "should_trigger": true},
+  {"query": "docs/design.md の設計、状態とか権限とか構成とか、いろんな断面で切ってレビューしてほしい", "should_trigger": true},
   {"query": "このブランチの変更を設計レビューして", "should_trigger": false},
   {"query": "このブランチの変更、副作用がないか見て", "should_trigger": false},
   {"query": "PR #12 のコードをレビューして", "should_trigger": false},
