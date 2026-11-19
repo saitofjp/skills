@@ -14,7 +14,7 @@ Each entry says when a document calls for the model, how to write it, where it t
 ## State transitions
 
 - **Signs.** Statuses, lifecycle words ("draft", "in progress", "expired", "cancelled"), anything that can be done "once" or "after".
-- **Write it as.** A table with states as rows and events as columns, each cell the next state or "refused", plus a Mermaid `stateDiagram` when the reader needs the picture. Note the guard on a transition if there is one.
+- **Write it as.** A table with states as rows and events as columns, each cell the next state or "refused", and a Mermaid `stateDiagram` of it. Note the guard on a transition if there is one.
 - **Fails to write when.** An event is allowed "at any time" but its effect is defined for only some states; there is no way out of a state (timeouts, abandonment); the start or end state is unnamed; two documents name the same state differently.
 - **Check.** States that cannot be reached or cannot be left; events with no defined result in some state; transitions that skip a step another rule depends on (paid before confirmed).
 - **Yields.** Tests that cover every transition and every refused event.
@@ -38,7 +38,7 @@ Each entry says when a document calls for the model, how to write it, where it t
 ## Domain model and rules
 
 - **Signs.** Nouns that are stored, counts, "must", "unique", "at most", "always", relationships between things.
-- **Write it as.** Entities and their relationships with multiplicities (a table or a Mermaid `erDiagram`), then the rules (invariants) as short statements: "a candidate has at most one active attempt per exam".
+- **Write it as.** Entities and their relationships with multiplicities (a table, and a Mermaid `erDiagram`), then the rules (invariants) as short statements: "a candidate has at most one active attempt per exam".
 - **Fails to write when.** Multiplicity is unstated (one or many?); what happens to children when a parent is deleted is unstated; history versus overwrite is unstated (retakes, edits); identity is unclear (what makes two records the same thing).
 - **Check.** Does every operation that changes data keep every rule? Can two rules both hold? Does deletion leave orphans? Does existing data satisfy a new rule?
 - **Yields.** Property-based tests, database constraints, migration checks. When Alloy is available, a model it can search for counterexamples.
@@ -62,7 +62,7 @@ Each entry says when a document calls for the model, how to write it, where it t
 ## Data flow and trust boundaries
 
 - **Signs.** Personal data, uploads, input from users or other services, data sent outside, logs.
-- **Write it as.** Where data enters, where it goes, where it is stored, and the lines where trust changes (browser to server, tenant to tenant, own system to third party).
+- **Write it as.** Where data enters, where it goes, where it is stored, and the lines where trust changes (browser to server, tenant to tenant, own system to third party). A Mermaid `flowchart` with each side of a trust line as a subgraph shows every crossing.
 - **Fails to write when.** Where data is stored or how long it is kept is unstated; who receives data sent outside is unstated; where validation happens is unstated.
 - **Check.** Each crossing of a trust line: what validates or controls it, and whether any path goes around it. STRIDE is a useful prompt for what could go wrong at each crossing.
 - **Yields.** Security test cases and a threat list.
@@ -70,7 +70,7 @@ Each entry says when a document calls for the model, how to write it, where it t
 ## Structure
 
 - **Signs.** A section or diagram of the system's parts; services, apps, databases, queues, workers, batch jobs; "A calls B", "sends to"; other systems the system talks to.
-- **Write it as.** The first two levels of the C4 model. The context: the people and outside systems around the system, and what passes between them. The containers: each part that runs or is deployed on its own, and each data store, with what it is responsible for. For each relationship, its direction, whether it is synchronous or asynchronous, and what it carries. Tables of parts and relationships, or a Mermaid `flowchart`. Go down to components only where the document does; the code level is too fine for a document review.
+- **Write it as.** The first two levels of the C4 model. The context: the people and outside systems around the system, and what passes between them. The containers: each part that runs or is deployed on its own, and each data store, with what it is responsible for. For each relationship, its direction, whether it is synchronous or asynchronous, and what it carries. Tables of parts and relationships, and a Mermaid `flowchart` of them, where a cycle or a part that everything waits on is easy to see. Go down to components only where the document does; the code level is too fine for a document review.
 - **Fails to write when.** Something the document says the system does belongs to no part (who sends the reminder, where the nightly job runs); a part is named without what it does; which side starts a call is unstated; a part shows up in the processing sections but not in the structure; two diagrams at different levels disagree.
 - **Check.** Each thing the system must do has exactly one part that owns it; calls that go round in a cycle; a chain of synchronous calls where one slow or stopped part stalls the rest; a part that two others rely on with nothing said about what happens when it is down.
 - **Yields.** The map that the failure, trust and capacity models are laid on, and the places to put contract tests.
@@ -110,7 +110,7 @@ Each entry says when a document calls for the model, how to write it, where it t
 ## Concurrency and ordering
 
 - **Signs.** Several people on the same thing, resubmission, deadlines, "first come", queues, retries.
-- **Write it as.** The steps of each actor and the shared state they touch, then the interleavings that matter. TLA+ when it is available and the protocol is worth it.
+- **Write it as.** The steps of each actor and the shared state they touch, then the interleavings that matter, each one that breaks something as a Mermaid `sequenceDiagram`. TLA+ when it is available and the protocol is worth it.
 - **Fails to write when.** What happens when two act at once is unstated; the order of messages is assumed; the deadline is not defined at the boundary (submitted at the second it closes).
 - **Check.** Lost updates; double execution; a check and the action that relies on it separated by a gap; behavior that depends on arrival order.
 - **Yields.** Race tests; with TLA+, counterexamples from the model checker.

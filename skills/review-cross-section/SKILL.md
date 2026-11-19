@@ -40,7 +40,7 @@ Write each model from what the document says, and point each element back to whe
 
 Where the text does not say, leave the cell empty and mark it. Do not fill it with what a reasonable system would do. A plausible default is exactly what hides the gap the review exists to find, and the author will read your model as their spec. When the answer seems implied but is not stated, write it as implied, so it can be confirmed rather than assumed.
 
-Use forms that a person can read and a tool could check: tables, Mermaid diagrams, short lists of rules. Keep each model the size of what it shows.
+Use forms that a person can read and a tool could check: tables, Mermaid diagrams, short lists of rules. A table lays out every cell, so the empty ones show. A diagram lets the reader take in a shape at a glance: a cycle, a dead end, a path that skips a step. So when a model has a shape that can be drawn (states and the transitions between them, parts and the lines between them, entities and their relationships, the calls between parties, screens and the moves between them), give it a Mermaid diagram as well as the table. Use the same names in both, and show in the diagram what the text leaves open, for example as a dashed line marked unstated. Keep each model the size of what it shows; when a diagram grows too large to read, split it, or draw only the part a finding is about.
 
 ## Check the models
 
