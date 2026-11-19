@@ -13,8 +13,9 @@
         "Points out that §7 lets facility staff register a closure, which cancels and refunds reservations, while the role table in §4 does not give staff that operation",
         "Points out that §8 promotes from the waiting list only on cancellation, leaving open what happens when a slot is freed by expiry or by a closure",
         "Points out at least one state with no way out or an event with no defined result: a paid reservation nobody shows up for, a waiting-list entry that never gets a slot, or cancelling a waiting-list entry",
-        "Points out that 「前日まで」 (§3.4, §9) does not say until what time",
-        "Points out that 「すぐに」 in §11 comes with no numbers (expected load or response time)",
+        "Shows that 「前日まで」 (§3.4, §9) does not say until what time, whether as a finding, as a line among the minor open points, or as an open cell in a model in the appendix",
+        "Shows that 「すぐに」 in §11 comes with no numbers (expected load or response time), whether as a finding, as a line among the minor open points, or as an open cell in a model in the appendix",
+        "Does not give every open cell a full finding of its own: the findings with real consequences come first and stand out, and minor open points get at most a line each after the findings or are left marked in the appendix",
         "Every finding names the section or sections of the spec it rests on",
         "Findings are put as questions the author can answer, not only as fixes",
         "The state table (or another model) leaves the cells the spec does not settle, such as (決済処理中, cancel), marked as unknown or implied, rather than filling them with a plausible behavior",
@@ -57,7 +58,7 @@
         "Each item names the section of the spec it comes from",
         "Includes items for cells the spec settles, for example that a tentative reservation not paid within 30 minutes expires and frees its slot (§3.3), or that cancelling a paid reservation by the day before refunds it in full (§3.4)",
         "Does not turn an open cell into an item: no item says what happens to 決済処理中 after 30 minutes, what cancelling a waiting-list entry does, or whether group reservations count toward the daily limit",
-        "Lists the open cells as waiting on an answer, each with the finding it waits on and without a checkbox",
+        "Lists the open cells as waiting on an answer, each with the finding it waits on where there is one, and without a checkbox",
         "Puts 「すぐに予約できる」 (§11) under waiting on an answer rather than as an item, since it has no number to confirm",
         "Payment, refund and email failures appear only as waiting on an answer, not as items"
       ]
@@ -111,6 +112,28 @@
         "Says the checks are a careful reading, not a proof",
         "Does not report the lack of a C4 diagram, an architecture decision record or a sequence diagram as a defect",
         "Gives the models that can be drawn, at least the structure and the state transitions, a Mermaid diagram as well as a table"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "evals/files/expense-spec.md の仕様をレビューして",
+      "expected_output": "A short review of a carefully written spec: it says the spec holds up and why in a few lines, raises few findings and makes none up, gives any minor open points a line each, and still gives the coverage and the models as an appendix.",
+      "files": ["evals/files/expense-spec.md"],
+      "expectations": [
+        "Says near the start that the spec holds up, and says why in a few lines, for example that §3.2 settles every state and operation with its table and its rule that anything else is refused, that §8 makes every change carry the version it read, or that §7 keeps a request from being paid twice",
+        "Keeps the findings few and short: no long list of full findings, nothing in them about cells that turned out fine, and minor open points at most a line each",
+        "Does not report state and operation combinations missing from the table in §3.2 as undefined, since §3.2 refuses every combination it does not list (409)",
+        "Does not report two approvers acting at once, or a withdrawal and an approval arriving together, as unhandled, since §8 fails the later change with 409",
+        "Does not report that a transfer file that could not be handed over, or a late, partial or repeated result, can leave a request stuck or pay it twice, since §7.1 numbers each file, keeps a request out of later files until its result arrives and has accounting resend the same file, and §7.2 covers missing, partial and repeated results, in the end by accounting entering the result",
+        "Does not report that a request rejected for an account problem cannot be filed again because of the 60-day rule, since §5 counts the 60 days of copied items from the original request's first submission",
+        "Does not report that a manager, a deputy or accounting staff can approve their own request, or that one person can approve a request both as manager and as accounting, since §4.1 and §4.2 route these to someone else",
+        "Does not report that a sent-back request never ends when it is left alone or its applicant leaves the company, since §3.2 withdraws it after 30 days or on the day the applicant leaves",
+        "Does not report the closing time on a holiday or the monthly maintenance window as unsettled, since §2 keeps the closing time on holidays and §10 says the maintenance never falls on a closing day",
+        "Does not raise what §1 puts out of scope (foreign currency, advance payments, corporate cards, corrections and refunds after payment, a phone app) as defects",
+        "Every finding or open point it raises names the section it rests on and is something the text really leaves open or contradicts, not something another section settles",
+        "Says which models were written and which were considered and left out, with a reason for each one left out, and every model written appears in the appendix",
+        "Ends by offering to write a checklist of what to confirm, without writing the checklist unasked",
+        "Says the checks are a careful reading, not a proof"
       ]
     }
   ]
